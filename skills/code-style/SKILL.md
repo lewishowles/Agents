@@ -21,6 +21,7 @@ related-skills:
 - No one-liner `if` statements — full block format with braces, body on new line
 - Blank lines separate logical steps in functions
 - Multi-line variable declarations should have a blank line before and after them
+- Repeated inline logic? Extract into named functions with JSDoc or equivalent, don't duplicate
 
 ## Naming & imports
 
@@ -43,7 +44,7 @@ related-skills:
 - Every top-level variable: single-line comment describing what it does — all languages
 - Functions: JSDoc or equivalent blocks. Parameters: `@param  {type}  name` format, description indented four spaces on next line
 - Use TypeScript-style JSDoc types where they stay simple, e.g. `object[]` or `string[]` instead of `Array<object>` or `Array<string>`
-- Repeated inline logic? Extract into named functions with JSDoc or equivalent, don't duplicate
+- Add a short purpose comment when future maintainers could reasonably mistake intentional behaviour for a bug, workaround, or accidental omission. Focus on why the code exists or why a surprising choice is deliberate.
 - No banner/divider comments (`// ---`) — use JSDoc or equivalent and blank lines for structure
 - **In-code comments should explain purpose, not implementation mechanics** — say what a value, prop, branch, or check is for. Do not explain framework internals, historical bugs, or how the code works unless that knowledge is required to safely modify it.
 - Avoid comments that merely repeat syntax, narrate control flow, or describe a workaround's mechanics. Prefer `// Ensures the dialog has an accessible label.` over `// Wrapped in onMounted to avoid invoking slots outside render context.`
