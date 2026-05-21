@@ -1,7 +1,7 @@
 ---
 name: vue-project-stack
 description: >
-  Use this skill when working in a Vue project that uses the wider Lewis Howles stack. Covers the chosen tools (Vue 3 with script setup, TypeScript, Tailwind, Vitest, Bun, Gitflow, GitHub Pages) with the *why* for each so suggestions can flag outdated choices, plus the @lewishowles/helpers and @lewishowles/components libraries that replace common packages.
+  Use this skill when working in a Vue project that uses the wider Lewis Howles stack. Covers the chosen tools (Vue 3 with script setup, Tailwind, Vitest, Bun, Gitflow, GitHub Pages) with the *why* for each so suggestions can flag outdated choices, plus the @lewishowles/helpers and @lewishowles/components libraries that replace common packages.
 related-skills:
   - vue
   - code-style
@@ -15,9 +15,7 @@ Stack used across Vue projects. Each choice has *why*. Better option emerges or 
 ## Core stack
 
 - **Vue 3 with `<script setup>`, Composition API**
-  *Why:* better TypeScript inference than Options API, smaller runtime, easier composable extraction, `<script setup>` cuts boilerplate
-- **TypeScript-first**
-  *Why:* catches errors at edit time, drives IDE autocomplete; pair with runtime validation for external/untyped data
+  *Why:* smaller runtime, easier composable extraction, `<script setup>` cuts boilerplate, reactive primitives compose naturally
 - **Tailwind (utility-first)**
   *Why:* colocates styles with markup, removes class-naming overhead, fast iteration, easy consistency audit
 - **Vitest**
@@ -51,3 +49,22 @@ Missing helper — discuss adding to `@lewishowles/helpers` rather than inlining
 ## Component library — `@lewishowles/components`
 
 Opinionated UI component library, accessibility baked in. Documented at [components.howles.dev](https://components.howles.dev/) — use live docs, not memory. Missing component — discuss adding there, not one-off duplicates.
+
+## Data layer structure
+
+When using Pinia Colada for server data, organise by responsibility:
+
+```
+src/
+├── api/          # Raw fetch functions — no keys, no cache logic
+├── queries/      # Key factories, defineQueryOptions, defineQuery
+└── mutations/    # defineMutation definitions
+```
+
+State management responsibilities:
+
+| Layer | Use for |
+|-------|---------|
+| Pinia stores | UI state, user preferences, app-wide flags |
+| Pinia Colada | Server data — fetching, caching, revalidation |
+| Plain composables | Local shared state that doesn't need caching |

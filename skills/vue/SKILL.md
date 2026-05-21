@@ -19,6 +19,7 @@ related-skills:
 - Always two-word minimum component names per Vue best practices
 - Max 5 attributes per line (single); 1 per line (multiline)
 - Import groups: destructurable → non-destructurable → Components, blank line between
+- Always wrap named slot content in an explicit `<template #name>` tag — never pass bare content to a named slot without a wrapper
 
 ## Macro order
 
@@ -48,6 +49,18 @@ const props = defineProps({
 		default: undefined,
 	},
 });
+```
+
+### Prop shorthand
+
+When the variable name matches the prop name, use the shorthand (Vue 3.4+):
+
+```vue
+<!-- ✓ -->
+<my-component :count />
+
+<!-- ✗ -->
+<my-component :count="count" />
 ```
 
 ### Computed properties
@@ -96,6 +109,47 @@ const displayDate = computed(() => {
 
 - Lowercase kebab-case names (`form-input`, `data-table`)
 - Always two words minimum — single-word names conflict with native HTML elements
+- Name from general to specific — the most specific word goes last: `form-date-picker` not `date-picker-form`, `table-row-actions` not `actions-table-row`
+
+## Conventions
+
+- Named exports for composables and utilities — `export function useX` not `export default function useX`
+- Named functions for component methods; arrow functions for inline handlers and callbacks only
+
+## File-based routing
+
+Vue Router's file-based routing generates routes from the `src/pages/` directory — the file path is the URL. Requires the Vue Router build plugin.
+
+```
+src/pages/
+├── (home).vue              → /          group name keeps URL clean; also used for shared layouts
+├── about.vue               → /about
+├── [...path].vue           → catch-all for unmatched routes
+├── users.edit.vue          → /users/edit  dot notation breaks out of the users/ layout
+├── users.vue               → layout wrapping everything under /users/ (must contain <router-view />)
+└── users/
+    ├── (user-list).vue     → /users
+    └── [userId].vue        → /users/:userId
+```
+
+Rules:
+- Avoid `index.vue` — use route groups like `(home).vue` for meaningful names
+- Name params explicitly: `[userId]` not `[id]`, `[postSlug]` not `[slug]`
+- Optional params: `[[slug]].vue` matches with or without the segment
+- Catch-all: `[...path].vue` matches any remaining path including slashes
+- Dot notation: `users.edit.vue` produces `/users/edit` without nesting inside the `users.vue` layout
+- `definePage()` inside a page component sets per-route `meta`, `name`, or `alias`
+
+```vue
+<!-- src/pages/users/[userId].vue -->
+<script setup>
+import { definePage } from "vue-router";
+
+definePage({
+	meta: { requiresAuth: true },
+});
+</script>
+```
 
 ---
 

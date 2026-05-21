@@ -45,3 +45,13 @@ description: >
 - Prescriptive absolutes where context matters — "generally", "ideally", "where possible" are honest
 - Capitalising every word in titles or headings
 - Opening with summary of what you're about to say
+
+## Technical documentation
+
+Skill files, reference docs, and inline code documentation follow a different style to longform prose. When writing these:
+
+- Lead with the rule or pattern, then the example. Establish *what* before showing *how* — don't bury the rule after a long preamble.
+- Prefer a short code snippet over a paragraph of prose when both would convey the same thing. A three-line example beats a sentence of abstract description.
+- Use tables for comparisons and trade-offs; bullet lists for independent items that don't have a comparative relationship.
+- Write instructions in the imperative: "Pass a getter function" not "You should pass a getter function".
+- Em-dash discipline: before writing one, identify the actual relationship between the clauses. Definition or explanation → colon. Separate statement → full stop. Continuation or aside → comma. Genuine interruption or parenthetical contrast → em-dash is appropriate. Most em-dashes in technical writing are a lazy colon or full stop in disguise.
