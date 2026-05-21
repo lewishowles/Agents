@@ -129,9 +129,28 @@
 						"timeout": 5
 					}
 				]
+			},
+			{
+				"matcher": "Edit|Write",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash -c 'bash \"$HOME/.claude/hooks/auto-format.sh\"'",
+						"timeout": 10
+					}
+				]
 			}
 		],
 		"PreToolUse": [
+			{
+				"matcher": "Read",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "jq -r '.tool_input.file_path // empty' | { read fp; if echo \"$fp\" | grep -q '\\.env'; then exit 2; fi; }"
+					}
+				]
+			},
 			{
 				"matcher": "Write|Edit",
 				"hooks": [

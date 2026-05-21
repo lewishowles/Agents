@@ -1,0 +1,9 @@
+{
+	"$schema": "https://cdn.jsdelivr.net/npm/oxfmt@latest/config-schema.json",
+	"useTabs": true,
+	"semi": true,
+	"singleQuote": false,
+	"trailingComma": "all",
+	"printWidth": 100,
+	"sortTailwindcss": true
+}
