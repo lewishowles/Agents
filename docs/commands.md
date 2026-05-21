@@ -35,6 +35,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/dependencies` | dependencies | Evaluating a new package |
 | `/e2e-testing` | e2e-testing | Writing Playwright tests |
 | `/error-handling` | error-handling | Adding validation to a function |
+| `/pinia-colada` | pinia-colada | Working with `@pinia/colada` queries, mutations, or cache |
 | `/readme` | readme | Starting or editing a README |
 | `/session-management` | session-management | Saving or resuming a session |
 | `/swift` | swift | Working in a Swift file |
@@ -48,6 +49,19 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/writing` | writing | Writing or editing prose |
 
 Most of these fire automatically via the trigger hooks — manual invocation is for cases the hooks don't catch, or to load a skill at the start of a session.
+
+## Custom commands
+
+Slash commands can be defined as plain markdown files. Claude Code reads them as additional instructions when invoked.
+
+- **Global commands** live in `~/.claude/commands/` and are available in every project. `scripts/setup-global.sh` symlinks everything in `targets/claude/commands/` there automatically.
+- **Project commands** live in `.claude/commands/` at the project root and are only available in that project.
+
+The file name becomes the command: `new-command.md` → `/new-command`.
+
+| Command | What it does |
+|---------|-------------|
+| `/new-command` | Scaffold a new slash command file with the standard structure |
 
 ## Plugin commands
 

@@ -10,6 +10,7 @@ Apply across all projects. See individual skills for detailed rules. Per-project
 - `/dependencies` — When adding packages, what to choose, when to add
 - `/e2e-testing` — When writing end-to-end tests with Playwright
 - `/error-handling` — When validating input, graceful fallbacks, error handling
+- `/pinia-colada` — When using `@pinia/colada` for async server state — `useQuery`, `useMutation`, cache management, optimistic updates
 - `/readme` — When writing a README, structure, what to include/cut
 - `/session-management` — When saving/resuming sessions, tracking multi-session work, token efficiency, goal-driven execution
 - `/swift` — When writing Swift, style, SwiftUI patterns, concurrency

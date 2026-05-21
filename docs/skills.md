@@ -18,6 +18,7 @@ Defined in `skills/` in this repo, then symlinked into each runtime by `scripts/
 | `dependencies` | Adding packages or considering a new library — when to add, what to avoid, @lewishowles libs | `package.json`, `npm install`, `bun add`, `yarn add`, `install package`, `new library`, `upgrade package` |
 | `e2e-testing` | End-to-end tests with Playwright — browser automation, user journeys, test structure | `e2e`, `playwright`, `end-to-end test`, `user journey`, `data-test` |
 | `error-handling` | Functions with parameters, API calls, response handling | `error handling`, `try-catch`, `validate`, `guard let`, `api call`, `fetch`, `async`, `throws`, `Result<` |
+| `pinia-colada` | Async server state in Vue — caching, mutations, optimistic updates, cache invalidation via `@pinia/colada` | `@pinia/colada`, `pinia colada`, `useQuery`, `useMutation`, `defineQuery`, `defineMutation`, `useQueryCache`, `invalidateQueries`, files in `queries/` or `mutations/` |
 | `readme` | Writing or editing a README — structure, what belongs, what to cut | `readme`, `getting started guide` |
 | `session-management` | Saving and resuming work sessions across Claude Code restarts | `save session`, `resume session`, `context snapshot`, `checkpoint`, `session management` |
 | `swift` | Swift code — comment style, spacing, concurrency, `@Observable`/`@MainActor` | `.swift`, `swift`, `swiftui`, `xcode`, `@observable`, `@state`, `@mainactor`, `xctest` |
@@ -27,7 +28,7 @@ Defined in `skills/` in this repo, then symlinked into each runtime by `scripts/
 | `unit-testing` | Writing or reviewing unit tests — Vitest, XCTest, `@testing-library/vue` | `test`, `spec`, `coverage`, `.test.`, `.spec.`, `xctest`, `vitest`, `describe`, `mock`, `spy`, `assert` |
 | `vite-patterns` | Configuring `vite.config.ts`, environment variables, build optimisation, security | `vite.config`, `VITE_`, `environment var`, `build.lib`, `rollup`, `esbuild` |
 | `vue` | Vue 3 components, composables, templates — patterns and organisation | `.vue`, `vue`, `composable`, `<script setup`, `pinia`, `defineProps`, `ref(`, `computed(` |
-| `vue-project-stack` | Vue projects using the wider stack: Bun, Vitest, Tailwind, Gitflow, `@lewishowles` libs | (always paired with `vue`; same triggers) |
+| `vue-project-stack` | Vue projects using the wider stack: Bun, Vitest, Tailwind, Gitflow, `@lewishowles` libs, Pinia Colada | (always paired with `vue`; same triggers) |
 | `writing` | Prose — blog posts, documentation, longform content, voice and tone | `documentation`, `docs`, `blog`, `changelog`, `article`, `reword`, `rephrase`, `proofread` |
 
 ## Built-in Claude Code skills

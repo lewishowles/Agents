@@ -47,6 +47,7 @@ copy_claude_support_files() {
 
 	copy_file "$REPO_DIR/templates/claude/settings.json" "$PROJECT_DIR/.claude/settings.json" ".claude/settings.json"
 	copy_file "$REPO_DIR/templates/claude/.claudeignore" "$PROJECT_DIR/.claude/.claudeignore" ".claude/.claudeignore"
+	copy_file "$REPO_DIR/templates/claude/.oxfmtrc.jsonc" "$PROJECT_DIR/.oxfmtrc.jsonc" ".oxfmtrc.jsonc"
 	copy_file "$REPO_DIR/templates/PLAN.md.template" "$PROJECT_DIR/.claude/templates/PLAN.md.template" ".claude/templates/PLAN.md.template"
 }
 

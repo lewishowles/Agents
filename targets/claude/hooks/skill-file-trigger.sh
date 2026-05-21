@@ -65,6 +65,11 @@ fi
 # architecture-decision-records: ADR files (0001-*.md pattern or adr/ directory)
 [[ "$file_path" =~ /adr/ ]] || [[ "$filename" =~ ^[0-9]{4}- ]] && skills+=("architecture-decision-records")
 
+# pinia-colada: files inside queries/ or mutations/ directories
+if [[ "$file_path" =~ /queries/ ]] || [[ "$file_path" =~ /mutations/ ]]; then
+	skills+=("code-style" "pinia-colada")
+fi
+
 shopt -u nocasematch
 
 [ ${#skills[@]} -eq 0 ] && exit 0

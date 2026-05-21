@@ -13,6 +13,8 @@ Hooks are shell scripts that Claude Code runs automatically at specific points i
 | `skill-file-trigger.sh` | Before every Write or Edit (`PreToolUse`, `Write\|Edit`) | Silently skips if `jq` is missing — writes are never blocked |
 | `test-skeleton-reminder.sh` | Before every Write or Edit (`PreToolUse`, `Write\|Edit`) | Silently skips if no matching test stack is detected |
 | `plan-verify.sh` | After `ExitPlanMode` (`PostToolUse`) | Silently skips if no plan files exist |
+| `auto-format.sh` | After every Write or Edit (`PostToolUse`, `Edit\|Write`) | Silently skips if `oxfmt` is not installed |
+| `.env` protection (inline) | Before every Read (`PreToolUse`, `Read`) | Exits with code 2 (block) if the file path matches `.env` |
 | `pre-stop-checks.sh` | When Claude finishes (`Stop`) | Runs lint and unit tests; logs failures; pauses Claude and displays output if either fails |
 
 ### skill-autotrigger.sh
@@ -77,6 +79,20 @@ Fires after `ExitPlanMode`. Finds the most recently modified `.md` file in `~/.c
 The hook warns rather than blocks — plans for small tasks are valid without a Validation section.
 
 **Requires:** `jq` — silently skips if missing.
+
+### auto-format.sh
+
+Fires after every Write or Edit. Reads the file path from the tool input, checks the extension (`.js`, `.mjs`, `.vue`, `.css`, `.json`, `.md`, `.html`), and runs `oxfmt` if it's in PATH. Skips silently if oxfmt isn't installed — so it only activates in projects that have opted in by installing it.
+
+Always exits 0. The hook can never block a write.
+
+**Requires:** `oxfmt` — install per project with `bun add -D oxfmt`. No effect if absent.
+
+### .env protection (inline)
+
+Defined directly in `settings.json` rather than as a separate script. Fires before every Read call. If the file path matches `.env` (using `grep -q '\.env'`), exits with code 2, which Claude Code treats as a block. Prevents Claude from reading secrets files that could appear in context.
+
+**No dependencies.** Inline `jq` + shell pipe — runs in any environment.
 
 ### pre-stop-checks.sh
 

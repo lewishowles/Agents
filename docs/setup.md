@@ -11,14 +11,15 @@ ln -s /path/to/repository/targets/claude/CLAUDE.md ~/.claude/CLAUDE.md
 ln -s /path/to/repository/targets/claude/settings.json ~/.claude/settings.json
 ```
 
-Create `~/.claude/skills/` and `~/.claude/hooks/`, then link each item individually:
+Create `~/.claude/skills/`, `~/.claude/hooks/`, and `~/.claude/commands/`, then link each item individually:
 
 ```bash
 ln -s /path/to/repository/skills/vue ~/.claude/skills/vue
 ln -s /path/to/repository/targets/claude/hooks/skill-autotrigger.sh ~/.claude/hooks/skill-autotrigger.sh
+ln -s /path/to/repository/targets/claude/commands/new-command.md ~/.claude/commands/new-command.md
 ```
 
-Repeat for each skill and hook. Per-item links allow plugin-installed skills and hooks to coexist.
+Repeat for each skill, hook, and command. Per-item links allow plugin-installed items to coexist.
 
 ## Global Codex setup
 
@@ -45,6 +46,7 @@ cp /path/to/repository/templates/claude/AGENTS.md.template AGENTS.md
 mkdir -p .claude/templates
 cp /path/to/repository/templates/claude/settings.json .claude/settings.json
 cp /path/to/repository/templates/claude/.claudeignore .claude/.claudeignore
+cp /path/to/repository/templates/claude/.oxfmtrc.jsonc .oxfmtrc.jsonc
 cp /path/to/repository/templates/PLAN.md.template .claude/templates/PLAN.md.template
 ```
 
@@ -62,6 +64,7 @@ cp /path/to/repository/templates/shared/AGENTS.md.template AGENTS.md
 mkdir -p .claude/templates
 cp /path/to/repository/templates/claude/settings.json .claude/settings.json
 cp /path/to/repository/templates/claude/.claudeignore .claude/.claudeignore
+cp /path/to/repository/templates/claude/.oxfmtrc.jsonc .oxfmtrc.jsonc
 cp /path/to/repository/templates/PLAN.md.template .claude/templates/PLAN.md.template
 mkdir -p .agents/skills
 ```

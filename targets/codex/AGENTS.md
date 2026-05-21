@@ -77,6 +77,14 @@ When your changes create orphans:
 
 Rule: every changed line traces directly to the request
 
+### Research
+
+When checking documentation for a package or library, try `<docs-url>/llms.txt` first — it often contains curated links optimised for LLMs.
+
+### File operations
+
+Use `trash` instead of `rm` for any destructive file removal.
+
 ## Communication
 
 - **UK spelling** — colour, organise, behaviour, grey, etc.

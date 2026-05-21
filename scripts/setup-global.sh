@@ -24,6 +24,7 @@ backup_path() {
 	case "$path" in
 		"$HOME/.claude/skills/"*) backup="$HOME/.claude/backups/skills/$(basename "$path").bak" ;;
 		"$HOME/.claude/hooks/"*) backup="$HOME/.claude/backups/hooks/$(basename "$path").bak" ;;
+		"$HOME/.claude/commands/"*) backup="$HOME/.claude/backups/commands/$(basename "$path").bak" ;;
 		"$HOME/.agents/skills/"*) backup="$HOME/.agents/backups/skills/$(basename "$path").bak" ;;
 	esac
 
@@ -102,6 +103,7 @@ setup_claude() {
 	ensure_container_dir "$HOME/.claude" "~/.claude"
 	ensure_container_dir "$HOME/.claude/skills" "skills"
 	ensure_container_dir "$HOME/.claude/hooks" "hooks"
+	ensure_container_dir "$HOME/.claude/commands" "commands"
 
 	link_path "$REPO_DIR/targets/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md" "CLAUDE.md"
 	link_path "$REPO_DIR/targets/claude/settings.json" "$HOME/.claude/settings.json" "settings.json"
@@ -117,6 +119,12 @@ setup_claude() {
 	for hook in "$REPO_DIR"/targets/claude/hooks/*; do
 		[ -f "$hook" ] || continue
 		link_path "$hook" "$HOME/.claude/hooks/$(basename "$hook")" "hooks/$(basename "$hook")"
+	done
+
+	local command
+	for command in "$REPO_DIR"/targets/claude/commands/*; do
+		[ -f "$command" ] || continue
+		link_path "$command" "$HOME/.claude/commands/$(basename "$command")" "commands/$(basename "$command")"
 	done
 }
 
