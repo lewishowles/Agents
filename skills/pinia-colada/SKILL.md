@@ -4,7 +4,7 @@ description: >
   Use this skill when working with @pinia/colada for async data fetching and server state in Vue projects.
   TRIGGER when: code imports from `@pinia/colada`, uses `useQuery`, `useMutation`, `defineQuery`,
   `defineMutation`, `useQueryCache`, or `invalidateQueries`; when setting up async data fetching
-  in a Vue project; when working in `src/queries/` or `src/mutations/` directories.
+  in a Vue project; when working in `src/queries/`.
 ---
 
 # Pinia Colada
@@ -14,7 +14,7 @@ Pinia Colada manages server state in Vue apps — caching, deduplication, backgr
 ## Setup
 
 ```bash
-bun add @pinia/colada
+bun add pinia @pinia/colada
 bun add -D @pinia/colada-devtools
 ```
 
@@ -43,6 +43,46 @@ import { PiniaColadaDevtools } from "@pinia/colada-devtools";
 </template>
 ```
 
+## Default conventions
+
+Use Pinia Colada as the server-state layer, not the transport layer. Keep API clients focused on HTTP/Xano/fetch calls; put cache keys, query options, mutations, and convenience wrappers under `src/queries/`.
+
+Prefer feature folders once a resource has both query and mutation behaviour:
+
+```
+src/queries/auth/
+├── index.js          # Public exports only
+├── current-user.js   # Current user query + useCurrentUser()
+└── login.js          # Login mutation + useAuth()
+```
+
+Components should import from the feature folder, not implementation files:
+
+```js
+import { useAuth, useCurrentUser } from "@/queries/auth";
+```
+
+Name reusable definitions as `*QueryOptions` / `*MutationOptions`, and live return values as the resource/action:
+
+```js
+export const currentUserQueryOptions = defineQueryOptions({
+	key: CURRENT_USER_QUERY_KEY,
+	query: getCurrentUser,
+});
+
+const currentUser = useQuery(() => ({
+	...currentUserQueryOptions,
+	enabled: hasAuthToken(),
+}));
+```
+
+Mental model:
+- `currentUserQueryOptions` — reusable recipe: key + fetcher
+- `currentUser` — live query state from `useQuery()`
+- `userDetails` — derived data object exposed to components
+
+Convenience wrappers are encouraged when they remove repeated setup or expose derived values. Use route middleware for access decisions, not data preloading: for auth, prefer a token-only guard; components/layouts that call `useCurrentUser()` activate the current-user query automatically when `enabled` is true.
+
 ## Key factories
 
 Centralise cache keys in the query file. Reusing parent keys creates a hierarchy — invalidating a parent key invalidates all its children.
@@ -58,6 +98,22 @@ export const CONTACT_KEYS = {
 
 Invalidating `CONTACT_KEYS.root` invalidates every contacts query. Invalidating `CONTACT_KEYS.byId(id)` invalidates that contact and its notes.
 
+For singleton resources, keep keys simple:
+
+```js
+export const CURRENT_USER_QUERY_KEY = ["user"];
+```
+
+For resource collections, include every input that changes the returned data:
+
+```js
+export const ALERT_KEYS = {
+	root: ["alerts"],
+	list: (siteId, filters) => [...ALERT_KEYS.root, "list", siteId, filters],
+	byId: (alertId) => [...ALERT_KEYS.root, "detail", alertId],
+};
+```
+
 ## defineQueryOptions
 
 Combine a key factory with a query function into a reusable definition. Pass it to `useQuery` directly rather than inlining keys.
@@ -68,7 +124,7 @@ Combine a key factory with a query function into a reusable definition. Pass it 
 import { defineQueryOptions } from "@pinia/colada";
 import { getContacts } from "@/api/contacts";
 
-export const contactListQuery = defineQueryOptions({
+export const contactListQueryOptions = defineQueryOptions({
 	key: CONTACT_KEYS.root,
 	query: () => getContacts(),
 });
@@ -79,7 +135,7 @@ export const contactListQuery = defineQueryOptions({
 ```js
 import { getContactById } from "@/api/contacts";
 
-export const contactByIdQuery = defineQueryOptions((id) => ({
+export const contactByIdQueryOptions = defineQueryOptions((id) => ({
 	key: CONTACT_KEYS.byId(id),
 	query: () => getContactById(id),
 }));
@@ -93,18 +149,18 @@ Pass dynamic options as a getter function so Vue tracks reactivity correctly.
 <script setup>
 import { useQuery } from "@pinia/colada";
 import { useRoute } from "vue-router";
-import { contactByIdQuery } from "@/queries/contacts";
+import { contactByIdQueryOptions } from "@/queries/contacts";
 
 const route = useRoute();
 
 // Getter function — re-evaluates reactively when route.params changes.
-const { state, asyncStatus } = useQuery(() => contactByIdQuery(route.params.contactId));
+const contact = useQuery(() => contactByIdQueryOptions(route.params.contactId));
 </script>
 
 <template>
-	<div v-if="asyncStatus === 'loading'">Loading…</div>
-	<div v-else-if="state.status === 'error'">{{ state.error.message }}</div>
-	<div v-else-if="state.data">{{ state.data.name }}</div>
+	<div v-if="contact.asyncStatus.value === 'loading'">Loading…</div>
+	<div v-else-if="contact.state.value.status === 'error'">{{ contact.state.value.error.message }}</div>
+	<div v-else-if="contact.state.value.data">{{ contact.state.value.data.name }}</div>
 </template>
 ```
 
@@ -130,7 +186,7 @@ Override individual options per usage without redefining the whole query.
 
 ```js
 useQuery(() => ({
-	...contactByIdQuery(route.params.contactId),
+	...contactByIdQueryOptions(route.params.contactId),
 	enabled: isReady.value,
 }));
 ```
@@ -155,27 +211,34 @@ const { mutate: saveContact, asyncStatus } = useMutation({
 - `mutate()` — fire-and-forget, catches errors silently
 - `mutateAsync()` — returns a promise, re-throws errors
 
-## defineMutation
+Prefer `mutateAsync()` when the caller already has a `try/catch` flow, such as login forms or save buttons that redirect after success.
 
-Reusable mutation definitions, optionally with shared state.
+## defineMutationOptions and defineMutation
+
+Use `defineMutationOptions` for normal reusable mutation recipes. Use `defineMutation` only when the mutation wrapper needs shared reactive state.
 
 ```js
-// src/mutations/contacts.js
-import { defineMutation, useMutation, useQueryCache } from "@pinia/colada";
+// src/queries/contacts/delete.js
+import { defineMutationOptions, useMutation, useQueryCache } from "@pinia/colada";
 import { CONTACT_KEYS } from "@/queries/contacts";
 import { deleteContact } from "@/api/contacts";
 
-export const useDeleteContact = defineMutation(() => {
+export const deleteContactMutationOptions = defineMutationOptions({
+	mutation: (id) => deleteContact(id),
+});
+
+export function useDeleteContact() {
 	const queryCache = useQueryCache();
 
 	return useMutation({
-		mutation: (id) => deleteContact(id),
+		...deleteContactMutationOptions,
+
 		onSettled(_data, _error, id) {
 			queryCache.invalidateQueries({ key: CONTACT_KEYS.byId(id) });
 			queryCache.invalidateQueries({ key: CONTACT_KEYS.root, exact: true });
 		},
 	});
-});
+}
 ```
 
 ## defineQuery
@@ -208,6 +271,12 @@ export const useContactSearch = defineQuery(() => {
 | `refresh()` | Reuses any in-flight request; skips if data is still fresh (`staleTime`). Prefer this. |
 | `refetch()` | Always triggers a new network request regardless of cache state. |
 
+Pass `true` when the caller should handle failures with `try/catch`:
+
+```js
+await currentUser.refetch(true);
+```
+
 ## State and status
 
 | Property | Values | What it tells you |
@@ -217,16 +286,21 @@ export const useContactSearch = defineQuery(() => {
 
 These are intentionally separate. A query can have `state.status === 'success'` (data loaded before) and `asyncStatus === 'loading'` (currently refreshing in background).
 
+## Active queries
+
+A query is active while live Vue code is using it through `useQuery()` or a wrapper that calls `useQuery()`. Mounted components and layouts are the common case. Invalidating an active query refetches it; invalidating an inactive query marks it stale so it refreshes next time something uses it.
+
 ## Folder structure
 
 ```
 src/
 ├── api/          # Raw fetch functions — no cache keys, no query logic
 │   └── contacts.js
-├── queries/      # Key factories + defineQueryOptions + defineQuery
-│   └── contacts.js
-└── mutations/    # defineMutation definitions
-    └── contacts.js
+└── queries/      # Feature folders: keys + options + wrappers
+    └── contacts/
+        ├── index.js
+        ├── list.js
+        └── update.js
 ```
 
 State management responsibilities:
