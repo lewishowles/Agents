@@ -51,12 +51,15 @@ const props = defineProps({
 });
 ```
 
-### Prop shorthand
+### Prop bindings
 
-When the variable name matches the prop name, use the shorthand (Vue 3.4+):
+Prefer object `v-bind` over `:` shorthand for prop bindings, including when the variable name matches the prop name:
 
 ```vue
 <!-- ✓ -->
+<my-component v-bind="{ count }" />
+
+<!-- ✗ -->
 <my-component :count />
 
 <!-- ✗ -->
