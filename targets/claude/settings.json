@@ -1,9 +1,121 @@
 {
+	"agentPushNotifEnabled": true,
+	"contextCompactionThreshold": 80,
+	"enabledPlugins": {},
 	"env": {
 		"CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
-		"MAX_THINKING_TOKENS": "10000",
-		"CLAUDE_CODE_SUBAGENT_MODEL": "haiku"
+		"CLAUDE_CODE_SUBAGENT_MODEL": "haiku",
+		"MAX_THINKING_TOKENS": "10000"
 	},
+	"hooks": {
+		"PostToolUse": [
+			{
+				"hooks": [
+					{
+						"command": "bash -c 'bash \"$HOME/.claude/hooks/plan-verify.sh\"'",
+						"timeout": 5,
+						"type": "command"
+					}
+				],
+				"matcher": "ExitPlanMode"
+			},
+			{
+				"hooks": [
+					{
+						"command": "bash -c 'bash \"$HOME/.claude/hooks/auto-format.sh\"'",
+						"timeout": 10,
+						"type": "command"
+					}
+				],
+				"matcher": "Edit|Write"
+			}
+		],
+		"PreToolUse": [
+			{
+				"hooks": [
+					{
+						"command": "jq -r '.tool_input.file_path // empty' | { read fp; if echo \"$fp\" | grep -q '\\.env'; then exit 2; fi; }",
+						"type": "command"
+					}
+				],
+				"matcher": "Read"
+			},
+			{
+				"hooks": [
+					{
+						"command": "bash -c 'bash \"$HOME/.claude/hooks/skill-file-trigger.sh\"'",
+						"timeout": 5,
+						"type": "command"
+					},
+					{
+						"command": "bash -c 'bash \"$HOME/.claude/hooks/test-skeleton-reminder.sh\"'",
+						"timeout": 5,
+						"type": "command"
+					},
+					{
+						"command": "bash \"/Users/lewis/.claude/hooks/auto-allow-edits.sh\"",
+						"timeout": 5,
+						"type": "command"
+					}
+				],
+				"matcher": "Write|Edit"
+			},
+			{
+				"hooks": [
+					{
+						"command": "/opt/homebrew/bin/tokensave hook-pre-tool-use",
+						"type": "command"
+					}
+				],
+				"matcher": "Agent"
+			}
+		],
+		"Stop": [
+			{
+				"hooks": [
+					{
+						"command": "bash -c 'bash \"$HOME/.claude/hooks/pre-stop-checks.sh\"'",
+						"statusMessage": "Checking lint and tests…",
+						"timeout": 60,
+						"type": "command"
+					}
+				]
+			},
+			{
+				"hooks": [
+					{
+						"command": "/opt/homebrew/bin/tokensave hook-stop",
+						"type": "command"
+					}
+				]
+			}
+		],
+		"UserPromptSubmit": [
+			{
+				"hooks": [
+					{
+						"command": "bash -c 'bash \"$HOME/.claude/hooks/skill-autotrigger.sh\"'",
+						"timeout": 5,
+						"type": "command"
+					},
+					{
+						"command": "bash -c 'bash \"$HOME/.claude/hooks/progress-resume.sh\"'",
+						"timeout": 5,
+						"type": "command"
+					}
+				]
+			},
+			{
+				"hooks": [
+					{
+						"command": "/opt/homebrew/bin/tokensave hook-prompt-submit",
+						"type": "command"
+					}
+				]
+			}
+		]
+	},
+	"modelCaching": true,
 	"permissions": {
 		"allow": [
 			"mcp__tokensave__tokensave_affected",
@@ -20,38 +132,51 @@
 			"mcp__tokensave__tokensave_circular",
 			"mcp__tokensave__tokensave_commit_context",
 			"mcp__tokensave__tokensave_complexity",
+			"mcp__tokensave__tokensave_config",
+			"mcp__tokensave__tokensave_constructors",
 			"mcp__tokensave__tokensave_context",
 			"mcp__tokensave__tokensave_coupling",
 			"mcp__tokensave__tokensave_dead_code",
 			"mcp__tokensave__tokensave_dependency_depth",
+			"mcp__tokensave__tokensave_derives",
+			"mcp__tokensave__tokensave_diagnose",
+			"mcp__tokensave__tokensave_diagnostics",
 			"mcp__tokensave__tokensave_diff_context",
 			"mcp__tokensave__tokensave_distribution",
 			"mcp__tokensave__tokensave_doc_coverage",
 			"mcp__tokensave__tokensave_dsm",
+			"mcp__tokensave__tokensave_field_sites",
 			"mcp__tokensave__tokensave_files",
 			"mcp__tokensave__tokensave_gini",
 			"mcp__tokensave__tokensave_god_class",
 			"mcp__tokensave__tokensave_health",
 			"mcp__tokensave__tokensave_hotspots",
 			"mcp__tokensave__tokensave_impact",
+			"mcp__tokensave__tokensave_implementations",
+			"mcp__tokensave__tokensave_impls",
 			"mcp__tokensave__tokensave_inheritance_depth",
 			"mcp__tokensave__tokensave_insert_at",
 			"mcp__tokensave__tokensave_largest",
 			"mcp__tokensave__tokensave_module_api",
 			"mcp__tokensave__tokensave_multi_str_replace",
 			"mcp__tokensave__tokensave_node",
+			"mcp__tokensave__tokensave_outline",
 			"mcp__tokensave__tokensave_port_order",
 			"mcp__tokensave__tokensave_port_status",
 			"mcp__tokensave__tokensave_pr_context",
 			"mcp__tokensave__tokensave_rank",
+			"mcp__tokensave__tokensave_read",
 			"mcp__tokensave__tokensave_record_code_area",
 			"mcp__tokensave__tokensave_record_decision",
 			"mcp__tokensave__tokensave_recursion",
 			"mcp__tokensave__tokensave_rename_preview",
+			"mcp__tokensave__tokensave_run_affected_tests",
 			"mcp__tokensave__tokensave_search",
 			"mcp__tokensave__tokensave_session_end",
 			"mcp__tokensave__tokensave_session_recall",
 			"mcp__tokensave__tokensave_session_start",
+			"mcp__tokensave__tokensave_signature",
+			"mcp__tokensave__tokensave_signature_search",
 			"mcp__tokensave__tokensave_similar",
 			"mcp__tokensave__tokensave_simplify_scan",
 			"mcp__tokensave__tokensave_status",
@@ -60,151 +185,40 @@
 			"mcp__tokensave__tokensave_test_risk",
 			"mcp__tokensave__tokensave_todos",
 			"mcp__tokensave__tokensave_type_hierarchy",
+			"mcp__tokensave__tokensave_unsafe_patterns",
 			"mcp__tokensave__tokensave_unused_imports"
 		]
 	},
+	"promptCaching": true,
 	"skillOverrides": {
-		"code-style": "on",
-		"error-handling": "on",
-		"writing": "on",
-		"vue": "name-only",
-		"vue-project-stack": "name-only",
-		"vite-patterns": "name-only",
-		"typescript": "name-only",
 		"accessibility": "name-only",
-		"ui-copy": "name-only",
-		"unit-testing": "name-only",
-		"e2e-testing": "name-only",
-		"swift": "name-only",
-		"swift-ui": "name-only",
-		"bash": "name-only",
-		"dependencies": "name-only",
-		"readme": "name-only",
-		"architecture-decision-records": "name-only",
-		"session-management": "name-only",
 		"agentic-engineering": "name-only",
+		"architecture-decision-records": "name-only",
+		"bash": "name-only",
 		"claude-api": "name-only",
+		"code-style": "on",
+		"dependencies": "name-only",
+		"e2e-testing": "name-only",
+		"error-handling": "on",
 		"fewer-permission-prompts": "name-only",
 		"init": "name-only",
 		"keybindings-help": "name-only",
 		"loop": "name-only",
+		"readme": "name-only",
 		"review": "name-only",
 		"schedule": "name-only",
 		"security-review": "name-only",
+		"session-management": "name-only",
 		"simplify": "name-only",
-		"update-config": "name-only"
-	},
-	"hooks": {
-		"UserPromptSubmit": [
-			{
-				"hooks": [
-					{
-						"type": "command",
-						"command": "bash -c 'bash \"$HOME/.claude/hooks/skill-autotrigger.sh\"'",
-						"timeout": 5
-					},
-					{
-						"type": "command",
-						"command": "bash -c 'bash \"$HOME/.claude/hooks/progress-resume.sh\"'",
-						"timeout": 5
-					}
-				]
-			},
-			{
-				"hooks": [
-					{
-						"type": "command",
-						"command": "/opt/homebrew/bin/tokensave hook-prompt-submit"
-					}
-				]
-			}
-		],
-		"PostToolUse": [
-			{
-				"matcher": "ExitPlanMode",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "bash -c 'bash \"$HOME/.claude/hooks/plan-verify.sh\"'",
-						"timeout": 5
-					}
-				]
-			},
-			{
-				"matcher": "Edit|Write",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "bash -c 'bash \"$HOME/.claude/hooks/auto-format.sh\"'",
-						"timeout": 10
-					}
-				]
-			}
-		],
-		"PreToolUse": [
-			{
-				"matcher": "Read",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "jq -r '.tool_input.file_path // empty' | { read fp; if echo \"$fp\" | grep -q '\\.env'; then exit 2; fi; }"
-					}
-				]
-			},
-			{
-				"matcher": "Write|Edit",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "bash -c 'bash \"$HOME/.claude/hooks/skill-file-trigger.sh\"'",
-						"timeout": 5
-					},
-					{
-						"type": "command",
-						"command": "bash -c 'bash \"$HOME/.claude/hooks/test-skeleton-reminder.sh\"'",
-						"timeout": 5
-					},
-					{
-						"type": "command",
-						"command": "bash \"/Users/lewis/.claude/hooks/auto-allow-edits.sh\"",
-						"timeout": 5
-					}
-				]
-			},
-			{
-				"matcher": "Agent",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "/opt/homebrew/bin/tokensave hook-pre-tool-use"
-					}
-				]
-			}
-		],
-		"Stop": [
-			{
-				"hooks": [
-					{
-						"type": "command",
-						"command": "bash -c 'bash \"$HOME/.claude/hooks/pre-stop-checks.sh\"'",
-						"timeout": 60,
-						"statusMessage": "Checking lint and tests…"
-					}
-				]
-			},
-			{
-				"hooks": [
-					{
-						"type": "command",
-						"command": "/opt/homebrew/bin/tokensave hook-stop"
-					}
-				]
-			}
-		]
-	},
-	"enabledPlugins": {},
-	"agentPushNotifEnabled": true,
-	"modelCaching": true,
-	"promptCaching": true,
-	"contextCompactionThreshold": 80
+		"swift": "name-only",
+		"swift-ui": "name-only",
+		"typescript": "name-only",
+		"ui-copy": "name-only",
+		"unit-testing": "name-only",
+		"update-config": "name-only",
+		"vite-patterns": "name-only",
+		"vue": "name-only",
+		"vue-project-stack": "name-only",
+		"writing": "on"
+	}
 }
