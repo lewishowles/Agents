@@ -14,7 +14,8 @@ related-skills:
 
 - Tab HTML indentation
 - Always self-close where possible (`<img />`, `<component />`)
-- Prefer `v-bind="{ prop: value }"` for non-string bindings (booleans, numbers, expressions)—the object form reads more clearly, especially with multiple bindings
+- Prefer `v-bind="{ prop: value }"` for variable and expression bindings — the object form reads more clearly, especially with multiple bindings
+- Use regular attributes for literal strings, including classes and ARIA values: `class="..."`, `aria-live="polite"`
 - Lowercase component names in templates
 - Always two-word minimum component names per Vue best practices
 - Max 5 attributes per line (single); 1 per line (multiline)
@@ -53,17 +54,23 @@ const props = defineProps({
 
 ### Prop bindings
 
-Prefer object `v-bind` over `:` shorthand for prop bindings, including when the variable name matches the prop name:
+Prefer object `v-bind` over `:` shorthand for variable or expression prop bindings, including when the variable name matches the prop name:
 
 ```vue
 <!-- ✓ -->
 <my-component v-bind="{ count }" />
+
+<!-- ✓ -->
+<my-component class="compact" aria-live="polite" />
 
 <!-- ✗ -->
 <my-component :count />
 
 <!-- ✗ -->
 <my-component :count="count" />
+
+<!-- ✗ -->
+<my-component v-bind="{ class: 'compact', ariaLive: 'polite' }" />
 ```
 
 ### Computed properties
