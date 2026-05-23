@@ -18,7 +18,7 @@ Codex reads `AGENTS.md` before work starts. The official discovery order is:
 
 Later files appear later in the combined prompt, so deeper project guidance overrides broader guidance.
 
-This repo links `~/.agents/AGENTS.md` to `targets/codex/AGENTS.md`.
+This repo links `~/.agents/AGENTS.md` and `~/.codex/AGENTS.md` to `targets/codex/AGENTS.md`.
 
 Project setup creates a root `AGENTS.md` using one of:
 
@@ -27,7 +27,7 @@ Project setup creates a root `AGENTS.md` using one of:
 
 ## Config
 
-User-level Codex config lives at `~/.agents/config.toml`. Project-level config can live at `.agents/config.toml`, and Codex loads it only for trusted projects.
+User-level Codex app config lives at `~/.codex/config.toml`. Legacy/user skill wiring also uses `~/.agents` on this machine. Project-level config can live at `.agents/config.toml`, and Codex loads it only for trusted projects.
 
 Useful keys for this repo:
 
@@ -37,6 +37,19 @@ project_doc_max_bytes = 65536
 ```
 
 The official reference also documents `skills.config` for per-skill path and enablement overrides.
+
+Global setup preserves the existing `~/.codex/config.toml` and ensures this MCP server is present:
+
+```toml
+[mcp_servers.codebase-memory-mcp]
+command = "codebase-memory-mcp"
+```
+
+Indexing is explicit by default. `codebase-memory-mcp config list` currently reports `auto_index = false`, so run `index_repository` for a project before expecting graph queries to work. The CLI form is:
+
+```bash
+codebase-memory-mcp cli index_repository '{"repo_path":"'$PWD'"}'
+```
 
 ## Skills
 

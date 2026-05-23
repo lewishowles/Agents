@@ -27,10 +27,14 @@ The global setup script runs `scripts/sync.sh`, then links:
 
 - `~/.claude/CLAUDE.md` to `targets/claude/CLAUDE.md`
 - `~/.claude/settings.json` to `targets/claude/settings.json`
+- `~/.claude/.mcp.json` to `targets/claude/.mcp.json`
 - `~/.claude/skills/<name>` to `skills/<name>`
 - `~/.claude/hooks/<file>` to `targets/claude/hooks/<file>`
 - `~/.agents/AGENTS.md` to `targets/codex/AGENTS.md`
+- `~/.codex/AGENTS.md` to `targets/codex/AGENTS.md`
 - `~/.agents/skills/<name>` to `skills/<name>`
+
+It also ensures `~/.codex/config.toml` has the `codebase-memory-mcp` MCP server entry.
 
 Existing files are backed up instead of overwritten.
 

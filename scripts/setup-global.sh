@@ -107,6 +107,7 @@ setup_claude() {
 
 	link_path "$REPO_DIR/targets/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md" "CLAUDE.md"
 	link_path "$REPO_DIR/targets/claude/settings.json" "$HOME/.claude/settings.json" "settings.json"
+	link_path "$REPO_DIR/targets/claude/.mcp.json" "$HOME/.claude/.mcp.json" ".mcp.json"
 
 	# Link each skill and hook individually so plugin-installed items can coexist.
 	local skill
@@ -133,15 +134,45 @@ setup_codex() {
 
 	ensure_container_dir "$HOME/.agents" "~/.agents"
 	ensure_container_dir "$HOME/.agents/skills" "~/.agents/skills"
+	ensure_container_dir "$HOME/.codex" "~/.codex"
 
 	link_path "$REPO_DIR/targets/codex/AGENTS.md" "$HOME/.agents/AGENTS.md" "AGENTS.md"
+	link_path "$REPO_DIR/targets/codex/AGENTS.md" "$HOME/.codex/AGENTS.md" "Codex AGENTS.md"
+	ensure_codex_config
 
-	# Keep Codex global config, instructions, and user skills under ~/.agents.
+	# Keep legacy ~/.agents wiring and current Codex ~/.codex instructions in sync.
 	local skill
 	for skill in "$REPO_DIR"/skills/*; do
 		[ -d "$skill" ] || continue
 		link_path "$skill" "$HOME/.agents/skills/$(basename "$skill")" "skills/$(basename "$skill")"
 	done
+}
+
+ensure_codex_config() {
+	local config="$HOME/.codex/config.toml"
+	local temp
+
+	temp=$(mktemp)
+	touch "$config"
+
+	awk '
+		/^\[mcp_servers\.codebase-memory-mcp(\.|\])/{ skip = 1; next }
+		/^\[/{ skip = 0 }
+		!skip { print }
+	' "$config" > "$temp"
+
+	printf '\n[mcp_servers.codebase-memory-mcp]\ncommand = "codebase-memory-mcp"\n' >> "$temp"
+
+	if cmp -s "$config" "$temp"; then
+		rm "$temp"
+		printf '  %s↪%s Codex config already configured\n' "$PURPLE" "$RESET_COLOUR"
+		return
+	fi
+
+	local backup="$config.bak.$(timestamp)"
+	cp "$config" "$backup"
+	mv "$temp" "$config"
+	printf '  %s✓%s configured Codex MCP server (backup at %s)\n' "$GREEN" "$RESET_COLOUR" "$(display_path "$backup")"
 }
 
 prompt_target() {

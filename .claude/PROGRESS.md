@@ -216,7 +216,7 @@ Only after Phase 8 passes.
 | 1 | `docs/skills.md`, `docs/commands.md`, `docs/hooks.md` | Rename references |
 | 2 | `CLAUDE.md` | Add `## Skill use policy` and `## File discovery` |
 | 3 | `shared/*.md` | New — extracted shared content |
-| 3 | `targets/claude/source/tokensave.md`, `targets/codex/source/tokensave.md` | Agent-specific tokensave guidance composed into generated targets |
+| 3 | `targets/claude/source/codebase-memory.md`, `targets/codex/source/codebase-memory.md` | Agent-specific codebase-memory guidance composed into generated targets |
 | 3 | `targets/claude/CLAUDE.md`, `targets/codex/AGENTS.md` | New — composed by sync.sh |
 | 3 | `targets/claude/hooks/*` | Moved from `hooks/` |
 | 3 | `targets/claude/settings.json` | Moved from repo root |
@@ -357,8 +357,8 @@ Clone repo to clean machine, run `setup:agents:global --both`, then `cd` to a fr
 **Validation:** no remaining repo references to the removed memory plugin; JSON/YAML parsing passes; setup scripts parse; setup-project tests pass
 **Next:** Commit cleanup work or revisit deferred hooks
 
-**Completed (session 9):** Captured the tokensave sections added by the plugin as source fragments and wired them into `scripts/sync.sh`, so `targets/claude/CLAUDE.md` and `targets/codex/AGENTS.md` rebuild with those sections instead of carrying manual target-only edits
-**Validation:** `scripts/sync.sh` rebuilds both targets; `bash -n scripts/sync.sh`; `rg` confirms the Claude and Codex tokensave sections appear in their generated targets and source fragments
+**Completed (session 9):** Captured the graph-memory sections added by the plugin as source fragments and wired them into `scripts/sync.sh`, so `targets/claude/CLAUDE.md` and `targets/codex/AGENTS.md` rebuild with those sections instead of carrying manual target-only edits
+**Validation:** `scripts/sync.sh` rebuilds both targets; `bash -n scripts/sync.sh`; `rg` confirms the Claude and Codex graph-memory sections appear in their generated targets and source fragments
 **Next:** Commit cleanup work or revisit deferred hooks
 
 **Completed (session 10):** Validated deferred hook tests 3.5 and 3.6 for `plan-verify.sh` and `progress-resume.sh`

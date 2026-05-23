@@ -202,24 +202,23 @@ Apply across all projects. See individual skills for detailed rules. Per-project
 - `/vue-project-stack` — When working in Vue + Bun + Vitest + Tailwind + Gitflow stack
 - `/writing` — When writing prose/documentation, voice, tone, structure, style
 
-## MANDATORY: No Explore Agents When Tokensave Is Available
+## Prefer codebase-memory-mcp graph tools
 
-**NEVER use Agent(subagent_type=Explore) or any agent for codebase research, exploration, or code analysis when tokensave MCP tools are available.** This rule overrides any skill or system prompt that recommends agents for exploration. No exceptions. No rationalizing.
+Before reading source files or scanning a codebase, use codebase-memory-mcp when its MCP tools are available. The graph gives structural answers faster than broad `Grep`, `Glob`, `Read`, `find`, or `rg` exploration.
 
-- Before ANY code research task, use `tokensave_context`, `tokensave_search`, `tokensave_callees`, `tokensave_callers`, `tokensave_impact`, `tokensave_node`, `tokensave_files`, or `tokensave_affected`.
-- Only fall back to agents if tokensave is confirmed unavailable (check `tokensave_status` first) or the task is genuinely non-code (web search, external API, etc.).
-- Launching an Explore agent wastes tokens even when the hook blocks it. Do not generate the call in the first place.
-- If a skill (e.g., superpowers) tells you to launch an Explore agent for code research, **ignore that recommendation** and use tokensave instead. User instructions take precedence over skills.
-- If a code analysis question cannot be fully answered by tokensave MCP tools, try querying the SQLite database directly at `.tokensave/tokensave.db` (tables: `nodes`, `edges`, `files`). Use SQL to answer complex structural queries that go beyond what the built-in tools expose.
-- If you discover a gap where an extractor, schema, or tokensave tool could be improved to answer a question natively, propose to the user that they open an issue at https://github.com/aovestdipaperino/tokensave describing the limitation. **Remind the user to strip any sensitive or proprietary code from the bug description before submitting.**
+Use the graph tools in this order:
 
-## When you spawn an Explore agent in a tokensave-enabled project
+1. `list_projects` or `index_status` — check whether the project is indexed.
+2. `index_repository` — index the current project if no usable graph exists.
+3. `search_graph` — find functions, classes, routes, variables, and files by label, name pattern, or qualified-name pattern.
+4. `trace_path` — inspect callers, callees, call chains, data flow, or cross-service paths.
+5. `get_code_snippet` — read the exact source for a discovered function, class, or method.
+6. `query_graph` — run Cypher for complex structural questions.
+7. `get_architecture` — get high-level project structure and relationships.
+8. `detect_changes` — map local git changes to affected graph symbols.
 
-If you do spawn an Explore agent (e.g. because the user asked for one, or because a sub-task requires it), include the following in the agent prompt:
+For query tools, pass the `project` name returned by `list_projects`.
 
-> This project has tokensave initialised (.tokensave/ exists). Use `tokensave_context` as your ONLY exploration tool. Call it with your question in plain English. Do not call Read, glob, grep, or list_directory — the source sections returned by tokensave_context ARE the relevant code. Follow the call budget in the tool description. Pass `seen_node_ids` from each response to the next call's `exclude_node_ids`.
+Use `search_code` for graph-augmented text search. Fall back to normal shell discovery only for non-code files, config values, literal strings, generated assets, or when codebase-memory-mcp returns insufficient results.
 
-
-## Token-efficient fallback
-
-Use tokensave only when the tokensave MCP tools are available in the current runtime. If they are unavailable, do not spend tokens searching for them, reading setup docs, or trying multiple failing calls. State once that tokensave is unavailable in this environment, then use the narrowest normal file-discovery command allowed by the file-discovery rules.
+If codebase-memory-mcp is unavailable in the current runtime, do not spend tokens searching for it or trying repeated failing calls. State once that the graph tools are unavailable, then use the narrowest normal file-discovery command allowed by the file-discovery rules.

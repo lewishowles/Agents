@@ -177,15 +177,23 @@ find . -name "*.js" -o -name "*.css"
 ls -R
 ```
 
-## Prefer tokensave MCP tools
+## Prefer codebase-memory-mcp graph tools
 
-Before reading source files or scanning the codebase, use the tokensave MCP tools (`tokensave_context`, `tokensave_search`, `tokensave_callers`, `tokensave_callees`, `tokensave_impact`, `tokensave_node`, `tokensave_files`, `tokensave_affected`). They provide instant semantic results from a pre-built knowledge graph and are faster than file reads.
+Before reading source files or scanning a codebase, use codebase-memory-mcp when its MCP tools are available. The graph gives structural answers faster than broad `rg`, `find`, or file reads.
 
-If a code analysis question cannot be fully answered by tokensave MCP tools, try querying the SQLite database directly at `.tokensave/tokensave.db` (tables: `nodes`, `edges`, `files`). Use SQL to answer complex structural queries that go beyond what the built-in tools expose.
+Priority order:
 
-If you discover a gap where an extractor, schema, or tokensave tool could be improved to answer a question natively, propose to the user that they open an issue at https://github.com/aovestdipaperino/tokensave describing the limitation. **Remind the user to strip any sensitive or proprietary code from the bug description before submitting.**
+1. `list_projects` or `index_status` — check whether the project is indexed.
+2. `index_repository` — index the current project if no usable graph exists.
+3. `search_graph` — find functions, classes, routes, variables, and files by label, name pattern, or qualified-name pattern.
+4. `trace_path` — inspect callers, callees, call chains, data flow, or cross-service paths.
+5. `get_code_snippet` — read the exact source for a discovered function, class, or method.
+6. `query_graph` — run Cypher for complex structural questions.
+7. `get_architecture` — get high-level project structure and relationships.
+8. `detect_changes` — map local git changes to affected graph symbols.
 
+For query tools, pass the `project` name returned by `list_projects`.
 
-## Token-efficient fallback
+Use `search_code` for graph-augmented text search. Fall back to normal file discovery only for non-code files, config values, literal strings, generated assets, or when codebase-memory-mcp returns insufficient results.
 
-Use tokensave only when the tokensave MCP tools are available in the current runtime. If they are unavailable, do not spend tokens searching for them, reading setup docs, or trying multiple failing calls. State once that tokensave is unavailable in this environment, then use the narrowest normal file-discovery command allowed by the file-discovery rules.
+If codebase-memory-mcp is unavailable in the current runtime, do not spend tokens searching for it or trying repeated failing calls. State once that the graph tools are unavailable, then use the narrowest normal file-discovery command allowed by the file-discovery rules.

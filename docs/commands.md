@@ -31,6 +31,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/accessibility` | accessibility | Auditing an interface for WCAG compliance |
 | `/architecture-decision-records` | architecture-decision-records | Documenting a technical decision |
 | `/bash` | bash | Writing a shell script or `.env` file |
+| `/codebase-memory` | codebase-memory | Exploring structure, tracing callers, or querying the code graph |
 | `/code-style` | code-style | Reviewing formatting before committing |
 | `/dependencies` | dependencies | Evaluating a new package |
 | `/e2e-testing` | e2e-testing | Writing Playwright tests |

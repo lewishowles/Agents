@@ -47,7 +47,15 @@ skills=()
 # Claude decides what to write. Inject all skills so Claude can pick what fits.
 if echo "$prompt" | grep -qiE '^\s*(yes|yep|yeah|ok|okay|sure|go ahead|sounds good|perfect|great|looks good|done|next|correct|exactly)\s*[.!]?\s*$' || \
    echo "$prompt" | grep -qiE '\b(continue|carry on|move on|next step|proceed|let'\''s go|what'\''s next|keep going|move forward|let'\''s continue|crack on)\b'; then
-	skills+=("code-style" "swift" "vue" "vue-project-stack" "pinia-colada" "typescript" "unit-testing" "writing" "readme" "ui-copy" "bash" "error-handling" "accessibility" "dependencies" "vite-patterns" "e2e-testing" "architecture-decision-records" "session-management")
+	skills+=("code-style" "codebase-memory" "swift" "vue" "vue-project-stack" "pinia-colada" "typescript" "unit-testing" "writing" "readme" "ui-copy" "bash" "error-handling" "accessibility" "dependencies" "vite-patterns" "e2e-testing" "architecture-decision-records" "session-management")
+fi
+
+# ─── codebase-memory ───────────────────────────────────────────────────────
+# Structural codebase questions, call graphs, dependencies, graph queries.
+if echo "$prompt" | grep -qiE 'explore.*codebase|understand.*architecture|codebase.*structure|what functions exist|show.*structure' || \
+   echo "$prompt" | grep -qiE 'who calls|what does .* call|trace.*call|call chain|find callers|show dependencies|impact analysis' || \
+   echo "$prompt" | grep -qiE 'dead code|unused functions|high fan.out|refactor candidates|code quality audit|graph query|cypher|search_graph'; then
+	skills+=("codebase-memory")
 fi
 
 # ─── code-style ───────────────────────────────────────────────────────────

@@ -15,6 +15,8 @@ Hooks are shell scripts that Claude Code runs automatically at specific points i
 | `plan-verify.sh` | After `ExitPlanMode` (`PostToolUse`) | Silently skips if no plan files exist |
 | `auto-format.sh` | After every Write or Edit (`PostToolUse`, `Edit\|Write`) | Silently skips if `oxfmt` is not installed |
 | `.env` protection (inline) | Before every Read (`PreToolUse`, `Read`) | Exits with code 2 (block) if the file path matches `.env` |
+| `cbm-code-discovery-gate` | First code discovery read/search per Claude session (`PreToolUse`, `Grep\|Glob\|Read\|Search`) | Exits with code 2 once per session to nudge use of codebase-memory-mcp graph tools first |
+| `cbm-session-reminder` | Claude session start/resume/clear/compact (`SessionStart`) | Injects a reminder to use codebase-memory-mcp before broad source discovery |
 | `pre-stop-checks.sh` | When Claude finishes (`Stop`) | Runs lint and unit tests; logs failures; pauses Claude and displays output if either fails |
 
 ### skill-autotrigger.sh
@@ -93,6 +95,16 @@ Always exits 0. The hook can never block a write.
 Defined directly in `settings.json` rather than as a separate script. Fires before every Read call. If the file path matches `.env` (using `grep -q '\.env'`), exits with code 2, which Claude Code treats as a block. Prevents Claude from reading secrets files that could appear in context.
 
 **No dependencies.** Inline `jq` + shell pipe — runs in any environment.
+
+### cbm-code-discovery-gate
+
+Fires on the first broad code-discovery tool call in a Claude session. It blocks once and tells Claude to use codebase-memory-mcp graph tools such as `search_graph`, `trace_path`, `get_code_snippet`, and `index_repository` before falling back to broad reads or searches.
+
+The hook stores a per-session marker in `/tmp` using Claude's parent process ID, so subsequent file discovery in the same session is allowed.
+
+### cbm-session-reminder
+
+Fires on Claude session startup, resume, clear, and compact. It injects a concise reminder that code discovery should start with codebase-memory-mcp graph tools and fall back to `Grep`, `Glob`, or `Read` only for text content, config values, and non-code files.
 
 ### pre-stop-checks.sh
 
