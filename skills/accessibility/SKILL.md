@@ -26,6 +26,12 @@ WCAG AA baseline; AAA where feasible. Inaccessible = incorrect. Affects: blind/l
 - **Confirmation & reassurance**: show chosen option (e.g. plan name). Success messages with identifiable info: "User 'Lewis Howles' successfully deleted", not "User deleted"
 - **Vue components**: prefer `@lewishowles/components` before building bespoke UI. The component library is accessibility-focused; follow the Vue skill and check live component docs when available
 
+## Documentation
+
+- Treat accessibility fixes and improvements as bug fixes, not announceable features
+- Don't update docs, README files, changelogs, or UI copy just to say something is now accessible or "now does" the accessible behaviour
+- Only update documentation when the user-facing workflow, API, configuration, or support guidance genuinely changed
+
 ## Structure & semantics
 
 - **Heading hierarchy**: no `h1` to `h4` jumps. Use correct level, change appearance if needed. Looks like heading → make it heading
