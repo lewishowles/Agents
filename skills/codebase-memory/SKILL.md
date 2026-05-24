@@ -61,3 +61,6 @@ MATCH (a)-[r:CALLS]->(b) WHERE a.name = 'main' RETURN b.name
 3. `trace_path` needs exact names — use `search_graph(name_pattern=...)` first.
 4. `direction="outbound"` misses cross-service callers — use `direction="both"`.
 5. Results default to 10 per page — check `has_more` and use `offset`.
+6. For file lookup, prefer `search_graph(label="File", name_pattern="...")` over BM25 `query`; BM25 may return symbols even when `label="File"` is supplied.
+7. If a tracked file is unexpectedly absent from `search_graph` and `search_code`, verify with `git ls-files` and `git check-ignore -v`. If it is tracked and not ignored, touch the file and re-run `index_repository`; the incremental classifier/cache can miss unchanged files.
+8. Terminal CLI shape is `codebase-memory-mcp cli <tool> '<json>'`; bare `codebase-memory-mcp` starts the MCP server and may look like it is hanging.
