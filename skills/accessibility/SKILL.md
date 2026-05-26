@@ -32,6 +32,17 @@ WCAG AA baseline; AAA where feasible. Inaccessible = incorrect. Affects: blind/l
 - Don't update docs, README files, changelogs, or UI copy just to say something is now accessible or "now does" the accessible behaviour
 - Only update documentation when the user-facing workflow, API, configuration, or support guidance genuinely changed
 
+The test: if a sighted developer using the component in a standard way needs to know a thing, document it. If the only reason to mention it is accessibility mechanics, omit it.
+
+```
+❌ "Each option is labelled with a unit-aware string so screen readers announce meaningful names."
+✅ No change — internal behaviour; only document props, slots, or emits that changed.
+
+❌ "A visually-hidden data table is always rendered alongside the SVG for screen reader users."
+✅ Omit entirely, or if the consumer needs to know it exists (e.g. to style around it):
+   "A data table of segment values is rendered alongside the chart."
+```
+
 ## Structure & semantics
 
 - **Heading hierarchy**: no `h1` to `h4` jumps. Use correct level, change appearance if needed. Looks like heading → make it heading
