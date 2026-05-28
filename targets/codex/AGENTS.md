@@ -14,8 +14,7 @@ Minimise token cost by default. Treat context as a limited shared budget.
 
 Strict rules:
 
-- Do not run tests, builds, typechecks, linters, or visual checks by default. Ask the user to run them and report errors unless you are sure running the command locally will cost fewer tokens than the back-and-forth it prevents.
-- Single test files are still test runs. Do not run them unless the result is necessary to choose the next edit or the user explicitly asks.
+- Do not run tests, builds, typechecks, linters, or visual checks (including single test files). Ask the user to run them unless local execution clearly saves more tokens than the back-and-forth it prevents.
 - Do not read build output, generated bundles, coverage, screenshots, or generated artefacts unless a reported failure points to a specific file or path.
 - Do not print large command output unless the user asked for it or it is needed to diagnose a failure.
 - For user-run failures, ask for the smallest useful excerpt: command, failing file/test, error message, and relevant stack frame.
@@ -104,29 +103,11 @@ Code must be reviewed before it is committed. Completing work means stopping aft
 
 ## Working across sessions
 
-**Maintain PROGRESS.md for significant work.** For multi-file, multi-session, or complex-scope work, keep `.claude/PROGRESS.md` as the persistent record that survives session changes.
+**Maintain PROGRESS.md for significant work.** For multi-file, multi-session, or complex-scope work, keep `.claude/PROGRESS.md` as the persistent record across sessions. Update it after every significant change, decision, or scope shift — mark items done as they complete, record decisions, compact completed sections to brief summaries when starting the next chunk.
 
-**Keep it live**: Update PROGRESS.md after every significant change, decision, or scope shift — don't wait until session end:
-- Mark checklist items done as they complete
-- Record new architectural decisions or constraint discoveries
-- Update Phase descriptions if requirements evolve
-- Append session notes after finishing each logical chunk of work
-
-**Work in committable chunks**: Break work into pieces that can be reviewed together:
-- Each chunk = a feature, bugfix, refactor, or documentation update — something coherent and meaningful
-- Avoid accumulating unrelated changes in a single review
-- Before starting a chunk, summarise what needs to be done and wait if the user asked for confirmation between chunks
-- After completing a chunk, explain what changed and, when code changed, walk through the new code and how it works so the user can keep a mental model
-- After completing a chunk, say what the user should see differently in the app/plugin/tool, if anything, so they can test it; if there is no user-visible change, say that clearly
-- After completing a chunk, provide a human-readable Conventional Commit message (e.g. `feat(component): add support for X`) — document it for review, but don't execute `git commit` unless asked
-- If a chunk reworks earlier implementation, the commit message should describe the coherent chunk outcome, not meta-commentary about rework
-- Do not start the next chunk until the user confirms the previous chunk has been reviewed or committed
-- Update PROGRESS.md to reflect what was completed
-- When starting the next chunk, compact completed PROGRESS.md sections into short human-readable summaries, retaining only decisions, verification status, user-visible test notes, and future-relevant constraints
-
-**Default continuation prompt expectations**: When the user asks to continue from progress, read only the current relevant progress section, keep it live with every meaningful change, decision, or scope shift, work in targeted reviewable chunks, do not commit, summarise before each chunk, explain each completed chunk, include user-visible test notes, provide a suggested Conventional Commit message, and stop until the user confirms the next chunk.
-
-**Why it matters**: You know the full session history and can pick up mid-stream without re-reading 100 lines of context. PROGRESS.md is the handoff mechanism between sessions.
+**Work in committable chunks** — feature, bugfix, refactor, or documentation update:
+- Before: summarise the chunk; wait for confirmation if the user requested it
+- After: explain what changed and how the code works; say what's visible to the user (or confirm nothing changed); provide a `feat(scope): description` commit message — do not run `git commit` unless asked; update PROGRESS.md; wait for confirmation before the next chunk
 
 ## Identity & expertise
 
@@ -138,14 +119,10 @@ Skills are authoritative when their trigger conditions match. Before coding, edi
 
 Minimise repeated skill reads:
 
-- Do not re-read the same skill file within a continuous session unless the task type changes, the user explicitly asks, or you need a specific detail not already loaded.
-- Reusing an already-read skill is the default. State briefly that you are continuing to apply it instead of opening it again.
-- Prefer loading the smallest relevant skill set. Do not load broad adjacent skills speculatively.
-- If a platform requires skill invocation every turn, invoke only the required matching skill and avoid opening long reference files unless needed.
-- Summarise remembered skill constraints in your own words; do not paste or quote long skill sections back to the user.
-- If a skill conflicts with the user's token-budget preference, follow the user's preference and note the tradeoff briefly.
-
-The goal is strict compliance without paying repeated token cost for unchanged instructions.
+- Re-read only if the task type changes, the user explicitly asks, or you need a specific detail. Default: state you're continuing to apply the already-read skill.
+- Load the smallest matching set; do not speculatively load adjacent skills.
+- Summarise remembered constraints in your own words — do not quote skill sections back.
+- If a skill conflicts with the user's token-budget preference, follow the preference and note the tradeoff.
 
 ## File discovery
 

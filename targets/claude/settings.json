@@ -92,27 +92,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'bash \"$HOME/.claude/hooks/skill-file-trigger.sh\"'",
-            "timeout": 5
-          },
-          {
-            "type": "command",
-            "command": "bash -c 'bash \"$HOME/.claude/hooks/test-skeleton-reminder.sh\"'",
-            "timeout": 5
-          },
-          {
-            "type": "command",
             "command": "bash -c 'bash \"$HOME/.claude/hooks/auto-allow-edits.sh\"'",
             "timeout": 5
-          }
-        ]
-      },
-      {
-        "matcher": "Grep|Glob|Read|Search",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/cbm-code-discovery-gate"
           }
         ]
       }
@@ -134,67 +115,14 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'bash \"$HOME/.claude/hooks/skill-autotrigger.sh\"'",
-            "timeout": 5
-          },
-          {
-            "type": "command",
             "command": "bash -c 'bash \"$HOME/.claude/hooks/progress-resume.sh\"'",
             "timeout": 5
           }
         ]
       }
-    ],
-    "SessionStart": [
-      {
-        "matcher": "startup",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/cbm-session-reminder"
-          }
-        ]
-      },
-      {
-        "matcher": "resume",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/cbm-session-reminder"
-          }
-        ]
-      },
-      {
-        "matcher": "clear",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/cbm-session-reminder"
-          }
-        ]
-      },
-      {
-        "matcher": "compact",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/cbm-session-reminder"
-          }
-        ]
-      }
     ]
   },
-  "enabledPlugins": {
-    "rocky@rocky-plugins": true
-  },
-  "extraKnownMarketplaces": {
-    "rocky-plugins": {
-      "source": {
-        "source": "github",
-        "repo": "vikxlp/rocky"
-      }
-    }
-  },
+  "enabledPlugins": {},
   "agentPushNotifEnabled": true,
   "contextCompactionThreshold": 80,
   "modelCaching": true,
