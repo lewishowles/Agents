@@ -14,6 +14,18 @@ Add only for complex work needing real skill/effort:
 - Authentication (JWT, OAuth handling)
 - Specialised libraries (not trivial utilities)
 
+## Approved ecosystem packages
+
+These packages are default choices in Vue projects when they fit the job:
+
+- `vue`, `vue-router`, `pinia`, `@pinia/colada`
+- `@vueuse/core` and focused `@vueuse/*` packages
+- `vite`, `vitest`, `@vitejs/plugin-vue`
+
+Agents may proactively recommend these without the full dependency proposal template. Still do not install them without permission. If already installed, use them before writing bespoke equivalents.
+
+Use VueUse before custom reactive/browser utilities for storage, media queries, breakpoints, focus, clipboard, observers, timers, network state, throttling/debouncing, and event listeners.
+
 ## When not to add packages
 
 - Single-function or trivial packages

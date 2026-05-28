@@ -8,6 +8,8 @@ Claude loads these from `~/.claude/skills/` and can be nudged by the Claude trig
 
 Defined in `skills/` in this repo, then symlinked into each runtime by `scripts/setup-global.sh`. The `agent-config` maintenance skill is intentionally repo-local under `.claude/skills/agent-config` and `.agents/skills/agent-config`; it is not installed globally for other projects.
 
+Official external skills are listed in `external-skills.json` and synced into `skills/` by `scripts/sync-external-skills.sh`. Global setup runs that sync before linking skills. If the network is unavailable, setup warns and continues with the existing local copy.
+
 | Skill | When to use | Auto-trigger keywords |
 |-------|-------------|----------------------|
 | `accessibility` | Building interfaces — WCAG AA baseline, colour contrast, keyboard access, semantic HTML | `wcag`, `a11y`, `aria`, `keyboard nav`, `screen reader`, `colour contrast`, `focus`, `button`, `form`, `label`, `heading` |
@@ -19,6 +21,7 @@ Defined in `skills/` in this repo, then symlinked into each runtime by `scripts/
 | `dependencies` | Adding packages or considering a new library — when to add, what to avoid, @lewishowles libs | `package.json`, `npm install`, `bun add`, `yarn add`, `install package`, `new library`, `upgrade package` |
 | `e2e-testing` | End-to-end tests with Playwright — browser automation, user journeys, test structure | `e2e`, `playwright`, `end-to-end test`, `user journey`, `data-test` |
 | `error-handling` | Functions with parameters, API calls, response handling | `error handling`, `try-catch`, `validate`, `guard let`, `api call`, `fetch`, `async`, `throws`, `Result<` |
+| `pinia` | Client-side Vue stores — app/UI state, setup stores, `storeToRefs`, HMR, testing | `pinia`, `defineStore`, `storeToRefs`, `@pinia/testing`, `useXStore`, files in `stores/` |
 | `pinia-colada` | Async server state in Vue — caching, mutations, optimistic updates, cache invalidation via `@pinia/colada` | `@pinia/colada`, `pinia colada`, `useQuery`, `useMutation`, `defineQuery`, `defineMutation`, `useQueryCache`, `invalidateQueries`, files in `queries/` or `mutations/` |
 | `readme` | Writing or editing a README — structure, what belongs, what to cut | `readme`, `getting started guide` |
 | `session-management` | Saving and resuming work sessions across Claude Code restarts | `save session`, `resume session`, `context snapshot`, `checkpoint`, `session management` |
@@ -30,6 +33,8 @@ Defined in `skills/` in this repo, then symlinked into each runtime by `scripts/
 | `vite-patterns` | Configuring `vite.config.ts`, environment variables, build optimisation, security | `vite.config`, `VITE_`, `environment var`, `build.lib`, `rollup`, `esbuild` |
 | `vue` | Vue 3 components, composables, templates — patterns and organisation | `.vue`, `vue`, `composable`, `<script setup`, `pinia`, `defineProps`, `ref(`, `computed(` |
 | `vue-project-stack` | Vue projects using the wider stack: Bun, Vitest, Tailwind, Gitflow, `@lewishowles` libs, Pinia Colada | (always paired with `vue`; same triggers) |
+| `vue-router` | Vue Router routes, guards, params, query strings, redirects, and route-driven state | `vue-router`, `router`, `routes`, `useRoute`, `useRouter`, `onBeforeRouteUpdate`, files in `router/`, `routes/`, or `pages/` |
+| `vueuse-functions` | Official VueUse composable guide — map requirements to VueUse functions before writing bespoke code | `@vueuse`, `vueuse`, common VueUse composables such as `useLocalStorage`, `useMouse`, `useBreakpoints` |
 | `writing` | Prose — blog posts, documentation, longform content, voice and tone | `documentation`, `docs`, `blog`, `changelog`, `article`, `reword`, `rephrase`, `proofread` |
 
 ## Built-in Claude Code skills
@@ -105,3 +110,14 @@ Content here.
 3. Add the skill to the skills table in this file and to [docs/commands.md](commands.md)
 
 After global setup, shared skills are available to Claude via `~/.claude/skills/` and to Codex via `~/.agents/skills/`.
+
+## Adding an external skill
+
+Use this only for official upstream skills that should stay managed externally.
+
+1. Add an entry to `external-skills.json` with `slug`, `name`, `source`, `skill_url`, optional `references_api_url`, optional `commit_api_url`, and `license`
+2. Run `scripts/sync-external-skills.sh`
+3. Register triggers in `targets/claude/hooks/skill-autotrigger.sh` and `targets/claude/hooks/skill-file-trigger.sh`
+4. Add the skill to this file and [docs/commands.md](commands.md)
+
+Do not edit synced external `SKILL.md` files directly; change the upstream source or local trigger/docs around it.

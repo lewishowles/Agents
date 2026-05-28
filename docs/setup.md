@@ -4,7 +4,7 @@ Use the scripts for normal installs. These manual steps are here as a fallback w
 
 ## Global Claude setup
 
-Run `scripts/sync.sh`, then link these paths:
+Run `scripts/sync-external-skills.sh`, then `scripts/sync.sh`, then link these paths:
 
 ```bash
 ln -s /path/to/repository/targets/claude/CLAUDE.md ~/.claude/CLAUDE.md
@@ -24,7 +24,7 @@ Repeat for each skill, hook, and command. Per-item links allow plugin-installed 
 
 ## Global Codex setup
 
-Run `scripts/sync.sh`, then link:
+Run `scripts/sync-external-skills.sh`, then `scripts/sync.sh`, then link:
 
 ```bash
 ln -s /path/to/repository/targets/codex/AGENTS.md ~/.agents/AGENTS.md
@@ -107,6 +107,8 @@ ln -s /path/to/repository/skills/vue ~/.agents/skills/vue
 ```
 
 This keeps the active Codex setup in one place: `~/.agents` for config, global `AGENTS.md`, and user skill symlinks.
+
+If external skill sync fails because the network is unavailable, keep the existing local `skills/<name>` copy and continue setup. `scripts/setup-global.sh --both` does this automatically; pass `--skip-external` to bypass the sync step intentionally.
 
 ## Project setup
 

@@ -10,7 +10,7 @@ REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 source "$REPO_DIR/scripts/lib/colours.sh"
 
 usage() {
-	printf 'Usage: %s [--claude|--codex|--both]\n' "$(basename "$0")"
+	printf 'Usage: %s [--claude|--codex|--both] [--skip-external]\n' "$(basename "$0")"
 }
 
 timestamp() {
@@ -187,17 +187,33 @@ prompt_target() {
 	esac
 }
 
-target="${1:-}"
+target=""
+sync_external=true
 
-case "$target" in
-	--claude) target="claude" ;;
-	--codex) target="codex" ;;
-	--both) target="both" ;;
-	"") target=$(prompt_target) ;;
-	*) usage >&2; exit 1 ;;
-esac
+while [ $# -gt 0 ]; do
+	case "$1" in
+		--claude) target="claude" ;;
+		--codex) target="codex" ;;
+		--both) target="both" ;;
+		--skip-external) sync_external=false ;;
+		--help) usage; exit 0 ;;
+		*) usage >&2; exit 1 ;;
+	esac
 
-"$REPO_DIR/scripts/sync.sh"
+	shift
+done
+
+if [ -z "$target" ]; then
+	target=$(prompt_target)
+fi
+
+if [ "$sync_external" = true ]; then
+	if ! bash "$REPO_DIR/scripts/sync-external-skills.sh"; then
+		printf '%s!%s external skill sync failed; continuing with existing local skills\n' "$YELLOW" "$RESET_COLOUR" >&2
+	fi
+fi
+
+bash "$REPO_DIR/scripts/sync.sh"
 
 case "$target" in
 	claude) setup_claude ;;

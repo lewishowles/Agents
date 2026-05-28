@@ -131,6 +131,27 @@ Dev uses esbuild for on-demand transforms; build uses Rollup for bundling. CJS l
 
 `vite build` transpiles but does NOT type-check. Type errors silently ship to production unless you run `tsc --noEmit` in CI or use `vite-plugin-checker`.
 
+## Imports and assets
+
+Use `import.meta.glob` for file-system driven imports instead of hand-maintained registries:
+
+```typescript
+const modules = import.meta.glob("./pages/**/*.vue");
+```
+
+Use Vite asset query imports when the requested representation matters:
+
+```typescript
+import iconUrl from "./icon.svg?url";
+import shaderSource from "./shader.glsl?raw";
+```
+
+## Plugins
+
+- Keep plugin order intentional; framework plugins usually come before inspection, analysis, or transform helpers
+- Use virtual modules only when config-time data genuinely needs to become importable runtime code
+- Check current Vite docs before applying version-specific migration guidance, especially around Rolldown, Oxc, and major-version beta features
+
 ## Library mode
 
 Publishing npm package: use `build.lib`. Two footguns:
@@ -150,6 +171,12 @@ build: {
 	},
 }
 ```
+
+## SSR mode
+
+- Treat SSR builds as a separate runtime: browser globals, env variables, and asset URLs may behave differently
+- Keep client-only logic behind component lifecycle hooks or explicit environment guards
+- Test both dev SSR and production build output when changing Vite SSR config
 
 ## Common pitfalls
 

@@ -54,6 +54,21 @@ shopt -s nocasematch
 # vite.config files: inject vite-patterns
 [[ "$filename" == "vite.config.ts" || "$filename" == "vite.config.js" ]] && skills+=("vite-patterns")
 
+# Vue Router: route setup files and file-based route pages
+if [[ "$filename" == "router.js" || "$filename" == "router.ts" ]] || [[ "$file_path" =~ /router/ ]] || [[ "$file_path" =~ /routes/ ]] || [[ "$file_path" =~ /pages/ ]]; then
+	skills+=("vue-router")
+fi
+
+# Pinia: store files and store directories
+if [[ "$filename" =~ store\.(js|ts)$ ]] || [[ "$filename" =~ stores\.(js|ts)$ ]] || [[ "$file_path" =~ /stores/ ]]; then
+	skills+=("pinia")
+fi
+
+# VueUse: import payloads in Write/Edit inputs when available
+if echo "$input" | grep -qiE '@vueuse|vueuse|\buse(LocalStorage|SessionStorage|Storage|Mouse|Element|Window|Clipboard|Dark|Preferred|Breakpoints|MediaQuery|EventListener|Debounce|Throttle|Interval|Timeout|Online|Fetch)\b'; then
+	skills+=("vueuse-functions")
+fi
+
 # unit-testing: .test.js, .spec.js, .spec.ts, or XCTest files
 [[ "$filename" =~ \.(test|spec)\.(js|ts)$ ]] || [[ "$filename" =~ Tests?\.(swift|js)$ ]] && skills+=("unit-testing")
 

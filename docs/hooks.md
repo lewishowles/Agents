@@ -45,6 +45,9 @@ Extension-to-skill mapping:
 | `.md` | `code-style`, `writing` |
 | `README.md` | + `readme` |
 | `vite.config.ts` / `.js` | + `vite-patterns` |
+| Router, routes, or pages files | + `vue-router` |
+| Store files or files in `stores/` | + `pinia` |
+| Write/Edit payloads mentioning VueUse imports/composables | + `vueuse-functions` |
 | `*.test.js`, `*.spec.ts`, etc. | + `unit-testing` |
 | `*.e2e.*`, `*.cy.*`, files in `e2e/` or `tests/cypress/` | + `e2e-testing` |
 | Files in `adr/` or `0001-*.md` | + `architecture-decision-records` |

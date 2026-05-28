@@ -47,7 +47,7 @@ skills=()
 # Claude decides what to write. Inject all skills so Claude can pick what fits.
 if echo "$prompt" | grep -qiE '^\s*(yes|yep|yeah|ok|okay|sure|go ahead|sounds good|perfect|great|looks good|done|next|correct|exactly)\s*[.!]?\s*$' || \
    echo "$prompt" | grep -qiE '\b(continue|carry on|move on|next step|proceed|let'\''s go|what'\''s next|keep going|move forward|let'\''s continue|crack on)\b'; then
-	skills+=("code-style" "codebase-memory" "swift" "vue" "vue-project-stack" "pinia-colada" "typescript" "unit-testing" "writing" "readme" "ui-copy" "bash" "error-handling" "accessibility" "dependencies" "vite-patterns" "e2e-testing" "architecture-decision-records" "session-management")
+	skills+=("code-style" "codebase-memory" "swift" "vue" "vue-project-stack" "pinia" "pinia-colada" "vue-router" "vueuse-functions" "typescript" "unit-testing" "writing" "readme" "ui-copy" "bash" "error-handling" "accessibility" "dependencies" "vite-patterns" "e2e-testing" "architecture-decision-records" "session-management")
 fi
 
 # ─── codebase-memory ───────────────────────────────────────────────────────
@@ -96,6 +96,26 @@ if echo "$prompt" | grep -qiE '\btests?\b|\bspec\b|\bcoverage\b|\.test\.|\.spec\
    echo "$prompt" | grep -qiE '\bdescribe\b|\bbeforeeach\b|\baftereach\b|\bmock\b|\bspy\b|\bstub\b|\bassert\b' || \
    echo "$prompt" | grep -qiE '@testing-library|test coverage|unit test|integration test|snapshot test'; then
 	skills+=("unit-testing")
+fi
+
+# ─── pinia ───────────────────────────────────────────────────────────────────
+# Client-side Vue stores, storeToRefs, app/UI state boundaries.
+if echo "$prompt" | grep -qiE '@pinia/testing|\bpinia\b|\bdefineStore\b|\bstoreToRefs\b|\buse[A-Z][A-Za-z0-9]+Store\b' || \
+   echo "$prompt" | grep -qiE '\b(client|app|ui).*state\b|\bstores?/.*\.(js|ts)\b'; then
+	skills+=("pinia" "vue" "vue-project-stack")
+fi
+
+# ─── vue-router ──────────────────────────────────────────────────────────────
+# Vue Router, route params/query, guards, redirects, route-driven state.
+if echo "$prompt" | grep -qiE 'vue-router|\bvue router\b|\brouter\b|\broutes?\b|\buseRoute\b|\buseRouter\b|\bonBeforeRoute(Update|Leave)\b' || \
+   echo "$prompt" | grep -qiE '\bnavigation guard\b|\bbeforeEach\b|\broute params?\b|\bquery string\b|\bredirect\b'; then
+	skills+=("vue-router" "vue" "vue-project-stack")
+fi
+
+# ─── vueuse-functions ────────────────────────────────────────────────────────
+# VueUse composables and @vueuse packages.
+if echo "$prompt" | grep -qiE '@vueuse|vueuse|\buse(LocalStorage|SessionStorage|Storage|Mouse|Element|Window|Clipboard|Dark|Preferred|Breakpoints|MediaQuery|EventListener|Debounce|Throttle|Interval|Timeout|Online|Fetch)\b'; then
+	skills+=("vueuse-functions" "vue" "vue-project-stack")
 fi
 
 # ─── accessibility ────────────────────────────────────────────────────────

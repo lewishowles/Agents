@@ -4,7 +4,10 @@ description: >
   Use this skill when working with .vue files, Vue components, composables, or Vue templates — even for small edits. Covers Vue 3 Composition API patterns, script setup, macro order, computed property organisation, component patterns, and component directory organisation. For project-specific stack choices (Bun, Vitest, Gitflow, @lewishowles/helpers, @lewishowles/components), see the vue-project-stack skill.
 related-skills:
   - code-style
+  - pinia
   - vue-project-stack
+  - vue-router
+  - vueuse-functions
   - typescript
 ---
 
@@ -27,6 +30,15 @@ related-skills:
 - `defineProps` → `defineModel` → `defineEmits` → implementation → `defineExpose` (last)
 
 ## Props and computed properties
+
+## Reactivity
+
+- Prefer `ref()` over `reactive()` by default. Refs destructure safely and make `.value` mutations explicit
+- Use `reactive()` only when object identity and deep object ergonomics matter
+- Do not destructure reactive objects unless using `toRefs()` or `storeToRefs()`
+- Use `shallowRef()` for large objects, fetched payloads, component/library instances, maps, charts, editors, and other values that do not need deep reactivity
+- Use `markRaw()` for external class instances or third-party objects Vue should not proxy
+- Prefer VueUse composables before writing custom browser/reactive utilities
 
 ### Props
 
@@ -79,6 +91,9 @@ Prefer object `v-bind` over `:` shorthand for variable or expression prop bindin
 - Order: variables and single-line computed, then multi-line computed, then functions
 - Keep related items together
 - Every computed property gets a single-line comment explaining what it represents (following `code-style` baseline)
+- Computed properties must be pure: no API calls, no mutations, no timers, no async side effects
+- Use computed values for filtered/sorted lists and complex class maps
+- Copy arrays before sorting or reversing inside computed values
 
 Example:
 
@@ -125,6 +140,9 @@ const displayDate = computed(() => {
 
 - Named exports for composables and utilities — `export function useX` not `export default function useX`
 - Named functions for component methods; arrow functions for inline handlers and callbacks only
+- Do not combine `v-if` and `v-for` on the same element. Filter with a computed value or wrap in `<template>`
+- Treat `v-html` as a security risk. Use only with trusted, sanitised content
+- Avoid dynamic Tailwind class string construction that prevents class detection. Map states to complete class names
 
 ## File-based routing
 

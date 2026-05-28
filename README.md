@@ -8,6 +8,7 @@ Shared configuration for Claude Code and OpenAI Codex. The repo keeps common rul
 - `targets/claude/` - generated `CLAUDE.md`, Claude settings, hooks, and Claude-only source fragments
 - `targets/codex/` - generated `AGENTS.md` and Codex-only source fragments
 - `skills/` - user skills, each as a folder containing `SKILL.md`
+- `external-skills.json` - official upstream skills synced into `skills/`
 - `scripts/` - sync and setup scripts
 - `templates/` - project templates for Claude, Codex, or both
 - `docs/` - deeper reference: [setup](docs/setup.md), [Codex](docs/codex.md), [hooks](docs/hooks.md), [skills](docs/skills.md), [commands](docs/commands.md), [agents](docs/agents.md), [plugins](docs/plugins.md)
@@ -23,7 +24,7 @@ scripts/setup-global.sh --both
 
 Use `--claude` or `--codex` to configure one runtime only. With no flag, the script asks which agent(s) to configure.
 
-The global setup script runs `scripts/sync.sh`, then links:
+The global setup script syncs official external skills, runs `scripts/sync.sh`, then links:
 
 - `~/.claude/CLAUDE.md` to `targets/claude/CLAUDE.md`
 - `~/.claude/settings.json` to `targets/claude/settings.json`
@@ -37,6 +38,12 @@ The global setup script runs `scripts/sync.sh`, then links:
 It also ensures `~/.codex/config.toml` has the `codebase-memory-mcp` MCP server entry.
 
 Existing files are backed up instead of overwritten.
+
+If you need to run setup without network access, use:
+
+```bash
+scripts/setup-global.sh --both --skip-external
+```
 
 ## Project setup
 
@@ -81,6 +88,7 @@ alias setup:codex="/path/to/repository/scripts/setup-project.sh --codex"
 
 ```bash
 scripts/sync.sh
+scripts/sync-external-skills.sh
 scripts/setup-global.sh --both
 scripts/setup-project.sh --both
 tests/setup-project.sh

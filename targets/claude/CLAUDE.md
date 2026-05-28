@@ -189,6 +189,7 @@ Apply across all projects. See individual skills for detailed rules. Per-project
 - `/dependencies` — When adding packages, what to choose, when to add
 - `/e2e-testing` — When writing end-to-end tests with Playwright
 - `/error-handling` — When validating input, graceful fallbacks, error handling
+- `/pinia` — When using Pinia for client-side Vue app state and stores
 - `/pinia-colada` — When using `@pinia/colada` for async server state — `useQuery`, `useMutation`, cache management, optimistic updates
 - `/readme` — When writing a README, structure, what to include/cut
 - `/session-management` — When saving/resuming sessions, tracking multi-session work, token efficiency, goal-driven execution
@@ -200,6 +201,8 @@ Apply across all projects. See individual skills for detailed rules. Per-project
 - `/vite-patterns` — When configuring vite.config.ts, Vite project patterns
 - `/vue` — When writing Vue code, formatting, patterns, composables, components
 - `/vue-project-stack` — When working in Vue + Bun + Vitest + Tailwind + Gitflow stack
+- `/vue-router` — When using Vue Router routes, guards, params, query strings, and redirects
+- `/vueuse-functions` — When using VueUse composables for Vue/Nuxt features
 - `/writing` — When writing prose/documentation, voice, tone, structure, style
 
 ## Prefer codebase-memory-mcp graph tools

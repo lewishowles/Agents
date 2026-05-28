@@ -20,6 +20,12 @@ Stack used across Vue projects. Each choice has *why*. Better option emerges or 
   *Why:* colocates styles with markup, removes class-naming overhead, fast iteration, easy consistency audit
 - **Vitest**
   *Why:* Vite-native (no dual config), fast watcher, modern API; natural pairing for Vue 3 + Vite
+- **Vue Router**
+  *Why:* standard production router for Vue SPAs; keeps navigation, params, query strings, and route metadata explicit
+- **Pinia**
+  *Why:* official client-side store for Vue; simple Composition API model and strong TypeScript support
+- **VueUse**
+  *Why:* proven Vue composables for browser/reactive patterns; reduces bespoke code for common behaviours
 - **Bun (package manager)**
   *Why:* fast installs, npm-compatible registry, drop-in replacement; npm/pnpm valid fallbacks if workflow breaks
 - **Gitflow branching**
@@ -65,6 +71,7 @@ State management responsibilities:
 
 | Layer | Use for |
 |-------|---------|
-| Pinia stores | UI state, user preferences, app-wide flags |
+| Pinia stores | Client-owned app state, UI state, user preferences, app-wide flags |
 | Pinia Colada | Server data — fetching, caching, revalidation |
-| Plain composables | Local shared state that doesn't need caching |
+| VueUse | Reusable reactive/browser utilities — storage, observers, media queries, timers |
+| Plain composables | Project-specific local shared state that doesn't need caching |

@@ -33,6 +33,7 @@ Configuration/Agents/
 │   ├── shared/              # Shared project templates
 │   └── PLAN.md.template
 ├── CREDITS.md              # Attribution for externally-inspired content
+├── external-skills.json    # Official upstream skills synced into skills/
 ├── README.md               # Setup guide for new installs
 ├── docs/
 │   ├── agents.md           # Claude agent types reference
@@ -42,6 +43,7 @@ Configuration/Agents/
 │   └── skills.md           # Full skills reference with auto-trigger keywords
 ├── scripts/
 │   ├── sync.sh             # Regenerates target agent files
+│   ├── sync-external-skills.sh # Fetches managed external skills
 │   └── setup-global.sh     # Creates global symlinks for Claude and Codex
 └── skills/
     ├── accessibility/
@@ -52,6 +54,7 @@ Configuration/Agents/
     ├── dependencies/
     ├── e2e-testing/
     ├── error-handling/
+    ├── pinia/
     ├── readme/
     ├── session-management/
     ├── swift/
@@ -62,6 +65,8 @@ Configuration/Agents/
     ├── vite-patterns/
     ├── vue/
     ├── vue-project-stack/
+    ├── vue-router/
+    ├── vueuse-functions/
     └── writing/
 ```
 
@@ -69,6 +74,7 @@ Configuration/Agents/
 
 - `agent-config` is repo-local only; keep it under `.claude/skills/agent-config` and symlink it into `.agents/skills/agent-config`
 - Shared global skills live under `skills/<name>`
+- Official external skills are listed in `external-skills.json`, synced into `skills/<name>`, and marked with `SYNC.md`
 - **Folder name** = skill slug (used in `/slug` commands, hook pattern lists, and Codex skill discovery)
 - Each skill folder: exactly one `SKILL.md`
 - Frontmatter fields: `name`, `description`, `related-skills` (optional)

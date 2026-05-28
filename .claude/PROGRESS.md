@@ -376,3 +376,10 @@ Clone repo to clean machine, run `setup:agents:global --both`, then `cd` to a fr
 **Completed (session 13):** Removed stale session-note text from `docs/skills.md` and updated progress status now that deferred hooks are complete
 **Validation:** current progress status reflects completed dual-target and deferred hook work
 **Next:** Commit and push the completed maintenance work
+
+### 2026-05-28
+**Completed:** Vue ecosystem skill refresh — added external skill sync, synced official VueUse skill plus 266 references, added Pinia and Vue Router skills, merged selected Vue/testing/Vite/design guidance into first-party skills, and wired triggers/docs/setup.
+**Follow-up:** Added visible progress output to `scripts/sync-external-skills.sh` so setup does not appear idle while downloading external skill references.
+**Follow-up:** Added upstream-SHA skip logic so unchanged external skills avoid re-downloading `SKILL.md` and reference files.
+**Validation:** `bash -n scripts/sync-external-skills.sh`; `bash -n scripts/setup-global.sh`; `jq empty external-skills.json targets/claude/settings.json`; targeted `rg` scan for new skill wiring; `scripts/sync-external-skills.sh` with network; unchanged sync confirms "already up to date"; `scripts/setup-global.sh --both --skip-external`; temp-home `setup-global.sh --both` confirmed sync failure warns and continues.
+**Next:** Review the chunk, then commit if accepted.

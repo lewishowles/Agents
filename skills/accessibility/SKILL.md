@@ -18,6 +18,8 @@ WCAG AA baseline; AAA where feasible. Inaccessible = incorrect. Affects: blind/l
 - **Don't rely on colour alone**: 1 in 12 men, 1 in 200 women colourblind. Pair colour with icon or text
 - **Text readability**: line-height ~1.5, line length ~65 chars, readable font sizes
 - **Responsive design**: works small screens AND 400% zoom. At max zoom viewport may be <250px; still navigable
+- **Robust text layout**: set `min-width: 0` in flex/grid children that contain long text; choose wrapping, truncation, or scrolling deliberately
+- **Images**: set dimensions or aspect ratio so layout does not jump. Lazy-load below-fold images
 
 ## Content & copy
 
@@ -60,8 +62,10 @@ The test: if a sighted developer using the component in a standard way needs to 
 
 - **Keyboard access**: every action via keyboard. Drag-drop? Provide button alternative. When programmatically querying focusable elements, see the code-style skill for the standard selector pattern
 - **Visible focus**: show keyboard focus. Ring indicator, no outline removal. Delete in table? Move focus sensibly (next row), not page top
+- **Focus after errors**: after failed form submission, move focus to the error summary or first invalid field
 - **Skip links**: `<a href="#main">Skip to main content</a>` with `<main id="main" tabindex="-1">`
 - **Motion**: respect `prefers-reduced-motion`. Guard animations: `@media (prefers-reduced-motion: reduce) { ... }`
+- **Transitions**: avoid `transition: all`; animate explicit properties and keep reduced-motion fallbacks
 - **Timing**: no auto-dismiss messages. User closes. Some need more time
 - **Touch targets**: min 44×44px; space to avoid accidental taps
 - **Focus trap in modals**: on open, save `document.activeElement` and move focus into dialog; on close, restore saved element. Without restoration, keyboard users lose page position
@@ -78,6 +82,7 @@ The test: if a sighted developer using the component in a standard way needs to 
 ## Forms & inputs
 
 - **Label association**: `<label for="inputId">` → `<input id="inputId">`, or wrap. Never placeholder alone
+- **Input type and mode**: use the most specific `type`, `inputmode`, and `autocomplete` for the expected data
 - **Grouped inputs**: `<fieldset>` + `<legend>` for radio, checkboxes, related fields. Legend read to screen reader users
 - **Help text & instructions**: `aria-describedby="helpId"` pointing at `<span id="helpId">`. Screen readers announce with field
 - **Validation & errors**: `aria-invalid="true"` + `aria-errormessage="errorId"` pointing at error text. Error summary at top, linked to fields
@@ -106,6 +111,13 @@ The test: if a sighted developer using the component in a standard way needs to 
 - **Region announcement**: pair with `aria-label`: `<div aria-live="polite" aria-label="Form errors">`
 - **No auto-dismiss**: messages stay until user closes. Some need extra read time
 - **Screenreader-only content**: `.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); }` — hides visually, announced to assistive tech
+
+## Controls
+
+- Icon-only buttons need an accessible name via visible text, `aria-label`, or `aria-labelledby`
+- Do not put click handlers on non-interactive elements when a button or link is the correct semantic control
+- Do not block paste in form fields
+- Destructive actions need confirmation, undo, or both
 
 ## Semantics & structure (expanded)
 

@@ -36,6 +36,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/dependencies` | dependencies | Evaluating a new package |
 | `/e2e-testing` | e2e-testing | Writing Playwright tests |
 | `/error-handling` | error-handling | Adding validation to a function |
+| `/pinia` | pinia | Working with client-side Vue stores |
 | `/pinia-colada` | pinia-colada | Working with `@pinia/colada` queries, mutations, or cache |
 | `/readme` | readme | Starting or editing a README |
 | `/session-management` | session-management | Saving or resuming a session |
@@ -47,6 +48,8 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/vite-patterns` | vite-patterns | Configuring Vite |
 | `/vue` | vue | Working in a `.vue` file |
 | `/vue-project-stack` | vue-project-stack | Working in a Vue project |
+| `/vue-router` | vue-router | Working with Vue Router routes, guards, params, or query strings |
+| `/vueuse-functions` | vueuse-functions | Checking VueUse composables before writing bespoke Vue utilities |
 | `/writing` | writing | Writing or editing prose |
 
 Most of these fire automatically via the trigger hooks — manual invocation is for cases the hooks don't catch, or to load a skill at the start of a session.

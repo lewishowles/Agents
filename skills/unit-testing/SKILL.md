@@ -4,6 +4,7 @@ description: >
   Use this skill when writing, editing, or reviewing unit tests — Vitest, @testing-library/vue, composable testing, XCTest. Covers testing philosophy (happy and unhappy paths), what to skip (methods that delegate to @lewishowles/helpers), and meaningful assertions over snapshots. Always apply when working in *.test.js files or when the user mentions tests, specs, or coverage. For end-to-end tests, see the e2e-testing skill if present.
 related-skills:
   - code-style
+  - pinia
   - vue
   - typescript
 ---
@@ -29,6 +30,14 @@ related-skills:
 - Component logic in unit tests: focus on computed properties, emitted events, composables, and heavily-used methods. Rendered state belongs in Playwright/Cypress component tests
 - Composables: test reactive state, side effects, lifecycle hooks
 - For async updates in tests, import `nextTick` from Vue and use `await nextTick()` instead of `await wrapper.vm.$nextTick()`
+- Use `flushPromises()` when waiting for pending promises, API mocks, or async component setup
+- Use `vi` for spies, fake timers, and module mocks; restore mocks after each test when state can leak
+- Use `expectTypeOf` or `assertType` for type-level assertions when runtime assertions cannot cover the contract
+- Test component behaviour as a black box. Avoid assertions tied to internal refs, private methods, or component implementation structure
+- Avoid snapshot-only tests. A snapshot may support a focused assertion, but should not be the only proof
+- Wrap async setup components in `Suspense` in tests
+- Configure Pinia explicitly in tests. Use `@pinia/testing` when component tests need stores without real action side effects
+- Test lifecycle-dependent composables through a small helper component when they rely on mount/unmount hooks
 
 ### Component logic test structure
 
