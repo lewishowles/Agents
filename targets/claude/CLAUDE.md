@@ -103,9 +103,10 @@ Code must be reviewed before it is committed. Completing work means stopping aft
 
 ## Working across sessions
 
-**Maintain PROGRESS.md for significant work.** For multi-file, multi-session, or complex-scope work, keep `.claude/PROGRESS.md` as the persistent record across sessions. Update it after every significant change, decision, or scope shift — mark items done as they complete, record decisions, compact completed sections to brief summaries when starting the next chunk.
+**Maintain PROGRESS.md for significant work.** For multi-file, multi-session, or complex-scope work, keep `.claude/PROGRESS.md` as the persistent record across sessions. Update it after every significant change, decision, or scope shift — mark items done as they complete, record decisions, compact completed sections to brief summaries when starting the next chunk. A starter template is at `.claude/templates/PROGRESS.md.template` if one exists in the project.
 
 **Work in committable chunks** — feature, bugfix, refactor, or documentation update:
+
 - Before: summarise the chunk; wait for confirmation if the user requested it
 - After: explain what changed and how the code works; say what's visible to the user (or confirm nothing changed); provide a `feat(scope): description` commit message — do not run `git commit` unless asked; update PROGRESS.md; wait for confirmation before the next chunk
 

@@ -75,7 +75,7 @@ copy_claude_support_files() {
 	sync_file "$REPO_DIR/templates/claude/settings.json" "$PROJECT_DIR/.claude/settings.json" ".claude/settings.json"
 	sync_file "$REPO_DIR/templates/claude/.claudeignore" "$PROJECT_DIR/.claude/.claudeignore" ".claude/.claudeignore"
 	copy_file "$REPO_DIR/templates/PLAN.md.template" "$PROJECT_DIR/.claude/templates/PLAN.md.template" ".claude/templates/PLAN.md.template"
-	copy_file "$REPO_DIR/templates/PROGRESS.md" "$PROJECT_DIR/.claude/PROGRESS.md" ".claude/PROGRESS.md"
+	copy_file "$REPO_DIR/templates/PROGRESS.md.template" "$PROJECT_DIR/.claude/templates/PROGRESS.md.template" ".claude/templates/PROGRESS.md.template"
 }
 
 setup_claude() {
@@ -89,7 +89,6 @@ setup_codex() {
 	printf '\n→ Setting up Codex (project)\n\n'
 
 	copy_file "$REPO_DIR/templates/codex/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
-	ensure_dir "$PROJECT_DIR/.agents" ".agents/"
 }
 
 setup_both() {
@@ -97,7 +96,6 @@ setup_both() {
 
 	copy_file "$REPO_DIR/templates/shared/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
 	copy_claude_support_files
-	ensure_dir "$PROJECT_DIR/.agents" ".agents/"
 }
 
 prompt_target() {
