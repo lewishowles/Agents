@@ -96,6 +96,15 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/cbm-code-discovery-gate"
+          }
+        ]
       }
     ],
     "Stop": [

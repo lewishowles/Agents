@@ -2,6 +2,13 @@
 
 set -euo pipefail
 
+# Only intercept Bash commands that look like shell-based code search.
+command=$(jq -r '.tool_input.command // empty' 2>/dev/null)
+
+if ! echo "$command" | grep -qE '^\s*(rg|grep|find)\s'; then
+	exit 0
+fi
+
 gate="/tmp/cbm-code-discovery-gate-$PPID"
 
 find /tmp -name 'cbm-code-discovery-gate-*' -mtime +1 -delete 2>/dev/null || true
@@ -11,5 +18,5 @@ if [[ -f "$gate" ]]; then
 fi
 
 touch "$gate"
-printf '%s\n' 'BLOCKED: For code discovery, use codebase-memory-mcp tools first: search_graph(name_pattern) to find functions/classes, trace_path() for call chains, get_code_snippet(qualified_name) to read source. If the graph is not indexed yet, call index_repository first. Fall back to Grep/Glob/Read only for text content search. If you need Grep, retry.' >&2
+printf '%s\n' 'BLOCKED: For code discovery, use codebase-memory-mcp tools first: search_graph(name_pattern) to find functions/classes, trace_path() for call chains, get_code_snippet(qualified_name) to read source. Index first if needed. Fall back to shell search only for config values, literals, or non-code files. Retry if shell search is genuinely needed.' >&2
 exit 2
