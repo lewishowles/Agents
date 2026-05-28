@@ -28,6 +28,33 @@ copy_file() {
 	printf '  %s✓%s created %s\n' "$GREEN" "$RESET_COLOUR" "$label"
 }
 
+sync_file() {
+	local source="$1"
+	local target="$2"
+	local label="$3"
+
+	if ! [ -e "$target" ] && ! [ -L "$target" ]; then
+		cp "$source" "$target"
+		printf '  %s✓%s created %s\n' "$GREEN" "$RESET_COLOUR" "$label"
+		return
+	fi
+
+	if ! cmp -s "$source" "$target"; then
+		printf '\n  %s⚠%s %s exists locally but differs from the default\n' "$PURPLE" "$RESET_COLOUR" "$label"
+		printf '  This usually means either:\n'
+		printf '    • You have customised it for this project\n'
+		printf '    • The default template has been updated\n\n'
+		printf '  Overwrite with the default? (y/n): '
+		read -r response
+		if [[ $response == y ]]; then
+			cp "$source" "$target"
+			printf '  %s✓%s updated %s\n\n' "$GREEN" "$RESET_COLOUR" "$label"
+		else
+			printf '  %s↪%s skipped %s\n\n' "$PURPLE" "$RESET_COLOUR" "$label"
+		fi
+	fi
+}
+
 ensure_dir() {
 	local path="$1"
 	local label="$2"
@@ -45,9 +72,10 @@ copy_claude_support_files() {
 	ensure_dir "$PROJECT_DIR/.claude" ".claude/"
 	ensure_dir "$PROJECT_DIR/.claude/templates" ".claude/templates/"
 
-	copy_file "$REPO_DIR/templates/claude/settings.json" "$PROJECT_DIR/.claude/settings.json" ".claude/settings.json"
-	copy_file "$REPO_DIR/templates/claude/.claudeignore" "$PROJECT_DIR/.claude/.claudeignore" ".claude/.claudeignore"
+	sync_file "$REPO_DIR/templates/claude/settings.json" "$PROJECT_DIR/.claude/settings.json" ".claude/settings.json"
+	sync_file "$REPO_DIR/templates/claude/.claudeignore" "$PROJECT_DIR/.claude/.claudeignore" ".claude/.claudeignore"
 	copy_file "$REPO_DIR/templates/PLAN.md.template" "$PROJECT_DIR/.claude/templates/PLAN.md.template" ".claude/templates/PLAN.md.template"
+	copy_file "$REPO_DIR/templates/PROGRESS.md" "$PROJECT_DIR/.claude/PROGRESS.md" ".claude/PROGRESS.md"
 }
 
 setup_claude() {
@@ -62,7 +90,6 @@ setup_codex() {
 
 	copy_file "$REPO_DIR/templates/codex/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
 	ensure_dir "$PROJECT_DIR/.agents" ".agents/"
-	ensure_dir "$PROJECT_DIR/.agents/skills" ".agents/skills/"
 }
 
 setup_both() {
@@ -71,7 +98,6 @@ setup_both() {
 	copy_file "$REPO_DIR/templates/shared/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
 	copy_claude_support_files
 	ensure_dir "$PROJECT_DIR/.agents" ".agents/"
-	ensure_dir "$PROJECT_DIR/.agents/skills" ".agents/skills/"
 }
 
 prompt_target() {
