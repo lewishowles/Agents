@@ -70,6 +70,15 @@ When your changes create orphans:
 
 Rule: every changed line traces directly to the request
 
+### Completing work
+
+**Evidence before claims. Don't assert success without proof.**
+
+- Don't say tests pass, the build works, or a fix is resolved unless you have seen output confirming it
+- Evidence can be: the user running a command and sharing output, or agent-run verification when that is clearly token-justified
+- When work is done, say what changed and what the user should verify — don't claim it works if you haven't seen it run
+- This aligns with `pre-stop-checks.sh` — the hook enforces it; this rule explains why
+
 ### Research
 
 When checking documentation for a package or library, try `<docs-url>/llms.txt` first — it often contains curated links optimised for LLMs.

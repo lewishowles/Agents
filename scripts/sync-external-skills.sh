@@ -32,6 +32,34 @@ if [ ! -f "$MANIFEST" ]; then
 	exit 1
 fi
 
+vet_skill_file() {
+	local file="$1"
+	local slug="$2"
+	local warnings=0
+
+	# Destructive shell commands
+	if grep -qE '\b(rm\s+-rf|sudo\s|chmod\s+[0-7]*7[0-7]*)\b' "$file" 2>/dev/null; then
+		printf '  %s⚠%s %s: contains potentially destructive shell commands (rm -rf / sudo / chmod 7xx)\n' "$YELLOW" "$RESET_COLOUR" "$slug" >&2
+		warnings=$((warnings + 1))
+	fi
+
+	# Network calls to non-GitHub hosts in script blocks
+	if grep -qE '^\s*(curl|wget|fetch)\s+.*https?://(?!raw\.githubusercontent\.com|api\.github\.com)' "$file" 2>/dev/null; then
+		printf '  %s⚠%s %s: contains network calls to external hosts\n' "$YELLOW" "$RESET_COLOUR" "$slug" >&2
+		warnings=$((warnings + 1))
+	fi
+
+	# Secret/credential exfiltration patterns
+	if grep -qiE '(AWS_SECRET|api_key|GITHUB_TOKEN|password|private_key)\s*=' "$file" 2>/dev/null; then
+		printf '  %s⚠%s %s: references credential-like variable names\n' "$YELLOW" "$RESET_COLOUR" "$slug" >&2
+		warnings=$((warnings + 1))
+	fi
+
+	if [ "$warnings" -gt 0 ]; then
+		printf '  Review %s before use.\n' "$file" >&2
+	fi
+}
+
 sync_skill() {
 	local slug="$1"
 	local name="$2"
@@ -73,6 +101,8 @@ sync_skill() {
 	temp_file=$(mktemp)
 	printf '  Fetching SKILL.md\n'
 	curl -fsSL "$skill_url" -o "$temp_file"
+
+	vet_skill_file "$temp_file" "$slug"
 
 	synced_at=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
 

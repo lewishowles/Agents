@@ -47,18 +47,25 @@ Configuration/Agents/
 │   └── setup-global.sh     # Creates global symlinks for Claude and Codex
 └── skills/
     ├── accessibility/
+    ├── accessibility-audit/
     ├── agentic-engineering/
     ├── architecture-decision-records/
     ├── bash/
+    ├── code-review/
     ├── code-style/
+    ├── debugging/
     ├── dependencies/
     ├── e2e-testing/
     ├── error-handling/
+    ├── frontend-security/
     ├── pinia/
+    ├── pinia-colada/
     ├── readme/
+    ├── refactoring/
     ├── session-management/
     ├── swift/
     ├── swift-ui/
+    ├── testing/
     ├── typescript/
     ├── ui-copy/
     ├── unit-testing/
@@ -67,6 +74,7 @@ Configuration/Agents/
     ├── vue-project-stack/
     ├── vue-router/
     ├── vueuse-functions/
+    ├── web-performance/
     └── writing/
 ```
 
@@ -76,11 +84,34 @@ Configuration/Agents/
 - Shared global skills live under `skills/<name>`
 - Official external skills are listed in `external-skills.json`, synced into `skills/<name>`, and marked with `SYNC.md`
 - **Folder name** = skill slug (used in `/slug` commands, hook pattern lists, and Codex skill discovery)
-- Each skill folder: exactly one `SKILL.md`
-- Frontmatter fields: `name`, `description`, `related-skills` (optional)
-- `description` shown in skills list — starts with "Use this skill when", then includes action-led wording and relevant file globs
+
+### Skill file layout (progressive disclosure)
+
+```
+skills/<name>/
+├── SKILL.md           # Triggers, core rules, and reference pointers — aim for ≤120 lines
+└── references/        # Overflow detail, loaded on demand
+    ├── examples.md
+    └── patterns.md
+```
+
+Keep `SKILL.md` lean: triggers, core rules, and brief pointers to `references/` for anything detailed (exhaustive tables, code examples, step-by-step procedures). Use a flat single file only when content is genuinely short and monolithic.
+
+### Frontmatter fields
+
+| Field             | Required    | Notes                                                                     |
+| ----------------- | ----------- | ------------------------------------------------------------------------- |
+| `name`            | Yes         | Skill slug                                                                |
+| `description`     | Yes         | Starts "Use this skill when…"; includes action-led wording and file globs |
+| `do-not-use-when` | Recommended | List of negative triggers to reduce wrong-skill activation                |
+| `related-skills`  | Optional    | Other skills to load alongside this one                                   |
+
+### Content rules
+
 - Content: `#` title, `##` sections — no banner comments or dividers
 - UK spelling
+- No wholesale copying from external sources — reword to match conventions and remove irrelevant content
+- Attribution: if content is adapted from an external skill, note source and licence at the bottom of `SKILL.md`
 
 ## Hook conventions
 
@@ -129,7 +160,9 @@ Filename-based rules (README, vite.config) go in `if`/`shopt` block below case.
     "EventName": [{ "hooks": [{ "type": "command", "command": "...", "timeout": 30 }] }]
   },
   "enabledPlugins": { "plugin@marketplace": true },
-  "extraKnownMarketplaces": { "marketplace": { "source": { "source": "github", "repo": "owner/repo" } } }
+  "extraKnownMarketplaces": {
+    "marketplace": { "source": { "source": "github", "repo": "owner/repo" } }
+  }
 }
 ```
 
@@ -146,11 +179,13 @@ Hook event names: `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `Stop`, `Sess
 ## When adding or changing skills and hooks
 
 When adding, removing, or renaming a skill:
+
 - Check `targets/claude/hooks/skill-autotrigger.sh` — add keyword patterns if the skill has clear trigger terms; add to the continuation catch-all list at the top
 - Check `targets/claude/hooks/skill-file-trigger.sh` — add file extension or filename mappings if the skill applies to specific file types
 - Update `docs/skills.md` with the new entry
 
 When creating a new hook:
+
 - Register it in `targets/claude/settings.json` under the correct lifecycle event
 - Add a entry to `docs/hooks.md` with: event, purpose, stdin format, and what it outputs
 

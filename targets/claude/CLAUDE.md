@@ -76,6 +76,15 @@ When your changes create orphans:
 
 Rule: every changed line traces directly to the request
 
+### Completing work
+
+**Evidence before claims. Don't assert success without proof.**
+
+- Don't say tests pass, the build works, or a fix is resolved unless you have seen output confirming it
+- Evidence can be: the user running a command and sharing output, or agent-run verification when that is clearly token-justified
+- When work is done, say what changed and what the user should verify — don't claim it works if you haven't seen it run
+- This aligns with `pre-stop-checks.sh` — the hook enforces it; this rule explains why
+
 ### Research
 
 When checking documentation for a package or library, try `<docs-url>/llms.txt` first — it often contains curated links optimised for LLMs.
@@ -164,6 +173,7 @@ Apply across all projects. See individual skills for detailed rules. Per-project
 - `/agentic-engineering` — When building with Claude API, Anthropic SDK, or managed agents
 - `/architecture-decision-records` — When documenting significant architectural decisions
 - `/bash` — When writing shell scripts, bash config, patterns
+- `/code-review` — When reviewing a PR or diff, or receiving review feedback
 - `/code-style` — When formatting code, covering naming, comments, arrays, objects
 - `/debugging` — When encountering any bug, test failure, or unexpected behaviour — before proposing a fix
 - `/dependencies` — When adding packages, what to choose, when to add
@@ -173,9 +183,11 @@ Apply across all projects. See individual skills for detailed rules. Per-project
 - `/pinia` — When using Pinia for client-side Vue app state and stores
 - `/pinia-colada` — When using `@pinia/colada` for async server state — `useQuery`, `useMutation`, cache management, optimistic updates
 - `/readme` — When writing a README, structure, what to include/cut
+- `/refactoring` — When refactoring existing code or triaging technical debt
 - `/session-management` — When saving/resuming sessions, tracking multi-session work, token efficiency, goal-driven execution
 - `/swift` — When writing Swift, style, SwiftUI patterns, concurrency
 - `/swift-ui` — When writing/reviewing SwiftUI code, views, state management
+- `/testing` — When deciding what to test and at which layer — strategy above unit-testing and e2e-testing
 - `/typescript` — When using TypeScript, type safety, escape hatches
 - `/ui-copy` — When writing microcopy, buttons, errors, empty states, CTAs
 - `/unit-testing` — When writing unit tests, Vitest, philosophy, what to skip
