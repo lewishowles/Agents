@@ -52,10 +52,12 @@ We will use Vue 3 with Composition API and `<script setup>`.
 ## Alternatives considered
 
 ### React
+
 - Pros: larger ecosystem, more jobs
 - Cons: JSX syntax, more boilerplate
 
 ### Svelte
+
 - Pros: compiler-based, small bundle size
 - Cons: smaller ecosystem, less mature
 
@@ -78,6 +80,22 @@ We will use Vue 3 with Composition API and `<script setup>`.
 - **Accepted** — made and implemented
 - **Superseded** — replaced by later ADR
 
+## Diagrams
+
+Include a Mermaid diagram when component relationships or data flow are non-obvious from prose alone. Place it in the **Context** or **Decision** section, not as decoration.
+
+````markdown
+```mermaid
+graph LR
+  A[Component] --> B[Store]
+  B --> C[API]
+```
+````
+
+````
+
+Keep diagrams minimal — only the parts relevant to the decision.
+
 ## Consequences matter
 
 Document trade-offs: gains and losses. Helps future devs understand constraints.
@@ -89,4 +107,4 @@ Reference ADRs in code comments and docs:
 ```typescript
 // See ADR-0001: we chose Vue for specific TypeScript + DX reasons
 // Revisit if those constraints change
-```
+````
