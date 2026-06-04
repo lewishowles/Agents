@@ -50,3 +50,4 @@ related-skills:
 - Avoid comments that merely repeat syntax, narrate control flow, or describe a workaround's mechanics. Prefer `// Ensures the dialog has an accessible label.` over `// Wrapped in onMounted to avoid invoking slots outside render context.`
 - Remove stale or transactional bug-fix comments once the code expresses the behaviour clearly.
 - Block comments for functions explain purpose and externally relevant constraints; avoid internal implementation trivia.
+- Comments use the same plain-language voice as prose — see `/writing`. No jargon without explanation, no "etc", write for a newcomer. Purpose over cleverness.
