@@ -80,3 +80,18 @@ Skill files, reference docs, and inline code documentation follow a different st
 - Describe what a thing is and where it sits, not the framework mechanics of how it gets there. Drop "rendered", "displayed", and the like when a placement word already carries it: "an instruction inside each column's heading button", not "an instruction rendered inside each column's heading button".
 - Match the scope of sibling entries. Don't volunteer how-to, override, or translation guidance in one entry when the rest of the reference doesn't — a lone aside that no neighbour shares reads as out of place. If such guidance belongs, it belongs everywhere it applies, not in one description.
 - In reference docs and JSDoc, write instructions in the imperative: "Pass a getter function", not "You should pass a getter function". In prose, frame the step instead (see Structure).
+
+## Product documentation
+
+User-facing documentation pages — a getting-started guide, a theming guide, a component's usage notes — are narrative like longform, but speak for the product, not for you. This is a third register, between personal longform and terse reference. When writing these:
+
+- **Neutral product voice, no first person.** The subject is "the library", "the component", "Tailwind" — never "I" or "we". State a recommendation plainly: "Automatic imports are the recommended starting point", not "the one I'd reach for first". Reserve "I"/"we" for blog posts and longform.
+- **No scene-setting intro.** Don't open a page or section with a paragraph that summarises what follows. Start at the first heading or the first real instruction. Cut "A component can come into your project three ways" if three subsections already say so.
+- **Say it once.** Drop benefit-restatements and comparative editorialising. "Components are automatically imported only when used" stands on its own; don't append "the convenience of global registration with the leanness of named imports".
+- **Give the instruction, not the internal mechanism.** The reader needs to know what to do, not how it works under the hood. "Register it globally, and make sure to exclude the original component from automatic imports" — not a paragraph on build-time versus runtime resolution. Let the code example carry the detail.
+- **Describe system behaviour in the passive, focused on the thing acted on.** "Components are automatically imported only when used", "Each stylesheet is published so you can start from a working copy" — not "you reference a component and your bundler drops the rest".
+- **Anthropomorphise tools, address the reader as "you".** "Point it at the library so it can generate the utility classes", "set the scale variables you care about". Light usage guidance is fine — "most of the time you'll only need to touch the first layer" — but don't characterise the reader otherwise.
+- **Imperative steps are welcome here**, unlike longform — often with a goal lead: "To re-theme, set the scale variables in your own `:root`". Keep them free of padding.
+- **A lead-in to a code block must add information, not announce the code.** Keep "Import this into your Tailwind entry stylesheet (e.g. `main.css`):" (says where); cut "Add the resolver to your Vite config:" (only announces a snippet that speaks for itself). A short punchy lead-in earns its place: "Your values win:".
+- **Concrete contrast lands abstract ideas.** "Rather than asking for 'purple 800', components ask for 'the primary fill'."
+- **Use the docs' own components and conventions, not raw HTML.** External links through the project's link component (e.g. `<link-tag external>`), package and technical names in `<code>`.
