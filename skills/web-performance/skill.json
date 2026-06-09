@@ -14,6 +14,10 @@
     "lighthouse",
     "runtime performance"
   ],
+  "do-not-use-when": [
+    "Configuring the Vite build — use vite-patterns",
+    "Writing animation or transition code — check accessibility for reduced-motion first"
+  ],
   "filePatterns": [],
   "pathPatterns": [],
   "dependencies": ["vite-patterns", "vue", "accessibility"],

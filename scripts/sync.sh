@@ -53,6 +53,8 @@ write_target() {
 	done
 }
 
+python3 "$REPO_DIR/scripts/build-skill-mds.py"
+
 write_target "$CLAUDE_TARGET" "${CLAUDE_PARTS[@]}"
 write_target "$CODEX_TARGET" "${CODEX_PARTS[@]}"
 

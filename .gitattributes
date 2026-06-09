@@ -1,0 +1,4 @@
+# Generated files — not manually authored
+skills/*/SKILL.md linguist-generated=true
+skills/*/*/SKILL.md linguist-generated=true
+dist/**/* linguist-generated=true

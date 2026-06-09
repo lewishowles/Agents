@@ -1,9 +1,8 @@
 ---
+# Generated — edit skill.json and SKILL.body.md instead.
 name: debugging
 description: >
-  Use this skill when encountering any bug, test failure, or unexpected behaviour — before proposing a fix.
-  Covers root-cause investigation, hypothesis testing, and minimal targeted fixes for Vue/Vite/Vitest
-  and Swift/SwiftUI projects.
+  Use this skill when encountering any bug, test failure, or unexpected behaviour — before proposing a fix. Covers root-cause investigation, hypothesis testing, and minimal targeted fixes for Vue/Vite/Vitest and Swift/SwiftUI projects.
 do-not-use-when:
   - The user is asking a general question unrelated to a specific failure
   - You have already identified the root cause and are ready to implement
@@ -13,7 +12,6 @@ related-skills:
   - vite-patterns
   - swift
 ---
-
 # Debugging
 
 **Root cause first. Always.** Proposing a fix before finding the cause is guessing — it wastes time and creates new bugs.

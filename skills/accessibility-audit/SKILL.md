@@ -1,10 +1,8 @@
 ---
+# Generated — edit skill.json and SKILL.body.md instead.
 name: accessibility-audit
 description: >
-  Use this skill when conducting an accessibility audit of a page, component, or PR — distinct from
-  building accessibly (use the accessibility skill for that). Two modes: quick PR triage or full
-  client audit. Triggers: "audit for accessibility", "a11y check", "WCAG compliance", "is this
-  accessible?", preparing a client accessibility report.
+  Use this skill when conducting an accessibility audit of a page, component, or PR — distinct from building accessibly (use the accessibility skill for that). Two modes: quick PR triage or full client audit. Triggers: "audit for accessibility", "a11y check", "WCAG compliance", "is this accessible?", preparing a client accessibility report.
 do-not-use-when:
   - Building or fixing a component (use the accessibility skill for guidance)
   - A general UI design review with no accessibility scope
@@ -13,7 +11,6 @@ related-skills:
   - accessibility
   - ui-copy
 ---
-
 # Accessibility audit
 
 WCAG 2.2 AA baseline; AAA where feasible. Two modes — choose by context.

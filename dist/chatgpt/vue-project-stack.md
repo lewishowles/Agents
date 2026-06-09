@@ -1,4 +1,5 @@
 ---
+# Generated — edit skill.json and SKILL.body.md instead.
 name: vue-project-stack
 description: >
   Use this skill when working in a Vue project that uses the wider Lewis Howles stack. Covers the chosen tools (Vue 3 with script setup, Tailwind, Vitest, Bun, Gitflow, GitHub Pages) with the *why* for each so suggestions can flag outdated choices, plus the @lewishowles/helpers and @lewishowles/components libraries that replace common packages.
@@ -7,7 +8,6 @@ related-skills:
   - code-style
   - dependencies
 ---
-
 # Vue project stack
 
 Stack used across Vue projects. Each choice has *why*. Better option emerges or tool goes stale — rationale tells you if original reason holds, whether to suggest alternative.

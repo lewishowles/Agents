@@ -1,10 +1,8 @@
 ---
+# Generated — edit skill.json and SKILL.body.md instead.
 name: refactoring
 description: >
-  Use this skill when refactoring existing code or triaging technical debt. Covers behaviour-preserving
-  refactoring technique (one change at a time, tests pass at every step), and a lightweight debt
-  categorisation and prioritisation approach. Distinct from debugging (fixing a bug) and from new
-  feature work.
+  Use this skill when refactoring existing code or triaging technical debt. Covers behaviour-preserving refactoring technique (one change at a time, tests pass at every step), and a lightweight debt categorisation and prioritisation approach. Distinct from debugging (fixing a bug) and from new feature work.
 do-not-use-when:
   - Fixing a bug — use the debugging skill
   - Adding new behaviour — that is feature work, not refactoring
@@ -14,7 +12,6 @@ related-skills:
   - unit-testing
   - debugging
 ---
-
 # Refactoring
 
 **Refactoring changes structure, not behaviour.** Tests must pass before the first change and after every subsequent step. If a step breaks tests, revert it — don't pile on more changes.

@@ -1,9 +1,8 @@
 ---
+# Generated — edit skill.json and SKILL.body.md instead.
 name: code-review
 description: >
-  Use this skill when reviewing code — a PR, a diff, or an individual file — or when receiving
-  review feedback. Applies your conventions (accessibility, code-style, error-handling,
-  frontend-security, web-performance) as a checklist, and covers how to give and receive feedback.
+  Use this skill when reviewing code — a PR, a diff, or an individual file — or when receiving review feedback. Applies your conventions (accessibility, code-style, error-handling, frontend-security, web-performance) as a checklist, and covers how to give and receive feedback.
 do-not-use-when:
   - Writing new code (apply the relevant stack skills instead)
   - A general question about code quality with no specific diff to review
@@ -14,7 +13,6 @@ related-skills:
   - frontend-security
   - web-performance
 ---
-
 # Code review
 
 Reviews are collaborative improvement, not gatekeeping. Feedback should be specific, actionable, and grounded in the code — not vague or judgemental.

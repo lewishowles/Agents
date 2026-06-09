@@ -1,14 +1,9 @@
 ---
+# Generated — edit skill.json and SKILL.body.md instead.
 name: code-style
 description: >
   Use this skill on every code change — even small snippets. Covers tabs vs spaces, quote style, semicolons, naming conventions, JSDoc comments, and documentation patterns. This is the baseline style guide for all code.
-related-skills:
-  - vue
-  - vue-project-stack
-  - swift
-  - typescript
 ---
-
 # Code style
 
 **Baseline for all code, all projects, all languages.** Working in specific language/framework: also consult language skill: `/vue` for Vue, `/swift` for Swift, `/typescript` for TypeScript. Those extend code-style with language patterns; code-style = foundation.

@@ -1,11 +1,11 @@
 ---
+# Generated — edit skill.json and SKILL.body.md instead.
 name: continue-project
 description: >
-  Use this skill to resume work from an existing PROGRESS.md — compacts stale
-  notes, verifies completed work, and picks up from where the last session
-  left off.
+  Use this skill to resume work from an existing PROGRESS.md — compacts stale notes, verifies completed work, and picks up from where the last session left off.
+related-skills:
+  - compact-progress
 ---
-
 # Continue project
 
 Use this skill to resume work from an existing `PROGRESS.md`. Treats the document as a living record — not a perfect source of truth — and updates it as the session progresses.

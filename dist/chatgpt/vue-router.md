@@ -1,4 +1,5 @@
 ---
+# Generated — edit skill.json and SKILL.body.md instead.
 name: vue-router
 description: >
   Use this skill when working with Vue Router routes, navigation guards, params, query strings, layouts, redirects, or route-driven state. Covers async guards, same-route param updates, side-effect cleanup, and the boundary between router state and component state.
@@ -7,7 +8,6 @@ related-skills:
   - vue-project-stack
   - accessibility
 ---
-
 # Vue Router
 
 Use Vue Router for production Vue SPAs and route-driven state. Keep URL state meaningful for shareable views: filters, tabs, pagination, selected records, and search where appropriate.

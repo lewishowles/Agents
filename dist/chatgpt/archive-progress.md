@@ -1,10 +1,11 @@
 ---
+# Generated — edit skill.json and SKILL.body.md instead.
 name: archive-progress
 description: >
-  Use this skill to reduce the size of a long-running PROGRESS.md by moving
-  completed sections into an archived milestones block at the bottom.
+  Use this skill to reduce the size of a long-running PROGRESS.md by moving completed sections into an archived milestones block at the bottom.
+related-skills:
+  - compact-progress
 ---
-
 # Archive progress
 
 Use this skill to reduce the size of a long-running `PROGRESS.md` by moving completed sections into an `## Archived milestones` block. Keeps active work small and easy to scan without losing the project history.

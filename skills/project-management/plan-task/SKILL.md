@@ -1,11 +1,9 @@
 ---
+# Generated — edit skill.json and SKILL.body.md instead.
 name: plan-task
 description: >
-  Use this skill to introduce new work into an existing plan — discusses
-  requirements and inserts a new section at the appropriate location, not
-  simply at the end.
+  Use this skill to introduce new work into an existing plan — discusses requirements and inserts a new section at the appropriate location, not simply at the end.
 ---
-
 # Plan task
 
 Use this skill to introduce new work into an existing plan. Inserts the work at the most appropriate location — not necessarily the end — and reorganises future sections if understanding has changed.

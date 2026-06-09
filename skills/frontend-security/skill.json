@@ -16,6 +16,10 @@
     "sanitise",
     "csrf"
   ],
+  "do-not-use-when": [
+    "Writing server-side code, API routes, or database queries",
+    "A general code review with no security implications"
+  ],
   "filePatterns": [],
   "pathPatterns": [],
   "dependencies": ["error-handling", "vue", "vite-patterns"],

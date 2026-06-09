@@ -1,8 +1,9 @@
 ---
+# Generated — edit skill.json and SKILL.body.md instead.
 name: codebase-memory
-description: Use this skill when answering structural code queries with the codebase knowledge graph, including architecture, callers, dependencies, impact analysis, dead code, graph query syntax, Cypher examples, edge types, and search_graph usage.
+description: >
+  Use this skill when answering structural code queries with the codebase knowledge graph, including architecture, callers, dependencies, impact analysis, dead code, graph query syntax, Cypher examples, edge types, and search_graph usage.
 ---
-
 # Codebase Memory — Knowledge Graph Tools
 
 Graph tools return precise structural results in ~500 tokens vs ~80K for grep.

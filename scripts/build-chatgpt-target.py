@@ -6,7 +6,7 @@ Reads skills/*/SKILL.md, extracts frontmatter, and writes:
   dist/chatgpt/<name>.md       — verbatim copy of each SKILL.md
 """
 
-import re
+import json
 import shutil
 from pathlib import Path
 
@@ -16,54 +16,21 @@ TARGET_DIR = REPO_DIR / "dist" / "chatgpt"
 SOURCE_DIR = TARGET_DIR / "source"
 
 
-def parse_frontmatter(text):
-	"""Extract name, description, related-skills, and do-not-use-when from SKILL.md frontmatter."""
-	lines = text.split("\n")
-	if not lines or lines[0].strip() != "---":
+def load_manifest(skill_dir: Path) -> dict:
+	"""Read skill.json and normalise to the shape build_skill_entry expects."""
+	manifest_file = skill_dir / "skill.json"
+	if not manifest_file.exists():
 		return {}
-
-	try:
-		end = next(i for i, line in enumerate(lines[1:], 1) if line.strip() == "---")
-	except StopIteration:
-		return {}
-
-	fm = "\n".join(lines[1:end])
-	result = {}
-
-	m = re.search(r"^name:\s*(.+)$", fm, re.MULTILINE)
-	if m:
-		result["name"] = m.group(1).strip()
-
-	# Folded scalar (>) — join continuation lines with spaces
-	m = re.search(r"^description:\s*>\s*\n((?:[ \t]+\S.*\n?)+)", fm, re.MULTILINE)
-	if m:
-		desc_lines = [line.strip() for line in m.group(1).splitlines() if line.strip()]
-		result["description"] = " ".join(desc_lines)
-	else:
-		m = re.search(r"^description:\s*(.+)$", fm, re.MULTILINE)
-		if m:
-			result["description"] = m.group(1).strip()
-
-	m = re.search(r"^related-skills:\s*\n((?:[ \t]+-[ \t]+\S.*\n?)+)", fm, re.MULTILINE)
-	if m:
-		result["related-skills"] = [
-			re.sub(r"^[ \t]+-[ \t]+", "", line)
-			for line in m.group(1).splitlines()
-			if line.strip().startswith("-")
-		]
-
-	m = re.search(r"^do-not-use-when:\s*\n((?:[ \t]+-[ \t]+.*\n?)+)", fm, re.MULTILINE)
-	if m:
-		result["do-not-use-when"] = [
-			re.sub(r"^[ \t]+-[ \t]+", "", line)
-			for line in m.group(1).splitlines()
-			if line.strip().startswith("-")
-		]
-
-	return result
+	data = json.loads(manifest_file.read_text())
+	return {
+		"name": data.get("name", skill_dir.name),
+		"description": data.get("description", ""),
+		"do-not-use-when": data.get("do-not-use-when", []),
+		"related-skills": data.get("dependencies", []),
+	}
 
 
-def build_skill_entry(fm, skill_name):
+def build_skill_entry(fm: dict, skill_name: str) -> str:
 	"""Build a SKILLS.md section for a single skill."""
 	lines = [f"### {skill_name}"]
 
@@ -108,8 +75,7 @@ def main():
 		if not skill_file.exists():
 			continue
 
-		content = skill_file.read_text()
-		fm = parse_frontmatter(content)
+		fm = load_manifest(skill_dir)
 		name = fm.get("name") or skill_dir.name
 
 		shutil.copy2(skill_file, TARGET_DIR / f"{name}.md")

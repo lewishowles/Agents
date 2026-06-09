@@ -1,10 +1,8 @@
 ---
+# Generated — edit skill.json and SKILL.body.md instead.
 name: frontend-security
 description: >
-  Use this skill when writing or reviewing client-side code for security implications. Covers XSS
-  prevention, Content Security Policy, safe v-html usage, authentication token handling, secrets
-  hygiene, and dependency security for Vue/TypeScript projects. Apply proactively when handling
-  user input, rendering dynamic content, or managing auth state.
+  Use this skill when writing or reviewing client-side code for security implications. Covers XSS prevention, Content Security Policy, safe v-html usage, authentication token handling, secrets hygiene, and dependency security for Vue/TypeScript projects. Apply proactively when handling user input, rendering dynamic content, or managing auth state.
 do-not-use-when:
   - Writing server-side code, API routes, or database queries
   - A general code review with no security implications
@@ -13,7 +11,6 @@ related-skills:
   - vue
   - vite-patterns
 ---
-
 # Frontend security
 
 ## XSS prevention

@@ -1,11 +1,9 @@
 ---
+# Generated — edit skill.json and SKILL.body.md instead.
 name: setup-project
 description: >
-  Use this skill to start a new project or feature — explores the repo, asks
-  clarifying questions, and creates an initial PROGRESS.md before any
-  implementation begins.
+  Use this skill to start a new project or feature — explores the repo, asks clarifying questions, and creates an initial PROGRESS.md before any implementation begins.
 ---
-
 # Setup project
 
 Use this skill to start a new project or feature with a solid foundation. Creates an initial `PROGRESS.md` after exploration and discussion — do not begin implementation until the plan is reviewed.

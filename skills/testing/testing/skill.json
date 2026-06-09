@@ -10,6 +10,10 @@
     "tdd",
     "test-driven"
   ],
+  "do-not-use-when": [
+    "Writing the actual test code — use unit-testing or e2e-testing",
+    "Debugging a failing test — use debugging"
+  ],
   "filePatterns": [],
   "pathPatterns": [],
   "dependencies": ["unit-testing", "e2e-testing", "debugging", "refactoring"],

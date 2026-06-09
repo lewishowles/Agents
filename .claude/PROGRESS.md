@@ -101,10 +101,11 @@ Phases 0–9 complete. Summary:
 
 **Commit:** `feat(skills): add skill.json manifests to all skills`
 
-- [ ] **12b.1** Strip YAML frontmatter from each `SKILL.md`; save body as `SKILL.body.md`
-- [ ] **12b.2** Update `scripts/sync.sh` to generate `SKILL.md` from `skill.json` + `SKILL.body.md`
-- [ ] **12b.3** Update `scripts/build-chatgpt-target.py` to use same generation
-- [ ] **12b.4** Add generated file marker to `SKILL.md` (comment or `.gitattributes`)
+- [x] **12b.1** Add `do-not-use-when` to 7 `skill.json` files; bootstrap `SKILL.body.md` by stripping frontmatter from existing `SKILL.md`
+- [x] **12b.2** Write `scripts/build-skill-mds.py`; call from `sync.sh` as first build step
+- [x] **12b.3** Update `scripts/build-chatgpt-target.py` to read from `skill.json` instead of parsing `SKILL.md` frontmatter
+- [x] **12b.4** `# Generated` comment in every `SKILL.md`; `.gitattributes` marks `skills/*/SKILL.md` as generated
+- [x] **12b.5** Update `scripts/sync-external-skills.sh` to write stripped body to `SKILL.body.md`
 
 **Commit:** `refactor(build): split SKILL.body.md from SKILL.md; generate SKILL.md via sync.sh`
 

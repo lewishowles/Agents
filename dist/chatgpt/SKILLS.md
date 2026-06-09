@@ -30,7 +30,6 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 
 ### code-style
 **When to use:** Use this skill on every code change — even small snippets. Covers tabs vs spaces, quote style, semicolons, naming conventions, JSDoc comments, and documentation patterns. This is the baseline style guide for all code.
-**Combine with:** vue, vue-project-stack, swift, typescript
 
 ### codebase-memory
 **When to use:** Use this skill when answering structural code queries with the codebase knowledge graph, including architecture, callers, dependencies, impact analysis, dead code, graph query syntax, Cypher examples, edge types, and search_graph usage.
@@ -53,12 +52,14 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 
 ### archive-progress
 **When to use:** Use this skill to reduce the size of a long-running PROGRESS.md by moving completed sections into an archived milestones block at the bottom.
+**Combine with:** compact-progress
 
 ### compact-progress
 **When to use:** Use this skill to refactor a growing PROGRESS.md — removes noise, preserves decisions and discoveries, and rewrites active sections for clarity.
 
 ### continue-project
 **When to use:** Use this skill to resume work from an existing PROGRESS.md — compacts stale notes, verifies completed work, and picks up from where the last session left off.
+**Combine with:** compact-progress
 
 ### plan-task
 **When to use:** Use this skill to introduce new work into an existing plan — discusses requirements and inserts a new section at the appropriate location, not simply at the end.
@@ -102,6 +103,7 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 
 ### pinia-colada
 **When to use:** Use this skill when working with @pinia/colada for async data fetching and server state in Vue projects. TRIGGER when: code imports from `@pinia/colada`, uses `useQuery`, `useMutation`, `defineQuery`, `defineMutation`, `useQueryCache`, or `invalidateQueries`; when setting up async data fetching in a Vue project; when working in `src/queries/`.
+**Combine with:** vue, vue-project-stack, pinia
 
 ### vite-patterns
 **When to use:** Use this skill when configuring vite.config.ts, managing environment variables, or troubleshooting build/dev server issues. Covers config structure, environment variables, security boundaries, library mode, dev vs build differences, and common pitfalls.
@@ -120,9 +122,7 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 
 ### vueuse-functions
 **When to use:** Apply VueUse composables where appropriate to build concise, maintainable Vue.js / Nuxt features.
-
-### vueuse-functions
-**When to use:** Apply VueUse composables where appropriate to build concise, maintainable Vue.js / Nuxt features.
+**Combine with:** vue, vue-project-stack
 
 ### web-performance
 **When to use:** Use this skill when optimising runtime performance, Core Web Vitals, bundle size, or asset loading for Vue/Vite projects — including GitHub Pages deployments. Covers LCP, CLS, INP, Vue reactivity cost, code splitting, images, fonts, and measurement. Distinct from vite-patterns (build config) and accessibility (which covers prefers-reduced-motion).
@@ -130,10 +130,12 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 **Combine with:** vite-patterns, vue, accessibility
 
 ### readme
-**When to use:** Use this skill when writing or editing a README file (README.md or similar). Covers what belongs in a README, what doesn't, structure, and the "no fluff that doesn't help the average reader" principle — example: a bash script for macOS shouldn't mention Windows alternatives that don't exist. Pair with the writing skill for voice and tone baselines.
+**When to use:** Use this skill when writing or editing a README file (README.md or similar). Covers what belongs in a README, what doesn't, structure, and the "no fluff that doesn't help the average reader" principle. Pair with the writing skill for voice and tone baselines.
+**Combine with:** writing
 
 ### ui-copy
 **When to use:** Use this skill when writing UI microcopy — button labels, error messages, empty states, tooltips, CTAs, form helper text, confirmation dialogs. Covers being specific and action-oriented, surfacing useful context, and avoiding vague filler. Pair with the writing skill for voice baselines and the accessibility skill for screen-reader-friendly phrasing.
+**Combine with:** writing
 
 ### writing
 **When to use:** Use this skill when writing or editing prose — blog posts, documentation, longform content, marketing copy. Covers voice, tone, structure, examples, language conventions (UK spelling, sentence case, em-dashes), and what to avoid (preachy tone, padding, opening summaries). For README files specifically, see the readme skill. For UI microcopy (buttons, error messages, empty states), see the ui-copy skill.

@@ -1,9 +1,11 @@
 ---
+# Generated — edit skill.json and SKILL.body.md instead.
 name: readme
 description: >
-  Use this skill when writing or editing a README file (README.md or similar). Covers what belongs in a README, what doesn't, structure, and the "no fluff that doesn't help the average reader" principle — example: a bash script for macOS shouldn't mention Windows alternatives that don't exist. Pair with the writing skill for voice and tone baselines.
+  Use this skill when writing or editing a README file (README.md or similar). Covers what belongs in a README, what doesn't, structure, and the "no fluff that doesn't help the average reader" principle. Pair with the writing skill for voice and tone baselines.
+related-skills:
+  - writing
 ---
-
 # README
 
 README job: help person who just landed — what is it, why exist, how use. Quick-start guide, not marketing page.

@@ -9,6 +9,11 @@
     "is this accessible",
     "accessibility report"
   ],
+  "do-not-use-when": [
+    "Building or fixing a component (use the accessibility skill for guidance)",
+    "A general UI design review with no accessibility scope",
+    "No UI, design artefacts, or code to review"
+  ],
   "filePatterns": [],
   "pathPatterns": [],
   "dependencies": ["accessibility", "ui-copy"],

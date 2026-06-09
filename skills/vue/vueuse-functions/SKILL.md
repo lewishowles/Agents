@@ -1,13 +1,12 @@
 ---
+# Generated — edit skill.json and SKILL.body.md instead.
 name: vueuse-functions
-description: Apply VueUse composables where appropriate to build concise, maintainable Vue.js / Nuxt features.
-license: MIT
-metadata:
-    author: SerKo <https://github.com/serkodev>
-    version: "1.0"
-compatibility: Requires Vue 3 (or above) or Nuxt 3 (or above) project
+description: >
+  Apply VueUse composables where appropriate to build concise, maintainable Vue.js / Nuxt features.
+related-skills:
+  - vue
+  - vue-project-stack
 ---
-
 # VueUse Functions
 
 This skill is a decision-and-implementation guide for VueUse composables in Vue.js / Nuxt projects. It maps requirements to the most suitable VueUse function, applies the correct usage pattern, and prefers composable-based solutions over bespoke code to keep implementations concise, maintainable, and performant.

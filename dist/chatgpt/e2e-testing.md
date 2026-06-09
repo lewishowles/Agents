@@ -1,4 +1,5 @@
 ---
+# Generated — edit skill.json and SKILL.body.md instead.
 name: e2e-testing
 description: >
   Use this skill when writing, reviewing, or planning end-to-end and browser-based component tests with Playwright or Cypress. It guides agents through user-focused browser automation, interaction coverage, test structure, selector strategy, and CI setup. For isolated logic or rendering checks that do not need a browser, use the unit-testing skill instead.
@@ -7,7 +8,6 @@ related-skills:
   - unit-testing
   - vue-project-stack
 ---
-
 # End-to-end testing
 
 E2E and component tests verify what users see and experience in a real browser. Playwright is the current standard for new projects; Cypress is used in many existing projects and should be respected where already in place.

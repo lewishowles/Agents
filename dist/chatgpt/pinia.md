@@ -1,4 +1,5 @@
 ---
+# Generated — edit skill.json and SKILL.body.md instead.
 name: pinia
 description: >
   Use this skill when working with Pinia client-side stores in Vue projects. Covers setup stores, state/getter/action usage, storeToRefs, SSR-safe access, HMR, testing with @pinia/testing, and the boundary between Pinia, Pinia Colada, and VueUse.
@@ -7,7 +8,6 @@ related-skills:
   - vue-project-stack
   - unit-testing
 ---
-
 # Pinia
 
 Pinia is for app state: UI state, user preferences, cross-page flags, and client-owned data. Use Pinia Colada for server state.

@@ -1,10 +1,8 @@
 ---
+# Generated — edit skill.json and SKILL.body.md instead.
 name: web-performance
 description: >
-  Use this skill when optimising runtime performance, Core Web Vitals, bundle size, or asset loading
-  for Vue/Vite projects — including GitHub Pages deployments. Covers LCP, CLS, INP, Vue reactivity
-  cost, code splitting, images, fonts, and measurement. Distinct from vite-patterns (build config)
-  and accessibility (which covers prefers-reduced-motion).
+  Use this skill when optimising runtime performance, Core Web Vitals, bundle size, or asset loading for Vue/Vite projects — including GitHub Pages deployments. Covers LCP, CLS, INP, Vue reactivity cost, code splitting, images, fonts, and measurement. Distinct from vite-patterns (build config) and accessibility (which covers prefers-reduced-motion).
 do-not-use-when:
   - Configuring the Vite build — use vite-patterns
   - Writing animation or transition code — check accessibility for reduced-motion first
@@ -13,7 +11,6 @@ related-skills:
   - vue
   - accessibility
 ---
-
 # Web performance
 
 ## Core Web Vitals targets

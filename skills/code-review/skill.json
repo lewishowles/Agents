@@ -10,6 +10,10 @@
     "review this",
     "review the"
   ],
+  "do-not-use-when": [
+    "Writing new code (apply the relevant stack skills instead)",
+    "A general question about code quality with no specific diff to review"
+  ],
   "filePatterns": [],
   "pathPatterns": [],
   "dependencies": [

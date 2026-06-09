@@ -1,9 +1,9 @@
 ---
+# Generated — edit skill.json and SKILL.body.md instead.
 name: dependencies
 description: >
   Use this skill whenever a package installation, npm/bun add, or new dependency is mentioned or considered — even if just suggesting a library. Covers when to add packages, what to avoid, the @lewishowles/helpers and @lewishowles/components libraries that replace common packages, and when to discuss before installing.
 ---
-
 # Dependencies
 
 ## When to add packages
