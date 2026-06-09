@@ -55,6 +55,17 @@ write_target() {
 
 python3 "$REPO_DIR/scripts/build-skill-mds.py"
 
+mkdir -p "$REPO_DIR/dist/claude/hooks"
+
+for hook_dir in "$REPO_DIR/hooks/claude/"/*/; do
+	[ -d "$hook_dir" ] || continue
+	for script in "$hook_dir"*; do
+		[ -f "$script" ] || continue
+		[[ "$(basename "$script")" == "hook.json" ]] && continue
+		cp "$script" "$REPO_DIR/dist/claude/hooks/$(basename "$script")"
+	done
+done
+
 write_target "$CLAUDE_TARGET" "${CLAUDE_PARTS[@]}"
 write_target "$CODEX_TARGET" "${CODEX_PARTS[@]}"
 

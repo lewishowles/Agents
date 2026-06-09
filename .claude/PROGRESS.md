@@ -118,8 +118,8 @@ Phases 0–9 complete. Summary:
 
 **Commit:** `feat(hooks): add hook.json manifests and move hook source to hooks/claude/<name>/`
 
-- [ ] **13b.1** Update `scripts/sync.sh` to copy `hooks/claude/<name>/<name>.sh` → `dist/claude/hooks/<name>.sh`
-- [ ] **13b.2** Remove hook scripts from `dist/claude/hooks/` as authored files
+- [x] **13b.1** Update `scripts/sync.sh` to copy `hooks/claude/<name>/<name>.sh` → `dist/claude/hooks/<name>.sh`
+- [x] **13b.2** Remove hook scripts from `dist/claude/hooks/` as authored files
 
 **Commit:** `refactor(build): generate dist/claude/hooks/ from hooks/claude/ source in sync.sh`
 
