@@ -52,7 +52,7 @@ run_hook() {
 
 	printf '{"tool_input":{"file_path":"%s"}}' "$file_path" | (
 		cd "$project_dir"
-		bash "$REPO_DIR/targets/claude/hooks/test-skeleton-reminder.sh"
+		bash "$REPO_DIR/dist/claude/hooks/test-skeleton-reminder.sh"
 	) > "$output_file"
 }
 

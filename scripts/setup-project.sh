@@ -94,7 +94,7 @@ setup_codex() {
 setup_both() {
 	printf '\n→ Setting up Claude + Codex (project)\n\n'
 
-	copy_file "$REPO_DIR/templates/shared/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
+	copy_file "$REPO_DIR/templates/rules/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
 	copy_claude_support_files
 }
 

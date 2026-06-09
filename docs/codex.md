@@ -18,12 +18,12 @@ Codex reads `AGENTS.md` before work starts. The official discovery order is:
 
 Later files appear later in the combined prompt, so deeper project guidance overrides broader guidance.
 
-This repo links `~/.agents/AGENTS.md` and `~/.codex/AGENTS.md` to `targets/codex/AGENTS.md`.
+This repo links `~/.agents/AGENTS.md` and `~/.codex/AGENTS.md` to `dist/codex/AGENTS.md`.
 
 Project setup creates a root `AGENTS.md` using one of:
 
 - `templates/codex/AGENTS.md.template`
-- `templates/shared/AGENTS.md.template`
+- `templates/rules/AGENTS.md.template`
 
 ## Config
 
@@ -63,4 +63,4 @@ Skill matching is description-driven. Keep frontmatter descriptions specific, ac
 
 Codex hooks are configured through `hooks.json` next to active config layers or inline `[hooks]` tables in `config.toml`. The official Codex hook events include `SessionStart`, `PreToolUse`, `PermissionRequest`, `PostToolUse`, `UserPromptSubmit`, and `Stop`.
 
-Codex hook parity is intentionally out of scope for the current repo phase. The Claude hooks remain in `targets/claude/hooks/`; Codex relies on skill descriptions and `AGENTS.md` guidance until dedicated Codex hooks are added.
+Codex hook parity is intentionally out of scope for the current repo phase. The Claude hooks remain in `dist/claude/hooks/`; Codex relies on skill descriptions and `AGENTS.md` guidance until dedicated Codex hooks are added.

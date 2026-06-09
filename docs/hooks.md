@@ -2,7 +2,7 @@
 
 These hooks are Claude-only. Codex has its own hook system, documented in [docs/codex.md](codex.md), but parity is out of scope for the current repo phase. For Codex, skill descriptions and `AGENTS.md` carry the discovery weight.
 
-Hooks are shell scripts that Claude Code runs automatically at specific points in a session. They're registered in `targets/claude/settings.json` under the `hooks` key and live in `targets/claude/hooks/`.
+Hooks are shell scripts that Claude Code runs automatically at specific points in a session. They're registered in `dist/claude/settings.json` under the `hooks` key and live in `dist/claude/hooks/`.
 
 ## Registered hooks
 
@@ -125,8 +125,8 @@ To invoke a skill manually: type `/skill-name` in Claude Code (e.g. `/vue`, `/ty
 
 ## Adding a new hook
 
-1. Create the script in `targets/claude/hooks/` — make it executable (`chmod +x`)
-2. Register it in `targets/claude/settings.json` under the appropriate event key
+1. Create the script in `dist/claude/hooks/` — make it executable (`chmod +x`)
+2. Register it in `dist/claude/settings.json` under the appropriate event key
 3. Document it in the table above
 
 Event types supported by Claude Code: `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `Stop`, `SessionStart`.

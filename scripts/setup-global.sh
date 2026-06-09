@@ -105,9 +105,9 @@ setup_claude() {
 	ensure_container_dir "$HOME/.claude/hooks" "hooks"
 	ensure_container_dir "$HOME/.claude/commands" "commands"
 
-	link_path "$REPO_DIR/targets/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md" "CLAUDE.md"
-	link_path "$REPO_DIR/targets/claude/settings.json" "$HOME/.claude/settings.json" "settings.json"
-	link_path "$REPO_DIR/targets/claude/.mcp.json" "$HOME/.claude/.mcp.json" ".mcp.json"
+	link_path "$REPO_DIR/dist/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md" "CLAUDE.md"
+	link_path "$REPO_DIR/dist/claude/settings.json" "$HOME/.claude/settings.json" "settings.json"
+	link_path "$REPO_DIR/dist/claude/.mcp.json" "$HOME/.claude/.mcp.json" ".mcp.json"
 
 	# Link each skill and hook individually so plugin-installed items can coexist.
 	local skill
@@ -117,13 +117,13 @@ setup_claude() {
 	done
 
 	local hook
-	for hook in "$REPO_DIR"/targets/claude/hooks/*; do
+	for hook in "$REPO_DIR"/dist/claude/hooks/*; do
 		[ -f "$hook" ] || continue
 		link_path "$hook" "$HOME/.claude/hooks/$(basename "$hook")" "hooks/$(basename "$hook")"
 	done
 
 	local command
-	for command in "$REPO_DIR"/targets/claude/commands/*; do
+	for command in "$REPO_DIR"/dist/claude/commands/*; do
 		[ -f "$command" ] || continue
 		link_path "$command" "$HOME/.claude/commands/$(basename "$command")" "commands/$(basename "$command")"
 	done
@@ -136,8 +136,8 @@ setup_codex() {
 	ensure_container_dir "$HOME/.agents/skills" "~/.agents/skills"
 	ensure_container_dir "$HOME/.codex" "~/.codex"
 
-	link_path "$REPO_DIR/targets/codex/AGENTS.md" "$HOME/.agents/AGENTS.md" "AGENTS.md"
-	link_path "$REPO_DIR/targets/codex/AGENTS.md" "$HOME/.codex/AGENTS.md" "Codex AGENTS.md"
+	link_path "$REPO_DIR/dist/codex/AGENTS.md" "$HOME/.agents/AGENTS.md" "AGENTS.md"
+	link_path "$REPO_DIR/dist/codex/AGENTS.md" "$HOME/.codex/AGENTS.md" "Codex AGENTS.md"
 	ensure_codex_config
 
 	# Keep legacy ~/.agents wiring and current Codex ~/.codex instructions in sync.

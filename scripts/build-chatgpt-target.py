@@ -2,8 +2,8 @@
 """Generate ChatGPT target files from skill frontmatter.
 
 Reads skills/*/SKILL.md, extracts frontmatter, and writes:
-  targets/chatgpt/SKILLS.md       — index assembled from source/instructions.md + skill entries
-  targets/chatgpt/<name>.md       — verbatim copy of each SKILL.md
+  dist/chatgpt/SKILLS.md       — index assembled from source/instructions.md + skill entries
+  dist/chatgpt/<name>.md       — verbatim copy of each SKILL.md
 """
 
 import re
@@ -12,7 +12,7 @@ from pathlib import Path
 
 REPO_DIR = Path(__file__).resolve().parent.parent
 SKILLS_DIR = REPO_DIR / "skills"
-TARGET_DIR = REPO_DIR / "targets" / "chatgpt"
+TARGET_DIR = REPO_DIR / "dist" / "chatgpt"
 SOURCE_DIR = TARGET_DIR / "source"
 
 

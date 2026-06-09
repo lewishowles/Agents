@@ -8,10 +8,10 @@ The included scripts generate the target files each tool expects for global and 
 
 ## What's inside
 
-- `shared/` - source fragments used by both Claude and Codex
-- `targets/claude/` - generated `CLAUDE.md`, Claude settings, hooks, and Claude-only source fragments
-- `targets/codex/` - generated `AGENTS.md` and Codex-only source fragments
-- `targets/chatgpt/` - generated `SKILLS.md` index and per-skill files for upload to a ChatGPT Custom GPT knowledge base
+- `rules/` - source fragments used by both Claude and Codex
+- `dist/claude/` - generated `CLAUDE.md`, Claude settings, hooks, and Claude-only source fragments
+- `dist/codex/` - generated `AGENTS.md` and Codex-only source fragments
+- `dist/chatgpt/` - generated `SKILLS.md` index and per-skill files for upload to a ChatGPT Custom GPT knowledge base
 - `skills/` - user skills, each as a folder containing `SKILL.md`
 - `external-skills.json` - official upstream skills synced into `skills/`
 - `scripts/` - sync and setup scripts
@@ -31,13 +31,13 @@ Use `--claude` or `--codex` to configure one runtime only. With no flag, the scr
 
 The global setup script syncs official external skills, runs `scripts/sync.sh`, then links:
 
-- `~/.claude/CLAUDE.md` to `targets/claude/CLAUDE.md`
-- `~/.claude/settings.json` to `targets/claude/settings.json`
-- `~/.claude/.mcp.json` to `targets/claude/.mcp.json`
+- `~/.claude/CLAUDE.md` to `dist/claude/CLAUDE.md`
+- `~/.claude/settings.json` to `dist/claude/settings.json`
+- `~/.claude/.mcp.json` to `dist/claude/.mcp.json`
 - `~/.claude/skills/<name>` to `skills/<name>`
-- `~/.claude/hooks/<file>` to `targets/claude/hooks/<file>`
-- `~/.agents/AGENTS.md` to `targets/codex/AGENTS.md`
-- `~/.codex/AGENTS.md` to `targets/codex/AGENTS.md`
+- `~/.claude/hooks/<file>` to `dist/claude/hooks/<file>`
+- `~/.agents/AGENTS.md` to `dist/codex/AGENTS.md`
+- `~/.codex/AGENTS.md` to `dist/codex/AGENTS.md`
 - `~/.agents/skills/<name>` to `skills/<name>`
 
 It also ensures `~/.codex/config.toml` has the `codebase-memory-mcp` MCP server entry.
@@ -52,11 +52,11 @@ scripts/setup-global.sh --both --skip-external
 
 ## ChatGPT setup
 
-ChatGPT doesn't support automatic skill loading, so the setup is manual. After running `scripts/sync.sh`, the `targets/chatgpt/` directory contains everything you need.
+ChatGPT doesn't support automatic skill loading, so the setup is manual. After running `scripts/sync.sh`, the `dist/chatgpt/` directory contains everything you need.
 
-**System prompt** — paste the contents of `targets/chatgpt/INSTRUCTIONS.md` into your Custom GPT's system prompt (or into ChatGPT's custom instructions).
+**System prompt** — paste the contents of `dist/chatgpt/INSTRUCTIONS.md` into your Custom GPT's system prompt (or into ChatGPT's custom instructions).
 
-**Knowledge base** — upload all the other files in `targets/chatgpt/` to the Custom GPT's knowledge base: `SKILLS.md` plus one `.md` file per skill.
+**Knowledge base** — upload all the other files in `dist/chatgpt/` to the Custom GPT's knowledge base: `SKILLS.md` plus one `.md` file per skill.
 
 Once uploaded, you can reference skills explicitly or let ChatGPT retrieve them automatically:
 

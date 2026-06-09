@@ -88,7 +88,7 @@ run_hook() {
 
 	(
 		cd "$project_dir"
-		HOME="$home_dir" PATH="$bin_dir:$PATH" bash "$REPO_DIR/targets/claude/hooks/pre-stop-checks.sh" >/dev/null 2>/dev/null
+		HOME="$home_dir" PATH="$bin_dir:$PATH" bash "$REPO_DIR/dist/claude/hooks/pre-stop-checks.sh" >/dev/null 2>/dev/null
 	)
 }
 

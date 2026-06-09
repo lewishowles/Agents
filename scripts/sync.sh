@@ -9,29 +9,29 @@ REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 
 source "$REPO_DIR/scripts/lib/colours.sh"
 
-CLAUDE_TARGET="$REPO_DIR/targets/claude/CLAUDE.md"
-CODEX_TARGET="$REPO_DIR/targets/codex/AGENTS.md"
+CLAUDE_TARGET="$REPO_DIR/dist/claude/CLAUDE.md"
+CODEX_TARGET="$REPO_DIR/dist/codex/AGENTS.md"
 
-mkdir -p "$REPO_DIR/targets/claude" "$REPO_DIR/targets/codex"
+mkdir -p "$REPO_DIR/dist/claude" "$REPO_DIR/dist/codex"
 
 # Target files are composed from editable fragments, not embedded prose.
 CLAUDE_PARTS=(
-	"$REPO_DIR/targets/claude/source/header.md"
-	"$REPO_DIR/shared/global-rules.md"
-	"$REPO_DIR/shared/identity.md"
-	"$REPO_DIR/shared/skills-policy.md"
-	"$REPO_DIR/shared/file-discovery.md"
-	"$REPO_DIR/targets/claude/source/global-skills.md"
-	"$REPO_DIR/targets/claude/source/codebase-memory.md"
+	"$REPO_DIR/dist/claude/source/header.md"
+	"$REPO_DIR/rules/global-rules.md"
+	"$REPO_DIR/rules/identity.md"
+	"$REPO_DIR/rules/skills-policy.md"
+	"$REPO_DIR/rules/file-discovery.md"
+	"$REPO_DIR/dist/claude/source/global-skills.md"
+	"$REPO_DIR/dist/claude/source/codebase-memory.md"
 )
 
 CODEX_PARTS=(
-	"$REPO_DIR/targets/codex/source/header.md"
-	"$REPO_DIR/shared/global-rules.md"
-	"$REPO_DIR/shared/identity.md"
-	"$REPO_DIR/shared/skills-policy.md"
-	"$REPO_DIR/shared/file-discovery.md"
-	"$REPO_DIR/targets/codex/source/codebase-memory.md"
+	"$REPO_DIR/dist/codex/source/header.md"
+	"$REPO_DIR/rules/global-rules.md"
+	"$REPO_DIR/rules/identity.md"
+	"$REPO_DIR/rules/skills-policy.md"
+	"$REPO_DIR/rules/file-discovery.md"
+	"$REPO_DIR/dist/codex/source/codebase-memory.md"
 )
 
 write_target() {
@@ -58,6 +58,6 @@ write_target "$CODEX_TARGET" "${CODEX_PARTS[@]}"
 
 python3 "$REPO_DIR/scripts/build-chatgpt-target.py"
 
-printf '%s✓%s synced %stargets/claude/CLAUDE.md%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"
-printf '%s✓%s synced %stargets/codex/AGENTS.md%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"
-printf '%s✓%s synced %stargets/chatgpt/%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"
+printf '%s✓%s synced %sdist/claude/CLAUDE.md%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"
+printf '%s✓%s synced %sdist/codex/AGENTS.md%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"
+printf '%s✓%s synced %sdist/chatgpt/%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"

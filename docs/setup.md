@@ -7,17 +7,17 @@ Use the scripts for normal installs. These manual steps are here as a fallback w
 Run `scripts/sync-external-skills.sh`, then `scripts/sync.sh`, then link these paths:
 
 ```bash
-ln -s /path/to/repository/targets/claude/CLAUDE.md ~/.claude/CLAUDE.md
-ln -s /path/to/repository/targets/claude/settings.json ~/.claude/settings.json
-ln -s /path/to/repository/targets/claude/.mcp.json ~/.claude/.mcp.json
+ln -s /path/to/repository/dist/claude/CLAUDE.md ~/.claude/CLAUDE.md
+ln -s /path/to/repository/dist/claude/settings.json ~/.claude/settings.json
+ln -s /path/to/repository/dist/claude/.mcp.json ~/.claude/.mcp.json
 ```
 
 Create `~/.claude/skills/`, `~/.claude/hooks/`, and `~/.claude/commands/`, then link each item individually:
 
 ```bash
 ln -s /path/to/repository/skills/vue ~/.claude/skills/vue
-ln -s /path/to/repository/targets/claude/hooks/skill-autotrigger.sh ~/.claude/hooks/skill-autotrigger.sh
-ln -s /path/to/repository/targets/claude/commands/new-command.md ~/.claude/commands/new-command.md
+ln -s /path/to/repository/dist/claude/hooks/skill-autotrigger.sh ~/.claude/hooks/skill-autotrigger.sh
+ln -s /path/to/repository/dist/claude/commands/new-command.md ~/.claude/commands/new-command.md
 ```
 
 Repeat for each skill, hook, and command. Per-item links allow plugin-installed items to coexist.
@@ -27,8 +27,8 @@ Repeat for each skill, hook, and command. Per-item links allow plugin-installed 
 Run `scripts/sync-external-skills.sh`, then `scripts/sync.sh`, then link:
 
 ```bash
-ln -s /path/to/repository/targets/codex/AGENTS.md ~/.agents/AGENTS.md
-ln -s /path/to/repository/targets/codex/AGENTS.md ~/.codex/AGENTS.md
+ln -s /path/to/repository/dist/codex/AGENTS.md ~/.agents/AGENTS.md
+ln -s /path/to/repository/dist/codex/AGENTS.md ~/.codex/AGENTS.md
 ```
 
 Ensure `~/.codex/config.toml` includes:
@@ -133,7 +133,7 @@ mkdir -p .agents/skills
 For projects using both:
 
 ```bash
-cp /path/to/repository/templates/shared/AGENTS.md.template AGENTS.md
+cp /path/to/repository/templates/rules/AGENTS.md.template AGENTS.md
 mkdir -p .claude/templates
 cp /path/to/repository/templates/claude/settings.json .claude/settings.json
 cp /path/to/repository/templates/claude/.claudeignore .claude/.claudeignore

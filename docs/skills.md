@@ -104,10 +104,10 @@ related-skills:
 Content here.
 ```
 
-1. Register keyword triggers in `targets/claude/hooks/skill-autotrigger.sh` so the hook detects relevant prompts
-2. Register file extension triggers in `targets/claude/hooks/skill-file-trigger.sh` if the skill maps to a file type
+1. Register keyword triggers in `dist/claude/hooks/skill-autotrigger.sh` so the hook detects relevant prompts
+2. Register file extension triggers in `dist/claude/hooks/skill-file-trigger.sh` if the skill maps to a file type
 3. Add the skill to the skills table in this file and to [docs/commands.md](commands.md)
-4. Run `scripts/sync.sh` — this regenerates the Claude and Codex targets and also rebuilds `targets/chatgpt/` with the new skill included
+4. Run `scripts/sync.sh` — this regenerates the Claude and Codex targets and also rebuilds `dist/chatgpt/` with the new skill included
 
 After global setup, shared skills are available to Claude via `~/.claude/skills/` and to Codex via `~/.agents/skills/`. The ChatGPT target requires a manual re-upload to the Custom GPT knowledge base after running sync.
 
@@ -117,7 +117,7 @@ Use this only for official upstream skills that should stay managed externally.
 
 1. Add an entry to `external-skills.json` with `slug`, `name`, `source`, `skill_url`, optional `references_api_url`, optional `commit_api_url`, and `license`
 2. Run `scripts/sync-external-skills.sh`
-3. Register triggers in `targets/claude/hooks/skill-autotrigger.sh` and `targets/claude/hooks/skill-file-trigger.sh`
+3. Register triggers in `dist/claude/hooks/skill-autotrigger.sh` and `dist/claude/hooks/skill-file-trigger.sh`
 4. Add the skill to this file and [docs/commands.md](commands.md)
 
 Do not edit synced external `SKILL.md` files directly; change the upstream source or local trigger/docs around it.
