@@ -20,7 +20,14 @@
     "@testing-library",
     "snapshot test"
   ],
-  "filePatterns": ["*.test.ts", "*.test.js", "*.spec.ts", "*.spec.js"],
+  "filePatterns": [
+    "*.test.ts",
+    "*.test.js",
+    "*.spec.ts",
+    "*.spec.js",
+    "*Tests.swift",
+    "*Test.swift"
+  ],
   "pathPatterns": [],
   "dependencies": ["code-style", "pinia", "vue", "typescript"],
   "capabilities": {

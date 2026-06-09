@@ -133,8 +133,8 @@ Phases 0–9 complete. Summary:
 
 **Commit:** `test(hooks): add fixtures for skill-file-trigger and skill-autotrigger`
 
-- [ ] **14b.1** Rewrite `skill-file-trigger.sh` to iterate `skill.json` for `filePatterns`/`pathPatterns`
-- [ ] **14b.2** Profile hook execution time; pre-cache in sync.sh if needed
+- [x] **14b.1** Rewrite `skill-file-trigger.sh` to iterate `skill.json` for `filePatterns`/`pathPatterns`
+- [x] **14b.2** Profile hook execution time; pre-cache in sync.sh if needed (56ms — no caching needed)
 
 **Commit:** `refactor(hooks): drive skill-file-trigger from skill.json filePatterns and pathPatterns`
 

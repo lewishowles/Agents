@@ -11,11 +11,11 @@
     "vue project stack",
     "lewishowles"
   ],
-  "filePatterns": [],
+  "filePatterns": ["*.vue"],
   "pathPatterns": [],
   "dependencies": ["vue", "code-style", "dependencies"],
   "capabilities": {
     "promptTriggering": true,
-    "fileTriggering": false
+    "fileTriggering": true
   }
 }
