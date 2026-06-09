@@ -1,0 +1,12 @@
+{
+  "name": "test-skeleton-reminder",
+  "runtime": "claude",
+  "events": [
+    {
+      "event": "PreToolUse",
+      "matcher": "Write|Edit"
+    }
+  ],
+  "dependencies": ["jq"],
+  "failureMode": "silent"
+}

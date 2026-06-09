@@ -1,0 +1,13 @@
+{
+  "name": "pre-stop-checks",
+  "runtime": "claude",
+  "events": [
+    {
+      "event": "Stop",
+      "timeout": 60,
+      "statusMessage": "Checking lint and tests…"
+    }
+  ],
+  "dependencies": [],
+  "failureMode": "silent"
+}

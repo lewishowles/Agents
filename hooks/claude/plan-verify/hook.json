@@ -1,0 +1,13 @@
+{
+  "name": "plan-verify",
+  "runtime": "claude",
+  "events": [
+    {
+      "event": "PostToolUse",
+      "matcher": "ExitPlanMode",
+      "timeout": 5
+    }
+  ],
+  "dependencies": [],
+  "failureMode": "silent"
+}

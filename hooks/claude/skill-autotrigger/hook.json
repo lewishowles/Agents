@@ -1,0 +1,11 @@
+{
+  "name": "skill-autotrigger",
+  "runtime": "claude",
+  "events": [
+    {
+      "event": "UserPromptSubmit"
+    }
+  ],
+  "dependencies": ["jq"],
+  "failureMode": "block"
+}

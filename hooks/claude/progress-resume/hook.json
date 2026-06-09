@@ -1,0 +1,12 @@
+{
+  "name": "progress-resume",
+  "runtime": "claude",
+  "events": [
+    {
+      "event": "UserPromptSubmit",
+      "timeout": 5
+    }
+  ],
+  "dependencies": [],
+  "failureMode": "silent"
+}

@@ -113,8 +113,8 @@ Phases 0–9 complete. Summary:
 
 ### Phase 13 — Hook source structure
 
-- [ ] **13a.1** Create `hooks/claude/<name>/` for each of the 10 hook scripts
-- [ ] **13a.2** Add `hook.json` beside each hook script (name, runtime, events[], dependencies, failureMode)
+- [x] **13a.1** Create `hooks/claude/<name>/` for each of the 10 hook scripts
+- [x] **13a.2** Add `hook.json` beside each hook script (name, runtime, events[], dependencies, failureMode)
 
 **Commit:** `feat(hooks): add hook.json manifests and move hook source to hooks/claude/<name>/`
 

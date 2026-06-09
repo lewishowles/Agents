@@ -1,0 +1,13 @@
+{
+  "name": "auto-allow-edits",
+  "runtime": "claude",
+  "events": [
+    {
+      "event": "PreToolUse",
+      "matcher": "Write|Edit",
+      "timeout": 5
+    }
+  ],
+  "dependencies": [],
+  "failureMode": "silent"
+}

@@ -1,0 +1,12 @@
+{
+  "name": "cbm-code-discovery-gate",
+  "runtime": "claude",
+  "events": [
+    {
+      "event": "PreToolUse",
+      "matcher": "Bash"
+    }
+  ],
+  "dependencies": ["jq"],
+  "failureMode": "block"
+}

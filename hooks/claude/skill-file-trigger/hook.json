@@ -1,0 +1,12 @@
+{
+  "name": "skill-file-trigger",
+  "runtime": "claude",
+  "events": [
+    {
+      "event": "PreToolUse",
+      "matcher": "Write|Edit"
+    }
+  ],
+  "dependencies": ["jq"],
+  "failureMode": "silent"
+}

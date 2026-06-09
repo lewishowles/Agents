@@ -1,0 +1,11 @@
+{
+  "name": "cbm-session-reminder",
+  "runtime": "claude",
+  "events": [
+    {
+      "event": "UserPromptSubmit"
+    }
+  ],
+  "dependencies": [],
+  "failureMode": "silent"
+}
