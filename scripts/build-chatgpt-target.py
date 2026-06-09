@@ -90,7 +90,20 @@ def main():
 	instructions = (SOURCE_DIR / "instructions.md").read_text()
 	skill_entries = []
 
-	for skill_dir in sorted(d for d in SKILLS_DIR.iterdir() if d.is_dir()):
+	# Discover flat skills (skills/<name>/SKILL.md) and grouped skills
+	# (skills/<group>/<name>/SKILL.md) at one level of nesting.
+	skill_dirs = []
+	for d in sorted(SKILLS_DIR.iterdir()):
+		if not d.is_dir():
+			continue
+		if (d / "SKILL.md").exists():
+			skill_dirs.append(d)
+		else:
+			for sub in sorted(d.iterdir()):
+				if sub.is_dir() and (sub / "SKILL.md").exists():
+					skill_dirs.append(sub)
+
+	for skill_dir in skill_dirs:
 		skill_file = skill_dir / "SKILL.md"
 		if not skill_file.exists():
 			continue

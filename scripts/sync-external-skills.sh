@@ -62,13 +62,19 @@ vet_skill_file() {
 
 sync_skill() {
 	local slug="$1"
-	local name="$2"
-	local source="$3"
-	local skill_url="$4"
-	local references_api_url="$5"
-	local commit_api_url="$6"
-	local license="$7"
-	local target_dir="$REPO_DIR/skills/$slug"
+	local group="$2"
+	local name="$3"
+	local source="$4"
+	local skill_url="$5"
+	local references_api_url="$6"
+	local commit_api_url="$7"
+	local license="$8"
+	local target_dir
+	if [ -n "$group" ]; then
+		target_dir="$REPO_DIR/skills/$group/$slug"
+	else
+		target_dir="$REPO_DIR/skills/$slug"
+	fi
 	local skill_file="$target_dir/SKILL.md"
 	local sync_file="$target_dir/SYNC.md"
 	local temp_file
@@ -151,6 +157,7 @@ count=$(jq 'length' "$MANIFEST")
 
 for index in $(seq 0 $((count - 1))); do
 	slug=$(jq -r ".[$index].slug" "$MANIFEST")
+	group=$(jq -r ".[$index].group // \"\"" "$MANIFEST")
 	name=$(jq -r ".[$index].name" "$MANIFEST")
 	source=$(jq -r ".[$index].source" "$MANIFEST")
 	skill_url=$(jq -r ".[$index].skill_url" "$MANIFEST")
@@ -158,5 +165,5 @@ for index in $(seq 0 $((count - 1))); do
 	commit_api_url=$(jq -r ".[$index].commit_api_url // \"\"" "$MANIFEST")
 	license=$(jq -r ".[$index].license // \"unknown\"" "$MANIFEST")
 
-	sync_skill "$slug" "$name" "$source" "$skill_url" "$references_api_url" "$commit_api_url" "$license"
+	sync_skill "$slug" "$group" "$name" "$source" "$skill_url" "$references_api_url" "$commit_api_url" "$license"
 done

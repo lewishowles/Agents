@@ -85,9 +85,10 @@ Phases 0–9 complete. Summary:
 
 **Commit:** `feat(skills): add project-management skill group`
 
-- [ ] **11c.1** Move 15 skills into group folders (vue ×7, swift ×2, testing ×3, writing ×3)
-- [ ] **11c.2** Update `scripts/setup-global.sh` to discover skills at `skills/<name>/` and `skills/<group>/<name>/`
-- [ ] **11c.3** Update `scripts/build-chatgpt-target.py` and `scripts/sync.sh` to iterate both path depths
+- [x] **11c.1** Move 15 skills into group folders (vue ×7, swift ×2, testing ×3, writing ×3)
+- [x] **11c.2** Update `scripts/setup-global.sh` to discover skills at `skills/<name>/` and `skills/<group>/<name>/`
+- [x] **11c.3** Update `scripts/build-chatgpt-target.py` and `scripts/sync.sh` to iterate both path depths
+- [x] **11c.4** Add `"group"` field to `external-skills.json`; update `sync-external-skills.sh` to use grouped path
 
 **Commit:** `refactor(skills): group vue, swift, testing, and writing skills into category folders`
 

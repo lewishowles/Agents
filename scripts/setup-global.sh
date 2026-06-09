@@ -109,11 +109,20 @@ setup_claude() {
 	link_path "$REPO_DIR/dist/claude/settings.json" "$HOME/.claude/settings.json" "settings.json"
 	link_path "$REPO_DIR/dist/claude/.mcp.json" "$HOME/.claude/.mcp.json" ".mcp.json"
 
-	# Link each skill and hook individually so plugin-installed items can coexist.
-	local skill
+	# Link each skill individually so plugin-installed items can coexist.
+	# Flat skills: skills/<name>/SKILL.md  →  ~/.claude/skills/<name>
+	# Grouped skills: skills/<group>/<name>/SKILL.md  →  ~/.claude/skills/<name>
+	local skill sub
 	for skill in "$REPO_DIR"/skills/*; do
 		[ -d "$skill" ] || continue
-		link_path "$skill" "$HOME/.claude/skills/$(basename "$skill")" "skills/$(basename "$skill")"
+		if [ -f "$skill/SKILL.md" ]; then
+			link_path "$skill" "$HOME/.claude/skills/$(basename "$skill")" "skills/$(basename "$skill")"
+		else
+			for sub in "$skill"/*/; do
+				[ -d "$sub" ] || continue
+				link_path "$sub" "$HOME/.claude/skills/$(basename "$sub")" "skills/$(basename "$skill")/$(basename "$sub")"
+			done
+		fi
 	done
 
 	local hook
@@ -141,10 +150,17 @@ setup_codex() {
 	ensure_codex_config
 
 	# Keep legacy ~/.agents wiring and current Codex ~/.codex instructions in sync.
-	local skill
+	local skill sub
 	for skill in "$REPO_DIR"/skills/*; do
 		[ -d "$skill" ] || continue
-		link_path "$skill" "$HOME/.agents/skills/$(basename "$skill")" "skills/$(basename "$skill")"
+		if [ -f "$skill/SKILL.md" ]; then
+			link_path "$skill" "$HOME/.agents/skills/$(basename "$skill")" "skills/$(basename "$skill")"
+		else
+			for sub in "$skill"/*/; do
+				[ -d "$sub" ] || continue
+				link_path "$sub" "$HOME/.agents/skills/$(basename "$sub")" "skills/$(basename "$skill")/$(basename "$sub")"
+			done
+		fi
 	done
 }
 
