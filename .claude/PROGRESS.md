@@ -68,20 +68,20 @@ Phases 0–9 complete. Summary:
 
 ### Phase 11 — Skill restructuring
 
-- [ ] **11a.1** Delete `skills/architecture-decision-records/`, `skills/agentic-engineering/`, `skills/session-management/`
-- [ ] **11a.2** Remove their `skillOverrides` entries from `dist/claude/settings.json`
-- [ ] **11a.3** Remove their entries from `dist/claude/source/global-skills.md`
-- [ ] **11a.4** Check `dist/claude/hooks/skill-autotrigger.sh` for stale trigger references
+- [x] **11a.1** Delete `skills/architecture-decision-records/`, `skills/agentic-engineering/`, `skills/session-management/`
+- [x] **11a.2** Remove their `skillOverrides` entries from `dist/claude/settings.json`
+- [x] **11a.3** Remove their entries from `dist/claude/source/global-skills.md`
+- [x] **11a.4** Check `dist/claude/hooks/skill-autotrigger.sh` for stale trigger references
 
 **Commit:** `chore(skills): remove architecture-decision-records, agentic-engineering, and session-management`
 
-- [ ] **11b.1** Create `skills/project-management/setup-project/` with `SKILL.body.md`
-- [ ] **11b.2** Create `skills/project-management/continue-project/` with `SKILL.body.md`
-- [ ] **11b.3** Create `skills/project-management/plan-task/` with `SKILL.body.md`
-- [ ] **11b.4** Create `skills/project-management/compact-progress/` with `SKILL.body.md`
-- [ ] **11b.5** Create `skills/project-management/archive-progress/` with `SKILL.body.md`
-- [ ] **11b.6** Add `skillOverrides` entries (name-only) for new skills in `dist/claude/settings.json`
-- [ ] **11b.7** Add entries to `dist/claude/source/global-skills.md`
+- [x] **11b.1** Create `skills/project-management/setup-project/` with `SKILL.body.md`
+- [x] **11b.2** Create `skills/project-management/continue-project/` with `SKILL.body.md`
+- [x] **11b.3** Create `skills/project-management/plan-task/` with `SKILL.body.md`
+- [x] **11b.4** Create `skills/project-management/compact-progress/` with `SKILL.body.md`
+- [x] **11b.5** Create `skills/project-management/archive-progress/` with `SKILL.body.md`
+- [x] **11b.6** Add `skillOverrides` entries (name-only) for new skills in `dist/claude/settings.json`
+- [x] **11b.7** Add entries to `dist/claude/source/global-skills.md`
 
 **Commit:** `feat(skills): add project-management skill group`
 

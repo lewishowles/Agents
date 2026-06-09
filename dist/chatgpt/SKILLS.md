@@ -20,13 +20,6 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 **Avoid:** Building or fixing a component (use the accessibility skill for guidance); A general UI design review with no accessibility scope; No UI, design artefacts, or code to review
 **Combine with:** accessibility, ui-copy
 
-### agentic-engineering
-**When to use:** Use this skill when building with Claude API, Anthropic SDK, or managed agents. Covers model selection, cost-conscious patterns, token budgeting, batch processing, prompt caching, and cost tracking for LLM-driven applications.
-
-### architecture-decision-records
-**When to use:** Use this skill when documenting significant architectural decisions. ADRs record the what, why, and context of decisions for future reference and team alignment. Store in docs/adr/ or adr/ directory.
-**Combine with:** writing, code-style
-
 ### bash
 **When to use:** Use this skill when writing shell scripts, zsh functions, bash utilities, .env files, or config files. Apply even for short scripts or helper functions — covers bash patterns, minimal documentation style, and config file conventions.
 
@@ -76,10 +69,6 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 **When to use:** Use this skill when refactoring existing code or triaging technical debt. Covers behaviour-preserving refactoring technique (one change at a time, tests pass at every step), and a lightweight debt categorisation and prioritisation approach. Distinct from debugging (fixing a bug) and from new feature work.
 **Avoid:** Fixing a bug — use the debugging skill; Adding new behaviour — that is feature work, not refactoring; The user hasn't asked for a refactor (don't improve adjacent code unprompted)
 **Combine with:** code-style, unit-testing, debugging
-
-### session-management
-**When to use:** Use this skill when saving or resuming Claude Code sessions, starting meaningful multi-session work, or tracking progress across sessions.
-**Combine with:** code-style
 
 ### swift
 **When to use:** Use this skill when writing or editing any Swift code — macOS apps, command-line tools, scripts, system tools. Covers comment style, naming, spacing, concurrency, error handling, process management, and environment setup. For SwiftUI-specific patterns, use the swift-ui skill.

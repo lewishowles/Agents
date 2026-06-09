@@ -47,7 +47,7 @@ skills=()
 # Claude decides what to write. Inject all skills so Claude can pick what fits.
 if echo "$prompt" | grep -qiE '^\s*(yes|yep|yeah|ok|okay|sure|go ahead|sounds good|perfect|great|looks good|done|next|correct|exactly)\s*[.!]?\s*$' || \
    echo "$prompt" | grep -qiE '\b(continue|carry on|move on|next step|proceed|let'\''s go|what'\''s next|keep going|move forward|let'\''s continue|crack on)\b'; then
-	skills+=("code-style" "codebase-memory" "swift" "vue" "vue-project-stack" "pinia" "pinia-colada" "vue-router" "vueuse-functions" "typescript" "unit-testing" "writing" "readme" "ui-copy" "bash" "error-handling" "accessibility" "dependencies" "vite-patterns" "e2e-testing" "architecture-decision-records" "session-management")
+	skills+=("code-style" "codebase-memory" "swift" "vue" "vue-project-stack" "pinia" "pinia-colada" "vue-router" "vueuse-functions" "typescript" "unit-testing" "writing" "readme" "ui-copy" "bash" "error-handling" "accessibility" "dependencies" "vite-patterns" "e2e-testing")
 fi
 
 # ─── codebase-memory ───────────────────────────────────────────────────────
@@ -187,25 +187,10 @@ if echo "$prompt" | grep -qiE '\be2e\b|\be2e.test|\bplaywright\b|\bbrowser.autom
 	skills+=("e2e-testing")
 fi
 
-# ─── architecture-decision-records ────────────────────────────────────────────
-# ADRs, architectural decisions, framework adoption, major refactors
-if echo "$prompt" | grep -qiE '\badr\b|\barchitecture.decision\b|\btech.decision\b|\bdecision.record\b' || \
-   echo "$prompt" | grep -qiE 'framework.*adoption|major.*refactor|architectural.*pattern'; then
-	skills+=("architecture-decision-records")
-fi
-
 # ─── pinia-colada ─────────────────────────────────────────────────────────────
 # Async server state for Vue — useQuery, useMutation, cache, optimistic updates
 if echo "$prompt" | grep -qiE '@pinia/colada|pinia colada|\busequery\b|\busemutation\b|\bdefinequery\b|\bdefinemutation\b|\bquerycache\b|\binvalidatequeries\b|\busequerycache\b'; then
 	skills+=("pinia-colada")
-fi
-
-# ─── session-management ───────────────────────────────────────────────────────
-# Save/resume sessions, PROGRESS.md tracking, token efficiency, goal-driven execution
-if echo "$prompt" | grep -qiE '\bsave.session\b|\bresume.session\b|\bcontext.*snapshot\b|\bcheckpoint\b' || \
-   echo "$prompt" | grep -qiE 'session.*management|pause.*resume' || \
-   echo "$prompt" | grep -qiE '\bPROGRESS\.md\b|progress.*track|token.*efficien|goal.driven'; then
-	skills+=("session-management")
 fi
 
 # ─── Deduplicate and output ───────────────────────────────────────────────────
