@@ -96,8 +96,8 @@ Phases 0–9 complete. Summary:
 
 ### Phase 12 — Skill manifests and generated SKILL.md
 
-- [ ] **12a.1** Add `skill.json` to each of the ~32 remaining skills (schema: name, description, triggers, filePatterns, pathPatterns, dependencies, capabilities, optional targets)
-- [ ] **12a.2** Ensure project-management skills have `skill.json` too
+- [x] **12a.1** Add `skill.json` to all 33 skills (schema: name, description, triggers, filePatterns, pathPatterns, dependencies, capabilities)
+- [x] **12a.2** Project-management skills have `skill.json` (promptTriggering: false — name-only invocation)
 
 **Commit:** `feat(skills): add skill.json manifests to all skills`
 

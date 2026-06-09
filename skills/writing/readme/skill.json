@@ -1,0 +1,12 @@
+{
+  "name": "readme",
+  "description": "Use this skill when writing or editing a README file (README.md or similar). Covers what belongs in a README, what doesn't, structure, and the \"no fluff that doesn't help the average reader\" principle. Pair with the writing skill for voice and tone baselines.",
+  "triggers": ["readme", "read.me", "getting started guide", "getting started doc"],
+  "filePatterns": ["README.md"],
+  "pathPatterns": [],
+  "dependencies": ["writing"],
+  "capabilities": {
+    "promptTriggering": true,
+    "fileTriggering": true
+  }
+}

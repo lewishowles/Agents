@@ -1,0 +1,20 @@
+{
+  "name": "e2e-testing",
+  "description": "Use this skill when writing, reviewing, or planning end-to-end and browser-based component tests with Playwright or Cypress. It guides agents through user-focused browser automation, interaction coverage, test structure, selector strategy, and CI setup. For isolated logic or rendering checks that do not need a browser, use the unit-testing skill instead.",
+  "triggers": [
+    "e2e",
+    "playwright",
+    "cypress",
+    "browser automation",
+    "end-to-end test",
+    "user journey test",
+    "data-test"
+  ],
+  "filePatterns": ["*.e2e.ts", "*.e2e.js", "*.cy.ts", "*.cy.js"],
+  "pathPatterns": ["/e2e/", "/tests/cypress/"],
+  "dependencies": ["code-style", "unit-testing", "vue-project-stack"],
+  "capabilities": {
+    "promptTriggering": true,
+    "fileTriggering": true
+  }
+}

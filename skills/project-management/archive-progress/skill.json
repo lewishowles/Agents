@@ -1,0 +1,12 @@
+{
+  "name": "archive-progress",
+  "description": "Use this skill to reduce the size of a long-running PROGRESS.md by moving completed sections into an archived milestones block at the bottom.",
+  "triggers": ["archive progress", "archive milestones", "progress too long"],
+  "filePatterns": [],
+  "pathPatterns": [],
+  "dependencies": ["compact-progress"],
+  "capabilities": {
+    "promptTriggering": false,
+    "fileTriggering": false
+  }
+}

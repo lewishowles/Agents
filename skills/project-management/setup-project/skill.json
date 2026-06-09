@@ -1,0 +1,18 @@
+{
+  "name": "setup-project",
+  "description": "Use this skill to start a new project or feature — explores the repo, asks clarifying questions, and creates an initial PROGRESS.md before any implementation begins.",
+  "triggers": [
+    "new project",
+    "setup project",
+    "start project",
+    "new feature planning",
+    "fresh project"
+  ],
+  "filePatterns": [],
+  "pathPatterns": [],
+  "dependencies": [],
+  "capabilities": {
+    "promptTriggering": false,
+    "fileTriggering": false
+  }
+}

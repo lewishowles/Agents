@@ -1,0 +1,12 @@
+{
+  "name": "continue-project",
+  "description": "Use this skill to resume work from an existing PROGRESS.md — compacts stale notes, verifies completed work, and picks up from where the last session left off.",
+  "triggers": ["resume work", "continue project", "continue from progress", "pick up where"],
+  "filePatterns": [],
+  "pathPatterns": [],
+  "dependencies": ["compact-progress"],
+  "capabilities": {
+    "promptTriggering": false,
+    "fileTriggering": false
+  }
+}

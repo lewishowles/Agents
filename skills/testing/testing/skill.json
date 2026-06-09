@@ -1,0 +1,20 @@
+{
+  "name": "testing",
+  "description": "Use this skill when deciding what to test, at which layer, and in what order — before writing the tests themselves. Covers the test pyramid, TDD red-green-refactor workflow, and what to skip. For the mechanics of writing tests, see unit-testing and e2e-testing.",
+  "triggers": [
+    "what to test",
+    "test strategy",
+    "test pyramid",
+    "which tests",
+    "testing approach",
+    "tdd",
+    "test-driven"
+  ],
+  "filePatterns": [],
+  "pathPatterns": [],
+  "dependencies": ["unit-testing", "e2e-testing", "debugging", "refactoring"],
+  "capabilities": {
+    "promptTriggering": true,
+    "fileTriggering": false
+  }
+}
