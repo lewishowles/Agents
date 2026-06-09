@@ -127,9 +127,9 @@ Phases 0–9 complete. Summary:
 
 ### Phase 14 — Data-driven skill trigger hooks
 
-- [ ] **14a.1** Add `tests/fixtures/skill-file-trigger/` — JSON inputs + expected output
-- [ ] **14a.2** Add `tests/fixtures/skill-autotrigger/` — prompt inputs + expected output
-- [ ] **14a.3** Write `tests/skill-triggers.sh` harness
+- [x] **14a.1** Add `tests/fixtures/skill-file-trigger/` — JSON inputs + expected output
+- [x] **14a.2** Add `tests/fixtures/skill-autotrigger/` — prompt inputs + expected output
+- [x] **14a.3** Write `tests/skill-triggers.sh` harness
 
 **Commit:** `test(hooks): add fixtures for skill-file-trigger and skill-autotrigger`
 
