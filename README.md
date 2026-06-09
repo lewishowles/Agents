@@ -1,12 +1,13 @@
 # Global agent configuration
 
-Shared configuration for Claude Code and OpenAI Codex. The repo keeps common rules in one place, generates agent-specific target files, and provides setup scripts for global and per-project configuration.
+Shared configuration for Claude Code, OpenAI Codex, and ChatGPT. The repo keeps common rules in one place, generates agent-specific target files, and provides setup scripts for global and per-project configuration.
 
 ## What's inside
 
 - `shared/` - source fragments used by both Claude and Codex
 - `targets/claude/` - generated `CLAUDE.md`, Claude settings, hooks, and Claude-only source fragments
 - `targets/codex/` - generated `AGENTS.md` and Codex-only source fragments
+- `targets/chatgpt/` - generated `SKILLS.md` index and per-skill files for upload to a ChatGPT Custom GPT knowledge base
 - `skills/` - user skills, each as a folder containing `SKILL.md`
 - `external-skills.json` - official upstream skills synced into `skills/`
 - `scripts/` - sync and setup scripts
@@ -44,6 +45,21 @@ If you need to run setup without network access, use:
 ```bash
 scripts/setup-global.sh --both --skip-external
 ```
+
+## ChatGPT setup
+
+ChatGPT doesn't support automatic skill loading, so the setup is manual. After running `scripts/sync.sh`, the `targets/chatgpt/` directory contains everything you need.
+
+**System prompt** — paste the contents of `targets/chatgpt/INSTRUCTIONS.md` into your Custom GPT's system prompt (or into ChatGPT's custom instructions).
+
+**Knowledge base** — upload all the other files in `targets/chatgpt/` to the Custom GPT's knowledge base: `SKILLS.md` plus one `.md` file per skill.
+
+Once uploaded, you can reference skills explicitly or let ChatGPT retrieve them automatically:
+
+- _"Use my vue and code-style skills."_ — explicit, most reliable
+- _"Use my skills."_ — ChatGPT reads `SKILLS.md`, determines which are relevant, and loads them
+
+Re-upload the files after running `scripts/sync.sh` whenever skills change.
 
 ## Project setup
 

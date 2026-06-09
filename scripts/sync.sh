@@ -56,5 +56,8 @@ write_target() {
 write_target "$CLAUDE_TARGET" "${CLAUDE_PARTS[@]}"
 write_target "$CODEX_TARGET" "${CODEX_PARTS[@]}"
 
+python3 "$REPO_DIR/scripts/build-chatgpt-target.py"
+
 printf '%s✓%s synced %stargets/claude/CLAUDE.md%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"
 printf '%s✓%s synced %stargets/codex/AGENTS.md%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"
+printf '%s✓%s synced %stargets/chatgpt/%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"
