@@ -1,6 +1,10 @@
 # Global agent configuration
 
-Shared configuration for Claude Code, OpenAI Codex, and ChatGPT. The repo keeps common rules in one place, generates agent-specific target files, and provides setup scripts for global and per-project configuration.
+Shared configuration for Claude Code and OpenAI Codex, and ChatGPT.
+
+This repository keeps common agent rules, skills, hooks, and project templates in one place. The setup is based on how I work as a designer and developer: small reviewable changes, accessible interfaces, maintainable code, clear communication, and tools that make repeated work easier.
+
+The included scripts generate the target files each tool expects for global and per-project setup.
 
 ## What's inside
 
