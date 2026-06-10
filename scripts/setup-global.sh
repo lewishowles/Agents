@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
+# Installs global agent configuration by symlinking dist/ output and skills
+# into ~/.claude/ and/or ~/.agents/. Safe to re-run — existing links are
+# backed up rather than overwritten, and stale links are pruned automatically.
 
 set -euo pipefail
 
-# Resolve the script's directory, then the repo root, so aliases can call this
-# script from anywhere.
+# Resolved at startup so aliases can call this script from any directory.
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 
@@ -13,22 +15,26 @@ usage() {
 	printf 'Usage: %s [--claude|--codex|--both] [--skip-external]\n' "$(basename "$0")"
 }
 
+# Produces a timestamp string used to make backup filenames unique.
 timestamp() {
 	date '+%Y%m%d-%H%M%S'
 }
 
+# Moves a file to its backup location and prints the backup path.
+# Backup paths are routed by prefix so each agent's backups stay separate.
+# If a backup already exists, a timestamp suffix is added to avoid collision.
+# @param  string  path  The file or symlink to back up.
 backup_path() {
 	local path="$1"
 	local backup="${path}.bak"
 
 	case "$path" in
-		"$HOME/.claude/skills/"*) backup="$HOME/.claude/backups/skills/$(basename "$path").bak" ;;
-		"$HOME/.claude/hooks/"*) backup="$HOME/.claude/backups/hooks/$(basename "$path").bak" ;;
+		"$HOME/.claude/skills/"*)   backup="$HOME/.claude/backups/skills/$(basename "$path").bak" ;;
+		"$HOME/.claude/hooks/"*)    backup="$HOME/.claude/backups/hooks/$(basename "$path").bak" ;;
 		"$HOME/.claude/commands/"*) backup="$HOME/.claude/backups/commands/$(basename "$path").bak" ;;
-		"$HOME/.agents/skills/"*) backup="$HOME/.agents/backups/skills/$(basename "$path").bak" ;;
+		"$HOME/.agents/skills/"*)   backup="$HOME/.agents/backups/skills/$(basename "$path").bak" ;;
 	esac
 
-	# Preserve existing backups by adding a timestamp only when needed.
 	if [ -e "$backup" ] || [ -L "$backup" ]; then
 		backup="${backup}.$(timestamp)"
 	fi
@@ -38,6 +44,8 @@ backup_path() {
 	printf '%s' "$backup"
 }
 
+# Prints a path with $HOME replaced by ~ for readable terminal output.
+# @param  string  path  The absolute path to display.
 display_path() {
 	local path="$1"
 
@@ -47,11 +55,15 @@ display_path() {
 	esac
 }
 
+# Ensures a directory exists as a real directory, not a symlink.
+# Per-item symlinks inside the directory need the parent to be a real dir,
+# otherwise the OS can't resolve sibling links independently.
+# @param  string  path   The directory path to ensure.
+# @param  string  label  Human-readable name for output messages.
 ensure_container_dir() {
 	local path="$1"
 	local label="$2"
 
-	# Container paths must be real directories so per-item symlinks can coexist.
 	if [ -L "$path" ]; then
 		local backup
 		backup=$(backup_path "$path")
@@ -67,6 +79,11 @@ ensure_container_dir() {
 	fi
 }
 
+# Removes broken symlinks in a directory that point into this repo.
+# Symlinks pointing elsewhere (e.g. plugin-installed skills) are left alone.
+# @param  string  dir          Directory to scan.
+# @param  string  repo_prefix  Only prune links whose target starts with this path.
+# @param  string  label        Human-readable name used in output messages.
 prune_stale_repo_links() {
 	local dir="$1"
 	local repo_prefix="$2"
@@ -85,12 +102,17 @@ prune_stale_repo_links() {
 	done
 }
 
+# Creates a symlink from source to target. If a symlink already exists at
+# target pointing to the same source, it is left unchanged. Any other existing
+# file or symlink is backed up first.
+# @param  string  source  The file or directory to link to.
+# @param  string  target  The symlink path to create.
+# @param  string  label   Human-readable name for output messages.
 link_path() {
 	local source="$1"
 	local target="$2"
 	local label="$3"
 
-	# Existing files are backed up, never overwritten in place.
 	if [ -L "$target" ]; then
 		local current
 		current=$(readlink "$target")
@@ -115,6 +137,27 @@ link_path() {
 	fi
 }
 
+# Links all skills from this repo into the given target directory.
+# Handles both flat skills (skills/<name>/) and grouped skills
+# (skills/<group>/<name>/), installing each under its own name.
+# @param  string  target_dir  The directory to install skill symlinks into.
+link_skills() {
+	local target_dir="$1"
+	local skill sub
+
+	for skill in "$REPO_DIR"/skills/*; do
+		[ -d "$skill" ] || continue
+		if [ -f "$skill/SKILL.md" ]; then
+			link_path "$skill" "$target_dir/$(basename "$skill")" "skills/$(basename "$skill")"
+		else
+			for sub in "$skill"/*/; do
+				[ -d "$sub" ] || continue
+				link_path "$sub" "$target_dir/$(basename "$sub")" "skills/$(basename "$skill")/$(basename "$sub")"
+			done
+		fi
+	done
+}
+
 setup_claude() {
 	printf '\n→ Setting up Claude (global)\n\n'
 
@@ -127,24 +170,8 @@ setup_claude() {
 	link_path "$REPO_DIR/dist/claude/settings.json" "$HOME/.claude/settings.json" "settings.json"
 	link_path "$REPO_DIR/dist/claude/.mcp.json" "$HOME/.claude/.mcp.json" ".mcp.json"
 
-	# Remove broken symlinks that point into this repo (stale after renames).
 	prune_stale_repo_links "$HOME/.claude/skills" "$REPO_DIR/skills" "skills"
-
-	# Link each skill individually so plugin-installed items can coexist.
-	# Flat skills: skills/<name>/SKILL.md  →  ~/.claude/skills/<name>
-	# Grouped skills: skills/<group>/<name>/SKILL.md  →  ~/.claude/skills/<name>
-	local skill sub
-	for skill in "$REPO_DIR"/skills/*; do
-		[ -d "$skill" ] || continue
-		if [ -f "$skill/SKILL.md" ]; then
-			link_path "$skill" "$HOME/.claude/skills/$(basename "$skill")" "skills/$(basename "$skill")"
-		else
-			for sub in "$skill"/*/; do
-				[ -d "$sub" ] || continue
-				link_path "$sub" "$HOME/.claude/skills/$(basename "$sub")" "skills/$(basename "$skill")/$(basename "$sub")"
-			done
-		fi
-	done
+	link_skills "$HOME/.claude/skills"
 
 	local hook
 	for hook in "$REPO_DIR"/dist/claude/hooks/*; do
@@ -171,22 +198,12 @@ setup_codex() {
 	ensure_codex_config
 
 	prune_stale_repo_links "$HOME/.agents/skills" "$REPO_DIR/skills" "skills"
-
-	# Keep legacy ~/.agents wiring and current Codex ~/.codex instructions in sync.
-	local skill sub
-	for skill in "$REPO_DIR"/skills/*; do
-		[ -d "$skill" ] || continue
-		if [ -f "$skill/SKILL.md" ]; then
-			link_path "$skill" "$HOME/.agents/skills/$(basename "$skill")" "skills/$(basename "$skill")"
-		else
-			for sub in "$skill"/*/; do
-				[ -d "$sub" ] || continue
-				link_path "$sub" "$HOME/.agents/skills/$(basename "$sub")" "skills/$(basename "$skill")/$(basename "$sub")"
-			done
-		fi
-	done
+	link_skills "$HOME/.agents/skills"
 }
 
+# Ensures ~/.codex/config.toml contains the codebase-memory-mcp server entry.
+# Any existing entry for that server is replaced rather than duplicated, so
+# this function is safe to run on every setup.
 ensure_codex_config() {
 	local config="$HOME/.codex/config.toml"
 	local temp
@@ -194,6 +211,8 @@ ensure_codex_config() {
 	temp=$(mktemp)
 	touch "$config"
 
+	# Strip any existing codebase-memory-mcp section before re-appending it,
+	# so re-running setup never creates duplicate entries.
 	awk '
 		/^\[mcp_servers\.codebase-memory-mcp(\.|\])/{ skip = 1; next }
 		/^\[/{ skip = 0 }
@@ -231,14 +250,13 @@ sync_external=true
 
 while [ $# -gt 0 ]; do
 	case "$1" in
-		--claude) target="claude" ;;
-		--codex) target="codex" ;;
-		--both) target="both" ;;
+		--claude)        target="claude" ;;
+		--codex)         target="codex" ;;
+		--both)          target="both" ;;
 		--skip-external) sync_external=false ;;
-		--help) usage; exit 0 ;;
-		*) usage >&2; exit 1 ;;
+		--help)          usage; exit 0 ;;
+		*)               usage >&2; exit 1 ;;
 	esac
-
 	shift
 done
 
@@ -256,8 +274,8 @@ bash "$REPO_DIR/scripts/sync.sh"
 
 case "$target" in
 	claude) setup_claude ;;
-	codex) setup_codex ;;
-	both) setup_claude; setup_codex ;;
+	codex)  setup_codex ;;
+	both)   setup_claude; setup_codex ;;
 esac
 
 printf '\nDone.\n'

@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
+# Scaffolds agent configuration files into a project directory.
+# Copies templates for the chosen agent runtime and prompts before
+# overwriting any file that already exists but differs from the template.
 
 set -euo pipefail
 
-# Resolve the script's directory, then the repo root, so aliases can call this
-# script from any project directory.
+# Resolved at startup so aliases can call this script from any project directory.
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 PROJECT_DIR=$(pwd)
@@ -14,6 +16,10 @@ usage() {
 	printf 'Usage: %s [--claude|--codex|--both]\n' "$(basename "$0")"
 }
 
+# Copies a template to target only if target does not already exist.
+# @param  string  source  Template file path.
+# @param  string  target  Destination path in the project.
+# @param  string  label   Human-readable name for output messages.
 copy_file() {
 	local source="$1"
 	local target="$2"
@@ -28,6 +34,12 @@ copy_file() {
 	printf '  %s✓%s created %s\n' "$GREEN" "$RESET_COLOUR" "$label"
 }
 
+# Copies a template to target, or prompts the user before overwriting a file
+# that exists locally but differs from the template. This handles the case
+# where a project has customised a file that the template has since updated.
+# @param  string  source  Template file path.
+# @param  string  target  Destination path in the project.
+# @param  string  label   Human-readable name for output messages.
 sync_file() {
 	local source="$1"
 	local target="$2"
@@ -55,6 +67,8 @@ sync_file() {
 	fi
 }
 
+# @param  string  path   Directory to create.
+# @param  string  label  Human-readable name for output messages.
 ensure_dir() {
 	local path="$1"
 	local label="$2"
@@ -80,20 +94,17 @@ copy_claude_support_files() {
 
 setup_claude() {
 	printf '\n→ Setting up Claude (project)\n\n'
-
 	copy_file "$REPO_DIR/templates/claude/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
 	copy_claude_support_files
 }
 
 setup_codex() {
 	printf '\n→ Setting up Codex (project)\n\n'
-
 	copy_file "$REPO_DIR/templates/codex/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
 }
 
 setup_both() {
 	printf '\n→ Setting up Claude + Codex (project)\n\n'
-
 	copy_file "$REPO_DIR/templates/rules/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
 	copy_claude_support_files
 }
@@ -114,16 +125,16 @@ target="${1:-}"
 
 case "$target" in
 	--claude) target="claude" ;;
-	--codex) target="codex" ;;
-	--both) target="both" ;;
-	"") target=$(prompt_target) ;;
-	*) usage >&2; exit 1 ;;
+	--codex)  target="codex" ;;
+	--both)   target="both" ;;
+	"")       target=$(prompt_target) ;;
+	*)        usage >&2; exit 1 ;;
 esac
 
 case "$target" in
 	claude) setup_claude ;;
-	codex) setup_codex ;;
-	both) setup_both ;;
+	codex)  setup_codex ;;
+	both)   setup_both ;;
 esac
 
 printf '\nDone.\n'

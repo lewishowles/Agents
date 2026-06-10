@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
-"""Generate ChatGPT target files from skill frontmatter.
-
-Reads skills/*/SKILL.md, extracts frontmatter, and writes:
-  dist/chatgpt/SKILLS.md       — index assembled from source/instructions.md + skill entries
-  dist/chatgpt/<name>.md       — verbatim copy of each SKILL.md
-"""
+# Generate ChatGPT target files from skill manifests.
+#
+# Reads each skill's skill.json and SKILL.md, and writes:
+#   dist/chatgpt/SKILLS.md       — index of all included skills with trigger descriptions
+#   dist/chatgpt/<name>.md       — verbatim copy of each included SKILL.md
+#   dist/chatgpt/INSTRUCTIONS.md — copied from dist/chatgpt/source/system.md
+#
+# Skills with a 'targets' field that does not include 'chatgpt' are excluded.
+# The output directory is cleared before each run so renamed or excluded skills
+# do not leave stale files behind.
 
 import json
 import shutil
@@ -16,8 +20,9 @@ TARGET_DIR = REPO_DIR / "dist" / "chatgpt"
 SOURCE_DIR = TARGET_DIR / "source"
 
 
+# Read skill.json and return the fields needed for index generation.
+# @param  Path  skill_dir  The skill directory containing skill.json.
 def load_manifest(skill_dir: Path) -> dict:
-	"""Read skill.json and normalise to the shape build_skill_entry expects."""
 	manifest_file = skill_dir / "skill.json"
 	if not manifest_file.exists():
 		return {}
@@ -31,29 +36,31 @@ def load_manifest(skill_dir: Path) -> dict:
 	}
 
 
-def build_skill_entry(fm: dict, skill_name: str) -> str:
-	"""Build a SKILLS.md section for a single skill."""
+# Build a single skill section for SKILLS.md from a manifest dict.
+# @param  dict  manifest    Manifest returned by load_manifest.
+# @param  str   skill_name  The skill name used as the section heading.
+def build_skill_entry(manifest: dict, skill_name: str) -> str:
 	lines = [f"### {skill_name}"]
 
-	description = fm.get("description", "")
+	description = manifest.get("description", "")
 	if description:
 		lines.append(f"**When to use:** {description}")
 
-	avoid = fm.get("do-not-use-when", [])
+	avoid = manifest.get("do-not-use-when", [])
 	if avoid:
 		lines.append(f"**Avoid:** {'; '.join(avoid)}")
 
-	related = fm.get("related-skills", [])
+	related = manifest.get("related-skills", [])
 	if related:
 		lines.append(f"**Combine with:** {', '.join(related)}")
 
 	return "\n".join(lines)
 
 
-def main():
+def main() -> None:
 	TARGET_DIR.mkdir(parents=True, exist_ok=True)
 
-	# Remove previously generated files so renamed/excluded skills don't accumulate.
+	# Clear previously generated files so renamed or excluded skills don't accumulate.
 	for f in TARGET_DIR.iterdir():
 		if f.is_file():
 			f.unlink()
@@ -63,8 +70,6 @@ def main():
 	instructions = (SOURCE_DIR / "instructions.md").read_text()
 	skill_entries = []
 
-	# Discover flat skills (skills/<name>/SKILL.md) and grouped skills
-	# (skills/<group>/<name>/SKILL.md) at one level of nesting.
 	skill_dirs = []
 	for d in sorted(SKILLS_DIR.iterdir()):
 		if not d.is_dir():
@@ -81,15 +86,15 @@ def main():
 		if not skill_file.exists():
 			continue
 
-		fm = load_manifest(skill_dir)
-		name = fm.get("name") or skill_dir.name
+		manifest = load_manifest(skill_dir)
+		name = manifest.get("name") or skill_dir.name
 
-		targets = fm.get("targets")
+		targets = manifest.get("targets")
 		if targets is not None and "chatgpt" not in targets:
 			continue
 
 		shutil.copy2(skill_file, TARGET_DIR / f"{name}.md")
-		skill_entries.append(build_skill_entry(fm, name))
+		skill_entries.append(build_skill_entry(manifest, name))
 
 	skills_md = instructions.rstrip() + "\n\n" + "\n\n".join(skill_entries) + "\n"
 	(TARGET_DIR / "SKILLS.md").write_text(skills_md)

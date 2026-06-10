@@ -1,22 +1,109 @@
-# Bash
+# Bash and Python scripts
 
-## Config files
+Applies to standalone bash scripts and Python build/utility scripts. Both are scripting languages used for the same purpose in this repo — keep them consistent.
 
-- Minimal comments, no headers
-- `.env`/`.conf` concise, scannable
-- Config organised cleanly
+## Shared conventions
 
-## Documentation
+- Tabs for indentation in all files, including Python
+- Quote all variables and paths in bash
+- Use `/path/to/directory` placeholders in examples, not user-specific paths
 
-- Use `/path/to/directory` placeholders, not user-specific paths
+## Script-level comments
 
-## Styling
+Every script opens with a `#` comment (after the shebang) describing its purpose. For build scripts, include the execution order or key constraints.
 
-- Simple functions
-- No premature abstraction
-- Quote variables and paths
-- Use `set -euo pipefail` for standalone scripts unless a command may legitimately fail
-- Check required commands before using them
+```bash
+#!/usr/bin/env bash
+# Generates all dist/ output from source files.
+#
+# Build order:
+#   1. SKILL.md files (build-skill-mds.py)
+#   2. Hook scripts copied to dist/claude/hooks/
+#   3. Agent instruction files assembled from rules/
+```
+
+```python
+#!/usr/bin/env python3
+# Generate dist/claude/settings.json from adapters/claude/settings.base.json
+# and hooks/claude/*/hook.json. The base file holds env, permissions, and
+# skillOverrides; all hook entries are derived from manifests.
+```
+
+## Function comments
+
+Every function gets a purpose comment and `@param` lines for each parameter, placed **before** the function definition.
+
+```bash
+# Moves a file to its backup location and prints the backup path.
+# Backup paths are routed by prefix so each agent's backups stay separate.
+# @param  string  path  The file or symlink to back up.
+backup_path() {
+	local path="$1"
+	…
+}
+```
+
+```python
+# Read skill.json and return the fields needed for index generation.
+# @param  Path  skill_dir  The skill directory containing skill.json.
+def load_manifest(skill_dir: Path) -> dict:
+	…
+```
+
+Only add a comment when the purpose would not be obvious from the function name and signature alone. A one-liner that reads a file needs no comment; a function with non-obvious side effects or constraints does.
+
+## Top-level variables
+
+Single trailing `#` comment on any variable whose purpose is not obvious from the name alone.
+
+```bash
+MANIFEST="$REPO_DIR/external-skills.json"  # List of skills to sync, with URLs and metadata.
+```
+
+```python
+PM_GROUP = "project-management"  # Listed first in the global index so it appears near slash-command docs.
+```
+
+## No banner dividers
+
+Do not use `# ---` or `# ===` divider lines. Use blank lines and a plain comment for section headings.
+
+```bash
+# Collect all skill names for dependency resolution.
+declare -A SKILL_NAMES
+```
+
+## Extract repeated logic
+
+If the same pattern appears more than once, extract it into a named function. Name the function after what it resolves, not how it works.
+
+```bash
+# Returns 0 if the value is in the allowed list, 1 otherwise.
+# @param  string  value  The value to check.
+# @param  string  ...    Allowed values (remaining arguments).
+is_valid() {
+	local value="$1"
+	shift
+	local allowed
+	for allowed in "$@"; do
+		[ "$value" = "$allowed" ] && return 0
+	done
+	return 1
+}
+```
+
+## Inline scripts in heredocs
+
+When a bash script embeds Python or awk inline, add a comment explaining what it does and — if not obvious — why it's inline rather than a separate file.
+
+```bash
+# Strips YAML frontmatter and writes the body to the output file.
+strip_frontmatter "$temp_file" "$skill_dir/SKILL.body.md"
+```
+
+If the logic is complex, extract it into a named function that wraps the heredoc, so the call site stays readable.
+
+## Bash boilerplate
 
 ```bash
 #!/usr/bin/env bash
@@ -37,3 +124,9 @@ fi
 
 jq -r '.name // "unknown"' "$config_path"
 ```
+
+## Config files
+
+- Minimal comments, no headers
+- `.env`/`.conf` concise, scannable
+- Config organised cleanly
