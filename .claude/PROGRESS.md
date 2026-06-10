@@ -146,9 +146,9 @@ Phases 0–9 complete. Summary:
 
 ### Phase 15 — Generated indexes
 
-- [ ] **15.1** Update `scripts/sync.sh` (or add build step) to generate `dist/claude/source/global-skills.md` from `skill.json`
-- [ ] **15.2** Update `scripts/build-chatgpt-target.py` to generate `dist/chatgpt/SKILLS.md` from `skill.json`
-- [ ] **15.3** Remove `dist/claude/source/global-skills.md` as a manually-edited file
+- [x] **15.1** Update `scripts/sync.sh` (or add build step) to generate `dist/claude/source/global-skills.md` from `skill.json`
+- [x] **15.2** Update `scripts/build-chatgpt-target.py` to generate `dist/chatgpt/SKILLS.md` from `skill.json` (already done in Phase 12b)
+- [x] **15.3** Remove `dist/claude/source/global-skills.md` as a manually-edited file
 
 **Commit:** `refactor(build): generate global skill indexes from skill.json`
 

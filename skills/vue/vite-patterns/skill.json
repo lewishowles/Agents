@@ -1,6 +1,7 @@
 {
   "name": "vite-patterns",
   "description": "Use this skill when configuring vite.config.ts, managing environment variables, or troubleshooting build/dev server issues. Covers config structure, environment variables, security boundaries, library mode, dev vs build differences, and common pitfalls.",
+  "when": "When configuring vite.config.ts, Vite project patterns",
   "triggers": [
     "vite.config",
     "vite.config.ts",
@@ -13,7 +14,10 @@
     "esbuild",
     "dev server"
   ],
-  "filePatterns": ["vite.config.ts", "vite.config.js"],
+  "filePatterns": [
+    "vite.config.ts",
+    "vite.config.js"
+  ],
   "pathPatterns": [],
   "dependencies": [],
   "capabilities": {

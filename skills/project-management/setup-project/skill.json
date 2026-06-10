@@ -1,6 +1,7 @@
 {
   "name": "setup-project",
   "description": "Use this skill to start a new project or feature — explores the repo, asks clarifying questions, and creates an initial PROGRESS.md before any implementation begins.",
+  "when": "When starting a new project or feature; explores repo, asks questions, creates PROGRESS.md before coding",
   "triggers": [
     "new project",
     "setup project",

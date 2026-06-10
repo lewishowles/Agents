@@ -1,6 +1,7 @@
 {
   "name": "vueuse-functions",
   "description": "Apply VueUse composables where appropriate to build concise, maintainable Vue.js / Nuxt features.",
+  "when": "When using VueUse composables for Vue/Nuxt features",
   "triggers": [
     "@vueuse",
     "vueuse",
@@ -22,7 +23,10 @@
   ],
   "filePatterns": [],
   "pathPatterns": [],
-  "dependencies": ["vue", "vue-project-stack"],
+  "dependencies": [
+    "vue",
+    "vue-project-stack"
+  ],
   "capabilities": {
     "promptTriggering": true,
     "fileTriggering": false

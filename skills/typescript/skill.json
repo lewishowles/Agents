@@ -1,6 +1,7 @@
 {
   "name": "typescript",
   "description": "Use this skill when working in TypeScript files (.ts, .tsx, .vue with lang=\"ts\") or when type errors, type definitions, or generics are involved. Covers keeping types simple, when `as any` is acceptable, avoiding type gymnastics, and always explaining type errors rather than silently suppressing them.",
+  "when": "When using TypeScript, type safety, escape hatches",
   "triggers": [
     ".ts",
     ".tsx",
@@ -23,9 +24,14 @@
     "type guard",
     "as any"
   ],
-  "filePatterns": ["*.ts", "*.tsx"],
+  "filePatterns": [
+    "*.ts",
+    "*.tsx"
+  ],
   "pathPatterns": [],
-  "dependencies": ["code-style"],
+  "dependencies": [
+    "code-style"
+  ],
   "capabilities": {
     "promptTriggering": true,
     "fileTriggering": true

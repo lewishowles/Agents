@@ -194,11 +194,11 @@ Apply across all projects. See individual skills for detailed rules. Per-project
 - `/ui-copy` — When writing microcopy, buttons, errors, empty states, CTAs
 - `/unit-testing` — When writing unit tests, Vitest, philosophy, what to skip
 - `/vite-patterns` — When configuring vite.config.ts, Vite project patterns
-- `/web-performance` — When optimising Core Web Vitals, bundle size, or asset loading for Vue/Vite/GitHub Pages projects
 - `/vue` — When writing Vue code, formatting, patterns, composables, components
 - `/vue-project-stack` — When working in Vue + Bun + Vitest + Tailwind + Gitflow stack
 - `/vue-router` — When using Vue Router routes, guards, params, query strings, and redirects
 - `/vueuse-functions` — When using VueUse composables for Vue/Nuxt features
+- `/web-performance` — When optimising Core Web Vitals, bundle size, or asset loading for Vue/Vite/GitHub Pages projects
 - `/writing` — When writing prose/documentation, voice, tone, structure, style
 
 ## Prefer codebase-memory-mcp graph tools

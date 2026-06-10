@@ -1,6 +1,7 @@
 {
   "name": "refactoring",
   "description": "Use this skill when refactoring existing code or triaging technical debt. Covers behaviour-preserving refactoring technique (one change at a time, tests pass at every step), and a lightweight debt categorisation and prioritisation approach. Distinct from debugging (fixing a bug) and from new feature work.",
+  "when": "When refactoring existing code or triaging technical debt",
   "triggers": [
     "refactor",
     "technical debt",
@@ -17,7 +18,11 @@
   ],
   "filePatterns": [],
   "pathPatterns": [],
-  "dependencies": ["code-style", "unit-testing", "debugging"],
+  "dependencies": [
+    "code-style",
+    "unit-testing",
+    "debugging"
+  ],
   "capabilities": {
     "promptTriggering": true,
     "fileTriggering": false

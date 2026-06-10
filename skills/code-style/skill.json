@@ -1,6 +1,7 @@
 {
   "name": "code-style",
   "description": "Use this skill on every code change — even small snippets. Covers tabs vs spaces, quote style, semicolons, naming conventions, JSDoc comments, and documentation patterns. This is the baseline style guide for all code.",
+  "when": "When formatting code, covering naming, comments, arrays, objects",
   "triggers": [
     "write",
     "add",
@@ -24,7 +25,14 @@
     "helper",
     "utility"
   ],
-  "filePatterns": ["*.swift", "*.vue", "*.ts", "*.tsx", "*.js", "*.md"],
+  "filePatterns": [
+    "*.swift",
+    "*.vue",
+    "*.ts",
+    "*.tsx",
+    "*.js",
+    "*.md"
+  ],
   "pathPatterns": [],
   "dependencies": [],
   "capabilities": {

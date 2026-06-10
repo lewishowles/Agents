@@ -1,6 +1,7 @@
 {
   "name": "frontend-security",
   "description": "Use this skill when writing or reviewing client-side code for security implications. Covers XSS prevention, Content Security Policy, safe v-html usage, authentication token handling, secrets hygiene, and dependency security for Vue/TypeScript projects. Apply proactively when handling user input, rendering dynamic content, or managing auth state.",
+  "when": "When writing or reviewing client-side code for security: XSS, CSP, auth tokens, secrets hygiene",
   "triggers": [
     "xss",
     "injection",
@@ -22,7 +23,11 @@
   ],
   "filePatterns": [],
   "pathPatterns": [],
-  "dependencies": ["error-handling", "vue", "vite-patterns"],
+  "dependencies": [
+    "error-handling",
+    "vue",
+    "vite-patterns"
+  ],
   "capabilities": {
     "promptTriggering": true,
     "fileTriggering": false

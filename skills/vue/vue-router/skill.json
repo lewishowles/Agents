@@ -1,6 +1,7 @@
 {
   "name": "vue-router",
   "description": "Use this skill when working with Vue Router routes, navigation guards, params, query strings, layouts, redirects, or route-driven state. Covers async guards, same-route param updates, side-effect cleanup, and the boundary between router state and component state.",
+  "when": "When using Vue Router routes, guards, params, query strings, and redirects",
   "triggers": [
     "vue-router",
     "vue router",
@@ -16,9 +17,20 @@
     "query string",
     "redirect"
   ],
-  "filePatterns": ["router.ts", "router.js"],
-  "pathPatterns": ["/router/", "/routes/", "/pages/"],
-  "dependencies": ["vue", "vue-project-stack", "accessibility"],
+  "filePatterns": [
+    "router.ts",
+    "router.js"
+  ],
+  "pathPatterns": [
+    "/router/",
+    "/routes/",
+    "/pages/"
+  ],
+  "dependencies": [
+    "vue",
+    "vue-project-stack",
+    "accessibility"
+  ],
   "capabilities": {
     "promptTriggering": true,
     "fileTriggering": true
