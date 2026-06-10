@@ -41,6 +41,7 @@ section 'Checking skill manifests...'
 
 SKILL_COUNT=0
 VALID_CAPS=("fileTriggering" "promptTriggering")
+VALID_TARGETS=("claude" "codex" "chatgpt")
 
 while IFS= read -r -d '' manifest; do
 	dir=$(dirname "$manifest")
@@ -65,6 +66,12 @@ while IFS= read -r -d '' manifest; do
 		for vc in "${VALID_CAPS[@]}"; do [ "$cap" = "$vc" ] && valid=true && break; done
 		[ "$valid" = false ] && fail "Unknown capability '$cap' in $name"
 	done < <(jq -r '.capabilities // {} | keys[]' "$manifest")
+
+	while IFS= read -r tgt; do
+		valid=false
+		for vt in "${VALID_TARGETS[@]}"; do [ "$tgt" = "$vt" ] && valid=true && break; done
+		[ "$valid" = false ] && fail "Unknown target '$tgt' in $name"
+	done < <(jq -r '.targets // [] | .[]' "$manifest")
 
 	while IFS= read -r dep; do
 		[ -z "${SKILL_NAMES[$dep]+_}" ] && \

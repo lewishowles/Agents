@@ -14,5 +14,9 @@
   "capabilities": {
     "promptTriggering": false,
     "fileTriggering": false
-  }
+  },
+  "targets": [
+    "claude",
+    "codex"
+  ]
 }

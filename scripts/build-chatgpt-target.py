@@ -27,6 +27,7 @@ def load_manifest(skill_dir: Path) -> dict:
 		"description": data.get("description", ""),
 		"do-not-use-when": data.get("do-not-use-when", []),
 		"related-skills": data.get("dependencies", []),
+		"targets": data.get("targets"),
 	}
 
 
@@ -51,6 +52,11 @@ def build_skill_entry(fm: dict, skill_name: str) -> str:
 
 def main():
 	TARGET_DIR.mkdir(parents=True, exist_ok=True)
+
+	# Remove previously generated files so renamed/excluded skills don't accumulate.
+	for f in TARGET_DIR.iterdir():
+		if f.is_file():
+			f.unlink()
 
 	shutil.copy2(SOURCE_DIR / "system.md", TARGET_DIR / "INSTRUCTIONS.md")
 
@@ -77,6 +83,10 @@ def main():
 
 		fm = load_manifest(skill_dir)
 		name = fm.get("name") or skill_dir.name
+
+		targets = fm.get("targets")
+		if targets is not None and "chatgpt" not in targets:
+			continue
 
 		shutil.copy2(skill_file, TARGET_DIR / f"{name}.md")
 		skill_entries.append(build_skill_entry(fm, name))

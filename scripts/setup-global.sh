@@ -67,6 +67,24 @@ ensure_container_dir() {
 	fi
 }
 
+prune_stale_repo_links() {
+	local dir="$1"
+	local repo_prefix="$2"
+	local label="$3"
+
+	[ -d "$dir" ] || return 0
+
+	local link target
+	for link in "$dir"/*; do
+		[ -L "$link" ] || continue
+		target=$(readlink "$link")
+		if [[ "$target" == "$repo_prefix"* ]] && [ ! -e "$link" ]; then
+			rm "$link"
+			printf '  %s−%s removed stale %s\n' "$YELLOW" "$RESET_COLOUR" "$label/$(basename "$link")"
+		fi
+	done
+}
+
 link_path() {
 	local source="$1"
 	local target="$2"
@@ -109,6 +127,9 @@ setup_claude() {
 	link_path "$REPO_DIR/dist/claude/settings.json" "$HOME/.claude/settings.json" "settings.json"
 	link_path "$REPO_DIR/dist/claude/.mcp.json" "$HOME/.claude/.mcp.json" ".mcp.json"
 
+	# Remove broken symlinks that point into this repo (stale after renames).
+	prune_stale_repo_links "$HOME/.claude/skills" "$REPO_DIR/skills" "skills"
+
 	# Link each skill individually so plugin-installed items can coexist.
 	# Flat skills: skills/<name>/SKILL.md  →  ~/.claude/skills/<name>
 	# Grouped skills: skills/<group>/<name>/SKILL.md  →  ~/.claude/skills/<name>
@@ -148,6 +169,8 @@ setup_codex() {
 	link_path "$REPO_DIR/dist/codex/AGENTS.md" "$HOME/.agents/AGENTS.md" "AGENTS.md"
 	link_path "$REPO_DIR/dist/codex/AGENTS.md" "$HOME/.codex/AGENTS.md" "Codex AGENTS.md"
 	ensure_codex_config
+
+	prune_stale_repo_links "$HOME/.agents/skills" "$REPO_DIR/skills" "skills"
 
 	# Keep legacy ~/.agents wiring and current Codex ~/.codex instructions in sync.
 	local skill sub

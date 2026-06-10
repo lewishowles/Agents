@@ -31,9 +31,6 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 ### code-style
 **When to use:** Use this skill on every code change — even small snippets. Covers tabs vs spaces, quote style, semicolons, naming conventions, JSDoc comments, and documentation patterns. This is the baseline style guide for all code.
 
-### codebase-memory
-**When to use:** Use this skill when answering structural code queries with the codebase knowledge graph, including architecture, callers, dependencies, impact analysis, dead code, graph query syntax, Cypher examples, edge types, and search_graph usage.
-
 ### debugging
 **When to use:** Use this skill when encountering any bug, test failure, or unexpected behaviour — before proposing a fix. Covers root-cause investigation, hypothesis testing, and minimal targeted fixes for Vue/Vite/Vitest and Swift/SwiftUI projects.
 **Avoid:** The user is asking a general question unrelated to a specific failure; You have already identified the root cause and are ready to implement
@@ -49,23 +46,6 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 **When to use:** Use this skill when writing or reviewing client-side code for security implications. Covers XSS prevention, Content Security Policy, safe v-html usage, authentication token handling, secrets hygiene, and dependency security for Vue/TypeScript projects. Apply proactively when handling user input, rendering dynamic content, or managing auth state.
 **Avoid:** Writing server-side code, API routes, or database queries; A general code review with no security implications
 **Combine with:** error-handling, vue, vue-vite
-
-### project-archive-progress
-**When to use:** Use this skill to reduce the size of a long-running PROGRESS.md by moving completed sections into an archived milestones block at the bottom.
-**Combine with:** project-compact-progress
-
-### project-compact-progress
-**When to use:** Use this skill to refactor a growing PROGRESS.md — removes noise, preserves decisions and discoveries, and rewrites active sections for clarity.
-
-### project-continue
-**When to use:** Use this skill to resume work from an existing PROGRESS.md — compacts stale notes, verifies completed work, and picks up from where the last session left off.
-**Combine with:** project-compact-progress
-
-### project-plan-task
-**When to use:** Use this skill to introduce new work into an existing plan — discusses requirements and inserts a new section at the appropriate location, not simply at the end.
-
-### project-setup
-**When to use:** Use this skill to start a new project or feature — explores the repo, asks clarifying questions, and creates an initial PROGRESS.md before any implementation begins.
 
 ### refactoring
 **When to use:** Use this skill when refactoring existing code or triaging technical debt. Covers behaviour-preserving refactoring technique (one change at a time, tests pass at every step), and a lightweight debt categorisation and prioritisation approach. Distinct from debugging (fixing a bug) and from new feature work.

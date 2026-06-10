@@ -56,6 +56,7 @@ write_target() {
 python3 "$REPO_DIR/scripts/build-skill-mds.py"
 
 mkdir -p "$REPO_DIR/dist/claude/hooks"
+find "$REPO_DIR/dist/claude/hooks" -maxdepth 1 -type f -delete
 
 for hook_dir in "$REPO_DIR/hooks/claude/"/*/; do
 	[ -d "$hook_dir" ] || continue
