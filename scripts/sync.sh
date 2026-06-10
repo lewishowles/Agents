@@ -77,3 +77,5 @@ printf '%s✓%s synced %sdist/claude/CLAUDE.md%s\n' "$GREEN" "$RESET_COLOUR" "$P
 printf '%s✓%s synced %sdist/codex/AGENTS.md%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"
 printf '%s✓%s synced %sdist/chatgpt/%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"
 printf '%s✓%s synced %sdist/claude/settings.json%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"
+
+bash "$REPO_DIR/scripts/validate.sh"
