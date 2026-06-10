@@ -1,5 +1,6 @@
 {
   "name": "cbm-session-reminder",
+  "command": "~/.claude/hooks/cbm-session-reminder",
   "runtime": "claude",
   "events": [
     {

@@ -156,9 +156,10 @@ Phases 0–9 complete. Summary:
 
 ### Phase 16 — Generated Claude settings
 
-- [ ] **16.1** Create `adapters/claude/settings.base.json` from current `dist/claude/settings.json` minus `hooks` block
-- [ ] **16.2** Update `scripts/sync.sh` to assemble `dist/claude/settings.json` from base + hook manifests
-- [ ] **16.3** Handle inline `.env` guard (extract to script or keep in base with comment)
+- [x] **16.1** Create `adapters/claude/settings.base.json` from current `dist/claude/settings.json` minus named hooks (inline .env guard kept)
+- [x] **16.2** Write `scripts/build-settings.py`; call from `sync.sh` after `build-chatgpt-target.py`
+- [x] **16.3** Trash `dist/claude/settings.json` as authored file; now fully generated
+- [x] Add `"command"` override to `cbm-code-discovery-gate/hook.json` and `cbm-session-reminder/hook.json` (no `.sh` extension → direct exec)
 
 **Commit:** `refactor(build): generate settings.json hooks block from hook manifests`
 

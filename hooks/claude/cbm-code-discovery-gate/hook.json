@@ -1,5 +1,6 @@
 {
   "name": "cbm-code-discovery-gate",
+  "command": "~/.claude/hooks/cbm-code-discovery-gate",
   "runtime": "claude",
   "events": [
     {
