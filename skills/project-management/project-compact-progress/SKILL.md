@@ -8,6 +8,10 @@ description: >
 
 Use this skill to refactor a growing `PROGRESS.md` that has become noisy or hard to scan. Preserves what matters; removes what doesn't; rewrites the active sections for clarity.
 
+## File location
+
+`PROGRESS.md` lives at the **project root** — not in `.claude/`. Always look for `<project-root>/PROGRESS.md` first. Do not assume `.claude/PROGRESS.md`.
+
 ## What to preserve
 
 - Decisions — especially rationale that would be re-debated without it

@@ -8,6 +8,10 @@ description: >
 
 Use this skill to introduce new work into an existing plan. Inserts the work at the most appropriate location — not necessarily the end — and reorganises future sections if understanding has changed.
 
+## File location
+
+`PROGRESS.md` lives at the **project root** — not in `.claude/`. Always look for `<project-root>/PROGRESS.md` first. Do not assume `.claude/PROGRESS.md`.
+
 ## Workflow
 
 1. **Discuss** — clarify requirements, scope, and dependencies before touching `PROGRESS.md`

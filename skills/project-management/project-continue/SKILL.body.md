@@ -2,9 +2,13 @@
 
 Use this skill to resume work from an existing `PROGRESS.md`. Treats the document as a living record — not a perfect source of truth — and updates it as the session progresses.
 
+## File location
+
+`PROGRESS.md` lives at the **project root** — not in `.claude/`. Always look for `<project-root>/PROGRESS.md` first. Do not assume `.claude/PROGRESS.md`.
+
 ## Workflow
 
-1. **Read** — read `PROGRESS.md` in full; note the current section and next-session guidance
+1. **Read** — read `PROGRESS.md` at the project root in full; note the current section and next-session guidance
 2. **Compact** — remove duplicate notes and obsolete TODOs; compress completed sub-tasks to a single line
 3. **Verify** — check that recently-completed work actually landed (spot-check files, not assumptions)
 4. **Reorient** — confirm the current section still makes sense given any new discoveries; move it to upcoming sections if priorities have changed

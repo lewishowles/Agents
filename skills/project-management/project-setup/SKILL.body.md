@@ -2,9 +2,13 @@
 
 Use this skill to start a new project or feature with a solid foundation. Creates an initial `PROGRESS.md` after exploration and discussion — do not begin implementation until the plan is reviewed.
 
+## File location
+
+`PROGRESS.md` lives at the **project root** — not in `.claude/`. Create and read it at `<project-root>/PROGRESS.md`. Do not assume `.claude/PROGRESS.md`.
+
 ## Workflow
 
-1. **Explore** — read the repository; identify existing patterns, tech choices, and relevant files; check for `PROGRESS.md`, `AGENTS.md`, and `README.md`
+1. **Explore** — read the repository; identify existing patterns, tech choices, and relevant files; check for `PROGRESS.md`, `AGENTS.md`, and `README.md` at the project root
 2. **Ask** — clarify ambiguous requirements and constraints before planning; surface tradeoffs and alternatives
 3. **Discuss** — if multiple approaches exist, present them; don't pick silently
 4. **Plan** — produce an initial `PROGRESS.md` following the standard schema (see below)
