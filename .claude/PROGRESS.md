@@ -138,7 +138,7 @@ Phases 0–9 complete. Summary:
 
 **Commit:** `refactor(hooks): drive skill-file-trigger from skill.json filePatterns and pathPatterns`
 
-- [ ] **14c.1** Rewrite `skill-autotrigger.sh` to iterate `skill.json` for `triggers`
+- [x] **14c.1** Rewrite `skill-autotrigger.sh` to iterate `skill.json` for `triggers`
 
 **Commit:** `refactor(hooks): drive skill-autotrigger from skill.json triggers`
 

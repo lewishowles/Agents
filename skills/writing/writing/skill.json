@@ -13,7 +13,8 @@
     "wording",
     "proofread",
     "edit the text",
-    "edit the copy"
+    "edit the copy",
+    "readme"
   ],
   "filePatterns": ["*.md"],
   "pathPatterns": [],

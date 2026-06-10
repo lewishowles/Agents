@@ -9,7 +9,14 @@
     "gitflow",
     "tailwind",
     "vue project stack",
-    "lewishowles"
+    "lewishowles",
+    ".vue",
+    "vue",
+    "composable",
+    "script setup",
+    "defineProps",
+    "defineEmits",
+    "defineExpose"
   ],
   "filePatterns": ["*.vue"],
   "pathPatterns": [],
