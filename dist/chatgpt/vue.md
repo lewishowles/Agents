@@ -5,10 +5,10 @@ description: >
   Use this skill when working with .vue files, Vue components, composables, or Vue templates — even for small edits. Covers Vue 3 Composition API patterns, script setup, macro order, computed property organisation, component patterns, and component directory organisation. For project-specific stack choices (Bun, Vitest, Gitflow, @lewishowles/helpers, @lewishowles/components), see the vue-project-stack skill.
 related-skills:
   - code-style
-  - pinia
+  - vue-pinia
   - vue-project-stack
   - vue-router
-  - vueuse-functions
+  - vue-use
   - typescript
 ---
 # Vue

@@ -9,7 +9,7 @@ do-not-use-when:
   - No UI, design artefacts, or code to review
 related-skills:
   - accessibility
-  - ui-copy
+  - writing-copy
 ---
 # Accessibility audit
 

@@ -9,7 +9,7 @@ do-not-use-when:
 related-skills:
   - error-handling
   - vue
-  - vite-patterns
+  - vue-vite
 ---
 # Frontend security
 

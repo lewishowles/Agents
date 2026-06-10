@@ -7,9 +7,9 @@ do-not-use-when:
   - The user is asking a general question unrelated to a specific failure
   - You have already identified the root cause and are ready to implement
 related-skills:
-  - unit-testing
-  - e2e-testing
-  - vite-patterns
+  - test-unit
+  - test-e2e
+  - vue-vite
   - swift
 ---
 # Debugging

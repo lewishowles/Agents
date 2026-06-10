@@ -1,6 +1,6 @@
 {
   "name": "web-performance",
-  "description": "Use this skill when optimising runtime performance, Core Web Vitals, bundle size, or asset loading for Vue/Vite projects — including GitHub Pages deployments. Covers LCP, CLS, INP, Vue reactivity cost, code splitting, images, fonts, and measurement. Distinct from vite-patterns (build config) and accessibility (which covers prefers-reduced-motion).",
+  "description": "Use this skill when optimising runtime performance, Core Web Vitals, bundle size, or asset loading for Vue/Vite projects \u2014 including GitHub Pages deployments. Covers LCP, CLS, INP, Vue reactivity cost, code splitting, images, fonts, and measurement. Distinct from vite-patterns (build config) and accessibility (which covers prefers-reduced-motion).",
   "when": "When optimising Core Web Vitals, bundle size, or asset loading for Vue/Vite/GitHub Pages projects",
   "triggers": [
     "performance",
@@ -16,13 +16,13 @@
     "runtime performance"
   ],
   "do-not-use-when": [
-    "Configuring the Vite build — use vite-patterns",
-    "Writing animation or transition code — check accessibility for reduced-motion first"
+    "Configuring the Vite build \u2014 use vue-vite",
+    "Writing animation or transition code \u2014 check accessibility for reduced-motion first"
   ],
   "filePatterns": [],
   "pathPatterns": [],
   "dependencies": [
-    "vite-patterns",
+    "vue-vite",
     "vue",
     "accessibility"
   ],

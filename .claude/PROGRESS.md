@@ -165,6 +165,38 @@ Phases 0–9 complete. Summary:
 
 ---
 
+### Phase 16b — Skill prefix renames
+
+Renamed 14 skills for prefix-based autocomplete discoverability.
+
+| Old | New |
+|---|---|
+| `archive-progress` | `project-archive-progress` |
+| `compact-progress` | `project-compact-progress` |
+| `continue-project` | `project-continue` |
+| `plan-task` | `project-plan-task` |
+| `setup-project` | `project-setup` |
+| `pinia` | `vue-pinia` |
+| `pinia-colada` | `vue-pinia-colada` |
+| `vite-patterns` | `vue-vite` |
+| `vueuse-functions` | `vue-use` |
+| `testing` | `test` |
+| `unit-testing` | `test-unit` |
+| `e2e-testing` | `test-e2e` |
+| `readme` | `writing-readme` |
+| `ui-copy` | `writing-copy` |
+
+- [x] git mv all 14 directories
+- [x] Update `name` field in each skill.json
+- [x] Update `dependencies` arrays across 12 skill.json files
+- [x] Update `do-not-use-when` text in 2 skill.json files
+- [x] Update `skillOverrides` keys in `adapters/claude/settings.base.json`
+- [x] Update `slug` in `external-skills.json` (`vueuse-functions` → `vue-use`)
+
+**Commit:** `refactor(skills): rename skills for prefix-based autocomplete discoverability`
+
+---
+
 ### Phase 17 — Validation
 
 - [ ] **17.1** Write `scripts/validate.sh` — manifests, dependencies, capabilities, executables, generated file freshness

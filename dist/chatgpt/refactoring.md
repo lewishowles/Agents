@@ -9,7 +9,7 @@ do-not-use-when:
   - The user hasn't asked for a refactor (don't improve adjacent code unprompted)
 related-skills:
   - code-style
-  - unit-testing
+  - test-unit
   - debugging
 ---
 # Refactoring

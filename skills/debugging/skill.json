@@ -1,7 +1,7 @@
 {
   "name": "debugging",
-  "description": "Use this skill when encountering any bug, test failure, or unexpected behaviour — before proposing a fix. Covers root-cause investigation, hypothesis testing, and minimal targeted fixes for Vue/Vite/Vitest and Swift/SwiftUI projects.",
-  "when": "When encountering any bug, test failure, or unexpected behaviour — before proposing a fix",
+  "description": "Use this skill when encountering any bug, test failure, or unexpected behaviour \u2014 before proposing a fix. Covers root-cause investigation, hypothesis testing, and minimal targeted fixes for Vue/Vite/Vitest and Swift/SwiftUI projects.",
+  "when": "When encountering any bug, test failure, or unexpected behaviour \u2014 before proposing a fix",
   "triggers": [
     "bug",
     "test failure",
@@ -21,9 +21,9 @@
   "filePatterns": [],
   "pathPatterns": [],
   "dependencies": [
-    "unit-testing",
-    "e2e-testing",
-    "vite-patterns",
+    "test-unit",
+    "test-e2e",
+    "vue-vite",
     "swift"
   ],
   "capabilities": {

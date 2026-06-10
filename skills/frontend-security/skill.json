@@ -26,7 +26,7 @@
   "dependencies": [
     "error-handling",
     "vue",
-    "vite-patterns"
+    "vue-vite"
   ],
   "capabilities": {
     "promptTriggering": true,
