@@ -21,11 +21,7 @@ prompt=$(printf '%s' "$input" | jq -r '.prompt // ""' 2>/dev/null)
 
 [ -z "$prompt" ] && exit 0
 
-_script="${BASH_SOURCE[0]}"
-[ -L "$_script" ] && _script=$(readlink "$_script")
-REPO_DIR=$(cd "$(dirname "$_script")/../../.." && pwd)
-
-mapfile -t manifests < <(find "$REPO_DIR/skills" -name "skill.json" -maxdepth 3 2>/dev/null)
+mapfile -t manifests < <(find -L "$HOME/.claude/skills" -name "skill.json" -maxdepth 2 2>/dev/null)
 [ ${#manifests[@]} -eq 0 ] && exit 0
 
 skills=()

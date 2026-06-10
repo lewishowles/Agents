@@ -20,11 +20,7 @@ file_path=$(printf '%s' "$input" | jq -r '.tool_input.file_path // ""' 2>/dev/nu
 
 filename=$(basename "$file_path")
 
-_script="${BASH_SOURCE[0]}"
-[ -L "$_script" ] && _script=$(readlink "$_script")
-REPO_DIR=$(cd "$(dirname "$_script")/../../.." && pwd)
-
-mapfile -t manifests < <(find "$REPO_DIR/skills" -name "skill.json" -maxdepth 3 2>/dev/null)
+mapfile -t manifests < <(find -L "$HOME/.claude/skills" -name "skill.json" -maxdepth 2 2>/dev/null)
 [ ${#manifests[@]} -eq 0 ] && exit 0
 
 skills=()
