@@ -53,3 +53,4 @@ Manifest-driven refactor complete. Key deliverables:
 - **16b:** 14 skills renamed for prefix-based autocomplete discoverability (e.g. `pinia` → `vue-pinia`, `testing` → `test`, `readme` → `writing-readme`)
 - **17:** Codex global setup now links skills into `~/.codex/skills` as well as `~/.agents/skills`; project-management skill headings now include the `Project` prefix for clearer Codex display names
 - **18a:** README refreshed for grouped skill paths and current project setup output
+- **18b:** ChatGPT dist refreshed by updating stale cross-skill references in source skill manifests (`test-unit`, `test-e2e`, `writing-readme`, `writing-copy`, `vue-vite`)

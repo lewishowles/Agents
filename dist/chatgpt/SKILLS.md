@@ -61,16 +61,16 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 **Combine with:** swift, code-style, accessibility
 
 ### test
-**When to use:** Use this skill when deciding what to test, at which layer, and in what order — before writing the tests themselves. Covers the test pyramid, TDD red-green-refactor workflow, and what to skip. For the mechanics of writing tests, see unit-testing and e2e-testing.
+**When to use:** Use this skill when deciding what to test, at which layer, and in what order — before writing the tests themselves. Covers the test pyramid, TDD red-green-refactor workflow, and what to skip. For the mechanics of writing tests, see test-unit and test-e2e.
 **Avoid:** Writing the actual test code — use unit-test or e2e-test; Debugging a failing test — use debugging
 **Combine with:** test-unit, test-e2e, debugging, refactoring
 
 ### test-e2e
-**When to use:** Use this skill when writing, reviewing, or planning end-to-end and browser-based component tests with Playwright or Cypress. It guides agents through user-focused browser automation, interaction coverage, test structure, selector strategy, and CI setup. For isolated logic or rendering checks that do not need a browser, use the unit-testing skill instead.
+**When to use:** Use this skill when writing, reviewing, or planning end-to-end and browser-based component tests with Playwright or Cypress. It guides agents through user-focused browser automation, interaction coverage, test structure, selector strategy, and CI setup. For isolated logic or rendering checks that do not need a browser, use the test-unit skill instead.
 **Combine with:** code-style, test-unit, vue-project-stack
 
 ### test-unit
-**When to use:** Use this skill when writing, editing, or reviewing unit tests — Vitest, @testing-library/vue, composable testing, XCTest. Covers testing philosophy (happy and unhappy paths), what to skip (methods that delegate to @lewishowles/helpers), and meaningful assertions over snapshots. Always apply when working in *.test.js files or when the user mentions tests, specs, or coverage. For end-to-end tests, see the e2e-testing skill if present.
+**When to use:** Use this skill when writing, editing, or reviewing unit tests — Vitest, @testing-library/vue, composable testing, XCTest. Covers testing philosophy (happy and unhappy paths), what to skip (methods that delegate to @lewishowles/helpers), and meaningful assertions over snapshots. Always apply when working in *.test.js files or when the user mentions tests, specs, or coverage. For end-to-end tests, see the test-e2e skill if present.
 **Combine with:** code-style, vue-pinia, vue, typescript
 
 ### typescript
@@ -105,12 +105,12 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 **When to use:** Use this skill when configuring vite.config.ts, managing environment variables, or troubleshooting build/dev server issues. Covers config structure, environment variables, security boundaries, library mode, dev vs build differences, and common pitfalls.
 
 ### web-performance
-**When to use:** Use this skill when optimising runtime performance, Core Web Vitals, bundle size, or asset loading for Vue/Vite projects — including GitHub Pages deployments. Covers LCP, CLS, INP, Vue reactivity cost, code splitting, images, fonts, and measurement. Distinct from vite-patterns (build config) and accessibility (which covers prefers-reduced-motion).
+**When to use:** Use this skill when optimising runtime performance, Core Web Vitals, bundle size, or asset loading for Vue/Vite projects — including GitHub Pages deployments. Covers LCP, CLS, INP, Vue reactivity cost, code splitting, images, fonts, and measurement. Distinct from vue-vite (build config) and accessibility (which covers prefers-reduced-motion).
 **Avoid:** Configuring the Vite build — use vue-vite; Writing animation or transition code — check accessibility for reduced-motion first
 **Combine with:** vue-vite, vue, accessibility
 
 ### writing
-**When to use:** Use this skill when writing or editing prose — blog posts, documentation, longform content, marketing copy. Covers voice, tone, structure, examples, language conventions (UK spelling, sentence case, em-dashes), and what to avoid (preachy tone, padding, opening summaries). For README files specifically, see the readme skill. For UI microcopy (buttons, error messages, empty states), see the ui-copy skill.
+**When to use:** Use this skill when writing or editing prose — blog posts, documentation, longform content, marketing copy. Covers voice, tone, structure, examples, language conventions (UK spelling, sentence case, em-dashes), and what to avoid (preachy tone, padding, opening summaries). For README files specifically, see the writing-readme skill. For UI microcopy (buttons, error messages, empty states), see the writing-copy skill.
 
 ### writing-copy
 **When to use:** Use this skill when writing UI microcopy — button labels, error messages, empty states, tooltips, CTAs, form helper text, confirmation dialogs. Covers being specific and action-oriented, surfacing useful context, and avoiding vague filler. Pair with the writing skill for voice baselines and the accessibility skill for screen-reader-friendly phrasing.

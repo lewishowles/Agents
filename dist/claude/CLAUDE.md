@@ -185,7 +185,7 @@ Apply across all projects. See individual skills for detailed rules. Per-project
 - `/refactoring` — When refactoring existing code or triaging technical debt
 - `/swift` — When writing Swift, style, SwiftUI patterns, concurrency
 - `/swift-ui` — When writing/reviewing SwiftUI code, views, state management
-- `/test` — When deciding what to test and at which layer — strategy above unit-testing and e2e-testing
+- `/test` — When deciding what to test and at which layer — strategy above test-unit and test-e2e
 - `/test-e2e` — When writing end-to-end tests with Playwright
 - `/test-unit` — When writing unit tests, Vitest, philosophy, what to skip
 - `/typescript` — When using TypeScript, type safety, escape hatches

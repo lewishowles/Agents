@@ -2,7 +2,7 @@
 # Generated — edit skill.json and SKILL.body.md instead.
 name: test
 description: >
-  Use this skill when deciding what to test, at which layer, and in what order — before writing the tests themselves. Covers the test pyramid, TDD red-green-refactor workflow, and what to skip. For the mechanics of writing tests, see unit-testing and e2e-testing.
+  Use this skill when deciding what to test, at which layer, and in what order — before writing the tests themselves. Covers the test pyramid, TDD red-green-refactor workflow, and what to skip. For the mechanics of writing tests, see test-unit and test-e2e.
 do-not-use-when:
   - Writing the actual test code — use unit-test or e2e-test
   - Debugging a failing test — use debugging
