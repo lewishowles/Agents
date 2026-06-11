@@ -1,6 +1,7 @@
 ---
 # Generated — edit skill.json and SKILL.body.md instead.
 name: project-continue
+displayName: Project continue
 description: >
   Use this skill to resume work from an existing PROGRESS.md — compacts stale notes, verifies completed work, and picks up from where the last session left off.
 related-skills:

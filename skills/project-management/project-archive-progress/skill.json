@@ -1,5 +1,6 @@
 {
   "name": "project-archive-progress",
+  "title": "Project archive progress",
   "description": "Use this skill to reduce the size of a long-running PROGRESS.md by moving completed sections into an archived milestones block at the bottom.",
   "when": "When moving completed PROGRESS.md sections into archived milestones to reduce document size",
   "triggers": [

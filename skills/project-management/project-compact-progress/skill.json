@@ -1,5 +1,6 @@
 {
   "name": "project-compact-progress",
+  "title": "Project compact progress",
   "description": "Use this skill to refactor a growing PROGRESS.md \u2014 removes noise, preserves decisions and discoveries, and rewrites active sections for clarity.",
   "when": "When PROGRESS.md has grown noisy or hard to scan; preserves decisions and rewrites active sections",
   "triggers": [

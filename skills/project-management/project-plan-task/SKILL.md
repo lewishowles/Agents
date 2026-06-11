@@ -1,6 +1,7 @@
 ---
 # Generated — edit skill.json and SKILL.body.md instead.
 name: project-plan-task
+displayName: Project plan task
 description: >
   Use this skill to introduce new work into an existing plan — discusses requirements and inserts a new section at the appropriate location, not simply at the end.
 ---
@@ -25,6 +26,10 @@ Use this skill to introduce new work into an existing plan. Inserts the work at 
 - Insert before other upcoming sections if this work is a prerequisite
 - Split into two sections if the task spans more than one commit
 - Avoid simply appending — sequential order should reflect dependency order, not arrival order
+- Treat each section with its own `### Expected commit` as an execution boundary
+- If asked to implement a multi-section plan, implement only the first incomplete section unless the user explicitly says to implement all chunks in one pass
+- After implementing one section, stop for review with changed files, verification performed, and the suggested commit message
+- Do not combine release code, repo policy, tooling, docs, and roadmap sections into one working-tree change unless the plan explicitly defines them as one expected commit
 
 ## Section structure
 

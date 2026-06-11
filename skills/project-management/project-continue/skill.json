@@ -1,5 +1,6 @@
 {
   "name": "project-continue",
+  "title": "Project continue",
   "description": "Use this skill to resume work from an existing PROGRESS.md \u2014 compacts stale notes, verifies completed work, and picks up from where the last session left off.",
   "when": "When resuming work from an existing PROGRESS.md",
   "triggers": [

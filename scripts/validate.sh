@@ -73,6 +73,10 @@ while IFS= read -r -d '' manifest; do
 	[ -z "$(jq -r '.description // empty' "$manifest")" ] && \
 		fail "Missing 'description' in $name"
 
+	title=$(jq -r '.title // empty' "$manifest")
+	[ -n "$title" ] && [ "$title" = "$name" ] && \
+		fail "title should be human-readable, not identical to name, in $name"
+
 	[ "$name" != "$dir_name" ] && \
 		fail "name '$name' does not match directory '$dir_name'"
 

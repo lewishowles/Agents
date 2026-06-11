@@ -1,6 +1,7 @@
 ---
 # Generated — edit skill.json and SKILL.body.md instead.
 name: project-compact-progress
+displayName: Project compact progress
 description: >
   Use this skill to refactor a growing PROGRESS.md — removes noise, preserves decisions and discoveries, and rewrites active sections for clarity.
 ---

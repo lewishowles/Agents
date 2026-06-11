@@ -82,9 +82,16 @@ def generate_skill_md(skill_dir: Path) -> None:
 		"---",
 		GENERATED_HEADER,
 		f"name: {manifest['name']}",
+	]
+
+	display_name = manifest.get("title")
+	if display_name:
+		parts.append(f"displayName: {display_name}")
+
+	parts.extend([
 		"description: >",
 		f"  {manifest.get('description', '')}",
-	]
+	])
 
 	do_not_use = manifest.get("do-not-use-when", [])
 	if do_not_use:

@@ -101,23 +101,34 @@ See `templates/claude/settings.json` for a Claude project template with non-univ
 ## Adding a new skill
 
 1. Create a folder in `skills/` matching the slug you want (e.g. `skills/my-skill/`)
-2. Add `SKILL.md` with frontmatter:
+2. Add `skill.json`:
+
+```json
+{
+  "name": "my-skill",
+  "title": "My skill",
+  "description": "Use this skill when... (one sentence — shown in the skills list)",
+  "when": "When doing this work",
+  "triggers": ["my trigger"],
+  "filePatterns": [],
+  "pathPatterns": [],
+  "dependencies": ["code-style"],
+  "capabilities": {
+    "promptTriggering": true,
+    "fileTriggering": false
+  }
+}
+```
+
+3. Add `SKILL.body.md`:
 
 ```markdown
----
-name: my-skill
-description: Use this skill when... (one sentence — shown in the skills list)
-related-skills:
-  - code-style
----
-
 # My skill
 
 Content here.
 ```
 
-1. Add `triggers`, `filePatterns`, and `pathPatterns` to `skill.json` so hooks and docs can derive their lists
-2. Run `scripts/sync.sh` — this regenerates the skill tables in this file and [docs/commands.md](commands.md), then rebuilds the Claude, Codex, and ChatGPT targets
+4. Run `scripts/sync.sh` — this regenerates `SKILL.md`, the skill tables in this file and [docs/commands.md](commands.md), then rebuilds the Claude, Codex, and ChatGPT targets
 
 After global setup, shared skills are available to Claude via `~/.claude/skills/` and to Codex via `~/.codex/skills/`, with compatibility links also kept in `~/.agents/skills/`. The ChatGPT target requires a manual re-upload to the Custom GPT knowledge base after running sync.
 

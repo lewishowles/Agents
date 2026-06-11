@@ -48,3 +48,7 @@ Manifest-driven refactor complete. Source/output dirs renamed (`shared/` → `ru
 ### Phase 19 (2026-06-11)
 
 Docs generation hardened: hook manifests now include descriptions; generated hook docs include purpose; file-trigger docs merge duplicate patterns; generated blocks carry edit-source comments; `scripts/build-docs.py --check` and `scripts/validate.sh` catch stale generated docs.
+
+### Phase 20 (2026-06-11)
+
+Project-management skill manifests now carry explicit `title` values; generated `SKILL.md` frontmatter emits Codex-compatible `displayName` from `title` only when present so UI labels can avoid reading markdown headings without broad generated churn.
