@@ -1,4 +1,4 @@
-# Archive progress
+# Project archive progress
 
 Use this skill to reduce the size of a long-running `PROGRESS.md` by moving completed sections into an `## Archived milestones` block. Keeps active work small and easy to scan without losing the project history.
 

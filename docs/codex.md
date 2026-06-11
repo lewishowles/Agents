@@ -53,7 +53,7 @@ codebase-memory-mcp cli index_repository '{"repo_path":"'$PWD'"}'
 
 ## Skills
 
-This repo uses `~/.agents/skills/<name>` for user-global skill symlinks because that matches the active local Codex setup on this machine. `scripts/setup-global.sh --codex` links every repo skill there.
+This repo uses `~/.codex/skills/<name>` for user-global skill symlinks in current Codex builds. `scripts/setup-global.sh --codex` links every repo skill there, and also keeps `~/.agents/skills/<name>` linked for compatibility with older local setups.
 
 Project setup creates `.agents/skills/` for project-local Codex skills. It does not copy the global skill set into each project.
 

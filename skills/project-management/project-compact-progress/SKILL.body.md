@@ -1,4 +1,4 @@
-# Compact progress
+# Project compact progress
 
 Use this skill to refactor a growing `PROGRESS.md` that has become noisy or hard to scan. Preserves what matters; removes what doesn't; rewrites the active sections for clarity.
 

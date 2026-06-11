@@ -4,7 +4,7 @@ name: project-compact-progress
 description: >
   Use this skill to refactor a growing PROGRESS.md — removes noise, preserves decisions and discoveries, and rewrites active sections for clarity.
 ---
-# Compact progress
+# Project compact progress
 
 Use this skill to refactor a growing `PROGRESS.md` that has become noisy or hard to scan. Preserves what matters; removes what doesn't; rewrites the active sections for clarity.
 

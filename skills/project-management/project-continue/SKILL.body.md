@@ -1,4 +1,4 @@
-# Continue project
+# Project continue
 
 Use this skill to resume work from an existing `PROGRESS.md`. Treats the document as a living record — not a perfect source of truth — and updates it as the session progresses.
 

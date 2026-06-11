@@ -33,6 +33,7 @@ backup_path() {
 		"$HOME/.claude/hooks/"*)    backup="$HOME/.claude/backups/hooks/$(basename "$path").bak" ;;
 		"$HOME/.claude/commands/"*) backup="$HOME/.claude/backups/commands/$(basename "$path").bak" ;;
 		"$HOME/.agents/skills/"*)   backup="$HOME/.agents/backups/skills/$(basename "$path").bak" ;;
+		"$HOME/.codex/skills/"*)    backup="$HOME/.codex/backups/skills/$(basename "$path").bak" ;;
 	esac
 
 	if [ -e "$backup" ] || [ -L "$backup" ]; then
@@ -192,13 +193,16 @@ setup_codex() {
 	ensure_container_dir "$HOME/.agents" "~/.agents"
 	ensure_container_dir "$HOME/.agents/skills" "~/.agents/skills"
 	ensure_container_dir "$HOME/.codex" "~/.codex"
+	ensure_container_dir "$HOME/.codex/skills" "~/.codex/skills"
 
 	link_path "$REPO_DIR/dist/codex/AGENTS.md" "$HOME/.agents/AGENTS.md" "AGENTS.md"
 	link_path "$REPO_DIR/dist/codex/AGENTS.md" "$HOME/.codex/AGENTS.md" "Codex AGENTS.md"
 	ensure_codex_config
 
 	prune_stale_repo_links "$HOME/.agents/skills" "$REPO_DIR/skills" "skills"
+	prune_stale_repo_links "$HOME/.codex/skills" "$REPO_DIR/skills" "Codex skills"
 	link_skills "$HOME/.agents/skills"
+	link_skills "$HOME/.codex/skills"
 }
 
 # Ensures ~/.codex/config.toml contains the codebase-memory-mcp server entry.

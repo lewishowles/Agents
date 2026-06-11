@@ -1,4 +1,4 @@
-# Setup project
+# Project setup
 
 Use this skill to start a new project or feature with a solid foundation. Creates an initial `PROGRESS.md` after exploration and discussion — do not begin implementation until the plan is reviewed.
 

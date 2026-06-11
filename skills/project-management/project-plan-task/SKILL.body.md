@@ -1,4 +1,4 @@
-# Plan task
+# Project plan task
 
 Use this skill to introduce new work into an existing plan. Inserts the work at the most appropriate location — not necessarily the end — and reorganises future sections if understanding has changed.
 

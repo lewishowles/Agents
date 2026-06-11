@@ -100,13 +100,13 @@ Or, inside Claude/Codex when the MCP tools are available, call `index_repository
 codebase-memory-mcp cli list_projects '{}'
 ```
 
-Create `~/.agents/skills/`, then link each skill folder:
+Create `~/.codex/skills/`, then link each skill folder:
 
 ```bash
-ln -s /path/to/repository/skills/vue ~/.agents/skills/vue
+ln -s /path/to/repository/skills/vue ~/.codex/skills/vue
 ```
 
-This keeps the active Codex setup in one place: `~/.agents` for config, global `AGENTS.md`, and user skill symlinks.
+This keeps the active Codex setup in one place: `~/.codex` for config, global `AGENTS.md`, and user skill symlinks. `scripts/setup-global.sh --codex` also maintains compatibility links in `~/.agents/skills/`.
 
 If external skill sync fails because the network is unavailable, keep the existing local `skills/<name>` copy and continue setup. `scripts/setup-global.sh --both` does this automatically; pass `--skip-external` to bypass the sync step intentionally.
 

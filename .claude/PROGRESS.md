@@ -19,6 +19,7 @@
 | Skill grouping: `vue/`, `swift/`, `testing/`, `writing/`, `project-management/` | Related skills navigable; build scripts handle one level of nesting                                    |
 | Per-skill, per-hook symlinks (not whole folder)                                 | Coexists with plugin/system-installed items in `~/.claude/` and `~/.agents/`                           |
 | Skill prefix renames (Phase 16b)                                                | Prefix-based autocomplete discoverability; 14 skills renamed                                           |
+| Codex skill links in `~/.codex/skills`                                          | Current Codex builds discover user skills there; `~/.agents/skills` remains linked for compatibility   |
 
 ---
 
@@ -26,7 +27,7 @@
 
 Editable source: `rules/` (shared rules), `skills/` (skill manifests + bodies), `hooks/` (hook source), `adapters/` (runtime-specific settings base).
 Generated output: `dist/` — never author directly; regenerate with `scripts/sync.sh`.
-Installed output: symlinks from `~/.claude/` and `~/.agents/` into `dist/`.
+Installed output: symlinks from `~/.claude/`, `~/.agents/`, and `~/.codex/` into `dist/`.
 
 **End-to-end validation target:** `scripts/validate.sh` exits 0; `scripts/sync.sh` exits 0 and is idempotent; `readlink ~/.claude/settings.json` → `dist/claude/settings.json`; writing a `.vue` file fires the vue skill reminder from the data-driven hook.
 
@@ -50,3 +51,4 @@ Manifest-driven refactor complete. Key deliverables:
 - **15:** `global-skills.md` and `SKILLS.md` (ChatGPT) generated from `skill.json`; no longer manually edited
 - **16:** `build-settings.py` generates `settings.json` hooks block from `hook.json`; `settings.base.json` is the editable source
 - **16b:** 14 skills renamed for prefix-based autocomplete discoverability (e.g. `pinia` → `vue-pinia`, `testing` → `test`, `readme` → `writing-readme`)
+- **17:** Codex global setup now links skills into `~/.codex/skills` as well as `~/.agents/skills`; project-management skill headings now include the `Project` prefix for clearer Codex display names
