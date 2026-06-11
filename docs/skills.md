@@ -10,32 +10,43 @@ Defined in `skills/` in this repo, then symlinked into each runtime by `scripts/
 
 Official external skills are listed in `external-skills.json` and synced into `skills/` by `scripts/sync-external-skills.sh`. Global setup runs that sync before linking skills. If the network is unavailable, setup warns and continues with the existing local copy.
 
-| Skill                           | When to use                                                                                                                     | Auto-trigger keywords                                                                                                                                                  |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `accessibility`                 | Building interfaces — WCAG AA baseline, colour contrast, keyboard access, semantic HTML                                         | `wcag`, `a11y`, `aria`, `keyboard nav`, `screen reader`, `colour contrast`, `focus`, `button`, `form`, `label`, `heading`                                              |
-| `agentic-engineering`           | Building with Claude API, Anthropic SDK, or managed agents — model selection, token budgeting, batch processing, prompt caching | `claude api`, `anthropic sdk`, `managed agent`, `llm cost`, `token budget`, `prompt caching`, `batch api`                                                              |
-| `architecture-decision-records` | Documenting significant technical decisions — framework adoption, major refactors, architectural patterns                       | `adr`, `architecture decision`, `tech decision`, `decision record`, `framework adoption`, `major refactor`                                                             |
-| `bash`                          | Shell scripts, zsh functions, `.env` files, config files                                                                        | `.sh`, `bash`, `zsh`, `shell script`, `.env`, `alias`, `export`, `PATH`, `.zshrc`, `cron`                                                                              |
-| `codebase-memory`               | Structural code queries via codebase-memory-mcp — graph search, call tracing, architecture, impact analysis                     | `explore the codebase`, `architecture`, `who calls`, `trace call`, `dependencies`, `impact analysis`, `dead code`, `graph query`, `search_graph`                       |
-| `code-style`                    | All code in any language — formatting, naming, comments                                                                         | `write`, `add`, `create`, `implement`, `fix`, `function`, `method`, `class`, `variable`, `file`, `code`                                                                |
-| `dependencies`                  | Adding packages or considering a new library — when to add, what to avoid, @lewishowles libs                                    | `package.json`, `npm install`, `bun add`, `yarn add`, `install package`, `new library`, `upgrade package`                                                              |
-| `e2e-testing`                   | End-to-end tests with Playwright — browser automation, user journeys, test structure                                            | `e2e`, `playwright`, `end-to-end test`, `user journey`, `data-test`                                                                                                    |
-| `error-handling`                | Functions with parameters, API calls, response handling                                                                         | `error handling`, `try-catch`, `validate`, `guard let`, `api call`, `fetch`, `async`, `throws`, `Result<`                                                              |
-| `pinia`                         | Client-side Vue stores — app/UI state, setup stores, `storeToRefs`, HMR, testing                                                | `pinia`, `defineStore`, `storeToRefs`, `@pinia/testing`, `useXStore`, files in `stores/`                                                                               |
-| `pinia-colada`                  | Async server state in Vue — caching, mutations, optimistic updates, cache invalidation via `@pinia/colada`                      | `@pinia/colada`, `pinia colada`, `useQuery`, `useMutation`, `defineQuery`, `defineMutation`, `useQueryCache`, `invalidateQueries`, files in `queries/` or `mutations/` |
-| `readme`                        | Writing or editing a README — structure, what belongs, what to cut                                                              | `readme`, `getting started guide`                                                                                                                                      |
-| `session-management`            | Saving and resuming work sessions across Claude Code restarts                                                                   | `save session`, `resume session`, `context snapshot`, `checkpoint`, `session management`                                                                               |
-| `swift`                         | Swift code — comment style, spacing, concurrency, `@Observable`/`@MainActor`                                                    | `.swift`, `swift`, `swiftui`, `xcode`, `@observable`, `@state`, `@mainactor`, `xctest`                                                                                 |
-| `swift-ui`                      | SwiftUI code — state management, view composition, navigation, performance                                                      | (paired with `swift`; triggered by SwiftUI-specific APIs)                                                                                                              |
-| `typescript`                    | TypeScript files, type errors, type definitions, generics                                                                       | `.ts`, `.tsx`, `typescript`, `type error`, `interface`, `generics`, `Record<`, `Partial<`, `keyof`, `typeof`                                                           |
-| `ui-copy`                       | Microcopy — button labels, error messages, empty states, tooltips, CTAs                                                         | `ui copy`, `microcopy`, `error message`, `button label`, `cta`, `empty state`, `tooltip`, `placeholder`                                                                |
-| `unit-testing`                  | Writing or reviewing unit tests — Vitest, XCTest, `@testing-library/vue`                                                        | `test`, `spec`, `coverage`, `.test.`, `.spec.`, `xctest`, `vitest`, `describe`, `mock`, `spy`, `assert`                                                                |
-| `vite-patterns`                 | Configuring `vite.config.ts`, environment variables, build optimisation, security                                               | `vite.config`, `VITE_`, `environment var`, `build.lib`, `rollup`, `esbuild`                                                                                            |
-| `vue`                           | Vue 3 components, composables, templates — patterns and organisation                                                            | `.vue`, `vue`, `composable`, `<script setup`, `pinia`, `defineProps`, `ref(`, `computed(`                                                                              |
-| `vue-project-stack`             | Vue projects using the wider stack: Bun, Vitest, Tailwind, Gitflow, `@lewishowles` libs, Pinia Colada                           | (always paired with `vue`; same triggers)                                                                                                                              |
-| `vue-router`                    | Vue Router routes, guards, params, query strings, redirects, and route-driven state                                             | `vue-router`, `router`, `routes`, `useRoute`, `useRouter`, `onBeforeRouteUpdate`, files in `router/`, `routes/`, or `pages/`                                           |
-| `vueuse-functions`              | Official VueUse composable guide — map requirements to VueUse functions before writing bespoke code                             | `@vueuse`, `vueuse`, common VueUse composables such as `useLocalStorage`, `useMouse`, `useBreakpoints`                                                                 |
-| `writing`                       | Prose — blog posts, documentation, longform content, voice and tone                                                             | `documentation`, `docs`, `blog`, `changelog`, `article`, `reword`, `rephrase`, `proofread`                                                                             |
+<!-- BEGIN GENERATED: user-skills -->
+| Skill | When to use | Auto-trigger keywords |
+| ----- | ----------- | --------------------- |
+| `accessibility` | When building interfaces, WCAG AA baseline, accessible design | `accessible`, `accessibility`, `wcag`, `a11y`, `aria`, `aria-`, `color contrast`, `colour contrast`, `keyboard nav`, `screen reader`, `focus trap`, `focus management`, `focus ring`, `focus visible`, `tabindex`, `role=`, `alt text`, `caption`, `landmark` |
+| `accessibility-audit` | When conducting an accessibility audit of a page, component, or PR; preparing a client report | `audit for accessibility`, `accessibility audit`, `a11y check`, `wcag compliance`, `is this accessible`, `accessibility report` |
+| `bash` | When writing shell scripts, bash config, patterns | `.sh`, `bash`, `zsh`, `shell script`, `shell function`, `shell util`, `#!/`, `.env`, `alias`, `.bashrc`, `.zshrc`, `cron`, `makefile` |
+| `code-review` | When reviewing a PR or diff, or receiving review feedback | `review`, `code review`, `pr review`, `pull request review`, `review feedback`, `review this`, `review the` |
+| `code-style` | When formatting code, covering naming, comments, arrays, objects | `write`, `add`, `create`, `implement`, `fix`, `update`, `refactor`, `edit`, `change`, `build`, `function`, `method`, `class`, `struct`, `enum`, `property`, `variable`, `snippet`, `handler`, `helper`, `utility` |
+| `codebase-memory` | Use this skill when answering structural code queries with the codebase knowledge graph, including architecture, callers, dependencies, impact analysis, dead code, graph query syntax, Cypher examples, edge types, and search_graph usage. | `explore codebase`, `understand architecture`, `codebase structure`, `who calls`, `call chain`, `find callers`, `dead code`, `unused functions`, `graph query`, `cypher`, `search_graph`, `impact analysis`, `show dependencies`, `trace path`, `high fan-out` |
+| `debugging` | When encountering any bug, test failure, or unexpected behaviour — before proposing a fix | `bug`, `test failure`, `unexpected behaviour`, `unexpected behavior`, `not working`, `debug`, `failing`, `why is`, `broken`, `regression` |
+| `dependencies` | When adding packages, what to choose, when to add | `package.json`, `npm install`, `npm add`, `bun add`, `yarn add`, `pnpm add`, `install package`, `add library`, `add dependency`, `new library`, `peer dep`, `devdependencies`, `upgrade package`, `package version` |
+| `error-handling` | When validating input, graceful fallbacks, error handling | `error handling`, `try-catch`, `try catch`, `validate`, `validation`, `guard let`, `api call`, `api request`, `fetch`, `async function`, `optional chaining`, `nil coalescing`, `throw`, `Result<`, `throws` |
+| `frontend-security` | When writing or reviewing client-side code for security: XSS, CSP, auth tokens, secrets hygiene | `xss`, `injection`, `security`, `csp`, `content security policy`, `v-html`, `authentication`, `auth token`, `secrets`, `sensitive data`, `sanitize`, `sanitise`, `csrf` |
+| `project-archive-progress` | When moving completed PROGRESS.md sections into archived milestones to reduce document size | (manual only) |
+| `project-compact-progress` | When PROGRESS.md has grown noisy or hard to scan; preserves decisions and rewrites active sections | (manual only) |
+| `project-continue` | When resuming work from an existing PROGRESS.md | (manual only) |
+| `project-plan-task` | When introducing new work into an existing plan | (manual only) |
+| `project-setup` | When starting a new project or feature; explores repo, asks questions, creates PROGRESS.md before coding | (manual only) |
+| `refactoring` | When refactoring existing code or triaging technical debt | `refactor`, `technical debt`, `tech debt`, `clean up`, `code smell`, `simplify`, `restructure` |
+| `swift` | When writing Swift, style, SwiftUI patterns, concurrency | `.swift`, `swift`, `swiftui`, `xcode`, `actor`, `struct`, `@observable`, `@state`, `@mainactor`, `@environment`, `@binding`, `nsworkspace`, `dispatchsource`, `macos app`, `appkit`, `uikit`, `swiftdata`, `xctest`, `async await swift` |
+| `swift-ui` | When writing/reviewing SwiftUI code, views, state management | `swiftui`, `@observable`, `@bindable`, `@state`, `@mainactor`, `@environment`, `@binding`, `navigationstack`, `navigationsplitview`, `tabview`, `labeledcontent`, `swiftui view`, `view composition` |
+| `test` | When deciding what to test and at which layer — strategy above test-unit and test-e2e | `what to test`, `test strategy`, `test pyramid`, `which tests`, `testing approach`, `tdd`, `test-driven` |
+| `test-e2e` | When writing end-to-end tests with Playwright | `e2e`, `playwright`, `cypress`, `browser automation`, `end-to-end test`, `user journey test`, `data-test` |
+| `test-unit` | When writing unit tests, Vitest, philosophy, what to skip | `unit test`, `test`, `spec`, `coverage`, `.test.`, `.spec.`, `xctest`, `vitest`, `describe`, `beforeeach`, `aftereach`, `mock`, `spy`, `stub`, `assert`, `@testing-library`, `snapshot test` |
+| `typescript` | When using TypeScript, type safety, escape hatches | `.ts`, `.tsx`, `typescript`, `lang="ts"`, `type error`, `type def`, `interface`, `generics`, `infer`, `keyof`, `typeof`, `Record<`, `Partial<`, `Pick<`, `Omit<`, `type alias`, `union type`, `intersection type`, `type guard`, `as any` |
+| `vue` | When writing Vue code, formatting, patterns, composables, components | `.vue`, `vue`, `composable`, `script setup`, `template`, `defineProps`, `defineEmits`, `defineExpose`, `ref(`, `reactive(`, `computed(`, `watch(`, `onMounted(`, `composition api` |
+| `vue-pinia` | When using Pinia for client-side Vue app state and stores | `@pinia/testing`, `pinia`, `defineStore`, `storeToRefs`, `useStore`, `client state`, `app state`, `ui state` |
+| `vue-pinia-colada` | When using `@pinia/colada` for async server state — `useQuery`, `useMutation`, cache management, optimistic updates | `@pinia/colada`, `pinia colada`, `useQuery`, `useMutation`, `defineQuery`, `defineMutation`, `queryCache`, `invalidateQueries`, `useQueryCache` |
+| `vue-project-stack` | When working in Vue + Bun + Vitest + Tailwind + Gitflow stack | `@lewishowles`, `vue-router`, `vitejs`, `vite`, `gitflow`, `tailwind`, `vue project stack`, `lewishowles`, `.vue`, `vue`, `composable`, `script setup`, `defineProps`, `defineEmits`, `defineExpose` |
+| `vue-router` | When using Vue Router routes, guards, params, query strings, and redirects | `vue-router`, `vue router`, `router`, `routes`, `useRoute`, `useRouter`, `onBeforeRouteUpdate`, `onBeforeRouteLeave`, `navigation guard`, `beforeEach`, `route params`, `query string`, `redirect` |
+| `vue-use` | When using VueUse composables for Vue/Nuxt features | `@vueuse`, `vueuse`, `useLocalStorage`, `useSessionStorage`, `useMouse`, `useElement`, `useWindow`, `useClipboard`, `useDark`, `usePreferred`, `useBreakpoints`, `useMediaQuery`, `useEventListener`, `useDebounce`, `useThrottle`, `useOnline`, `useFetch` |
+| `vue-vite` | When configuring vite.config.ts, Vite project patterns | `vite.config`, `vite.config.ts`, `environment var`, `VITE_`, `build.lib`, `bundle size`, `vite config`, `rollup`, `esbuild`, `dev server` |
+| `web-performance` | When optimising Core Web Vitals, bundle size, or asset loading for Vue/Vite/GitHub Pages projects | `performance`, `web vitals`, `lcp`, `cls`, `inp`, `bundle size`, `code splitting`, `lazy load`, `core web vitals`, `lighthouse`, `runtime performance` |
+| `writing` | When writing prose/documentation, voice, tone, structure, style | `documentation`, `docs`, `blog`, `changelog`, `announcement`, `article`, `reword`, `rephrase`, `wording`, `proofread`, `edit the text`, `edit the copy`, `readme` |
+| `writing-copy` | When writing microcopy, buttons, errors, empty states, CTAs | `ui copy`, `microcopy`, `error message`, `button label`, `button copy`, `cta`, `empty state`, `tooltip`, `placeholder text`, `confirmation dialog`, `helper text`, `form label`, `user-facing`, `user facing` |
+| `writing-readme` | When writing a README, structure, what to include/cut | `readme`, `read.me`, `getting started guide`, `getting started doc` |
+<!-- END GENERATED: user-skills -->
 
 ## Built-in Claude Code skills
 
@@ -80,7 +91,7 @@ See `templates/claude/settings.json` for a Claude project template with non-univ
 
 ## Invoking a skill
 
-**Manually in Claude:** type `/skill-name` in Claude Code (e.g. `/vue`, `/unit-testing`).
+**Manually in Claude:** type `/skill-name` in Claude Code (e.g. `/vue`, `/test-unit`).
 
 **Automatically in Claude:** the trigger hooks inject skills based on your prompt keywords and the file being written. See [docs/hooks.md](hooks.md) for how this works.
 
@@ -104,10 +115,8 @@ related-skills:
 Content here.
 ```
 
-1. Register keyword triggers in `dist/claude/hooks/skill-autotrigger.sh` so the hook detects relevant prompts
-2. Register file extension triggers in `dist/claude/hooks/skill-file-trigger.sh` if the skill maps to a file type
-3. Add the skill to the skills table in this file and to [docs/commands.md](commands.md)
-4. Run `scripts/sync.sh` — this regenerates the Claude and Codex targets and also rebuilds `dist/chatgpt/` with the new skill included
+1. Add `triggers`, `filePatterns`, and `pathPatterns` to `skill.json` so hooks and docs can derive their lists
+2. Run `scripts/sync.sh` — this regenerates the skill tables in this file and [docs/commands.md](commands.md), then rebuilds the Claude, Codex, and ChatGPT targets
 
 After global setup, shared skills are available to Claude via `~/.claude/skills/` and to Codex via `~/.codex/skills/`, with compatibility links also kept in `~/.agents/skills/`. The ChatGPT target requires a manual re-upload to the Custom GPT knowledge base after running sync.
 
@@ -117,7 +126,7 @@ Use this only for official upstream skills that should stay managed externally.
 
 1. Add an entry to `external-skills.json` with `slug`, `name`, `source`, `skill_url`, optional `references_api_url`, optional `commit_api_url`, and `license`
 2. Run `scripts/sync-external-skills.sh`
-3. Register triggers in `dist/claude/hooks/skill-autotrigger.sh` and `dist/claude/hooks/skill-file-trigger.sh`
-4. Add the skill to this file and [docs/commands.md](commands.md)
+3. Add local trigger metadata in `skill.json` if the upstream defaults need adjustment
+4. Run `scripts/sync.sh` to regenerate docs and targets
 
 Do not edit synced external `SKILL.md` files directly; change the upstream source or local trigger/docs around it.

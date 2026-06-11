@@ -3,11 +3,12 @@
 #
 # Build order:
 #   1. SKILL.md files + global-skills.md (build-skill-mds.py)
-#   2. dist/claude/hooks/ (copied from hooks/claude/ source)
-#   3. dist/claude/CLAUDE.md and dist/codex/AGENTS.md (assembled from rules/)
-#   4. dist/chatgpt/ (build-chatgpt-target.py)
-#   5. dist/claude/settings.json (build-settings.py)
-#   6. Validation (validate.sh)
+#   2. Docs tables generated from skill/hook manifests (build-docs.py)
+#   3. dist/claude/hooks/ (copied from hooks/claude/ source)
+#   4. dist/claude/CLAUDE.md and dist/codex/AGENTS.md (assembled from rules/)
+#   5. dist/chatgpt/ (build-chatgpt-target.py)
+#   6. dist/claude/settings.json (build-settings.py)
+#   7. Validation (validate.sh)
 
 set -euo pipefail
 
@@ -82,6 +83,7 @@ copy_hooks() {
 mkdir -p "$REPO_DIR/dist/claude" "$REPO_DIR/dist/codex"
 
 python3 "$REPO_DIR/scripts/build-skill-mds.py"
+python3 "$REPO_DIR/scripts/build-docs.py"
 copy_hooks
 write_target "$CLAUDE_TARGET" "${CLAUDE_PARTS[@]}"
 write_target "$CODEX_TARGET" "${CODEX_PARTS[@]}"

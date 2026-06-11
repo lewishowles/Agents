@@ -26,31 +26,43 @@ These are provided by Claude Code itself and are always available.
 
 Every skill can be invoked manually as a command. Type the skill name with a `/` prefix.
 
+<!-- BEGIN GENERATED: skill-commands -->
 | Command | Skill | When to use it manually |
-|---------|-------|------------------------|
-| `/accessibility` | accessibility | Auditing an interface for WCAG compliance |
-| `/architecture-decision-records` | architecture-decision-records | Documenting a technical decision |
-| `/bash` | bash | Writing a shell script or `.env` file |
-| `/codebase-memory` | codebase-memory | Exploring structure, tracing callers, or querying the code graph |
-| `/code-style` | code-style | Reviewing formatting before committing |
-| `/dependencies` | dependencies | Evaluating a new package |
-| `/e2e-testing` | e2e-testing | Writing Playwright tests |
-| `/error-handling` | error-handling | Adding validation to a function |
-| `/pinia` | pinia | Working with client-side Vue stores |
-| `/pinia-colada` | pinia-colada | Working with `@pinia/colada` queries, mutations, or cache |
-| `/readme` | readme | Starting or editing a README |
-| `/session-management` | session-management | Saving or resuming a session |
-| `/swift` | swift | Working in a Swift file |
-| `/swift-ui` | swift-ui | Working with SwiftUI views |
-| `/typescript` | typescript | Resolving type errors |
-| `/ui-copy` | ui-copy | Writing button labels or error messages |
-| `/unit-testing` | unit-testing | Writing or reviewing tests |
-| `/vite-patterns` | vite-patterns | Configuring Vite |
-| `/vue` | vue | Working in a `.vue` file |
-| `/vue-project-stack` | vue-project-stack | Working in a Vue project |
-| `/vue-router` | vue-router | Working with Vue Router routes, guards, params, or query strings |
-| `/vueuse-functions` | vueuse-functions | Checking VueUse composables before writing bespoke Vue utilities |
-| `/writing` | writing | Writing or editing prose |
+| ------- | ----- | ----------------------- |
+| `/accessibility` | `accessibility` | When building interfaces, WCAG AA baseline, accessible design |
+| `/accessibility-audit` | `accessibility-audit` | When conducting an accessibility audit of a page, component, or PR; preparing a client report |
+| `/bash` | `bash` | When writing shell scripts, bash config, patterns |
+| `/code-review` | `code-review` | When reviewing a PR or diff, or receiving review feedback |
+| `/code-style` | `code-style` | When formatting code, covering naming, comments, arrays, objects |
+| `/codebase-memory` | `codebase-memory` | Use this skill when answering structural code queries with the codebase knowledge graph, including architecture, callers, dependencies, impact analysis, dead code, graph query syntax, Cypher examples, edge types, and search_graph usage. |
+| `/debugging` | `debugging` | When encountering any bug, test failure, or unexpected behaviour — before proposing a fix |
+| `/dependencies` | `dependencies` | When adding packages, what to choose, when to add |
+| `/error-handling` | `error-handling` | When validating input, graceful fallbacks, error handling |
+| `/frontend-security` | `frontend-security` | When writing or reviewing client-side code for security: XSS, CSP, auth tokens, secrets hygiene |
+| `/project-archive-progress` | `project-archive-progress` | When moving completed PROGRESS.md sections into archived milestones to reduce document size |
+| `/project-compact-progress` | `project-compact-progress` | When PROGRESS.md has grown noisy or hard to scan; preserves decisions and rewrites active sections |
+| `/project-continue` | `project-continue` | When resuming work from an existing PROGRESS.md |
+| `/project-plan-task` | `project-plan-task` | When introducing new work into an existing plan |
+| `/project-setup` | `project-setup` | When starting a new project or feature; explores repo, asks questions, creates PROGRESS.md before coding |
+| `/refactoring` | `refactoring` | When refactoring existing code or triaging technical debt |
+| `/swift` | `swift` | When writing Swift, style, SwiftUI patterns, concurrency |
+| `/swift-ui` | `swift-ui` | When writing/reviewing SwiftUI code, views, state management |
+| `/test` | `test` | When deciding what to test and at which layer — strategy above test-unit and test-e2e |
+| `/test-e2e` | `test-e2e` | When writing end-to-end tests with Playwright |
+| `/test-unit` | `test-unit` | When writing unit tests, Vitest, philosophy, what to skip |
+| `/typescript` | `typescript` | When using TypeScript, type safety, escape hatches |
+| `/vue` | `vue` | When writing Vue code, formatting, patterns, composables, components |
+| `/vue-pinia` | `vue-pinia` | When using Pinia for client-side Vue app state and stores |
+| `/vue-pinia-colada` | `vue-pinia-colada` | When using `@pinia/colada` for async server state — `useQuery`, `useMutation`, cache management, optimistic updates |
+| `/vue-project-stack` | `vue-project-stack` | When working in Vue + Bun + Vitest + Tailwind + Gitflow stack |
+| `/vue-router` | `vue-router` | When using Vue Router routes, guards, params, query strings, and redirects |
+| `/vue-use` | `vue-use` | When using VueUse composables for Vue/Nuxt features |
+| `/vue-vite` | `vue-vite` | When configuring vite.config.ts, Vite project patterns |
+| `/web-performance` | `web-performance` | When optimising Core Web Vitals, bundle size, or asset loading for Vue/Vite/GitHub Pages projects |
+| `/writing` | `writing` | When writing prose/documentation, voice, tone, structure, style |
+| `/writing-copy` | `writing-copy` | When writing microcopy, buttons, errors, empty states, CTAs |
+| `/writing-readme` | `writing-readme` | When writing a README, structure, what to include/cut |
+<!-- END GENERATED: skill-commands -->
 
 Most of these fire automatically via the trigger hooks — manual invocation is for cases the hooks don't catch, or to load a skill at the start of a session.
 

@@ -6,18 +6,20 @@ Hooks are shell scripts that Claude Code runs automatically at specific points i
 
 ## Registered hooks
 
+<!-- BEGIN GENERATED: registered-hooks -->
 | Hook | Event | Behaviour on failure |
-|------|-------|----------------------|
-| `skill-autotrigger.sh` | Every user message (`UserPromptSubmit`) | Exits cleanly if `jq` is missing — but blocks the prompt and reports an error if `jq` is installed and the hook itself errors |
-| `progress-resume.sh` | Every user message (`UserPromptSubmit`) | Silently skips if `jq` missing or no PROGRESS.md found |
-| `skill-file-trigger.sh` | Before every Write or Edit (`PreToolUse`, `Write\|Edit`) | Silently skips if `jq` is missing — writes are never blocked |
-| `test-skeleton-reminder.sh` | Before every Write or Edit (`PreToolUse`, `Write\|Edit`) | Silently skips if no matching test stack is detected |
-| `plan-verify.sh` | After `ExitPlanMode` (`PostToolUse`) | Silently skips if no plan files exist |
-| `auto-format.sh` | After every Write or Edit (`PostToolUse`, `Edit\|Write`) | Silently skips if `oxfmt` is not installed |
-| `.env` protection (inline) | Before every Read (`PreToolUse`, `Read`) | Exits with code 2 (block) if the file path matches `.env` |
-| `cbm-code-discovery-gate` | First code discovery read/search per Claude session (`PreToolUse`, `Grep\|Glob\|Read\|Search`) | Exits with code 2 once per session to nudge use of codebase-memory-mcp graph tools first |
-| `cbm-session-reminder` | Claude session start/resume/clear/compact (`SessionStart`) | Injects a reminder to use codebase-memory-mcp before broad source discovery |
-| `pre-stop-checks.sh` | When Claude finishes (`Stop`) | Runs lint and unit tests; logs failures; pauses Claude and displays output if either fails |
+| ---- | ----- | -------------------- |
+| `auto-allow-edits` | PreToolUse (`Write\|Edit`) | `silent` |
+| `auto-format` | PostToolUse (`Edit\|Write`) | `silent` |
+| `cbm-code-discovery-gate` | PreToolUse (`Bash`) | `block`; requires jq |
+| `cbm-session-reminder` | UserPromptSubmit | `silent` |
+| `plan-verify` | PostToolUse (`ExitPlanMode`) | `silent` |
+| `pre-stop-checks` | Stop | `silent` |
+| `progress-resume` | UserPromptSubmit | `silent` |
+| `skill-autotrigger` | UserPromptSubmit | `block`; requires jq |
+| `skill-file-trigger` | PreToolUse (`Write\|Edit`) | `silent`; requires jq |
+| `test-skeleton-reminder` | PreToolUse (`Write\|Edit`) | `silent`; requires jq |
+<!-- END GENERATED: registered-hooks -->
 
 ### skill-autotrigger.sh
 
@@ -35,22 +37,25 @@ Fires whenever Claude is about to write or edit a file. Checks the file extensio
 
 Extension-to-skill mapping:
 
-| Extension / filename | Skills injected |
-|----------------------|----------------|
-| `.swift` | `code-style`, `swift` |
-| `.vue` | `code-style`, `vue`, `vue-project-stack` |
-| `.ts`, `.tsx` | `code-style`, `typescript` |
-| `.js` | `code-style` |
-| `.sh` | `bash` |
-| `.md` | `code-style`, `writing` |
-| `README.md` | + `readme` |
-| `vite.config.ts` / `.js` | + `vite-patterns` |
-| Router, routes, or pages files | + `vue-router` |
-| Store files or files in `stores/` | + `pinia` |
-| Write/Edit payloads mentioning VueUse imports/composables | + `vueuse-functions` |
-| `*.test.js`, `*.spec.ts`, etc. | + `unit-testing` |
-| `*.e2e.*`, `*.cy.*`, files in `e2e/` or `tests/cypress/` | + `e2e-testing` |
-| Files in `adr/` or `0001-*.md` | + `architecture-decision-records` |
+<!-- BEGIN GENERATED: file-trigger-mapping -->
+| Pattern | Skills injected |
+| ------- | --------------- |
+| `*.sh` | `bash` |
+| `*.swift`, `*.vue`, `*.ts`, `*.tsx`, `*.js`, `*.md` | `code-style` |
+| `*.swift` | `swift`, `code-style` |
+| `*.swift` | `swift-ui`, `swift`, `code-style`, `accessibility` |
+| `*.e2e.ts`, `*.e2e.js`, `*.cy.ts`, `*.cy.js`, `/e2e/`, `/tests/cypress/` | `test-e2e`, `code-style`, `test-unit`, `vue-project-stack` |
+| `*.test.ts`, `*.test.js`, `*.spec.ts`, `*.spec.js`, `*Tests.swift`, `*Test.swift` | `test-unit`, `code-style`, `vue-pinia`, `vue`, `typescript` |
+| `*.ts`, `*.tsx` | `typescript`, `code-style` |
+| `*.vue` | `vue`, `code-style`, `vue-pinia`, `vue-project-stack`, `vue-router`, `vue-use`, `typescript` |
+| `/stores/` | `vue-pinia`, `vue`, `vue-project-stack`, `test-unit` |
+| `/queries/`, `/mutations/` | `vue-pinia-colada`, `vue`, `vue-project-stack`, `vue-pinia` |
+| `*.vue` | `vue-project-stack`, `vue`, `code-style`, `dependencies` |
+| `router.ts`, `router.js`, `/router/`, `/routes/`, `/pages/` | `vue-router`, `vue`, `vue-project-stack`, `accessibility` |
+| `vite.config.ts`, `vite.config.js` | `vue-vite` |
+| `*.md` | `writing` |
+| `README.md` | `writing-readme`, `writing` |
+<!-- END GENERATED: file-trigger-mapping -->
 
 **Requires:** `jq` — silently skips if missing.
 
@@ -125,8 +130,8 @@ To invoke a skill manually: type `/skill-name` in Claude Code (e.g. `/vue`, `/ty
 
 ## Adding a new hook
 
-1. Create the script in `dist/claude/hooks/` — make it executable (`chmod +x`)
-2. Register it in `dist/claude/settings.json` under the appropriate event key
-3. Document it in the table above
+1. Create the script in `hooks/claude/<name>/` — make it executable (`chmod +x`)
+2. Add `hooks/claude/<name>/hook.json` with event, matcher, dependencies, and failure mode
+3. Run `scripts/sync.sh` to copy the hook into `dist/claude/hooks/`, regenerate `dist/claude/settings.json`, and update the hook table above
 
 Event types supported by Claude Code: `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `Stop`, `SessionStart`.
