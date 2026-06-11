@@ -37,12 +37,17 @@ Every script opens with a `#` comment (after the shebang) describing its purpose
 
 ## Function comments
 
-Every function gets a purpose comment and `@param` lines for each parameter, placed **before** the function definition.
+Every function gets a purpose comment and JSDoc-style `@param` lines for each parameter, placed **before** the function definition. Bash and Python do not have a universal JSDoc standard; use the same parameter format as the code-style skill so comments stay consistent across languages:
+
+`# @param  {type}  name`
+
+Put the description on the next indented line when it needs more than a few words.
 
 ```bash
 # Moves a file to its backup location and prints the backup path.
 # Backup paths are routed by prefix so each agent's backups stay separate.
-# @param  string  path  The file or symlink to back up.
+# @param  {string}  path
+#     The file or symlink to back up.
 backup_path() {
 	local path="$1"
 	…
@@ -51,7 +56,8 @@ backup_path() {
 
 ```python
 # Read skill.json and return the fields needed for index generation.
-# @param  Path  skill_dir  The skill directory containing skill.json.
+# @param  {Path}  skill_dir
+#     The skill directory containing skill.json.
 def load_manifest(skill_dir: Path) -> dict:
 	…
 ```
@@ -85,8 +91,10 @@ If the same pattern appears more than once, extract it into a named function. Na
 
 ```bash
 # Returns 0 if the value is in the allowed list, 1 otherwise.
-# @param  string  value  The value to check.
-# @param  string  ...    Allowed values (remaining arguments).
+# @param  {string}  value
+#     The value to check.
+# @param  {string}  ...
+#     Allowed values passed as remaining arguments.
 is_valid() {
 	local value="$1"
 	shift
