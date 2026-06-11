@@ -1,5 +1,6 @@
 {
   "name": "cbm-session-reminder",
+  "description": "Reminds Claude to start code discovery with codebase-memory graph tools.",
   "command": "~/.claude/hooks/cbm-session-reminder",
   "runtime": "claude",
   "events": [

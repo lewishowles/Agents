@@ -1,5 +1,6 @@
 {
   "name": "auto-allow-edits",
+  "description": "Auto-approves safe edits inside the configuration repo.",
   "runtime": "claude",
   "events": [
     {

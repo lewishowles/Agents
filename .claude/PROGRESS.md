@@ -20,6 +20,7 @@
 | Per-skill, per-hook symlinks (not whole folder)                                 | Coexists with plugin/system-installed items in `~/.claude/` and `~/.agents/`                           |
 | Skill prefix renames (Phase 16b)                                                | Prefix-based autocomplete discoverability; 14 skills renamed                                           |
 | Codex skill links in `~/.codex/skills`                                          | Current Codex builds discover user skills there; `~/.agents/skills` remains linked for compatibility   |
+| Progress remains in `.claude/PROGRESS.md`                                       | Root `AGENTS.md` / `CLAUDE.md` semantics are reserved for symlinked/generated runtime files             |
 
 ---
 
@@ -28,6 +29,7 @@
 Editable source: `rules/` (shared rules), `skills/` (skill manifests + bodies), `hooks/` (hook source), `adapters/` (runtime-specific settings base).
 Generated output: `dist/` — never author directly; regenerate with `scripts/sync.sh`.
 Installed output: symlinks from `~/.claude/`, `~/.agents/`, and `~/.codex/` into `dist/`.
+Repo-maintenance state stays in `.claude/PROGRESS.md` so root agent files are not confused with the symlinked/generated target files this repo manages for other projects.
 
 **End-to-end validation target:** `scripts/validate.sh` exits 0; `scripts/sync.sh` exits 0 and is idempotent; `readlink ~/.claude/settings.json` → `dist/claude/settings.json`; writing a `.vue` file fires the vue skill reminder from the data-driven hook.
 
@@ -39,19 +41,10 @@ Installed output: symlinks from `~/.claude/`, `~/.agents/`, and `~/.codex/` into
 
 Dual-target setup, sync infrastructure, and ecosystem expansion complete. Key deliverables: `rules/` + `dist/` structure; `sync.sh`; `setup-global.sh` (per-skill symlinks, idempotent, backup strategy); `setup-project.sh`; template splits; README + docs rewrite; end-to-end validation of both runtimes; repo renamed to `~/Dev/Configuration/Agents`; Vue ecosystem skills refreshed; external skill sync added.
 
-### Phases 10–16b (2026-05-28 to 2026-06-10)
+### Phases 10–18 (2026-05-28 to 2026-06-11)
 
-Manifest-driven refactor complete. Key deliverables:
+Manifest-driven refactor complete. Source/output dirs renamed (`shared/` → `rules/`, `targets/` → `dist/`); skills grouped under `vue/`, `swift/`, `testing/`, `writing/`, and `project-management/`; all 33 skills now use `skill.json` + `SKILL.body.md` with generated `SKILL.md`; hook source moved to `hooks/claude/<name>/` with `hook.json`; Claude settings, ChatGPT skill index, global skill index, and docs tables now generate from manifests. Phase 16b renamed 14 skills for prefix-based autocomplete. Phase 17 linked Codex skills into `~/.codex/skills` as well as `~/.agents/skills`. Phase 18 refreshed README/ChatGPT docs and added `scripts/build-docs.py` for skill, command, and hook tables.
 
-- **10:** Source/output dirs renamed (`shared/` → `rules/`, `targets/` → `dist/`)
-- **11:** Skill restructuring — removed 3 stale skills; added `project-management` group (5 skills); grouped 15 skills into `vue/`, `swift/`, `testing/`, `writing/`
-- **12:** `skill.json` manifests on all 33 skills; `SKILL.body.md` split; `build-skill-mds.py` generates `SKILL.md`; `do-not-use-when` on 7 skills; external skill sync writes `SKILL.body.md`
-- **13:** Hook source moved to `hooks/claude/<name>/`; `hook.json` manifests on all 10 hooks; `sync.sh` copies to `dist/`
-- **14:** Data-driven trigger hooks — `skill-file-trigger.sh` and `skill-autotrigger.sh` rewritten to iterate `skill.json`; fixture test harness added (56ms execution, no caching needed)
-- **15:** `global-skills.md` and `SKILLS.md` (ChatGPT) generated from `skill.json`; no longer manually edited
-- **16:** `build-settings.py` generates `settings.json` hooks block from `hook.json`; `settings.base.json` is the editable source
-- **16b:** 14 skills renamed for prefix-based autocomplete discoverability (e.g. `pinia` → `vue-pinia`, `testing` → `test`, `readme` → `writing-readme`)
-- **17:** Codex global setup now links skills into `~/.codex/skills` as well as `~/.agents/skills`; project-management skill headings now include the `Project` prefix for clearer Codex display names
-- **18a:** README refreshed for grouped skill paths and current project setup output
-- **18b:** ChatGPT dist refreshed by updating stale cross-skill references in source skill manifests (`test-unit`, `test-e2e`, `writing-readme`, `writing-copy`, `vue-vite`)
-- **18c:** Skill, command, and hook docs tables now regenerate from `skill.json` and `hook.json` via `scripts/build-docs.py`
+### Phase 19 (2026-06-11)
+
+Docs generation hardened: hook manifests now include descriptions; generated hook docs include purpose; file-trigger docs merge duplicate patterns; generated blocks carry edit-source comments; `scripts/build-docs.py --check` and `scripts/validate.sh` catch stale generated docs.

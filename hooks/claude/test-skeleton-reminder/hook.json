@@ -1,5 +1,6 @@
 {
   "name": "test-skeleton-reminder",
+  "description": "Suggests matching tests when implementation files change.",
   "runtime": "claude",
   "events": [
     {

@@ -1,5 +1,6 @@
 {
   "name": "skill-file-trigger",
+  "description": "Injects matching skill reminders before file writes and edits.",
   "runtime": "claude",
   "events": [
     {

@@ -1,5 +1,6 @@
 {
   "name": "skill-autotrigger",
+  "description": "Injects matching skill reminders based on user prompt keywords.",
   "runtime": "claude",
   "events": [
     {

@@ -1,5 +1,6 @@
 {
   "name": "plan-verify",
+  "description": "Warns when an exited plan is missing a validation section.",
   "runtime": "claude",
   "events": [
     {

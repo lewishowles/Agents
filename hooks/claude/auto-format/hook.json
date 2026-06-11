@@ -1,5 +1,6 @@
 {
   "name": "auto-format",
+  "description": "Runs oxfmt after supported file writes when available.",
   "runtime": "claude",
   "events": [
     {

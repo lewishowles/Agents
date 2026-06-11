@@ -1,5 +1,6 @@
 {
   "name": "cbm-code-discovery-gate",
+  "description": "Blocks first broad code-discovery command to nudge codebase-memory graph use.",
   "command": "~/.claude/hooks/cbm-code-discovery-gate",
   "runtime": "claude",
   "events": [

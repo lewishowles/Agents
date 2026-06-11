@@ -1,5 +1,6 @@
 {
   "name": "progress-resume",
+  "description": "Injects project progress context when the prompt asks to resume work.",
   "runtime": "claude",
   "events": [
     {

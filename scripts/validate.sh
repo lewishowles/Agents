@@ -119,6 +119,9 @@ while IFS= read -r -d '' manifest; do
 	[ -z "$(jq -r '.runtime // empty' "$manifest")" ] && \
 		fail "Missing 'runtime' in $name"
 
+	[ -z "$(jq -r '.description // empty' "$manifest")" ] && \
+		fail "Missing 'description' in $name"
+
 	failure_mode=$(jq -r '.failureMode // empty' "$manifest")
 	if [ -z "$failure_mode" ]; then
 		fail "Missing 'failureMode' in $name"
@@ -183,6 +186,14 @@ while IFS= read -r -d '' manifest; do
 done < <(find "$REPO_DIR/hooks/claude" -name "hook.json" -print0 | sort -z)
 
 [ "$STALE" -eq 0 ] && printf '%s✓%s dist/claude/hooks/ in sync\n' "$GREEN" "$RESET_COLOUR"
+
+section 'Checking generated docs tables...'
+
+if python3 "$REPO_DIR/scripts/build-docs.py" --check; then
+	printf '%s✓%s Generated docs tables in sync\n' "$GREEN" "$RESET_COLOUR"
+else
+	fail "Generated docs tables out of sync (run scripts/sync.sh)"
+fi
 
 
 printf '\n'
