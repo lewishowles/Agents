@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# Suggests creating a matching test file when Claude edits an implementation
+# file that has no test alongside it. Fires before Write and Edit tool calls.
+# Only activates when the project has a recognisable test runner installed,
+# so it stays silent in projects without a test setup.
 
 set -euo pipefail
 
@@ -12,6 +16,13 @@ file_path=$(echo "$input" | jq -r '.tool_input.file_path // ""' 2>/dev/null)
 filename=$(basename "$file_path")
 extension="${filename##*.}"
 
+# Returns 0 if the path looks like a test file, based on name patterns and
+# directory conventions for JS/TS/Vue and Swift projects.
+#
+# @param  {string}  path
+#     Full file path being edited.
+# @param  {string}  name
+#     Basename of the file (used for pattern matching).
 is_test_file() {
 	local path="$1"
 	local name="$2"
@@ -24,6 +35,8 @@ is_test_file() {
 	return 1
 }
 
+# Returns 0 if the file extension is a testable implementation type.
+# Reads $extension from the outer scope.
 is_implementation_file() {
 	case "$extension" in
 		js|ts|tsx|vue|swift) return 0 ;;
@@ -31,6 +44,9 @@ is_implementation_file() {
 	esac
 }
 
+# Returns 0 if the project has a recognisable test runner.
+# Checks for Swift package structure or npm test scripts (Vitest, Jest, Playwright, Cypress).
+# Reads $extension from the outer scope.
 has_test_stack() {
 	if [ "$extension" = "swift" ]; then
 		[ -d "Tests" ] || [ -f "Package.swift" ]
@@ -56,6 +72,11 @@ has_test_stack() {
 	fi
 }
 
+# Prints candidate test file paths for a given implementation file.
+# Generates conventional locations based on file extension and directory layout.
+#
+# @param  {string}  path
+#     Full path to the implementation file.
 test_candidates() {
 	local path="$1"
 	local dir
@@ -78,6 +99,8 @@ test_candidates() {
 	esac
 }
 
+# Returns 0 if any candidate test path for $file_path already exists on disk.
+# Reads $file_path from the outer scope.
 matching_test_exists() {
 	local candidate
 

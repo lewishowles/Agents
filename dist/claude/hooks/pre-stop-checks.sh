@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Runs lint and unit tests before Claude stops, then pauses if either fails.
+# This enforces the evidence-before-claims rule — Claude cannot mark work done
+# until the project's own checks pass. Only runs in projects with package.json.
 
-# Before stopping, run lint and unit tests. If either fails, pause and display
-# output.
+set -euo pipefail
 
-# Check if package.json exists. If it doesn't this probably isn't a frontend
-# project, and we don't need to continue.
 if [ ! -f "package.json" ]; then
 	exit 0
 fi
@@ -13,15 +13,25 @@ failed=false
 errors=""
 failed_checks=""
 
-# Check if an npm script exists.
+# Returns 0 if the named npm script exists in package.json, 1 otherwise.
+# Uses jq for exact key lookup when available; falls back to grep.
+#
+# @param  {string}  name
+#     The npm script name to look up.
 has_script() {
+	local name="$1"
+
 	if command -v jq &>/dev/null; then
-		jq -e ".scripts | has(\"$1\")" package.json 2>/dev/null && return 0 || return 1
+		jq -e ".scripts | has(\"$name\")" package.json 2>/dev/null && return 0 || return 1
 	else
-		grep -q "\"$1\"" package.json 2>/dev/null && return 0 || return 1
+		grep -q "\"$name\"" package.json 2>/dev/null && return 0 || return 1
 	fi
 }
 
+# Adds a check name to the comma-separated failed_checks string.
+#
+# @param  {string}  check
+#     The check name to append (e.g. "lint" or "test:unit:run").
 append_failed_check() {
 	local check="$1"
 
@@ -32,6 +42,8 @@ append_failed_check() {
 	fi
 }
 
+# Appends a tab-separated entry to the friction log so patterns can be
+# analysed later with scripts/analyse-friction.sh.
 write_friction_log() {
 	local log_file="$HOME/.claude/logs/friction.log"
 	local timestamp
@@ -44,9 +56,8 @@ write_friction_log() {
 	printf '%s\t%s\t%s\t%s\n' "$timestamp" "$PWD" "$failed_checks" "$summary" >> "$log_file"
 }
 
-# Run lint if exists
 if has_script "lint"; then
-	echo "Running lint..." >&2
+	printf 'Running lint...\n' >&2
 	if ! lint_out=$(npm run lint 2>&1); then
 		failed=true
 		append_failed_check "lint"
@@ -54,9 +65,8 @@ if has_script "lint"; then
 	fi
 fi
 
-# Run test:unit:run if exists
 if has_script "test:unit:run"; then
-	echo "Running unit tests..." >&2
+	printf 'Running unit tests...\n' >&2
 	if ! test_out=$(npm run test:unit:run 2>&1); then
 		failed=true
 		append_failed_check "test:unit:run"
@@ -68,7 +78,6 @@ if has_script "test:unit:run"; then
 	fi
 fi
 
-# If failed, output pause signal as JSON
 if [ "$failed" = true ]; then
 	write_friction_log
 

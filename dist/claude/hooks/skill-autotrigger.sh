@@ -55,6 +55,11 @@ else
 
 	# Match trigger against prompt. Alphanumeric-starting triggers use word-boundary
 	# ERE; symbol triggers use substring match.
+	#
+	# @param  {string}  trigger_lower
+	#     Trigger string, already lowercased.
+	# @param  {string}  prompt_lower
+	#     User prompt, already lowercased.
 	matches_trigger() {
 		local trigger_lower="$1" prompt_lower="$2"
 		if [[ ! "$trigger_lower" =~ ^[a-z0-9] ]]; then

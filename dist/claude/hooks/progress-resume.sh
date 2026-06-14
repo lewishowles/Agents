@@ -10,11 +10,11 @@ if ! command -v jq &>/dev/null; then
 fi
 
 input=$(cat)
-prompt=$(echo "$input" | jq -r '.prompt // ""' 2>/dev/null)
+prompt=$(printf '%s' "$input" | jq -r '.prompt // ""' 2>/dev/null)
 
 [ -z "$prompt" ] && exit 0
 
-if ! echo "$prompt" | grep -qiE '\b(continue|carry on|pick up|resume|where were we|next step|where did we|what.s next)\b'; then
+if ! printf '%s' "$prompt" | grep -qiE '\b(continue|carry on|pick up|resume|where were we|next step|where did we|what.s next)\b'; then
 	exit 0
 fi
 
