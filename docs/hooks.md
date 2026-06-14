@@ -16,7 +16,6 @@ Hooks are shell scripts that Claude Code runs automatically at specific points i
 | `plan-verify` | Warns when an exited plan is missing a validation section. | PostToolUse (`ExitPlanMode`) | `silent` |
 | `pre-stop-checks` | Runs configured lint and unit checks before Claude stops. | Stop | `silent` |
 | `progress-resume` | Injects project progress context when the prompt asks to resume work. | UserPromptSubmit | `silent` |
-| `skill-autotrigger` | Injects matching skill reminders based on user prompt keywords. | UserPromptSubmit | `block`; requires jq |
 | `skill-file-trigger` | Injects matching skill reminders before file writes and edits. | PreToolUse (`Write\|Edit`) | `silent`; requires jq |
 | `test-skeleton-reminder` | Suggests matching tests when implementation files change. | PreToolUse (`Write\|Edit`) | `silent`; requires jq |
 <!-- END GENERATED: registered-hooks -->
