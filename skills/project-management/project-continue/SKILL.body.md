@@ -4,7 +4,13 @@ Use this skill to resume from an existing `PROGRESS.md`. Treat it as a living re
 
 ## File location
 
-`PROGRESS.md` lives at the **project root** — not in `.claude/`. Always look for `<project-root>/PROGRESS.md` first. Do not assume `.claude/PROGRESS.md`.
+Look in this order and use the first match:
+
+1. `<project-root>/PROGRESS.md`
+2. `<project-root>/.claude/PROGRESS.md`
+3. `<project-root>/.agents/PROGRESS.md`
+
+If none exist, say so and ask the user where to create one.
 
 ## Workflow
 
