@@ -1,13 +1,42 @@
-node_modules/
-dist/
-build/
-*.lock
-__pycache__/
+# Universal
 .git/
+.DS_Store
+.env*
 *.db
 *.sqlite
-.env*
-.DS_Store
+
+# Node / JS / TS
+node_modules/
+*.lock
+*.tsbuildinfo
+dist/
+build/
+out/
+
+# Vue / Nuxt
+.nuxt/
+.output/
+.nitro/
+storybook-static/
+*.d.ts
+
+# Swift
+.build/
+*.xcarchive/
+*.xcworkspace/xcuserdata/
+DerivedData/
+*.ipa
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# Tooling / caches
 coverage/
 .cache/
-.venv/
+.parcel-cache/
+.turbo/
+.nx/cache/
+*.log
