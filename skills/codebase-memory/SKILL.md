@@ -8,7 +8,7 @@ description: >
 
 Graph tools return precise structural results in ~500 tokens vs ~80K for grep.
 
-## Quick Decision Matrix
+## Quick decision matrix
 
 | Question | Tool call |
 |----------|----------|
@@ -22,18 +22,18 @@ Graph tools return precise structural results in ~500 tokens vs ~80K for grep.
 | Risk-classified trace | `trace_path(risk_labels=true)` |
 | Text search | `search_code` or Grep |
 
-## Exploration Workflow
+## Exploration workflow
 1. `list_projects` — check if project is indexed
 2. `get_graph_schema` — understand node/edge types
 3. `search_graph(label="Function", name_pattern=".*Pattern.*")` — find code
 4. `get_code_snippet(qualified_name="project.path.FuncName")` — read source
 
-## Tracing Workflow
+## Tracing workflow
 1. `search_graph(name_pattern=".*FuncName.*")` — discover exact name
 2. `trace_path(function_name="FuncName", direction="both", depth=3)` — trace
 3. `detect_changes()` — map git diff to affected symbols
 
-## Quality Analysis
+## Quality analysis
 - Dead code: `search_graph(max_degree=0, exclude_entry_points=true)`
 - High fan-out: `search_graph(min_degree=10, relationship="CALLS", direction="outbound")`
 - High fan-in: `search_graph(min_degree=10, relationship="CALLS", direction="inbound")`
@@ -44,12 +44,12 @@ Graph tools return precise structural results in ~500 tokens vs ~80K for grep.
 `query_graph`, `get_graph_schema`, `get_code_snippet`, `get_architecture`,
 `manage_adr`, `ingest_traces`
 
-## Edge Types
+## Edge types
 CALLS, HTTP_CALLS, ASYNC_CALLS, IMPORTS, DEFINES, DEFINES_METHOD,
 HANDLES, IMPLEMENTS, OVERRIDE, USAGE, FILE_CHANGES_WITH,
 CONTAINS_FILE, CONTAINS_FOLDER, CONTAINS_PACKAGE
 
-## Cypher Examples (for query_graph)
+## Cypher examples (for query_graph)
 ```
 MATCH (a)-[r:HTTP_CALLS]->(b) RETURN a.name, b.name, r.url_path, r.confidence LIMIT 20
 MATCH (f:Function) WHERE f.name =~ '.*Handler.*' RETURN f.name, f.file_path

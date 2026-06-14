@@ -10,7 +10,7 @@ related-skills:
 ---
 # SwiftUI patterns
 
-Modern SwiftUI, iOS 26+ / macOS 26+. `@Observable` over legacy `ObservableObject`. Type-safe navigation. Performance-aware view composition.
+Modern SwiftUI, iOS 26+ / macOS 26+. Prefer `@Observable` over `ObservableObject`, type-safe navigation, and performance-aware composition.
 
 ## State management
 

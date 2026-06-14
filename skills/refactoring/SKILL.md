@@ -14,11 +14,11 @@ related-skills:
 ---
 # Refactoring
 
-**Refactoring changes structure, not behaviour.** Tests must pass before the first change and after every subsequent step. If a step breaks tests, revert it — don't pile on more changes.
+**Refactoring changes structure, not behaviour.** Tests must pass before the first change and after each step. If a step breaks tests, revert it.
 
 ## Behaviour-preserving technique
 
-1. **Confirm tests exist** for the code being refactored. If they don't, write them first — they're your safety net.
+1. **Confirm tests exist** for the code being refactored. If not, write them first.
 2. **One change at a time.** Each change should be independently reviewable and revertable.
 3. **Run tests after each step.** Ask the user to run the relevant test command; don't move forward until they pass.
 4. **No scope creep.** A refactor PR does one structural thing. Spotted a bug? Note it, fix it separately.
@@ -36,7 +36,7 @@ related-skills:
 
 ## Technical debt triage
 
-Use this when assessing what to address, not when actively refactoring.
+Use this to assess what to address, not while actively refactoring.
 
 ### Categories
 
@@ -47,18 +47,18 @@ Use this when assessing what to address, not when actively refactoring.
 
 ### Prioritisation
 
-Score each item by impact (how much it slows down changes or causes bugs) and effort (how hard to fix):
+Score each item by impact and effort:
 
 |                 | Low effort              | High effort       |
 | --------------- | ----------------------- | ----------------- |
 | **High impact** | Fix now (quick win)     | Plan and schedule |
 | **Low impact**  | Batch with related work | Defer or drop     |
 
-Don't refactor low-impact, high-effort items unless the surrounding code needs to change anyway.
+Do not refactor low-impact, high-effort items unless the surrounding code is already changing.
 
 ### Prevention
 
-- Enforce standards in CI (lint, type-check) so debt doesn't silently accumulate
+- Enforce standards in CI (lint, type-check) so debt does not accumulate silently
 - Address debt incrementally when you're already touching a file — the "campsite rule"
 - Note spotted debt with a `// TODO:` comment so it's findable; don't fix it mid-PR unless it's a blocker
 

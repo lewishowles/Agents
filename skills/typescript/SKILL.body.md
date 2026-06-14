@@ -8,7 +8,7 @@
 
 ## Useful utility types
 
-Reach for these before writing a manual type — they're not gymnastics, they're vocabulary:
+Use these before writing a manual type; they are vocabulary, not gymnastics:
 
 | Type             | Use for                                          |
 | ---------------- | ------------------------------------------------ |
@@ -23,7 +23,7 @@ Reach for these before writing a manual type — they're not gymnastics, they're
 
 ## `satisfies` operator
 
-Use `satisfies` to validate a value matches a type without widening it. Useful for config objects where you want autocomplete and type checking, but want the literal type preserved:
+Use `satisfies` to validate a value against a type without widening it. Useful for config objects that need autocomplete, type checking, and preserved literals:
 
 ```typescript
 const routes = {

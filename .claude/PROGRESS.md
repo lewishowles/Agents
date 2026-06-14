@@ -271,14 +271,15 @@ Compact original `SKILL.body.md` files by removing words, not meaning. Preserve 
 
 - [x] Group 1: compact largest/high-impact bodies (`vue-use`, `vue-pinia-colada`, `accessibility-audit`, `bash`, `vue-vite`)
 - [x] Group 2: compact core frontend/runtime bodies (`vue`, `accessibility`, `web-performance`, `frontend-security`, `code-review`)
-- [ ] Group 3: compact language/testing/process bodies (`swift`, `swift-ui`, `typescript`, `test`, `test-unit`, `test-e2e`, `debugging`, `refactoring`, `error-handling`, `code-style`, `dependencies`, `codebase-memory`)
+- [x] Group 3: compact language/testing/process bodies (`swift`, `swift-ui`, `typescript`, `test`, `test-unit`, `test-e2e`, `debugging`, `refactoring`, `error-handling`, `code-style`, `dependencies`, `codebase-memory`)
 - [ ] Group 4: compact writing/project-management and small remaining bodies
 - [x] Regenerate generated outputs after group 1
 - [x] Regenerate generated outputs after group 2
+- [x] Regenerate generated outputs after group 3
 
 ### Notes
 
-`scripts/sync.sh` passed after groups 1 and 2.
+`scripts/sync.sh` passed after groups 1, 2, and 3.
 
 ---
 

@@ -10,9 +10,9 @@ related-skills:
 
 ## Comments
 
-Swift comments: strict two-tier system.
+Swift comments use a strict two-tier system.
 
-**Types and functions** — always use `/** */` block form, even single sentence. Never `/** Description. */` one line. Never `//` for types or functions.
+**Types and functions** — always use `/** */` block form, even for one sentence. Never one-line `/** Description. */` or `//`.
 
 ```swift
 /**
@@ -26,7 +26,7 @@ struct Foo { ... }
 func doSomething() { ... }
 ```
 
-**Properties and inline logic** — `//` only. Multi-line `//` blocks fine. Never `/** */` on property or inside function body.
+**Properties and inline logic** — `//` only. Multi-line `//` blocks are fine. Never `/** */` on a property or inside a function body.
 
 ```swift
 // ID of the currently selected project.
@@ -61,7 +61,7 @@ let projects = projects
       Persistence.save(projects, filename: "projects.json")
   }
   ```
-- Actors protect internal state — one instance per operation, not global serialisation queue.
+- Actors protect internal state — one instance per operation, not a global serialisation queue.
 - `AsyncStream` with `continuation` to bridge callback-based APIs (`Process`, `DispatchSource`) into structured concurrency.
 
 ## Error handling
@@ -72,7 +72,7 @@ let projects = projects
 
 ## PATH in macOS apps
 
-Apps from Finder don't inherit shell `PATH`. When spawning external tools (`bun`, `git`, etc.), prepend known locations manually:
+Finder-launched apps don't inherit shell `PATH`. When spawning tools (`bun`, `git`), prepend known locations:
 
 ```swift
 var env = ProcessInfo.processInfo.environment

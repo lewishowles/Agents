@@ -15,25 +15,25 @@ related-skills:
 
 - Over-test: happy/unhappy paths, valid/invalid variants
 - Meaningful assertions over snapshots for volatile content
-- For JSON or other serialised output, assert decoded structure or user-visible behaviour unless key order is part of a deliberately implemented contract. Do not test object key order from standard encoders because it is often not guaranteed and leads to brittle failures.
+- For JSON or serialised output, assert decoded structure or user-visible behaviour unless key order is a deliberate contract. Do not test standard encoder key order.
 - Separate test setup from assertions like separating variables from logic in JS
 - Keep imports at the top of the file
 - Test and group names are capitalised, human-readable, and self-contained; method/computed names may stay exact
 - Group tests by collection, e.g. "Initialisation", "Computed", "Methods"
-- **Do not** write interaction, rendered-state, or DOM-presence tests in unit tests; those are covered in Playwright/Cypress component tests. DOM checks like `wrapper.find("[data-test=...]").exists()` belong in browser component tests, not Vitest
+- **Do not** write interaction, rendered-state, or DOM-presence tests in unit tests. DOM checks like `wrapper.find("[data-test=...]").exists()` belong in browser component tests
 - Running a single test file or focused test is fine when verifying a specific fix; output stays manageable. Ask the user for full suite runs.
 
 ## Vue & Vitest
 
 - Vitest; unit-test computed properties and heavily-used methods
 - Skip tests for methods delegating to `@lewishowles/helpers`
-- Component logic in unit tests: focus on computed properties, emitted events, composables, and heavily-used methods. Rendered state belongs in Playwright/Cypress component tests
+- Component logic in unit tests: computed properties, emitted events, composables, and heavily-used methods. Rendered state belongs in browser component tests
 - Composables: test reactive state, side effects, lifecycle hooks
 - For async updates in tests, import `nextTick` from Vue and use `await nextTick()` instead of `await wrapper.vm.$nextTick()`
 - Use `flushPromises()` when waiting for pending promises, API mocks, or async component setup
 - Use `vi` for spies, fake timers, and module mocks; restore mocks after each test when state can leak
 - Use `expectTypeOf` or `assertType` for type-level assertions when runtime assertions cannot cover the contract
-- Test component behaviour as a black box. Avoid assertions tied to internal refs, private methods, or component implementation structure
+- Test component behaviour as a black box. Avoid internal refs, private methods, or implementation structure
 - Avoid snapshot-only tests. A snapshot may support a focused assertion, but should not be the only proof
 - Wrap async setup components in `Suspense` in tests
 - Configure Pinia explicitly in tests. Use `@pinia/testing` when component tests need stores without real action side effects

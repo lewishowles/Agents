@@ -1,31 +1,31 @@
 # Debugging
 
-**Root cause first. Always.** Proposing a fix before finding the cause is guessing — it wastes time and creates new bugs.
+**Root cause first. Always.** Fixing before finding the cause is guessing; it wastes time and creates bugs.
 
 ## When to apply
 
 Any technical failure: test failures, runtime bugs, unexpected output, build errors, integration failures.
 
-Apply especially when under time pressure or when a "quick fix" seems obvious — those are when guessing is most tempting and most costly.
+Apply especially under time pressure or when a "quick fix" seems obvious.
 
 ## Token-discipline note
 
-Prefer running scoped commands over asking the user when it saves more back-and-forth than it costs in tokens — a single test file, a lint check on a touched path, or a minimal repro script. Ask the user for full suite runs, builds, and e2e checks.
+Prefer scoped commands when they save more back-and-forth than they cost: a single test file, lint on a touched path, or a minimal repro. Ask the user for full suites, builds, and e2e.
 
 ## Phase 1 — Investigate
 
 Do not skip this phase.
 
-1. **Read the error message fully.** Stack traces, line numbers, error codes. They often contain the answer.
-2. **Ask the user to reproduce it.** Get exact steps. If it isn't reliably reproducible, gather more data before forming any hypothesis.
+1. **Read the error fully.** Stack traces, line numbers, and error codes often contain the answer.
+2. **Ask the user to reproduce it.** Get exact steps. If unreliable, gather more data before forming a hypothesis.
 3. **Check recent changes.** What changed? Git diff, new dependency, config edit, environment difference.
-4. **Trace data flow.** Where does a bad value originate? Trace backward up the call stack to the source — fix at the source, not at the symptom.
+4. **Trace data flow.** Find where the bad value originates; fix the source, not the symptom.
 
 ### Vue/Vite/Vitest specifics
 
 - Check for reactivity loss: was a reactive object destructured without `toRefs`?
 - Check `shallowRef` vs `ref` — deep mutations on a `shallowRef` don't trigger updates
-- Vite dev vs build differences: CJS interop, `import.meta.env` availability, `define` substitution
+- Vite dev/build differences: CJS interop, `import.meta.env`, `define` substitution
 - In Vitest, check if the module needs `vi.mock()` or `flushPromises()` before asserting
 
 ### Swift/SwiftUI specifics
@@ -44,12 +44,12 @@ State a single, specific hypothesis: _"I think X is the root cause because Y."_
 
 ## Phase 3 — Minimal fix
 
-1. Run the smallest scoped test or repro that confirms or refutes the hypothesis. If it requires a full suite or is likely slow, ask the user to run it instead.
+1. Run the smallest scoped test or repro. If it requires a full suite or is likely slow, ask the user to run it.
 2. If confirmed: implement the smallest possible fix addressing the root cause
 3. One change at a time — no bundled improvements
 4. Ask the user to verify the fix works and no other tests broke
 
-If the fix doesn't work, return to Phase 1 with new information. After three failed fixes, stop — the architecture may be wrong. Discuss with the user before trying again.
+If the fix fails, return to Phase 1 with new information. After three failed fixes, stop; the architecture may be wrong. Discuss before trying again.
 
 ## Prevention
 

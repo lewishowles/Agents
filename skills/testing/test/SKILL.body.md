@@ -12,7 +12,7 @@
   /‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\
 ```
 
-More tests at the bottom (fast, isolated, cheap) and fewer at the top (slow, realistic, expensive).
+More tests at the bottom: fast, isolated, cheap. Fewer at the top: slow, realistic, expensive.
 
 ## What to test at each layer
 
@@ -22,7 +22,7 @@ More tests at the bottom (fast, isolated, cheap) and fewer at the top (slow, rea
 | Component | Playwright / Cypress | Rendered output, ARIA attributes, user interactions, slot behaviour  |
 | E2E       | Playwright           | Full user journeys: register → login → complete a task               |
 
-**Don't duplicate coverage across layers.** If a composable is unit-tested, the component test doesn't need to re-assert the same logic — test that the component wires it up correctly.
+**Don't duplicate coverage across layers.** If a composable is unit-tested, the component test only needs to prove it is wired correctly.
 
 ## What to skip
 
@@ -39,7 +39,7 @@ Use when building new behaviour, especially composables and helpers.
 2. **Green** — write the minimum code to make it pass. Don't over-engineer.
 3. **Refactor** — clean up the implementation while keeping tests green.
 
-**Why watch it fail first:** a test that passes immediately proves nothing. The failure proves the test actually exercises the code path you think it does.
+**Why watch it fail first:** a test that passes immediately proves nothing. The failure proves it exercises the intended path.
 
 ### TDD in practice for Vue
 
@@ -49,7 +49,7 @@ Use when building new behaviour, especially composables and helpers.
 
 ## When to write tests after the fact
 
-TDD isn't always feasible — debugging existing code, exploratory work, or time-boxed spikes. In those cases:
+TDD is not always feasible for existing bugs, exploratory work, or spikes. In those cases:
 
 - Write a failing test that reproduces the bug _before_ fixing it (even for bug fixes)
 - Add tests for the paths you touched when refactoring
@@ -57,7 +57,7 @@ TDD isn't always feasible — debugging existing code, exploratory work, or time
 
 ## Coverage
 
-Coverage measures what was executed, not what was verified — 100% coverage with weak assertions is worse than 70% with sharp ones. Aim for coverage of:
+Coverage measures what ran, not what was verified. 100% with weak assertions is worse than 70% with sharp ones. Cover:
 
 - All happy paths
 - Key unhappy paths (invalid input, network failure, empty state)

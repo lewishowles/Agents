@@ -1,21 +1,21 @@
 # End-to-end testing
 
-E2E and component tests verify what users see and experience in a real browser. Playwright is the current standard for new projects; Cypress is used in many existing projects and should be respected where already in place.
+E2E and component tests verify what users experience in a real browser. Playwright is standard for new projects; respect Cypress where already established.
 
 ## General
 
-- Avoid running tests by default because browser-test output is token-heavy. Run only focused tests when needed to verify a specific fix or failure; suggest broader commands for the user to run
+- Avoid browser tests by default because output is token-heavy. Run focused tests only for a specific fix or failure; suggest broader user-run commands
 - Do not run full suites from plan verification steps unless the user explicitly asks
 
 ## Which tool to use
 
-- **Playwright** — preferred for all new projects and new test suites. Supports both full e2e and component-level testing
+- **Playwright** — preferred for new projects and suites. Supports full e2e and component testing
 - **Cypress** — used in many existing projects. Continue using it where already established; don't migrate away unless asked
 - **No component testing yet?** — add Playwright component tests, not Cypress
 
 ## Component testing
 
-Component tests sit between Vitest unit tests and full e2e. They mount a single component in a real browser and assert what the user sees and experiences. Both Playwright and Cypress support this pattern.
+Component tests sit between Vitest unit tests and full e2e. They mount one component in a real browser and assert user-visible behaviour. Playwright and Cypress both support this.
 
 ### What to test
 
@@ -26,11 +26,11 @@ Component tests sit between Vitest unit tests and full e2e. They mount a single 
 
 ### What not to test
 
-- Framework internals: computed values, reactive refs, `wrapper.vm.*` — those belong in Vitest
+- Framework internals: computed values, reactive refs, `wrapper.vm.*` belong in Vitest
 - Implementation details: internal state, method calls, component structure not visible to the user
 - DOM structure for its own sake: assert that an element communicates something, not that a specific tag was used
 
-For Cypress and Playwright component test examples, Playwright setup config, full e2e test structure, and interaction patterns, see [references/patterns.md](references/patterns.md).
+For Cypress/Playwright examples, setup config, e2e structure, and interaction patterns, see [references/patterns.md](references/patterns.md).
 
 ## Selectors
 
