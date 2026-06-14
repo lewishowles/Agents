@@ -1,24 +1,23 @@
 # VueUse Functions
 
-This skill is a decision-and-implementation guide for VueUse composables in Vue.js / Nuxt projects. It maps requirements to the most suitable VueUse function, applies the correct usage pattern, and prefers composable-based solutions over bespoke code to keep implementations concise, maintainable, and performant.
+Decision and implementation guide for VueUse composables in Vue.js / Nuxt projects. Map requirements to the right function, apply its invocation rule, and prefer composables over bespoke code.
 
 ## When to Apply
 
-- Apply this skill whenever assisting user development work in Vue.js / Nuxt.
-- Always check first whether a VueUse function can implement the requirement.
-- Prefer VueUse composables over custom code to improve readability, maintainability, and performance.
-- Map requirements to the most appropriate VueUse function and follow the function’s invocation rule.
-- Please refer to the `Invocation` field in the below functions table. For example:
-  - `AUTO`: Use automatically when applicable.
-  - `EXTERNAL`: Use only if the user already installed the required external dependency; otherwise reconsider, and ask to install only if truly needed.
-  - `EXPLICIT_ONLY`: Use only when explicitly requested by the user.
-  > *NOTE* User instructions in the prompt or `AGENTS.md` may override a function’s default `Invocation` rule.
+- Apply for Vue.js / Nuxt development work.
+- Check whether VueUse already covers the requirement before writing custom code.
+- Follow the table's `Invocation` value:
+  - `AUTO`: use when applicable
+  - `EXTERNAL`: use only if the dependency already exists; ask to install only when needed
+  - `EXPLICIT_ONLY`: use only when the user asks for it
+
+User instructions in the prompt or `AGENTS.md` override these defaults.
 
 ## Functions
 
-All functions listed below are part of the [VueUse](https://vueuse.org/) library, each section categorizes functions based on their functionality.
+All functions below are part of [VueUse](https://vueuse.org/) and grouped by purpose.
 
-IMPORTANT: Each function entry includes a short `Description` and a detailed `Reference`. When using any function, always consult the corresponding document in `./references` for Usage details and Type Declarations.
+Before using a function, consult its `./references` document for usage and types.
 
 ### State
 
@@ -36,7 +35,7 @@ IMPORTANT: Each function entry includes a short `Description` and a detailed `Re
 | [`useManualRefHistory`](references/useManualRefHistory.md) | Manually track the change history of a ref when the user calls `commit()` | AUTO |
 | [`useRefHistory`](references/useRefHistory.md) | Track the change history of a ref | AUTO |
 | [`useSessionStorage`](references/useSessionStorage.md) | Reactive [SessionStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage) | AUTO |
-| [`useStorage`](references/useStorage.md) | Create a reactive ref that can be used to access & modify [LocalStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) or [SessionStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage) | AUTO |
+| [`useStorage`](references/useStorage.md) | Reactive [LocalStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) or [SessionStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage) ref | AUTO |
 | [`useStorageAsync`](references/useStorageAsync.md) | Reactive Storage with async support | AUTO |
 | [`useThrottledRefHistory`](references/useThrottledRefHistory.md) | Shorthand for `useRefHistory` with throttled filter | AUTO |
 
@@ -78,7 +77,7 @@ IMPORTANT: Each function entry includes a short `Description` and a detailed `Re
 | [`useEyeDropper`](references/useEyeDropper.md) | Reactive [EyeDropper API](https://developer.mozilla.org/en-US/docs/Web/API/EyeDropper_API) | AUTO |
 | [`useFavicon`](references/useFavicon.md) | Reactive favicon | AUTO |
 | [`useFileDialog`](references/useFileDialog.md) | Open file dialog with ease | AUTO |
-| [`useFileSystemAccess`](references/useFileSystemAccess.md) | Create and read and write local files with [FileSystemAccessAPI](https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API) | AUTO |
+| [`useFileSystemAccess`](references/useFileSystemAccess.md) | Create, read, and write local files with [FileSystemAccessAPI](https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API) | AUTO |
 | [`useFullscreen`](references/useFullscreen.md) | Reactive [Fullscreen API](https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API) | AUTO |
 | [`useGamepad`](references/useGamepad.md) | Provides reactive bindings for the [Gamepad API](https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API) | AUTO |
 | [`useImage`](references/useImage.md) | Reactive load an image in the browser | AUTO |
@@ -98,7 +97,7 @@ IMPORTANT: Each function entry includes a short `Description` and a detailed `Re
 | [`useScreenSafeArea`](references/useScreenSafeArea.md) | Reactive `env(safe-area-inset-*)` | AUTO |
 | [`useScriptTag`](references/useScriptTag.md) | Creates a script tag | AUTO |
 | [`useShare`](references/useShare.md) | Reactive [Web Share API](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share) | AUTO |
-| [`useSSRWidth`](references/useSSRWidth.md) | Used to set a global viewport width which will be used when rendering SSR components that rely on the viewport width like [`useMediaQuery`](../useMediaQuery/index.md) or [`useBreakpoints`](../useBreakpoints/index.md) | AUTO |
+| [`useSSRWidth`](references/useSSRWidth.md) | Global viewport width for SSR components using [`useMediaQuery`](../useMediaQuery/index.md) or [`useBreakpoints`](../useBreakpoints/index.md) | AUTO |
 | [`useStyleTag`](references/useStyleTag.md) | Inject reactive `style` element in head | AUTO |
 | [`useTextareaAutosize`](references/useTextareaAutosize.md) | Automatically update the height of a textarea depending on the content | AUTO |
 | [`useTextDirection`](references/useTextDirection.md) | Reactive [dir](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/dir) of the element's text | AUTO |
@@ -263,7 +262,7 @@ IMPORTANT: Each function entry includes a short `Description` and a detailed `Re
 | Function | Description | Invocation |
 |----------|-------------|------------|
 | [`useCountdown`](references/useCountdown.md) | Reactive countdown timer in seconds | AUTO |
-| [`useDateFormat`](references/useDateFormat.md) | Get the formatted date according to the string of tokens passed in | AUTO |
+| [`useDateFormat`](references/useDateFormat.md) | Format dates with token strings | AUTO |
 | [`useTimeAgo`](references/useTimeAgo.md) | Reactive time ago | AUTO |
 | [`useTimeAgoIntl`](references/useTimeAgoIntl.md) | Reactive time ago with i18n supported | AUTO |
 
@@ -276,9 +275,9 @@ IMPORTANT: Each function entry includes a short `Description` and a detailed `Re
 | [`createUnrefFn`](references/createUnrefFn.md) | Make a plain function accepting ref and raw values as arguments | AUTO |
 | [`get`](references/get.md) | Shorthand for accessing `ref.value` | EXPLICIT_ONLY |
 | [`isDefined`](references/isDefined.md) | Non-nullish checking type guard for Ref | AUTO |
-| [`makeDestructurable`](references/makeDestructurable.md) | Make isomorphic destructurable for object and array at the same time | AUTO |
+| [`makeDestructurable`](references/makeDestructurable.md) | Make a value destructurable as object and array | AUTO |
 | [`set`](references/set.md) | Shorthand for `ref.value = x` | EXPLICIT_ONLY |
-| [`useAsyncQueue`](references/useAsyncQueue.md) | Executes each asynchronous task sequentially and passes the current task result to the next task | AUTO |
+| [`useAsyncQueue`](references/useAsyncQueue.md) | Run async tasks sequentially, passing each result to the next | AUTO |
 | [`useBase64`](references/useBase64.md) | Reactive base64 transforming | AUTO |
 | [`useCached`](references/useCached.md) | Cache a ref with a custom comparator | AUTO |
 | [`useCloned`](references/useCloned.md) | Reactive clone of a ref | AUTO |
@@ -287,7 +286,7 @@ IMPORTANT: Each function entry includes a short `Description` and a detailed `Re
 | [`useCycleList`](references/useCycleList.md) | Cycle through a list of items | AUTO |
 | [`useDebounceFn`](references/useDebounceFn.md) | Debounce execution of a function | AUTO |
 | [`useEventBus`](references/useEventBus.md) | A basic event bus | AUTO |
-| [`useMemoize`](references/useMemoize.md) | Cache results of functions depending on arguments and keep it reactive | AUTO |
+| [`useMemoize`](references/useMemoize.md) | Reactive function result cache keyed by arguments | AUTO |
 | [`useOffsetPagination`](references/useOffsetPagination.md) | Reactive offset pagination | AUTO |
 | [`usePrevious`](references/usePrevious.md) | Holds the previous value of a ref | AUTO |
 | [`useStepper`](references/useStepper.md) | Provides helpers for building a multi-step wizard interface | AUTO |
@@ -333,7 +332,7 @@ IMPORTANT: Each function entry includes a short `Description` and a detailed `Re
 | [`useCookies`](references/useCookies.md) | Wrapper for [`universal-cookie`](https://www.npmjs.com/package/universal-cookie) | EXTERNAL |
 | [`useDrauu`](references/useDrauu.md) | Reactive instance for [drauu](https://github.com/antfu/drauu) | EXTERNAL |
 | [`useFocusTrap`](references/useFocusTrap.md) | Reactive wrapper for [`focus-trap`](https://github.com/focus-trap/focus-trap) | EXTERNAL |
-| [`useFuse`](references/useFuse.md) | Easily implement fuzzy search using a composable with [Fuse.js](https://github.com/krisk/fuse) | EXTERNAL |
+| [`useFuse`](references/useFuse.md) | Fuzzy search with [Fuse.js](https://github.com/krisk/fuse) | EXTERNAL |
 | [`useIDBKeyval`](references/useIDBKeyval.md) | Wrapper for [`idb-keyval`](https://www.npmjs.com/package/idb-keyval) | EXTERNAL |
 | [`useJwt`](references/useJwt.md) | Wrapper for [`jwt-decode`](https://github.com/auth0/jwt-decode) | EXTERNAL |
 | [`useNProgress`](references/useNProgress.md) | Reactive wrapper for [`nprogress`](https://github.com/rstacruz/nprogress) | EXTERNAL |
@@ -391,7 +390,7 @@ IMPORTANT: Each function entry includes a short `Description` and a detailed `Re
 | [`useExtractedObservable`](references/useExtractedObservable.md) | Use an RxJS [`Observable`](https://rxjs.dev/guide/observable) as extracted from one or more composables | EXTERNAL |
 | [`useObservable`](references/useObservable.md) | Use an RxJS [`Observable`](https://rxjs.dev/guide/observable) | EXTERNAL |
 | [`useSubject`](references/useSubject.md) | Bind an RxJS [`Subject`](https://rxjs.dev/guide/subject) to a `ref` and propagate value changes both ways | EXTERNAL |
-| [`useSubscription`](references/useSubscription.md) | Use an RxJS [`Subscription`](https://rxjs.dev/guide/subscription) without worrying about unsubscribing from it or creating memory leaks | EXTERNAL |
+| [`useSubscription`](references/useSubscription.md) | RxJS [`Subscription`](https://rxjs.dev/guide/subscription) with cleanup | EXTERNAL |
 | [`watchExtractedObservable`](references/watchExtractedObservable.md) | Watch the values of an RxJS [`Observable`](https://rxjs.dev/guide/observable) as extracted from one or more composables | EXTERNAL |
 
 ### @SchemaOrg
@@ -406,5 +405,3 @@ IMPORTANT: Each function entry includes a short `Description` and a detailed `Re
 | Function | Description | Invocation |
 |----------|-------------|------------|
 | [`useSound`](https://github.com/vueuse/sound#examples) | Play sound effects reactively. | EXTERNAL |
-
-

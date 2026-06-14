@@ -6,7 +6,7 @@ description: >
 ---
 # Bash and Python scripts
 
-Applies to standalone bash scripts and Python build/utility scripts. Both are scripting languages used for the same purpose in this repo — keep them consistent.
+Applies to standalone bash scripts and Python build/utility scripts. Keep both consistent in this repo.
 
 ## Shared conventions
 
@@ -16,7 +16,7 @@ Applies to standalone bash scripts and Python build/utility scripts. Both are sc
 
 ## Script-level comments
 
-Every script opens with a `#` comment (after the shebang) describing its purpose. For build scripts, include the execution order or key constraints.
+Every script opens with a `#` purpose comment after the shebang. For build scripts, include execution order or key constraints.
 
 ```bash
 #!/usr/bin/env bash
@@ -37,11 +37,11 @@ Every script opens with a `#` comment (after the shebang) describing its purpose
 
 ## Function comments
 
-Every function gets a purpose comment and JSDoc-style `@param` lines for each parameter, placed **before** the function definition. Bash and Python do not have a universal JSDoc standard; use the same parameter format as the code-style skill so comments stay consistent across languages:
+Every function gets a purpose comment and JSDoc-style `@param` lines before the definition. Bash and Python lack a universal JSDoc standard; use the code-style skill's parameter format:
 
 `# @param  {type}  name`
 
-Put the description on the next indented line, even if it only needs a few words. Always add a blank `#` line between the purpose prose and the first `@param` — it makes the boundary easy to spot at a glance.
+Put the description on the next indented line, even for a few words. Add a blank `#` line between purpose prose and the first `@param`.
 
 ```bash
 # Moves a file to its backup location and prints the backup path.
@@ -64,11 +64,11 @@ def load_manifest(skill_dir: Path) -> dict:
 	…
 ```
 
-Only add a comment when the purpose would not be obvious from the function name and signature alone. A one-liner that reads a file needs no comment; a function with non-obvious side effects or constraints does.
+Only comment when purpose is not obvious from the name and signature. A one-line file reader needs none; a function with side effects or constraints does.
 
 ## Top-level variables
 
-Single trailing `#` comment on any variable whose purpose is not obvious from the name alone.
+Use one trailing `#` comment when a variable's purpose is not obvious from its name.
 
 ```bash
 MANIFEST="$REPO_DIR/external-skills.json"  # List of skills to sync, with URLs and metadata.
@@ -80,7 +80,7 @@ PM_GROUP = "project-management"  # Listed first in the global index so it appear
 
 ## No banner dividers
 
-Do not use `# ---` or `# ===` divider lines. Use blank lines and a plain comment for section headings.
+Do not use `# ---` or `# ===` dividers. Use blank lines and plain section comments.
 
 ```bash
 # Collect all skill names for dependency resolution.
@@ -89,7 +89,7 @@ declare -A SKILL_NAMES
 
 ## Extract repeated logic
 
-If the same pattern appears more than once, extract it into a named function. Name the function after what it resolves, not how it works.
+If a pattern appears more than once, extract a named function. Name it after what it resolves, not how it works.
 
 ```bash
 # Returns 0 if the value is in the allowed list, 1 otherwise.
@@ -110,14 +110,14 @@ is_valid() {
 
 ## Inline scripts in heredocs
 
-When a bash script embeds Python or awk inline, add a comment explaining what it does and — if not obvious — why it's inline rather than a separate file.
+When bash embeds Python or awk inline, add a comment explaining what it does and, if needed, why it is inline.
 
 ```bash
 # Strips YAML frontmatter and writes the body to the output file.
 strip_frontmatter "$temp_file" "$skill_dir/SKILL.body.md"
 ```
 
-If the logic is complex, extract it into a named function that wraps the heredoc, so the call site stays readable.
+If the logic is complex, wrap the heredoc in a named function so the call site stays readable.
 
 ## Bash boilerplate
 

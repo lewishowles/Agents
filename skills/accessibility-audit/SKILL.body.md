@@ -1,10 +1,10 @@
 # Accessibility audit
 
-WCAG 2.2 AA baseline; AAA where feasible. Two modes — choose by context.
+WCAG 2.2 AA baseline; AAA where feasible. Choose the mode by context.
 
 ## Quick triage (PR / pre-release)
 
-Fast, high-signal check before a release or PR merge. Not a compliance audit.
+Fast check before release or PR merge. Not a compliance audit.
 
 ### Automated scan first
 
@@ -15,7 +15,7 @@ npx @axe-core/cli <url>
 npx pa11y <url> --standard WCAG2AA
 ```
 
-Or check Lighthouse: DevTools → Lighthouse → Accessibility.
+Or use Lighthouse: DevTools → Lighthouse → Accessibility.
 
 ### Manual checks
 
@@ -77,7 +77,7 @@ Or check Lighthouse: DevTools → Lighthouse → Accessibility.
 
 ## Full client audit
 
-Systematic WCAG 2.2 AA audit producing a client-ready report.
+Systematic WCAG 2.2 AA audit with a client-ready report.
 
 ### 1. Confirm scope
 
@@ -88,11 +88,11 @@ Systematic WCAG 2.2 AA audit producing a client-ready report.
 
 ### 2. Automated baseline
 
-Ask the user to run axe, pa11y, or Lighthouse across in-scope pages. Automated tools catch ~30–50% of issues; the rest require manual verification.
+Ask the user to run axe, pa11y, or Lighthouse across in-scope pages. Automated tools catch roughly 30–50% of issues; manually verify the rest.
 
 ### 3. Manual verification
 
-Work through the WCAG 2.2 AA criteria. For the full per-criterion checklist, see [references/wcag-checklist.md](references/wcag-checklist.md).
+Work through WCAG 2.2 AA. For the per-criterion checklist, see [references/wcag-checklist.md](references/wcag-checklist.md).
 
 Priority areas:
 
@@ -101,7 +101,7 @@ Priority areas:
 - **Understandable**: error messages, form labels, consistent navigation, plain language
 - **Robust**: valid HTML, ARIA used correctly, works with screen readers
 
-Screen reader testing is manual and requires the AT running on a real device. For VoiceOver (macOS/iOS), NVDA (Windows), and JAWS command references, see [references/screen-reader-testing.md](references/screen-reader-testing.md).
+Screen reader testing is manual and needs the AT on a real device. For VoiceOver, NVDA, and JAWS commands, see [references/screen-reader-testing.md](references/screen-reader-testing.md).
 
 ### 4. Map findings to severity
 

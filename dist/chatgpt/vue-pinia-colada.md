@@ -10,7 +10,7 @@ related-skills:
 ---
 # Pinia Colada
 
-Pinia Colada manages server state in Vue apps — caching, deduplication, background revalidation, and mutation coordination. It sits above your fetch layer; you still write the functions that call your API, Pinia Colada handles everything else.
+Pinia Colada manages Vue server state: caching, deduplication, background revalidation, and mutation coordination. It sits above fetch/API functions.
 
 ## Setup
 
@@ -46,9 +46,9 @@ import { PiniaColadaDevtools } from "@pinia/colada-devtools";
 
 ## Default conventions
 
-Use Pinia Colada as the server-state layer, not the transport layer. Keep API clients focused on HTTP/Xano/fetch calls; put cache keys, query options, mutations, and convenience wrappers under `src/queries/`.
+Use Pinia Colada for server state, not transport. Keep API clients focused on HTTP/Xano/fetch; put cache keys, query options, mutations, and wrappers under `src/queries/`.
 
-Prefer feature folders once a resource has both query and mutation behaviour:
+Prefer feature folders once a resource has queries and mutations:
 
 ```
 src/queries/auth/
@@ -57,13 +57,13 @@ src/queries/auth/
 └── login.js          # Login mutation + useAuth()
 ```
 
-Components should import from the feature folder, not implementation files:
+Components import from the feature folder, not implementation files:
 
 ```js
 import { useAuth, useCurrentUser } from "@/queries/auth";
 ```
 
-Name reusable definitions as `*QueryOptions` / `*MutationOptions`, and live return values as the resource/action:
+Name reusable definitions `*QueryOptions` / `*MutationOptions`; name live return values after the resource/action:
 
 ```js
 export const currentUserQueryOptions = defineQueryOptions({
@@ -82,11 +82,11 @@ Mental model:
 - `currentUser` — live query state from `useQuery()`
 - `userDetails` — derived data object exposed to components
 
-Convenience wrappers are encouraged when they remove repeated setup or expose derived values. Use route middleware for access decisions, not data preloading: for auth, prefer a token-only guard; components/layouts that call `useCurrentUser()` activate the current-user query automatically when `enabled` is true.
+Use wrappers when they remove repeated setup or expose derived values. Use route middleware for access decisions, not data preloading: for auth, prefer a token-only guard; components/layouts calling `useCurrentUser()` activate the query when `enabled` is true.
 
 ## Key factories
 
-Centralise cache keys in the query file. Reusing parent keys creates a hierarchy — invalidating a parent key invalidates all its children.
+Centralise cache keys in the query file. Parent keys create hierarchy: invalidating a parent invalidates its children.
 
 ```js
 // src/queries/contacts.js
@@ -105,7 +105,7 @@ For singleton resources, keep keys simple:
 export const CURRENT_USER_QUERY_KEY = ["user"];
 ```
 
-For resource collections, include every input that changes the returned data:
+For collections, include every input that changes returned data:
 
 ```js
 export const ALERT_KEYS = {
@@ -117,7 +117,7 @@ export const ALERT_KEYS = {
 
 ## defineQueryOptions
 
-Combine a key factory with a query function into a reusable definition. Pass it to `useQuery` directly rather than inlining keys.
+Combine a key factory with a query function. Pass the definition to `useQuery` instead of inlining keys.
 
 **Static** (no parameters):
 
@@ -144,7 +144,7 @@ export const contactByIdQueryOptions = defineQueryOptions((id) => ({
 
 ## useQuery
 
-Pass dynamic options as a getter function so Vue tracks reactivity correctly.
+Pass dynamic options as a getter so Vue tracks reactivity.
 
 ```vue
 <script setup>
@@ -165,11 +165,11 @@ const contact = useQuery(() => contactByIdQueryOptions(route.params.contactId));
 </template>
 ```
 
-Use `state` (not destructured `data`/`error`) for status checks — it narrows types correctly in conditionals.
+Use `state`, not destructured `data`/`error`, for status checks; it narrows types in conditionals.
 
 ### Pausing a query
 
-Use `enabled` to prevent a query running until required data is available.
+Use `enabled` to pause until required data exists.
 
 ```js
 const selectedId = ref(null);
@@ -183,7 +183,7 @@ useQuery({
 
 ### Spreading extra options
 
-Override individual options per usage without redefining the whole query.
+Override individual options without redefining the query.
 
 ```js
 useQuery(() => ({
@@ -212,11 +212,11 @@ const { mutate: saveContact, asyncStatus } = useMutation({
 - `mutate()` — fire-and-forget, catches errors silently
 - `mutateAsync()` — returns a promise, re-throws errors
 
-Prefer `mutateAsync()` when the caller already has a `try/catch` flow, such as login forms or save buttons that redirect after success.
+Prefer `mutateAsync()` when the caller already has `try/catch`, such as login forms or save buttons that redirect after success.
 
 ## defineMutationOptions and defineMutation
 
-Use `defineMutationOptions` for normal reusable mutation recipes. Use `defineMutation` only when the mutation wrapper needs shared reactive state.
+Use `defineMutationOptions` for reusable mutation recipes. Use `defineMutation` only when the wrapper needs shared reactive state.
 
 ```js
 // src/queries/contacts/delete.js
@@ -244,7 +244,7 @@ export function useDeleteContact() {
 
 ## defineQuery
 
-Shares reactive state (a search ref, filters, etc.) across components using the same query. Without `defineQuery`, each component gets its own copy of any refs defined inside.
+Shares reactive state, such as search refs or filters, across components using the same query. Without it, each component gets its own internal refs.
 
 ```js
 // src/queries/contacts.js
@@ -272,7 +272,7 @@ export const useContactSearch = defineQuery(() => {
 | `refresh()` | Reuses any in-flight request; skips if data is still fresh (`staleTime`). Prefer this. |
 | `refetch()` | Always triggers a new network request regardless of cache state. |
 
-Pass `true` when the caller should handle failures with `try/catch`:
+Pass `true` when the caller handles failures with `try/catch`:
 
 ```js
 await currentUser.refetch(true);
@@ -285,11 +285,11 @@ await currentUser.refetch(true);
 | `state.status` | `'pending'` → `'success'` \| `'error'` | Whether data has ever resolved |
 | `asyncStatus` | `'idle'` \| `'loading'` | Whether a fetch is currently in progress |
 
-These are intentionally separate. A query can have `state.status === 'success'` (data loaded before) and `asyncStatus === 'loading'` (currently refreshing in background).
+These are separate. A query can have `state.status === 'success'` from earlier data and `asyncStatus === 'loading'` while refreshing.
 
 ## Active queries
 
-A query is active while live Vue code is using it through `useQuery()` or a wrapper that calls `useQuery()`. Mounted components and layouts are the common case. Invalidating an active query refetches it; invalidating an inactive query marks it stale so it refreshes next time something uses it.
+A query is active while live Vue code uses it through `useQuery()` or a wrapper. Invalidating an active query refetches it; invalidating an inactive one marks it stale for next use.
 
 ## Folder structure
 

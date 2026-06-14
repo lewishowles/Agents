@@ -261,6 +261,26 @@ A “hook-enforced” rule may contain nuance the hook lacks. Review before cutt
 
 ---
 
+## Phase 22 — compact skill source prose
+
+### Purpose
+
+Compact original `SKILL.body.md` files by removing words, not meaning. Preserve trigger intent, ordering constraints, examples, and effectiveness.
+
+### Tasks
+
+- [x] Group 1: compact largest/high-impact bodies (`vue-use`, `vue-pinia-colada`, `accessibility-audit`, `bash`, `vue-vite`)
+- [ ] Group 2: compact core frontend/runtime bodies (`vue`, `accessibility`, `web-performance`, `frontend-security`, `code-review`)
+- [ ] Group 3: compact language/testing/process bodies (`swift`, `swift-ui`, `typescript`, `test`, `test-unit`, `test-e2e`, `debugging`, `refactoring`, `error-handling`, `code-style`, `dependencies`, `codebase-memory`)
+- [ ] Group 4: compact writing/project-management and small remaining bodies
+- [x] Regenerate generated outputs after group 1
+
+### Notes
+
+`scripts/sync.sh` passed after group 1.
+
+---
+
 ## Parking lot
 
 - Model-tiering guidance once 21d filtering exists.

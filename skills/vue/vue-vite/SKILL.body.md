@@ -2,7 +2,7 @@
 
 # Vite patterns
 
-Build tool patterns for Vite projects. Dev mode serves source files as native ESM with on-demand transforms. Build mode bundles with tree-shaking and code-splitting via Rollup.
+Build tool patterns for Vite projects. Dev serves source as native ESM with on-demand transforms; build bundles with Rollup tree-shaking and code-splitting.
 
 ## Config structure
 
@@ -52,7 +52,7 @@ export default defineConfig(({ command, mode }) => {
 
 ## Environment variables
 
-Vite loads `.env`, `.env.local`, `.env.[mode]`, `.env.[mode].local` in order; later files override earlier. `.local` files gitignored, for local secrets.
+Vite loads `.env`, `.env.local`, `.env.[mode]`, `.env.[mode].local` in order; later files override earlier. `.local` files are gitignored for local secrets.
 
 ### Client-side access
 
@@ -84,9 +84,9 @@ export default defineConfig(({ mode }) => {
 
 ### `VITE_` prefix is not a security boundary
 
-Any `VITE_`-prefixed var is **statically inlined into the client bundle at build time**. Minification and disabled source maps do NOT hide it — an attacker can extract any `VITE_` var from shipped JavaScript.
+Any `VITE_` var is **statically inlined into the client bundle at build time**. Minification and disabled source maps do not hide it; attackers can extract shipped values.
 
-**Rule:** Only public values (API URLs, feature flags, public keys) go in `VITE_` vars. Secrets MUST live server-side behind an API.
+**Rule:** only public values (API URLs, feature flags, public keys) go in `VITE_`. Secrets must live server-side behind an API.
 
 ### The `loadEnv("")` trap
 
@@ -100,7 +100,7 @@ const env = loadEnv(mode, process.cwd(), ["VITE_", "APP_"]);
 
 ### Source maps in production
 
-Production source maps leak original source. Disable unless uploading to an error tracker and deleting locally afterward:
+Production source maps leak original source. Disable unless uploading to an error tracker and deleting local copies afterward:
 
 ```typescript
 build: {
@@ -116,9 +116,9 @@ build: {
 
 ## Dev vs build
 
-Dev uses esbuild for on-demand transforms; build uses Rollup for bundling. CJS libs can behave differently between the two. Always verify with `vite build && vite preview` before deploying.
+Dev uses esbuild for on-demand transforms; build uses Rollup. CJS libraries can behave differently. Verify with `vite build && vite preview` before deploying.
 
-`vite build` transpiles but does NOT type-check. Type errors silently ship to production unless you run `tsc --noEmit` in CI or use `vite-plugin-checker`.
+`vite build` transpiles but does not type-check. Type errors ship unless CI runs `tsc --noEmit` or `vite-plugin-checker`.
 
 ## Imports and assets
 
@@ -134,7 +134,7 @@ import shaderSource from "./shader.glsl?raw";
 ## Plugins
 
 - Keep plugin order intentional; framework plugins usually come before inspection, analysis, or transform helpers
-- Use virtual modules only when config-time data genuinely needs to become importable runtime code
-- Check current Vite docs before applying version-specific migration guidance, especially around Rolldown, Oxc, and major-version beta features
+- Use virtual modules only when config-time data must become importable runtime code
+- Check current Vite docs before version-specific migration guidance, especially around Rolldown, Oxc, and major-version beta features
 
-For library mode, SSR mode, and common pitfalls (stale chunks, Docker, monorepo, barrel files, import extensions, stale cache), see [references/advanced.md](references/advanced.md).
+For library mode, SSR, and common pitfalls (stale chunks, Docker, monorepo, barrel files, import extensions, stale cache), see [references/advanced.md](references/advanced.md).
