@@ -284,15 +284,41 @@ Compact original `SKILL.body.md` files by removing words, not meaning. Preserve 
 
 ---
 
+## Phase 23 — tighten remaining workflow guidance
+
+### Purpose
+
+Convert concrete parking-lot quick wins into durable source guidance.
+
+### Expected commit
+
+`docs(rules): tighten workflow guidance`
+
+### Files likely to change
+
+- `rules/global-rules.md`
+- `skills/vue/vue/SKILL.body.md`
+- Generated outputs from `scripts/sync.sh`
+
+### Tasks
+
+- [x] Add Vue Markdown fence guidance for literal `</script>` in SFC examples
+- [x] Clarify ad-hoc staged commit grouping when no `PROGRESS.md` plan exists
+- [x] Add model-tiering guidance
+- [x] Regenerate outputs
+
+### Risks
+
+Model-tiering guidance can become vague or over-prescriptive. Keep it action-based and short.
+
+---
+
 ## Parking lot
 
-- Model-tiering guidance once 21d filtering exists.
 - `.claudeignore` templates for heavy projects.
 - Memory tooling: claude-mem/rocky removed; revisit only if codebase-memory-mcp leaves a gap.
 - Per-project cbm opt-in if SessionStart-only advisory kills useful graph usage.
-- Vue/docs skill note: escape or split literal `</script>` inside SFC Markdown fences.
 - Component library guidance: add one line to that repo’s `AGENTS.md` saying progress is root `PROGRESS.md`, not `.claude/PROGRESS.md`.
-- Ad-hoc staged commits: clarify commit grouping when no PROGRESS plan exists.
 - Task-agent spike for locating long-file sections without line-offset churn.
 
 ---

@@ -14,6 +14,14 @@ Minimise token cost by default. Treat context as a limited shared budget.
 - Read targeted file ranges instead of whole files. Do not repeatedly read large progress files; use targeted headings or searches.
 - Do not re-run or re-print expensive commands unless something changed that can affect their result and local execution is justified by token cost.
 
+### Effort tiering
+
+Match effort to risk and ambiguity:
+
+- **Quick tier**: direct answers, small prose edits, file lookup, or simple command output. Keep context reads minimal.
+- **Standard tier**: scoped code/config changes, focused docs updates, or localised reviews. Read the relevant source, edit surgically, and run scoped checks when useful.
+- **Deep tier**: debugging, architecture, security, accessibility, data loss risk, or cross-file behavioural changes. Investigate root cause, state assumptions, and gather evidence before proposing fixes.
+
 ### Interacting with the user
 
 - Batch clarifying questions — minimise back and forth
@@ -72,6 +80,7 @@ Code must be reviewed before it is committed. Completing work means stopping aft
 - Do not run `git commit`, `git tag`, `git push`, merge commands, or any command that creates or publishes Git history unless I explicitly ask for that exact action in the current conversation.
 - Do not treat "finish", "wrap up", "ready", "ship it", "commit message", or a suggested commit message as permission to commit.
 - Do not stage files with `git add` unless I explicitly ask you to prepare a staged commit.
+- If asked to stage or commit without an active `PROGRESS.md` plan, first show the files to include and the exact Conventional Commit message, then wait for confirmation.
 - Update docs when changes require documentation
 - After completing a coherent step, provide a scoped Conventional Commit message as plain text only. Label it `Suggested commit message:` and do not execute it.
 - If I do ask you to commit, show the files to be included and the exact commit message first, then wait for confirmation.

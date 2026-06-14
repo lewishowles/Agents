@@ -99,6 +99,7 @@ Date(props.date).toLocaleDateString(props.locale); });
 - Do not combine `v-if` and `v-for` on the same element — filter with a computed value or wrap in `<template>`
 - Treat `v-html` as a security risk. Use only with trusted, sanitised content
 - Avoid dynamic Tailwind class string construction that prevents class detection. Map states to complete class names
+- In Markdown docs, do not place a literal `</script>` inside Vue SFC code fences if the renderer may parse it as HTML. Escape it or split the closing tag.
 
 ## File-based routing
 
