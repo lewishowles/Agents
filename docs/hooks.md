@@ -12,8 +12,7 @@ Hooks are shell scripts that Claude Code runs automatically at specific points i
 | ---- | ------- | ----- | -------------------- |
 | `auto-allow-edits` | Auto-approves safe edits inside the configuration repo. | PreToolUse (`Write\|Edit`) | `silent` |
 | `auto-format` | Runs oxfmt after supported file writes when available. | PostToolUse (`Edit\|Write`) | `silent` |
-| `cbm-code-discovery-gate` | Blocks first broad code-discovery command to nudge codebase-memory graph use. | PreToolUse (`Bash`) | `block`; requires jq |
-| `cbm-session-reminder` | Reminds Claude to start code discovery with codebase-memory graph tools. | UserPromptSubmit | `silent` |
+| `cbm-session-reminder` | One-time session advisory to prefer codebase-memory graph tools for code discovery. | SessionStart | `silent` |
 | `plan-verify` | Warns when an exited plan is missing a validation section. | PostToolUse (`ExitPlanMode`) | `silent` |
 | `pre-stop-checks` | Runs configured lint and unit checks before Claude stops. | Stop | `silent` |
 | `progress-resume` | Injects project progress context when the prompt asks to resume work. | UserPromptSubmit | `silent` |

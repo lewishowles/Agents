@@ -174,6 +174,7 @@ setup_claude() {
 	prune_stale_repo_links "$HOME/.claude/skills" "$REPO_DIR/skills" "skills"
 	link_skills "$HOME/.claude/skills"
 
+	prune_stale_repo_links "$HOME/.claude/hooks" "$REPO_DIR/dist/claude/hooks" "hooks"
 	local hook
 	for hook in "$REPO_DIR"/dist/claude/hooks/*; do
 		[ -f "$hook" ] || continue
