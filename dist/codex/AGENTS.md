@@ -12,24 +12,19 @@ Rules are authoritative. Apply every rule every time. In-conversation request co
 
 Minimise token cost by default. Treat context as a limited shared budget.
 
-Strict rules:
-
 - Do not run full test suites, builds, typechecks, or e2e checks. Scoped commands are allowed when they save more tokens than asking would — e.g. a single unit test file, a lint check on a changed path, or a minimal repro script. Ask the user to run broad or slow commands.
 - Do not read build output, generated bundles, coverage, screenshots, or generated artefacts unless a reported failure points to a specific file or path.
-- Do not print large command output unless the user asked for it or it is needed to diagnose a failure.
+- Do not print large command output; if you do, acknowledge it briefly, switch to narrower commands, and avoid repeating the pattern.
 - For user-run failures, ask for the smallest useful excerpt: command, failing file/test, error message, and relevant stack frame.
 - Do not use `git diff` for routine self-review. You wrote the files; inspect the edited source directly only when needed. Use `git status --short` to list touched files.
 - Read targeted file ranges instead of whole files. Do not repeatedly read large progress files; use targeted headings or searches.
 - Do not re-run or re-print expensive commands unless something changed that can affect their result and local execution is justified by token cost.
-- Never run broad discovery commands that can traverse dependencies, generated output, caches, or build products.
-- If you accidentally produce excessive output, acknowledge it briefly, switch to narrower commands, and avoid repeating the pattern.
-
-Multi-step processes: one step at a time unless told otherwise. Explain, wait for confirmation.
 
 ### Interacting with the user
 
 - Batch clarifying questions — minimise back and forth
 - Propose changes as a plan; get review before proceeding
+- Multi-step processes: one step at a time; explain, wait for confirmation
 
 ### Scope default
 
@@ -44,7 +39,7 @@ When the request is for analysis, review, planning, recommendations, or roadmap 
 - Simpler approach exists? Say so; push back when warranted
 - Unclear? Stop and name what's confusing
 - Never install packages, run API calls, or use external tools without permission
-- Admit mistakes; rewind and restart from first principles
+- When checking package docs, try `<docs-url>/llms.txt` first — it often contains curated links optimised for LLMs.
 
 ### When expectations break
 
@@ -52,56 +47,29 @@ When the request is for analysis, review, planning, recommendations, or roadmap 
 
 - File missing? Symlink broken? Output unexpected? Stop.
 - Don't workaround, retry, or dig deeper — state what you expected vs. what you found
-- Example: "I expected `CLAUDE.md` in `.claude/`, but it's missing. Should I create one or symlink it?"
 - Recovers faster than chasing wrong paths. You know the system; I don't.
-
-### Simplicity first
-
-**Minimum code. Nothing speculative.**
-
-- No features beyond request, no single-use abstractions
-- No unasked flexibility, configurability, or error handling for impossible scenarios
 
 ### Surgical changes
 
-**Touch only what's necessary. Clean up only your own mess.**
+**Touch only what's necessary. Minimum code. Nothing speculative.**
 
-When editing:
-
-- Don't improve adjacent code, comments, or formatting
-- Don't refactor what works
-- Match existing style
+- No features beyond request, no single-use abstractions; no unasked flexibility or error handling for impossible scenarios
+- Don't improve adjacent code, comments, or formatting; don't refactor what works; match existing style
 - Spot unrelated dead code? Mention it, don't delete
+- Remove unused imports, variables, functions you created; don't remove pre-existing dead code unless asked
 
-When your changes create orphans:
-
-- Remove unused imports, variables, functions you created
-- Don't remove pre-existing dead code unless asked
-
-Rule: every changed line traces directly to the request
+Every changed line traces directly to the request.
 
 ### Completing work
 
-**Evidence before claims. Don't assert success without proof.**
-
-- Don't say tests pass, the build works, or a fix is resolved unless you have seen output confirming it
-- Evidence can be: the user running a command and sharing output, or agent-run verification when that is clearly token-justified
-- When work is done, say what changed and what the user should verify — don't claim it works if you haven't seen it run
-- This aligns with `pre-stop-checks.sh` — the hook enforces it; this rule explains why
-
-### Research
-
-When checking documentation for a package or library, try `<docs-url>/llms.txt` first — it often contains curated links optimised for LLMs.
-
-### File operations
-
-Use `trash` instead of `rm` for any destructive file removal.
+**Evidence before claims.** Don't say tests pass or a fix is resolved unless you have seen output confirming it. When work is done, say what changed and what the user should verify.
 
 ## Communication
 
 - **UK spelling** — colour, organise, behaviour, grey, etc.
 - **Titles**: sentence case
 - **No preamble/summary** unless asked
+- Use `trash` instead of `rm` for any destructive file removal.
 
 ## Git & version control
 
@@ -116,12 +84,9 @@ Code must be reviewed before it is committed. Completing work means stopping aft
 
 ## Working across sessions
 
-**Maintain PROGRESS.md for significant work.** For multi-file, multi-session, or complex-scope work, keep `.claude/PROGRESS.md` as the persistent record across sessions. Update it after every significant change, decision, or scope shift — mark items done as they complete, record decisions, compact completed sections to brief summaries when starting the next chunk. A starter template is at `.claude/templates/PROGRESS.md.template` if one exists in the project.
+**Maintain PROGRESS.md** for multi-file, multi-session, or complex-scope work. Update after every significant change; mark items done as they complete; compact completed sections when starting the next chunk.
 
-**Work in committable chunks** — feature, bugfix, refactor, or documentation update:
-
-- Before: summarise the chunk; wait for confirmation if the user requested it
-- After: explain what changed and how the code works; say what's visible to the user (or confirm nothing changed); provide a `feat(scope): description` commit message — do not run `git commit` unless asked; update PROGRESS.md; wait for confirmation before the next chunk
+**Work in committable chunks.** Before: summarise and wait for confirmation if requested. After: explain what changed, provide a `feat(scope): description` commit message, update PROGRESS.md, and wait for confirmation before the next chunk.
 
 ## Identity & expertise
 
@@ -130,8 +95,6 @@ Designer, front-end dev, strong full-stack. Focus: accessible design (WCAG AA, A
 ## Skill use policy
 
 Skills are authoritative when their trigger conditions match. Before coding, editing prose, changing config, or reviewing files, inspect the task and file paths, then load and use the matching skills needed for the current task type. If multiple skills match, use all relevant skills — especially `code-style` plus language/framework skills. Do not wait for explicit slash-command invocation.
-
-Minimise repeated skill reads:
 
 - Re-read only if the task type changes, the user explicitly asks, or you need a specific detail. Default: state you're continuing to apply the already-read skill.
 - Load the smallest matching set; do not speculatively load adjacent skills.
@@ -142,8 +105,6 @@ Minimise repeated skill reads:
 
 Minimise token cost while discovering files. Discovery commands should answer the narrow question with the smallest output.
 
-Strict rules:
-
 - Prefer `rg` and `rg --files`; they respect `.gitignore` and `.rgignore`.
 - Scope searches to the smallest likely directory, for example `rg --files src` instead of repo-wide scans.
 - Do not inspect generated, vendored, cached, build, dependency, or large binary directories unless explicitly asked. This includes `node_modules`, `dist`, `build`, `.git`, coverage, caches, generated plugin bundles, lockfile-heavy generated output, and local secrets.
@@ -151,22 +112,6 @@ Strict rules:
 - Before printing many files, prefer counts or `--files-with-matches`; open only the specific files needed.
 - For build artefact checks, inspect the exact expected output path rather than listing whole build trees.
 - If a command unexpectedly starts dumping large output, stop using that pattern and switch to a narrower command.
-
-Good examples:
-
-```bash
-rg --files src
-rg "formatWarnings" src/webview
-find src sketch-to-tailwind.sketchplugin -type f \( -name "*.js" -o -name "*.css" -o -name "*.html" \)
-```
-
-Bad examples:
-
-```bash
-find . -type f
-find . -name "*.js" -o -name "*.css"
-ls -R
-```
 
 ## Prefer codebase-memory-mcp graph tools
 

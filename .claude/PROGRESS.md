@@ -2,7 +2,7 @@
 
 **Started:** 2026-05-13
 **Project:** `~/Dev/Configuration/Agents`
-**Status:** active — Phases 21a, 21b, 21e complete (2026-06-14); 21c/21d next
+**Status:** active — Phases 21a, 21b, 21c, 21d, 21e complete (2026-06-14); parking lot next
 
 ---
 
@@ -250,10 +250,10 @@ Slim Claude output without weakening Codex. CLAUDE.md is ~216 lines; some prose 
 
 ### Tasks
 
-- [ ] Implement marker filtering
-- [ ] Audit each rule section: keep, Claude-only, Codex-only, or shared
-- [ ] Review hook-enforced cuts before applying
-- [ ] Regenerate; aim for Claude output ~100–120 lines
+- [x] Implement marker filtering → chose direct condensation over marker syntax; simpler, no new infrastructure
+- [x] Audit each rule section: keep, Claude-only, Codex-only, or shared
+- [x] Review hook-enforced cuts before applying
+- [x] Regenerate; aim for Claude output ~100–120 lines → 114 lines achieved
 
 ### Risks
 
