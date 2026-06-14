@@ -21,7 +21,9 @@ OUT_FILE = REPO_DIR / "dist" / "claude" / "settings.json"
 # Return the shell command string that invokes a hook.
 # Hooks with a 'command' field use it directly. All others are wrapped in a
 # bash -c invocation so the hook runs with the user's shell environment.
-# @param  dict  manifest  The hook's hook.json contents.
+#
+# @param  {dict}  manifest
+#     The hook's hook.json contents.
 def hook_command(manifest: dict) -> str:
 	if "command" in manifest:
 		return manifest["command"]
@@ -30,8 +32,11 @@ def hook_command(manifest: dict) -> str:
 
 
 # Build a single hook entry for the settings.json hooks block.
-# @param  dict  hook_def  The event definition from the manifest's events array.
-# @param  str   command   The command string returned by hook_command.
+#
+# @param  {dict}  hook_def
+#     The event definition from the manifest's events array.
+# @param  {str}   command
+#     The command string returned by hook_command.
 def build_hook_entry(hook_def: dict, command: str) -> dict:
 	entry: dict = {"type": "command", "command": command}
 	if "timeout" in hook_def:

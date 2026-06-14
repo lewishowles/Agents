@@ -51,9 +51,11 @@ def current_block(path: Path, name: str) -> str:
 
 
 # Replace generated block content between named markers.
-# @param  Path  path   Markdown file path.
-# @param  str   name   Marker name, e.g. user-skills.
-# @param  str   body   New block content without surrounding markers.
+#
+# @param  {Path}  path  Markdown file path.
+# @param  {str}   name  Marker name, e.g. user-skills.
+# @param  {str}   body
+#     New block content without surrounding markers.
 def replace_block(path: Path, name: str, body: str) -> None:
 	start = f"<!-- BEGIN GENERATED: {name} -->"
 	end = f"<!-- END GENERATED: {name} -->"
@@ -72,13 +74,15 @@ def generated_notice() -> str:
 
 
 # Keep table cells on one line.
-# @param  str  value  Cell text.
+#
+# @param  {str}  value  Cell text.
 def cell(value: str) -> str:
 	return value.replace("\n", " ").replace("|", "\\|")
 
 
 # Render a comma-separated list as inline code values.
-# @param  list  values  Values to render.
+#
+# @param  {list}  values  Values to render.
 def code_list(values: list[str]) -> str:
 	if not values:
 		return ""
@@ -161,6 +165,7 @@ def build_file_trigger_table() -> str:
 	return "\n".join(lines)
 
 
+# Return all (path, marker-name, body) triples for every generated block across all docs files.
 def generated_blocks() -> list[tuple[Path, str, str]]:
 	return [
 		(REPO_DIR / "docs" / "skills.md", "user-skills", build_user_skills_table()),
@@ -170,6 +175,7 @@ def generated_blocks() -> list[tuple[Path, str, str]]:
 	]
 
 
+# Return the number of generated blocks whose on-disk content does not match what would be generated.
 def check_blocks() -> int:
 	failures = 0
 	for path, name, body in generated_blocks():

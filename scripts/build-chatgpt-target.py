@@ -21,7 +21,9 @@ SOURCE_DIR = TARGET_DIR / "source"
 
 
 # Read skill.json and return the fields needed for index generation.
-# @param  Path  skill_dir  The skill directory containing skill.json.
+#
+# @param  {Path}  skill_dir
+#     The skill directory containing skill.json.
 def load_manifest(skill_dir: Path) -> dict:
 	manifest_file = skill_dir / "skill.json"
 	if not manifest_file.exists():
@@ -37,8 +39,10 @@ def load_manifest(skill_dir: Path) -> dict:
 
 
 # Build a single skill section for SKILLS.md from a manifest dict.
-# @param  dict  manifest    Manifest returned by load_manifest.
-# @param  str   skill_name  The skill name used as the section heading.
+#
+# @param  {dict}  manifest    Manifest returned by load_manifest.
+# @param  {str}   skill_name
+#     The skill name used as the section heading.
 def build_skill_entry(manifest: dict, skill_name: str) -> str:
 	lines = [f"### {skill_name}"]
 

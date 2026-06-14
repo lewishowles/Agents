@@ -50,7 +50,9 @@ def discover_skill_dirs() -> list[Path]:
 
 
 # Return the content of a SKILL.md after stripping its YAML frontmatter.
-# @param  Path  skill_file  Path to the SKILL.md to extract body from.
+#
+# @param  {Path}  skill_file
+#     Path to the SKILL.md to extract body from.
 def extract_body(skill_file: Path) -> str:
 	lines = skill_file.read_text().splitlines()
 	dash_indices = [i for i, line in enumerate(lines) if line.strip() == "---"]
@@ -65,7 +67,9 @@ def extract_body(skill_file: Path) -> str:
 # Write SKILL.md by combining skill.json metadata with SKILL.body.md.
 # If SKILL.body.md does not exist, the body is bootstrapped from the existing
 # SKILL.md so the first sync run on an existing skill is non-destructive.
-# @param  Path  skill_dir  The skill directory to generate SKILL.md for.
+#
+# @param  {Path}  skill_dir
+#     The skill directory to generate SKILL.md for.
 def generate_skill_md(skill_dir: Path) -> None:
 	manifest_file = skill_dir / "skill.json"
 	body_file = skill_dir / "SKILL.body.md"
