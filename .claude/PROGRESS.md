@@ -217,9 +217,9 @@ After 21a, remove leftovers and refresh repo-local docs once against the final h
 
 ### Tasks
 
-- [ ] Confirm `targets/chatgpt` is unreferenced and stale/duplicated
-- [ ] Trash `targets/`
-- [ ] Rewrite agent-config skill for current architecture
+- [x] Confirm `targets/chatgpt` is unreferenced and stale/duplicated — was empty; `scripts/*` only reference `targets` as a JSON field in skill manifests
+- [x] Trash `targets/`
+- [x] Rewrite agent-config skill for current architecture
 - [ ] Run `scripts/validate.sh` (user-run)
 
 ### Risks

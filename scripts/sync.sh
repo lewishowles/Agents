@@ -42,8 +42,11 @@ CODEX_PARTS=(
 
 # Concatenates ordered fragment files into a single target file, with a blank
 # line separating each fragment so sections don't run together.
-# @param  string  target  Output file path.
-# @param  string  ...     Fragment file paths (remaining arguments), in order.
+#
+# @param  {string}  target
+#     Output file path.
+# @param  {string}  ...
+#     Fragment file paths (remaining arguments), in order.
 write_target() {
 	local target="$1"
 	shift

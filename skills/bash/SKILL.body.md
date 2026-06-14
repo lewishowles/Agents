@@ -35,11 +35,12 @@ Every function gets a purpose comment and JSDoc-style `@param` lines for each pa
 
 `# @param  {type}  name`
 
-Put the description on the next indented line when it needs more than a few words.
+Put the description on the next indented line, even if it only needs a few words. Always add a blank `#` line between the purpose prose and the first `@param` — it makes the boundary easy to spot at a glance.
 
 ```bash
 # Moves a file to its backup location and prints the backup path.
 # Backup paths are routed by prefix so each agent's backups stay separate.
+#
 # @param  {string}  path
 #     The file or symlink to back up.
 backup_path() {
@@ -50,6 +51,7 @@ backup_path() {
 
 ```python
 # Read skill.json and return the fields needed for index generation.
+#
 # @param  {Path}  skill_dir
 #     The skill directory containing skill.json.
 def load_manifest(skill_dir: Path) -> dict:

@@ -34,8 +34,9 @@ def hook_manifests() -> list[dict]:
 
 
 # Return generated block content between named markers.
-# @param  Path  path  Markdown file path.
-# @param  str   name  Marker name, e.g. user-skills.
+#
+# @param  {Path}  path  Markdown file path.
+# @param  {str}   name  Marker name, e.g. user-skills.
 def current_block(path: Path, name: str) -> str:
 	start = f"<!-- BEGIN GENERATED: {name} -->"
 	end = f"<!-- END GENERATED: {name} -->"

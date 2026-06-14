@@ -17,20 +17,27 @@ fi
 
 ERRORS=0
 
-# @param  string  message  Error message to display.
+# Prints an error message and increments the error counter.
+#
+# @param  {string}  message
+#     Error message to display.
 fail() {
 	printf '%s✗%s %s\n' "$RED" "$RESET_COLOUR" "$1" >&2
 	ERRORS=$((ERRORS + 1))
 }
 
-# @param  string  heading  Section heading to print.
+# @param  {string}  heading
+#     Section heading to print.
 section() {
 	printf '\n%s\n' "$1"
 }
 
 # Returns 0 if the value is in the allowed list, 1 otherwise.
-# @param  string  value    The value to check.
-# @param  string  ...      Allowed values (remaining arguments).
+#
+# @param  {string}  value
+#     The value to check.
+# @param  {string}  ...
+#     Allowed values (remaining arguments).
 is_valid() {
 	local value="$1"
 	shift

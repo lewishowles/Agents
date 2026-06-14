@@ -38,8 +38,11 @@ fi
 
 # Scans a downloaded skill file for patterns that warrant manual review before
 # the skill is trusted. Prints a warning for each match but does not block.
-# @param  string  file  Path to the downloaded file to inspect.
-# @param  string  slug  Skill slug, used in warning messages.
+#
+# @param  {string}  file
+#     Path to the downloaded file to inspect.
+# @param  {string}  slug
+#     Skill slug, used in warning messages.
 vet_skill_file() {
 	local file="$1"
 	local slug="$2"
@@ -67,8 +70,11 @@ vet_skill_file() {
 
 # Strips YAML frontmatter from a skill file and writes the body to a target path.
 # SKILL.body.md is the editable source; SKILL.md is regenerated from it by sync.sh.
-# @param  string  input_file   Path to the downloaded SKILL.md with frontmatter.
-# @param  string  output_file  Path to write the stripped body content.
+#
+# @param  {string}  input_file
+#     Path to the downloaded SKILL.md with frontmatter.
+# @param  {string}  output_file
+#     Path to write the stripped body content.
 strip_frontmatter() {
 	local input_file="$1"
 	local output_file="$2"
@@ -90,8 +96,11 @@ PYEOF
 
 # Downloads any reference files listed in a GitHub contents API response and
 # writes them into the skill's references/ subdirectory.
-# @param  string  references_api_url  GitHub API URL for the references directory.
-# @param  string  target_dir          The skill directory to write references into.
+#
+# @param  {string}  references_api_url
+#     GitHub API URL for the references directory.
+# @param  {string}  target_dir
+#     The skill directory to write references into.
 fetch_references() {
 	local references_api_url="$1"
 	local target_dir="$2"
@@ -117,14 +126,23 @@ fetch_references() {
 
 # Downloads and installs a single external skill. Skips the download if the
 # upstream SHA matches what was recorded during the last sync.
-# @param  string  slug                Skill directory name and identifier.
-# @param  string  group               Parent group directory, or empty for flat skills.
-# @param  string  name                Human-readable skill name (used in SYNC.md).
-# @param  string  source              Source description (e.g. repo name) for SYNC.md.
-# @param  string  skill_url           Direct download URL for the skill's SKILL.md.
-# @param  string  references_api_url  GitHub API URL for reference files, or empty.
-# @param  string  commit_api_url      GitHub API URL to resolve the upstream SHA, or empty.
-# @param  string  license             Licence identifier for SYNC.md.
+#
+# @param  {string}  slug
+#     Skill directory name and identifier.
+# @param  {string}  group
+#     Parent group directory, or empty for flat skills.
+# @param  {string}  name
+#     Human-readable skill name (used in SYNC.md).
+# @param  {string}  source
+#     Source description (e.g. repo name) for SYNC.md.
+# @param  {string}  skill_url
+#     Direct download URL for the skill's SKILL.md.
+# @param  {string}  references_api_url
+#     GitHub API URL for reference files, or empty.
+# @param  {string}  commit_api_url
+#     GitHub API URL to resolve the upstream SHA, or empty.
+# @param  {string}  license
+#     Licence identifier for SYNC.md.
 sync_skill() {
 	local slug="$1"
 	local group="$2"

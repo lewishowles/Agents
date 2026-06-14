@@ -17,9 +17,12 @@ usage() {
 }
 
 # Copies a template to target only if target does not already exist.
-# @param  string  source  Template file path.
-# @param  string  target  Destination path in the project.
-# @param  string  label   Human-readable name for output messages.
+#
+# @param  {string}  source  Template file path.
+# @param  {string}  target
+#     Destination path in the project.
+# @param  {string}  label
+#     Human-readable name for output messages.
 copy_file() {
 	local source="$1"
 	local target="$2"
@@ -37,9 +40,12 @@ copy_file() {
 # Copies a template to target, or prompts the user before overwriting a file
 # that exists locally but differs from the template. This handles the case
 # where a project has customised a file that the template has since updated.
-# @param  string  source  Template file path.
-# @param  string  target  Destination path in the project.
-# @param  string  label   Human-readable name for output messages.
+#
+# @param  {string}  source  Template file path.
+# @param  {string}  target
+#     Destination path in the project.
+# @param  {string}  label
+#     Human-readable name for output messages.
 sync_file() {
 	local source="$1"
 	local target="$2"
@@ -67,8 +73,11 @@ sync_file() {
 	fi
 }
 
-# @param  string  path   Directory to create.
-# @param  string  label  Human-readable name for output messages.
+# Creates a directory at path if it doesn't already exist.
+#
+# @param  {string}  path  Directory to create.
+# @param  {string}  label
+#     Human-readable name for output messages.
 ensure_dir() {
 	local path="$1"
 	local label="$2"

@@ -23,7 +23,9 @@ timestamp() {
 # Moves a file to its backup location and prints the backup path.
 # Backup paths are routed by prefix so each agent's backups stay separate.
 # If a backup already exists, a timestamp suffix is added to avoid collision.
-# @param  string  path  The file or symlink to back up.
+#
+# @param  {string}  path
+#     The file or symlink to back up.
 backup_path() {
 	local path="$1"
 	local backup="${path}.bak"
@@ -46,7 +48,9 @@ backup_path() {
 }
 
 # Prints a path with $HOME replaced by ~ for readable terminal output.
-# @param  string  path  The absolute path to display.
+#
+# @param  {string}  path
+#     The absolute path to display.
 display_path() {
 	local path="$1"
 
@@ -59,8 +63,11 @@ display_path() {
 # Ensures a directory exists as a real directory, not a symlink.
 # Per-item symlinks inside the directory need the parent to be a real dir,
 # otherwise the OS can't resolve sibling links independently.
-# @param  string  path   The directory path to ensure.
-# @param  string  label  Human-readable name for output messages.
+#
+# @param  {string}  path
+#     The directory path to ensure.
+# @param  {string}  label
+#     Human-readable name for output messages.
 ensure_container_dir() {
 	local path="$1"
 	local label="$2"
@@ -82,9 +89,13 @@ ensure_container_dir() {
 
 # Removes broken symlinks in a directory that point into this repo.
 # Symlinks pointing elsewhere (e.g. plugin-installed skills) are left alone.
-# @param  string  dir          Directory to scan.
-# @param  string  repo_prefix  Only prune links whose target starts with this path.
-# @param  string  label        Human-readable name used in output messages.
+#
+# @param  {string}  dir
+#     Directory to scan.
+# @param  {string}  repo_prefix
+#     Only prune links whose target starts with this path.
+# @param  {string}  label
+#     Human-readable name used in output messages.
 prune_stale_repo_links() {
 	local dir="$1"
 	local repo_prefix="$2"
@@ -106,9 +117,13 @@ prune_stale_repo_links() {
 # Creates a symlink from source to target. If a symlink already exists at
 # target pointing to the same source, it is left unchanged. Any other existing
 # file or symlink is backed up first.
-# @param  string  source  The file or directory to link to.
-# @param  string  target  The symlink path to create.
-# @param  string  label   Human-readable name for output messages.
+#
+# @param  {string}  source
+#     The file or directory to link to.
+# @param  {string}  target
+#     The symlink path to create.
+# @param  {string}  label
+#     Human-readable name for output messages.
 link_path() {
 	local source="$1"
 	local target="$2"
@@ -141,7 +156,9 @@ link_path() {
 # Links all skills from this repo into the given target directory.
 # Handles both flat skills (skills/<name>/) and grouped skills
 # (skills/<group>/<name>/), installing each under its own name.
-# @param  string  target_dir  The directory to install skill symlinks into.
+#
+# @param  {string}  target_dir
+#     The directory to install skill symlinks into.
 link_skills() {
 	local target_dir="$1"
 	local skill sub
