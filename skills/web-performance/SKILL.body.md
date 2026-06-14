@@ -8,15 +8,15 @@
 | **CLS** | < 0.1   | Layout shift from elements loading or resizing      |
 | **INP** | < 200ms | Responsiveness: time from interaction to next paint |
 
-Measure with Lighthouse (DevTools → Lighthouse) or [web.dev/measure](https://web.dev/measure). Ask the user to run Lighthouse against production — dev mode numbers are unreliable.
+Measure with Lighthouse (DevTools → Lighthouse) or [web.dev/measure](https://web.dev/measure). Ask the user to run Lighthouse against production; dev numbers are unreliable.
 
 ## LCP
 
-The LCP element is usually a hero image or large heading above the fold.
+LCP is usually a hero image or large heading above the fold.
 
 - **Preload the LCP image**: `<link rel="preload" as="image" href="/hero.webp">`
 - **Use modern formats**: WebP or AVIF. Provide a fallback with `<picture>` + `<source>`
-- **Don't lazy-load the LCP image** — it's already in the viewport
+- **Don't lazy-load the LCP image** — it is already in the viewport
 - **Set explicit width/height** on all images to reserve space before load
 
 ```html
@@ -27,17 +27,17 @@ The LCP element is usually a hero image or large heading above the fold.
 
 Layout shift happens when elements change size or position after initial paint.
 
-- **Set width/height on all images and video** — or use `aspect-ratio` in CSS
+- **Set width/height on images and video** — or use `aspect-ratio`
 - **Reserve space for async content**: skeleton loaders, min-height on dynamic areas
 - **Avoid inserting content above existing content** (banners, cookie bars loading late)
 - **Use `font-display: swap` or `optional`** to prevent invisible text during font load
 
 ## INP
 
-INP measures how quickly the page responds to clicks, taps, and keyboard input.
+INP measures response time for clicks, taps, and keyboard input.
 
-- **Long tasks block the main thread** — break up work with `scheduler.yield()` or deferred promises
-- **Avoid expensive work in Vue `computed`** — computed is synchronous and runs on every reactive access
+- **Long tasks block the main thread** — split work with `scheduler.yield()` or deferred promises
+- **Avoid expensive Vue `computed` work** — computed is synchronous and runs on every reactive access
 - **Keep event handlers fast** — defer non-critical work (analytics, logging) to `requestIdleCallback`
 - **Use `v-show` instead of `v-if`** for elements toggled frequently — avoids repeated mount/unmount cost
 
@@ -45,7 +45,7 @@ INP measures how quickly the page responds to clicks, taps, and keyboard input.
 
 - Use `shallowRef` for large objects, fetched payloads, and library instances that don't need deep reactivity
 - Avoid deeply reactive objects (`reactive({...})`) for data with many nested properties
-- `v-memo` on expensive list rows when the template is costly to re-evaluate
+- Use `v-memo` on expensive list rows when the template is costly to re-evaluate
 - `defineAsyncComponent` to defer component initialisation until needed:
 
 ```javascript
@@ -54,13 +54,13 @@ const HeavyChart = defineAsyncComponent(() => import("./heavy-chart.vue"));
 
 ## Code splitting
 
-Vite splits at route boundaries automatically with dynamic imports. Ensure route components use `defineAsyncComponent` or are imported dynamically in the router:
+Vite splits at route boundaries with dynamic imports. Ensure route components use `defineAsyncComponent` or dynamic router imports:
 
 ```javascript
 const routes = [{ path: "/dashboard", component: () => import("./views/dashboard.vue") }];
 ```
 
-Check bundle composition with `rollup-plugin-visualizer` — ask the user to run `bun run build --report` if it's configured.
+Check bundles with `rollup-plugin-visualizer`; ask the user to run `bun run build --report` if configured.
 
 ## Images
 
@@ -92,7 +92,7 @@ Check bundle composition with `rollup-plugin-visualizer` — ask the user to run
 }
 ```
 
-Prefer variable fonts (one file, all weights) over loading multiple static weights.
+Prefer variable fonts over multiple static weights.
 
 ## GitHub Pages specifics
 

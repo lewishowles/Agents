@@ -15,14 +15,14 @@ related-skills:
 ---
 # Code review
 
-Reviews are collaborative improvement, not gatekeeping. Feedback should be specific, actionable, and grounded in the code — not vague or judgemental.
+Reviews improve the code collaboratively. Feedback is specific, actionable, and grounded in the code.
 
 ## Giving a review
 
 ### Before reviewing
 
-- Understand the intent: what problem does this change solve?
-- Check the scope: is the diff doing one thing, or several?
+- Understand the intent: what problem does this solve?
+- Check scope: is the diff doing one thing, or several?
 - Load the relevant skills for the language/framework in view
 
 ### Severity levels
@@ -72,9 +72,9 @@ Reviews are collaborative improvement, not gatekeeping. Feedback should be speci
 
 ### Tailoring by PR type
 
-Adjust focus by what the PR is doing:
+Adjust focus by PR type:
 
-- **Bug fix** — focus on root-cause correctness, regression test, no scope creep
+- **Bug fix** — root-cause correctness, regression test, no scope creep
 - **New feature** — focus on a11y, error handling, test coverage, and API surface
 - **Refactor** — focus on behaviour preservation (tests pass before and after each step)
 - **Dependency upgrade** — focus on breaking changes, security advisories, bundle impact
@@ -82,14 +82,14 @@ Adjust focus by what the PR is doing:
 ### Giving feedback
 
 - Prefix with severity: `[blocker]`, `[important]`, `[suggestion]`, `[nit]`
-- State what, why, and ideally what the alternative is
+- State what, why, and ideally the alternative
 - Ask questions for things you don't understand before flagging them as issues
 
 ---
 
 ## Receiving a review
 
-Read all feedback before responding to any of it — related items may depend on each other.
+Read all feedback before responding; related items may depend on each other.
 
 **For each item:**
 
@@ -98,7 +98,7 @@ Read all feedback before responding to any of it — related items may depend on
 3. Evaluate whether it's technically correct for your stack and context
 4. Respond with action or reasoned pushback — not performative agreement
 
-**Push back when** a suggestion would break existing behaviour, lacks full context, violates YAGNI, or conflicts with an established architectural decision. Use technical reasoning, not defensiveness.
+**Push back when** a suggestion would break existing behaviour, lacks context, violates YAGNI, or conflicts with an architectural decision. Use technical reasoning.
 
 **If you were wrong:** state it factually and proceed. _"You were right — I checked and it does [X]. Fixing now."_
 

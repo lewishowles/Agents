@@ -4,7 +4,7 @@
 
 - Tab HTML indentation
 - Always self-close where possible (`<img />`, `<component />`)
-- Prefer `v-bind="{ prop: value }"` for variable and expression bindings — the object form reads more clearly, especially with multiple bindings
+- Prefer `v-bind="{ prop: value }"` for variable/expression bindings, especially multiple bindings
 - Use regular attributes for literal strings, including classes and ARIA values: `class="..."`, `aria-live="polite"`
 - Lowercase component names in templates
 - Always two-word minimum component names per Vue best practices
@@ -27,7 +27,7 @@
 
 ## Props
 
-Every prop should have a JSDoc block explaining its purpose. Keep descriptions concise and user-focused:
+Every prop gets a concise, user-focused JSDoc block:
 
 ```vue
 const props = defineProps({ /** * The date to display, formatted as ISO 8601. */ date: { type:
@@ -37,7 +37,7 @@ the user's locale. */ locale: { type: String, default: undefined, }, });
 
 ### Prop bindings
 
-Prefer object `v-bind` over `:` shorthand for variable or expression prop bindings:
+Prefer object `v-bind` over `:` shorthand for variable/expression prop bindings:
 
 ```vue
 <!-- ✓ -->
@@ -75,7 +75,7 @@ Date(props.date).toLocaleDateString(props.locale); });
 ## provide / inject
 
 - Key by the providing component's name: `provide("dropdown-menu", { selectMenuItem })`
-- Provide an object, not a bare value — keeps related functionality under one key, makes additions additive rather than breaking
+- Provide an object, not a bare value — keeps related functionality under one key and additions non-breaking
 - At the inject site, destructure with an empty object default: `const { selectMenuItem } = inject("dropdown-menu", {})`
 
 ## Component organisation
@@ -102,7 +102,7 @@ Date(props.date).toLocaleDateString(props.locale); });
 
 ## File-based routing
 
-Vue Router's file-based routing generates routes from `src/pages/` — the file path is the URL. Requires the Vue Router build plugin.
+Vue Router file-based routing generates routes from `src/pages/`; the file path is the URL. Requires the build plugin.
 
 ```
 src/pages/
