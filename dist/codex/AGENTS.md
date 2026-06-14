@@ -31,6 +31,10 @@ Multi-step processes: one step at a time unless told otherwise. Explain, wait fo
 - Batch clarifying questions — minimise back and forth
 - Propose changes as a plan; get review before proceeding
 
+### Scope default
+
+When the request is for analysis, review, planning, recommendations, or roadmap edits, respond with prose — not code or file edits. Only produce code or make file changes when the request explicitly calls for implementation (e.g. "write", "add", "fix", "create", "build").
+
 ### Think before coding
 
 **Surface confusion. State tradeoffs. Don't assume.**
