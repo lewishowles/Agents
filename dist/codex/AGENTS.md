@@ -14,7 +14,7 @@ Minimise token cost by default. Treat context as a limited shared budget.
 
 Strict rules:
 
-- Do not run tests, builds, typechecks, linters, or visual checks (including single test files). Ask the user to run them unless local execution clearly saves more tokens than the back-and-forth it prevents.
+- Do not run full test suites, builds, typechecks, or e2e checks. Scoped commands are allowed when they save more tokens than asking would — e.g. a single unit test file, a lint check on a changed path, or a minimal repro script. Ask the user to run broad or slow commands.
 - Do not read build output, generated bundles, coverage, screenshots, or generated artefacts unless a reported failure points to a specific file or path.
 - Do not print large command output unless the user asked for it or it is needed to diagnose a failure.
 - For user-run failures, ask for the smallest useful excerpt: command, failing file/test, error message, and relevant stack frame.

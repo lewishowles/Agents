@@ -10,7 +10,7 @@ Apply especially when under time pressure or when a "quick fix" seems obvious �
 
 ## Token-discipline note
 
-Don't run tests or builds — ask the user. Phrase it as the smallest useful command they need to run, and ask what output they get.
+Prefer running scoped commands over asking the user when it saves more back-and-forth than it costs in tokens — a single test file, a lint check on a touched path, or a minimal repro script. Ask the user for full suite runs, builds, and e2e checks.
 
 ## Phase 1 — Investigate
 
@@ -44,7 +44,7 @@ State a single, specific hypothesis: _"I think X is the root cause because Y."_
 
 ## Phase 3 — Minimal fix
 
-1. Ask the user to run the smallest test or repro that would confirm or refute the hypothesis
+1. Run the smallest scoped test or repro that confirms or refutes the hypothesis. If it requires a full suite or is likely slow, ask the user to run it instead.
 2. If confirmed: implement the smallest possible fix addressing the root cause
 3. One change at a time — no bundled improvements
 4. Ask the user to verify the fix works and no other tests broke

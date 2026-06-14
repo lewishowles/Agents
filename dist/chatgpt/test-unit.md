@@ -21,7 +21,7 @@ related-skills:
 - Test and group names are capitalised, human-readable, and self-contained; method/computed names may stay exact
 - Group tests by collection, e.g. "Initialisation", "Computed", "Methods"
 - **Do not** write interaction, rendered-state, or DOM-presence tests in unit tests; those are covered in Playwright/Cypress component tests. DOM checks like `wrapper.find("[data-test=...]").exists()` belong in browser component tests, not Vitest
-- Avoid running tests by default because output is token-heavy. Run only focused tests when needed to verify a specific fix or failure; suggest broader commands for the user to run
+- Running a single test file or focused test is fine when verifying a specific fix; output stays manageable. Ask the user for full suite runs.
 
 ## Vue & Vitest
 
