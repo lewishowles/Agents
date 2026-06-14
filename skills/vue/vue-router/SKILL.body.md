@@ -1,12 +1,12 @@
 # Vue Router
 
-Use Vue Router for production Vue SPAs and route-driven state. Keep URL state meaningful for shareable views: filters, tabs, pagination, selected records, and search where appropriate.
+Use Vue Router for production Vue SPAs and route-driven state. Keep URL state meaningful for shareable filters, tabs, pagination, selected records, and search.
 
 ## Routes and state
 
 - Keep routes named and domain-oriented
 - Use route params for resource identity and query strings for view state
-- Keep temporary UI state in components or Pinia, not the URL
+- Keep temporary UI state in components or Pinia
 - Validate route params before using them for API calls or store lookups
 - Keep route metadata small: auth, layout, titles, and feature flags
 
@@ -27,7 +27,7 @@ router.beforeEach((to) => {
 
 ## Same-route updates
 
-Vue reuses the same component instance when only params or query values change.
+Vue reuses the same component when only params or query values change.
 
 - Watch specific route params or query values, not the whole route object
 - Use `onBeforeRouteUpdate()` when navigation should be accepted, rejected, or used to reload data

@@ -8,12 +8,12 @@ related-skills:
 ---
 # UI copy
 
-Microcopy = short interface text guiding users through actions. Bar: clear in one read.
+Microcopy = short interface text guiding action. Bar: clear in one read.
 
 ## Buttons and CTAs
 
 - Lead with verb — `Save changes`, not `OK`
-- Specific about what happens — `Delete account` beats `Confirm`
+- Be specific about what happens — `Delete account` beats `Confirm`
 - Match surrounding form: `Sign in` form → `Sign in` button, not `Submit`
 - Icon-only buttons still need an accessible name. Use a concise action label like `Close menu`, `Delete project`, or `Copy link`
 
@@ -26,16 +26,16 @@ Microcopy = short interface text guiding users through actions. Bar: clear in on
 
 ## Empty states
 
-- Acknowledge empty, point to next action — `No projects yet. Create one to get started.`
+- Acknowledge empty and point to the next action — `No projects yet. Create one to get started.`
 - Avoid placeholder text that looks like data — confuses screen readers and low-cognition users
 
 ## Confirmations
 
 - Confirm with identifiable info — `User "Lewis Howles" deleted`, not `User deleted`
 - Destructive actions: restate consequence — `Delete account? This removes 12 projects and can't be undone.`
-- Prefer undo for reversible destructive actions. Use confirmation when the action is hard to undo or high-impact
+- Prefer undo for reversible destructive actions. Use confirmation for hard-to-undo or high-impact actions
 
 ## Helper and supporting text
 
 - Place near related input. Essential info → not hidden in tooltip
-- Keep short; more than two sentences → belongs in docs
+- Keep short; more than two sentences belongs in docs

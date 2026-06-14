@@ -9,7 +9,7 @@ related-skills:
 ---
 # Project archive progress
 
-Use this skill to reduce the size of a long-running `PROGRESS.md` by moving completed sections into an `## Archived milestones` block. Keeps active work small and easy to scan without losing the project history.
+Use this skill to shrink a long-running `PROGRESS.md` by moving completed sections into `## Archived milestones`. Keep active work small without losing history.
 
 ## File location
 
@@ -17,15 +17,15 @@ Use this skill to reduce the size of a long-running `PROGRESS.md` by moving comp
 
 ## What to archive
 
-- Fully completed sections where all tasks are done and the commit has landed
+- Completed sections where tasks are done and the commit has landed
 - Sections that are no longer relevant to current or upcoming work
 - Detailed implementation notes that are now redundant with the code
 
 ## What not to archive
 
-- Decisions — keep these in `## Decisions` permanently; they prevent re-debating resolved questions
+- Decisions — keep in `## Decisions`; they prevent re-debating resolved questions
 - Discoveries — keep these if they still affect active work
-- Anything that would be needed to resume the current section
+- Anything needed to resume the current section
 
 ## How to archive
 
@@ -47,9 +47,9 @@ Use this skill to reduce the size of a long-running `PROGRESS.md` by moving comp
 Run archive-progress when:
 
 - The document is over ~200 lines and most of it is done work
-- Completed sections are making it hard to find active work
+- Completed sections make active work hard to find
 - Starting a new major phase and the old phases are fully settled
 
 ## Relationship with compact-progress
 
-Compact-progress cleans and condenses; archive-progress moves. They can be run together — compact first, then archive — or separately depending on what the document needs.
+Compact-progress cleans in place; archive-progress moves sections. Run together when useful: compact first, then archive.

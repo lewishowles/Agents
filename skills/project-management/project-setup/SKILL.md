@@ -7,7 +7,7 @@ description: >
 ---
 # Project setup
 
-Use this skill to start a new project or feature with a solid foundation. Creates an initial `PROGRESS.md` after exploration and discussion — do not begin implementation until the plan is reviewed.
+Use this skill to start a new project or feature. Create initial `PROGRESS.md` after exploration and discussion; do not implement until the plan is reviewed.
 
 ## File location
 
@@ -15,7 +15,7 @@ Use this skill to start a new project or feature with a solid foundation. Create
 
 ## Workflow
 
-1. **Explore** — read the repository; identify existing patterns, tech choices, and relevant files; check for `PROGRESS.md`, `AGENTS.md`, and `README.md` at the project root
+1. **Explore** — read the repository; identify patterns, tech choices, and relevant files; check for root `PROGRESS.md`, `AGENTS.md`, and `README.md`
 2. **Ask** — clarify ambiguous requirements and constraints before planning; surface tradeoffs and alternatives
 3. **Discuss** — if multiple approaches exist, present them; don't pick silently
 4. **Plan** — produce an initial `PROGRESS.md` following the standard schema (see below)
@@ -23,9 +23,9 @@ Use this skill to start a new project or feature with a solid foundation. Create
 
 ## Planning principles
 
-- Treat commits as the primary unit of work — each section of PROGRESS.md should correspond roughly to one Conventional Commit
+- Treat commits as the unit of work — each PROGRESS.md section should roughly match one Conventional Commit
 - Prefer multiple small sections over one large one; each section should be independently reviewable
-- "Files likely to change" is important — reduces re-exploration in future sessions
+- "Files likely to change" reduces re-exploration in future sessions
 - Don't plan more than 2–3 sections ahead; detailed planning happens when work starts
 
 ## PROGRESS.md schema

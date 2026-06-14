@@ -10,7 +10,7 @@ related-skills:
 ---
 # Vue project stack
 
-Stack used across Vue projects. Each choice has *why*. Better option emerges or tool goes stale — rationale tells you if original reason holds, whether to suggest alternative.
+Stack used across Vue projects. Each choice includes *why* so stale tools or better options can be assessed.
 
 ## Core stack
 
@@ -37,7 +37,7 @@ Stack used across Vue projects. Each choice has *why*. Better option emerges or 
 
 ## Helpers library — `@lewishowles/helpers`
 
-Replaces ad-hoc utility packages with single internal collection. Check before writing helper or adding utility dependency. Full docs in package's GitHub README.
+Replaces ad-hoc utility packages with one internal collection. Check before writing helpers or adding utility dependencies. Full docs in the package README.
 
 Import path: `import { getNextIndex } from "@lewishowles/helpers/array"`
 
@@ -50,11 +50,11 @@ Key helpers:
 - URLs: `getUrlParameter`, `updateUrlParameter`
 - Vue: `runComponentMethod`
 
-Missing helper — discuss adding to `@lewishowles/helpers` rather than inlining or pulling third-party dep.
+Missing helper — discuss adding to `@lewishowles/helpers` rather than inlining or adding a third-party dependency.
 
 ## Component library — `@lewishowles/components`
 
-Opinionated UI component library, accessibility baked in. Documented at [components.howles.dev](https://components.howles.dev/) — use live docs, not memory. Missing component — discuss adding there, not one-off duplicates.
+Opinionated accessible UI component library. Use live docs at [components.howles.dev](https://components.howles.dev/), not memory. Missing component — discuss adding it there, not one-off duplicates.
 
 ## Data layer structure
 

@@ -1,6 +1,6 @@
 # Project compact progress
 
-Use this skill to refactor a growing `PROGRESS.md` that has become noisy or hard to scan. Preserves what matters; removes what doesn't; rewrites the active sections for clarity.
+Use this skill to clean a growing `PROGRESS.md` that is noisy or hard to scan. Preserve what matters, remove what doesn't, and clarify active sections.
 
 ## File location
 
@@ -8,7 +8,7 @@ Use this skill to refactor a growing `PROGRESS.md` that has become noisy or hard
 
 ## What to preserve
 
-- Decisions — especially rationale that would be re-debated without it
+- Decisions — especially rationale that would otherwise be re-debated
 - Discoveries — unexpected findings that affect current or future work
 - Completed milestones — brief summary only; move detail to `## Archived milestones`
 
@@ -22,12 +22,12 @@ Use this skill to refactor a growing `PROGRESS.md` that has become noisy or hard
 ## What to rewrite
 
 - `## Current goal` — one sentence; update if the goal has shifted
-- `## Next session` — what to do first; should be scannable in 30 seconds
+- `## Next session` — first action; scannable in 30 seconds
 - `## Parking lot` — remove items that are no longer relevant; promote items that have become urgent
 
 ## Refresh file lists
 
-If the scope has changed, update "files likely to change" in the current section to match the current understanding.
+If scope changed, update "files likely to change" in the current section.
 
 ## When to run
 
@@ -40,4 +40,4 @@ Run compact-progress when:
 
 ## Relationship with archive-progress
 
-Compact-progress cleans and condenses in place. Use `archive-progress` when you also want to move large completed sections out of the main document.
+Compact-progress cleans in place. Use `archive-progress` to move large completed sections out of the main document.

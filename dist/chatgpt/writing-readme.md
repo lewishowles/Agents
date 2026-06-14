@@ -8,12 +8,12 @@ related-skills:
 ---
 # README
 
-README job: help person who just landed — what is it, why exist, how use. Quick-start guide, not marketing page.
+README job: help someone who just landed — what it is, why it exists, how to use it. Quick-start guide, not marketing page.
 
 ## What belongs
 
 - **Purpose** — one or two sentences: what this is, who it's for
-- **Setup / install** — concrete steps reader can copy. macOS-only? Say once. No Windows alternatives that don't exist
+- **Setup / install** — copyable steps. macOS-only? Say once. No Windows alternatives that don't exist
 - **Usage** — most common one or two uses, with examples
 - **Where to look next** — links to deeper docs, contributing guide, license
 
@@ -22,7 +22,7 @@ README job: help person who just landed — what is it, why exist, how use. Quic
 - Marketing prose, long origin stories, repeated value-prop sentences
 - Step-by-step for unsupported platforms
 - Long feature lists — link to dedicated docs file instead
-- Internal-only notes (decisions, history, TODOs) — commit messages, ADRs, per-project docs
+- Internal-only notes (decisions, history, TODOs) — use commit messages, ADRs, or project docs
 
 ## Tone
 
@@ -35,7 +35,7 @@ README job: help person who just landed — what is it, why exist, how use. Quic
 
 - Can new reader run setup from clean machine using only what's here?
 - Platform assumptions stated explicitly?
-- Cut anything that doesn't help average reader?
+- Cut anything that doesn't help the average reader?
 
 ## Minimal structure
 
