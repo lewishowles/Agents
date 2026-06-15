@@ -1,13 +1,14 @@
 ---
+# Generated — edit skill.json and SKILL.body.md instead.
 name: codebase-memory
-description: Use the codebase knowledge graph for structural code queries. Triggers on: explore the codebase, understand the architecture, what functions exist, show me the structure, who calls this function, what does X call, trace the call chain, find callers of, show dependencies, impact analysis, dead code, unused functions, high fan-out, refactor candidates, code quality audit, graph query syntax, Cypher query examples, edge types, how to use search_graph.
+description: >
+  Use this skill when answering structural code queries with the codebase knowledge graph, including architecture, callers, dependencies, impact analysis, dead code, graph query syntax, Cypher examples, edge types, and search_graph usage.
 ---
-
 # Codebase Memory — Knowledge Graph Tools
 
 Graph tools return precise structural results in ~500 tokens vs ~80K for grep.
 
-## Quick Decision Matrix
+## Quick decision matrix
 
 | Question | Tool call |
 |----------|----------|
@@ -21,18 +22,18 @@ Graph tools return precise structural results in ~500 tokens vs ~80K for grep.
 | Risk-classified trace | `trace_path(risk_labels=true)` |
 | Text search | `search_code` or Grep |
 
-## Exploration Workflow
+## Exploration workflow
 1. `list_projects` — check if project is indexed
 2. `get_graph_schema` — understand node/edge types
 3. `search_graph(label="Function", name_pattern=".*Pattern.*")` — find code
 4. `get_code_snippet(qualified_name="project.path.FuncName")` — read source
 
-## Tracing Workflow
+## Tracing workflow
 1. `search_graph(name_pattern=".*FuncName.*")` — discover exact name
 2. `trace_path(function_name="FuncName", direction="both", depth=3)` — trace
 3. `detect_changes()` — map git diff to affected symbols
 
-## Quality Analysis
+## Quality analysis
 - Dead code: `search_graph(max_degree=0, exclude_entry_points=true)`
 - High fan-out: `search_graph(min_degree=10, relationship="CALLS", direction="outbound")`
 - High fan-in: `search_graph(min_degree=10, relationship="CALLS", direction="inbound")`
@@ -43,12 +44,12 @@ Graph tools return precise structural results in ~500 tokens vs ~80K for grep.
 `query_graph`, `get_graph_schema`, `get_code_snippet`, `get_architecture`,
 `manage_adr`, `ingest_traces`
 
-## Edge Types
+## Edge types
 CALLS, HTTP_CALLS, ASYNC_CALLS, IMPORTS, DEFINES, DEFINES_METHOD,
 HANDLES, IMPLEMENTS, OVERRIDE, USAGE, FILE_CHANGES_WITH,
 CONTAINS_FILE, CONTAINS_FOLDER, CONTAINS_PACKAGE
 
-## Cypher Examples (for query_graph)
+## Cypher examples (for query_graph)
 ```
 MATCH (a)-[r:HTTP_CALLS]->(b) RETURN a.name, b.name, r.url_path, r.confidence LIMIT 20
 MATCH (f:Function) WHERE f.name =~ '.*Handler.*' RETURN f.name, f.file_path
@@ -61,3 +62,6 @@ MATCH (a)-[r:CALLS]->(b) WHERE a.name = 'main' RETURN b.name
 3. `trace_path` needs exact names — use `search_graph(name_pattern=...)` first.
 4. `direction="outbound"` misses cross-service callers — use `direction="both"`.
 5. Results default to 10 per page — check `has_more` and use `offset`.
+6. For file lookup, prefer `search_graph(label="File", name_pattern="...")` over BM25 `query`; BM25 may return symbols even when `label="File"` is supplied.
+7. If a tracked file is unexpectedly absent from `search_graph` and `search_code`, verify with `git ls-files` and `git check-ignore -v`. If it is tracked and not ignored, touch the file and re-run `index_repository`; the incremental classifier/cache can miss unchanged files.
+8. Terminal CLI shape is `codebase-memory-mcp cli <tool> '<json>'`; bare `codebase-memory-mcp` starts the MCP server and may look like it is hanging.

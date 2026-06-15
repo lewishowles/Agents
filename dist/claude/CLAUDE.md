@@ -121,3 +121,4 @@ Minimise token cost while discovering files. Discovery commands should answer th
 - Before printing many files, prefer counts or `--files-with-matches`; open only the specific files needed.
 - For build artefact checks, inspect the exact expected output path rather than listing whole build trees.
 - If a command unexpectedly starts dumping large output, stop using that pattern and switch to a narrower command.
+- Never rely on a remembered line number to offset-read into a file. Formatters shift lines on save. Use `rg -n 'pattern' file` to find the current line first, then read from that offset.

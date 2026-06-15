@@ -316,10 +316,7 @@ Model-tiering guidance can become vague or over-prescriptive. Keep it action-bas
 ## Parking lot
 
 - `.claudeignore` templates for heavy projects.
-- Memory tooling: claude-mem/rocky removed; revisit only if codebase-memory-mcp leaves a gap.
-- Per-project cbm opt-in if SessionStart-only advisory kills useful graph usage.
-- Component library guidance: add one line to that repo’s `AGENTS.md` saying progress is root `PROGRESS.md`, not `.claude/PROGRESS.md`.
-- Task-agent spike for locating long-file sections without line-offset churn.
+- ~~Task-agent spike for locating long-file sections without line-offset churn.~~ — resolved 2026-06-15 with `rg -n` rule in `file-discovery.md`; task-agent pattern deferred unless rule proves insufficient.
 
 ---
 
