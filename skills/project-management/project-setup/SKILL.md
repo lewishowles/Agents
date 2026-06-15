@@ -15,7 +15,7 @@ Use this skill to start a new project or feature. Create initial `PROGRESS.md` a
 
 ## Workflow
 
-1. **Explore** — read the repository; identify patterns, tech choices, and relevant files; check for root `PROGRESS.md`, `AGENTS.md`, and `README.md`
+1. **Explore** — read the repository; identify patterns, tech choices, and relevant files; check for root `PROGRESS.md`, `AGENTS.md`, `CONTEXT.md`, and `README.md`
 2. **Ask** — clarify ambiguous requirements and constraints before planning; surface tradeoffs and alternatives
 3. **Discuss** — if multiple approaches exist, present them; don't pick silently
 4. **Plan** — produce an initial `PROGRESS.md` following the standard schema (see below)
@@ -27,6 +27,22 @@ Use this skill to start a new project or feature. Create initial `PROGRESS.md` a
 - Prefer multiple small sections over one large one; each section should be independently reviewable
 - "Files likely to change" reduces re-exploration in future sessions
 - Don't plan more than 2–3 sections ahead; detailed planning happens when work starts
+
+## CONTEXT.md — domain glossary
+
+`CONTEXT.md` at the project root is a pure glossary of domain terms. It is not a spec, a scratch pad, or an implementation guide — only canonical names, what to avoid calling them, and resolved ambiguities.
+
+Create it lazily: only when the first term is worth capturing. Add an entry when a term is agreed, not in a batch at the end.
+
+Each entry follows this shape:
+
+```markdown
+**Term** — one-sentence definition. _Avoid_: synonyms or overloaded words that should not be used.
+```
+
+When `CONTEXT.md` exists, use its vocabulary in code, comments, issue titles, and ADRs. If the user uses a term that conflicts with it, surface the conflict rather than picking silently.
+
+_CONTEXT.md glossary pattern inspired by [mattpocock/skills](https://github.com/mattpocock/skills) (MIT)._
 
 ## PROGRESS.md schema
 

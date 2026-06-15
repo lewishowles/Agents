@@ -12,7 +12,13 @@ Apply especially under time pressure or when a "quick fix" seems obvious.
 
 Prefer scoped commands when they save more back-and-forth than they cost: a single test file, lint on a touched path, or a minimal repro. Ask the user for full suites, builds, and e2e.
 
-## Phase 1 — Investigate
+## Phase 1 — Build a feedback loop
+
+Before investigating, create a fast, deterministic, repeatable signal that confirms the failure. This is the most important investment — having a reliable way to observe the bug is 90% of fixing it.
+
+A good feedback loop is fast (seconds, not minutes), deterministic (fails consistently), and scoped (minimum setup needed). It can be a failing unit test, a minimal CLI invocation, a script, or a repro route in the app. If you can't create one, ask the user to reproduce it and describe exactly what they observe.
+
+## Phase 2 — Investigate
 
 Do not skip this phase.
 
@@ -20,6 +26,8 @@ Do not skip this phase.
 2. **Ask the user to reproduce it.** Get exact steps. If unreliable, gather more data before forming a hypothesis.
 3. **Check recent changes.** What changed? Git diff, new dependency, config edit, environment difference.
 4. **Trace data flow.** Find where the bad value originates; fix the source, not the symptom.
+
+When adding temporary logging to trace the issue, tag each entry with a short unique prefix — e.g. `[DBG-a4f2]` — so you can grep for it and remove it cleanly at the end.
 
 ### Vue/Vite/Vitest specifics
 
@@ -34,7 +42,7 @@ Do not skip this phase.
 - SwiftUI view body: expensive work in `body` causes thrashing; it should be in `.task {}`
 - `@Observable` vs legacy `ObservableObject` — mixing the two breaks observation
 
-## Phase 2 — Hypothesis
+## Phase 3 — Hypothesis
 
 State a single, specific hypothesis: _"I think X is the root cause because Y."_
 
@@ -42,23 +50,24 @@ State a single, specific hypothesis: _"I think X is the root cause because Y."_
 - List every difference, however small
 - Do not assume "that can't matter"
 
-## Phase 3 — Minimal fix
+## Phase 4 — Fix
 
-1. Run the smallest scoped test or repro. If it requires a full suite or is likely slow, ask the user to run it.
-2. If confirmed: implement the smallest possible fix addressing the root cause
-3. One change at a time — no bundled improvements
-4. Ask the user to verify the fix works and no other tests broke
+1. Run the feedback loop to confirm the failure is reproducible.
+2. Write a regression test that fails against the current code. Confirm it fails before changing anything.
+3. Implement the smallest fix that makes it pass.
+4. One change at a time — no bundled improvements.
+5. Ask the user to verify the fix and that no other tests broke.
 
-If the fix fails, return to Phase 1 with new information. After three failed fixes, stop; the architecture may be wrong. Discuss before trying again.
+If the fix fails, return to Phase 2 with new information. After three failed fixes, stop; the architecture may be wrong. Discuss before trying again.
 
-## Prevention
+## Cleanup
 
 After resolving the bug:
 
-- Note whether a test would have caught it, and suggest adding one if so
-- If it was a reactivity or type error, note the pattern to avoid
+- Remove all tagged debug logs — grep for `[DBG-` to find them
+- Note the pattern to avoid if the bug was a reactivity or type error
 
-## Red flags — stop and go back to Phase 1
+## Red flags — stop and go back to Phase 2
 
 - "Quick fix for now, investigate later"
 - "Just try changing X and see if it works"
@@ -68,3 +77,7 @@ After resolving the bug:
 - Attempting a fourth fix without questioning the architecture
 
 See [references/rationalisations.md](references/rationalisations.md) for a full table of common rationalisations and why they fail.
+
+---
+
+_Feedback loop as Phase 1, tagged debug logs, and regression-before-fix were inspired by [mattpocock/skills](https://github.com/mattpocock/skills) (MIT)._

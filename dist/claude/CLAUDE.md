@@ -91,6 +91,18 @@ Code must be reviewed before it is committed. Completing work means stopping aft
 - After completing a coherent step, provide a scoped Conventional Commit message as plain text only. Label it `Suggested commit message:` and do not execute it.
 - If I do ask you to commit, show the files to be included and the exact commit message first, then wait for confirmation.
 
+## Architecture Decision Records
+
+Only propose writing an ADR when all three are true:
+
+1. **Hard to reverse** — changing course later carries meaningful cost
+2. **Surprising without context** — a future reader would wonder "why did they do it this way?"
+3. **Result of a real trade-off** — there were genuine alternatives and one was chosen for specific reasons
+
+If any of the three is missing, skip the ADR. Ephemeral reasons ("not worth it right now") and self-evident choices don't warrant one. When all three are met, offer it — don't write it unasked.
+
+_Three-gate criteria inspired by [mattpocock/skills](https://github.com/mattpocock/skills) (MIT)._
+
 ## Working across sessions
 
 **Maintain PROGRESS.md** for multi-file, multi-session, or complex-scope work. Update after every significant change; mark items done as they complete; compact completed sections when starting the next chunk.
