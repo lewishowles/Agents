@@ -17,6 +17,9 @@ description: >
 - Blank lines separate logical steps in functions
 - Multi-line variable declarations should have a blank line before and after them
 - Repeated inline logic? Extract into named functions with JSDoc or equivalent, don't duplicate
+- Prefer line-based parsing, structured APIs, or small named helpers over complex regular expressions. Use regex only when it is the clearest small pattern; assign complex patterns to named constants and explain what they match.
+- For multi-line generated strings, prefer small named values and `["line one", value, "line three"].join("\n")` over dense template literals with many escapes.
+- Split dense template expressions into named intermediate values before interpolation.
 
 ## Naming & imports
 
