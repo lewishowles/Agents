@@ -31,6 +31,17 @@ Before starting new work, read only enough to orient:
 - Confirm branch state and any uncommitted work
 - Verify unfinished tasks belong to the current section
 
+## Starting the next task
+
+When the user signals readiness to move on ("next please", "let's continue", "what's next") without specifying what to do:
+
+1. **Name the task** — one sentence saying what it is and where it sits in the plan
+2. **Explain why** — one or two sentences on what it unlocks or why it's next in order
+3. **Flag the unknowns** — if the approach isn't obvious, name the key question or decision before starting; don't just begin
+4. **Wait for confirmation** — do not start implementation until the user agrees
+
+Keep the outline short (3–5 sentences total). The goal is to give the user enough to redirect if priorities have changed, without spending tokens on a full plan.
+
 ## During the session
 
 - Record discoveries under `## Discoveries` as they happen — don't defer to the end
@@ -39,13 +50,21 @@ Before starting new work, read only enough to orient:
 
 ## Finishing work
 
-Finishing a piece of work includes updating `PROGRESS.md`. Do not leave that to the next session.
+Finishing a piece of work includes updating `PROGRESS.md` and giving the user a handoff. Do not leave either to the next session.
 
 - Mark completed tasks in `## Active work`
 - Update `### Previous step` with what just changed and any verification performed
 - Update `### Next step` with the first concrete follow-up action
 - Move finished active work toward `## Archived milestones` when it no longer needs attention
 - If nothing remains for the current goal, say that clearly in the handoff instead of leaving stale TODOs
+
+After updating `PROGRESS.md`, always show the user a brief handoff before offering to continue:
+
+1. **What changed** — 1–3 sentences: what was done and what was verified (or skipped and why)
+2. **What's next** — same format as "Starting the next task": name it, explain why it's next
+3. **Wait** — do not start the next chunk until the user confirms
+
+Never use a transition like "ready to move on to X" without this context. The user needs enough to redirect if priorities have changed.
 
 ## Wrapping up
 

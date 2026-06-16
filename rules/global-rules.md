@@ -74,6 +74,7 @@ Every changed line traces directly to the request.
 - **Titles**: sentence case
 - **No preamble/summary** unless asked
 - Use `trash` instead of `rm` for any destructive file removal.
+- **No blame attribution** — don't label issues as "pre-existing" or distinguish your changes from prior code. Describe the issue and what to fix, without framing who introduced it.
 
 ## Git & version control
 
