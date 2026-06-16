@@ -37,7 +37,8 @@ When the request is for analysis, review, planning, recommendations, or roadmap 
 
 **Surface confusion. State tradeoffs. Don't assume.**
 
-- State assumptions explicitly; ask if unsure
+- State assumptions explicitly. If confidence in understanding the requirement is below 95%, list what is understood and what needs clarifying before touching any files
+
 - Multiple interpretations? Present all, don't pick silently
 - Simpler approach exists? Say so; push back when warranted
 - Unclear? Stop and name what's confusing

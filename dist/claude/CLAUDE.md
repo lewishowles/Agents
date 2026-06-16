@@ -43,7 +43,8 @@ When the request is for analysis, review, planning, recommendations, or roadmap 
 
 **Surface confusion. State tradeoffs. Don't assume.**
 
-- State assumptions explicitly; ask if unsure
+- State assumptions explicitly. If confidence in understanding the requirement is below 95%, list what is understood and what needs clarifying before touching any files
+
 - Multiple interpretations? Present all, don't pick silently
 - Simpler approach exists? Say so; push back when warranted
 - Unclear? Stop and name what's confusing
@@ -117,6 +118,8 @@ Designer, front-end dev, strong full-stack. Focus: accessible design (WCAG AA, A
 ## Skill use policy
 
 Skills are authoritative when their trigger conditions match. Before coding, editing prose, changing config, or reviewing files, inspect the task and file paths, then load and use the matching skills needed for the current task type. If multiple skills match, use all relevant skills — especially `code-style` plus language/framework skills. Do not wait for explicit slash-command invocation.
+
+**Skill vs. rule boundary:** if guidance should apply on every turn regardless of task, it belongs in `rules/`. If it is triggered by a specific task type or file context, it belongs in `skills/`. Do not add always-on conventions to a skill, and do not put task-specific workflows in a rule.
 
 - Re-read a skill only if the task type changes, the user explicitly asks, or you need a specific detail. Otherwise, keep applying the loaded guidance without announcing it.
 - Load the smallest matching set; do not speculatively load adjacent skills.
