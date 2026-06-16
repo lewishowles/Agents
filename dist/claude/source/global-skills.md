@@ -15,6 +15,7 @@ Apply across all projects. See individual skills for detailed rules. Per-project
 - `/debugging` — When encountering any bug, test failure, or unexpected behaviour — before proposing a fix
 - `/dependencies` — When adding packages, what to choose, when to add
 - `/error-handling` — When validating input, graceful fallbacks, error handling
+- `/frontend-design` — When designing UI or making aesthetic decisions for a public-facing interface
 - `/frontend-security` — When writing or reviewing client-side code for security: XSS, CSP, auth tokens, secrets hygiene
 - `/refactoring` — When refactoring existing code or triaging technical debt
 - `/swift` — When writing Swift, style, SwiftUI patterns, concurrency
