@@ -18,6 +18,7 @@ Minimise token cost by default. Treat context as a limited shared budget.
 - For user-run failures, ask for the smallest useful excerpt: command, failing file/test, error message, and relevant stack frame.
 - Do not use `git diff` for routine self-review. You wrote the files; inspect the edited source directly only when needed. Use `git status --short` to list touched files.
 - Read targeted file ranges instead of whole files. Do not repeatedly read large progress files; use targeted headings or searches.
+- For file relocations, use `mv` or `cp` via Bash. Never read a file's content just to write it at a different path — that's three tool calls instead of one.
 - Do not re-run or re-print expensive commands unless something changed that can affect their result and local execution is justified by token cost.
 - Do not output placeholder status text between tool calls ("Still active", "Continuing…"). Only emit a status update when there is something genuinely new to report — a finding, a direction change, or a blocker.
 

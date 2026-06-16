@@ -66,6 +66,7 @@ Finishing a piece of work includes updating `PROGRESS.md` and giving the user a 
 - Update `### Next step` with the first concrete follow-up action
 - Move finished active work toward `## Archived milestones` when it no longer needs attention
 - If nothing remains for the current goal, say that clearly in the handoff instead of leaving stale TODOs
+- Compact now if `PROGRESS.md` has grown significantly — you're already in context, so it costs far less than a separate session would
 
 After updating `PROGRESS.md`, always show the user a brief handoff before offering to continue:
 
