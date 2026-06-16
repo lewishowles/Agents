@@ -26,6 +26,14 @@ fail() {
 	ERRORS=$((ERRORS + 1))
 }
 
+# Prints a warning message without incrementing the error counter.
+#
+# @param  {string}  message
+#     Warning message to display.
+warn() {
+	printf '%s⚠%s %s\n' "$YELLOW" "$RESET_COLOUR" "$1" >&2
+}
+
 # @param  {string}  heading
 #     Section heading to print.
 section() {
@@ -101,6 +109,12 @@ while IFS= read -r -d '' manifest; do
 
 	[ ! -f "$dir/SKILL.body.md" ] && fail "Missing SKILL.body.md for $name"
 	[ ! -f "$dir/SKILL.md" ]      && fail "Missing SKILL.md for $name (run scripts/sync.sh)"
+
+	if [ -f "$dir/SKILL.md" ]; then
+		line_count=$(wc -l < "$dir/SKILL.md")
+		[ "$line_count" -gt 500 ] && \
+			warn "SKILL.md for $name is ${line_count} lines (limit: 500) — consider splitting"
+	fi
 
 	SKILL_COUNT=$((SKILL_COUNT + 1))
 done < <(find "$REPO_DIR/skills" -name "skill.json" -print0 | sort -z)
