@@ -91,17 +91,24 @@ Test: if a sighted developer using the component normally needs to know it, docu
 
 ```html
 <label for="email">Email address</label>
-<input id="email" type="email" autocomplete="email" aria-describedby="email-help email-error" aria-invalid="true" aria-errormessage="email-error" />
+<input
+  id="email"
+  type="email"
+  autocomplete="email"
+  aria-describedby="email-help email-error"
+  aria-invalid="true"
+  aria-errormessage="email-error"
+/>
 <p id="email-help">Use the email address for your account.</p>
 <p id="email-error">Enter an email address, like name@example.com.</p>
 ```
 
 ```html
 <section role="dialog" aria-modal="true" aria-labelledby="delete-title">
-	<h2 id="delete-title">Delete project?</h2>
-	<p>This removes "Website refresh" and can't be undone.</p>
-	<button type="button">Cancel</button>
-	<button type="button">Delete project</button>
+  <h2 id="delete-title">Delete project?</h2>
+  <p>This removes "Website refresh" and can't be undone.</p>
+  <button type="button">Cancel</button>
+  <button type="button">Delete project</button>
 </section>
 ```
 
@@ -126,6 +133,10 @@ Test: if a sighted developer using the component normally needs to know it, docu
 - **Abbreviations**: `<abbr title="full text">` for acronyms
 - **Language tag**: `lang="en"` on `<html>`. Use `lang="cy"` or `lang="fr"` where content switches
 - **Navigation & landmarks**: use `<nav>`, `<main>`, `<aside>`, `<article>`
+
+## Quick-reference checklist
+
+A standalone PR-pasteable checklist is at [`references/checklist.md`](references/checklist.md).
 
 ## Content warnings & safety
 

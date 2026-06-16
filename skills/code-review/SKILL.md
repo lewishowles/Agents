@@ -87,6 +87,10 @@ Adjust focus by PR type:
 
 ---
 
+## Quick-reference checklist
+
+A standalone PR-pasteable checklist is at [`references/checklist.md`](references/checklist.md).
+
 ## Receiving a review
 
 Read all feedback before responding; related items may depend on each other.
