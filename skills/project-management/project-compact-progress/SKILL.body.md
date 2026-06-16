@@ -8,6 +8,7 @@ Use this skill to clean a growing `PROGRESS.md` that is noisy or hard to scan. P
 
 ## What to preserve
 
+- `## Session handoff` — keep this at the top and make it accurate
 - Decisions — especially rationale that would otherwise be re-debated
 - Discoveries — unexpected findings that affect current or future work
 - Completed milestones — brief summary only; move detail to `## Archived milestones`
@@ -21,13 +22,40 @@ Use this skill to clean a growing `PROGRESS.md` that is noisy or hard to scan. P
 
 ## What to rewrite
 
-- `## Current goal` — one sentence; update if the goal has shifted
-- `## Next session` — first action; scannable in 30 seconds
+- `## Session handoff` — first section in the file; scannable in 30 seconds
+- `### Current goal` — one sentence; update if the goal has shifted
+- `### Previous step` — what changed most recently, with verification when useful
+- `### Next step` — the first concrete action for the next session
+- `### Stop here` — preserve guidance to stop reading unless deeper context is needed
 - `## Parking lot` — remove items that are no longer relevant; promote items that have become urgent
+
+## Handoff-first format
+
+If the file does not already start with `## Session handoff`, create it above the deeper sections. Agents should be able to read from the top and stop after the handoff when it gives enough context.
+
+```markdown
+## Session handoff
+
+Read this section first. Stop after this section unless the task needs deeper context.
+
+### Current goal
+
+### Previous step
+
+### Next step
+
+### Stop here
+
+Only continue reading if the next step is unclear, the user asks for planning/review/history, or implementation needs decisions, discoveries, risks, or file lists below.
+```
 
 ## Refresh file lists
 
 If scope changed, update "files likely to change" in the current section.
+
+## Finishing work
+
+When compacting after work finishes, treat the work as incomplete unless the handoff is refreshed. Mark completed tasks, update `### Previous step`, set the next concrete action in `### Next step`, and archive or remove stale active notes.
 
 ## When to run
 

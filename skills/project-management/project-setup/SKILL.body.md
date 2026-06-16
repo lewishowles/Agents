@@ -20,6 +20,7 @@ Use this skill to start a new project or feature. Create initial `PROGRESS.md` a
 - Prefer multiple small sections over one large one; each section should be independently reviewable
 - "Files likely to change" reduces re-exploration in future sessions
 - Don't plan more than 2–3 sections ahead; detailed planning happens when work starts
+- Keep the session handoff at the top current at all times. Future agents should be able to read from the top and stop after the handoff when it gives enough context.
 
 ## CONTEXT.md — domain glossary
 
@@ -42,23 +43,31 @@ _CONTEXT.md glossary pattern inspired by [mattpocock/skills](https://github.com/
 ```markdown
 # <Project name>
 
+## Session handoff
+
+Read this section first. Stop after this section unless the task needs deeper context.
+
+### Current goal
+
+One sentence. What are we delivering right now?
+
+### Previous step
+
+Plan created; no implementation yet.
+
+### Next step
+
+Review and approve the plan before implementation starts.
+
+### Stop here
+
+Only continue reading if the next step is unclear, the user asks for planning/review/history, or implementation needs decisions, discoveries, risks, or file lists below.
+
 ## Project overview
 
 Brief description: purpose, tech, constraints.
 
-## Current goal
-
-One sentence. What are we delivering right now?
-
-## Decisions
-
-Key architectural or process decisions. Date-stamped entries.
-
-## Discoveries
-
-Unexpected findings that affect the work. Date-stamped entries.
-
-## Current section
+## Active work
 
 ### Purpose
 
@@ -78,17 +87,21 @@ Unexpected findings that affect the work. Date-stamped entries.
 
 ### Notes
 
-## Upcoming sections
+## Decisions
+
+Key architectural or process decisions. Date-stamped entries.
+
+## Discoveries
+
+Unexpected findings that affect the work. Date-stamped entries.
+
+## Upcoming work
 
 Brief bullets only. Detailed planning happens when work starts.
 
 ## Parking lot
 
 Ideas and concerns not belonging to the current section.
-
-## Next session
-
-What to do first when resuming. Should be scannable in 30 seconds.
 
 ## Archived milestones
 

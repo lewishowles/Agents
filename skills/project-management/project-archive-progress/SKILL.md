@@ -23,6 +23,7 @@ Use this skill to shrink a long-running `PROGRESS.md` by moving completed sectio
 
 ## What not to archive
 
+- `## Session handoff` — keep it at the top and update it after archiving
 - Decisions — keep in `## Decisions`; they prevent re-debating resolved questions
 - Discoveries — keep these if they still affect active work
 - Anything needed to resume the current section
@@ -32,6 +33,7 @@ Use this skill to shrink a long-running `PROGRESS.md` by moving completed sectio
 1. Summarise the completed section in 1–3 bullet points
 2. Move the summary to `## Archived milestones` with a date stamp
 3. Delete the full section from the main document
+4. Update `## Session handoff` so `### Previous step` reflects the archived work when it was the latest meaningful change, and `### Next step` points to the next concrete action
 
 ```markdown
 ## Archived milestones
