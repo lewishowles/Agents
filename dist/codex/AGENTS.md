@@ -90,7 +90,7 @@ Code must be reviewed before it is committed. Completing work means stopping aft
 - Do not stage files with `git add` unless I explicitly ask you to prepare a staged commit.
 - If asked to stage or commit without an active `PROGRESS.md` plan, first show the files to include and the exact Conventional Commit message, then wait for confirmation.
 - Update docs when changes require documentation
-- After completing a coherent step, provide a scoped Conventional Commit message as plain text only. Label it `Suggested commit message:` and do not execute it.
+- After completing a coherent step that changes tracked source files (code, config, rules, skills, scripts, templates, or docs), provide a scoped Conventional Commit message as plain text only. Label it `Suggested commit message:` and do not execute it. Do not suggest a commit message for PROGRESS.md updates, planning discussions, analysis, or responses that contain no file changes.
 - If I do ask you to commit, show the files to be included and the exact commit message first, then wait for confirmation.
 
 ## Architecture Decision Records
