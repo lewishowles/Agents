@@ -48,6 +48,18 @@ For Cypress/Playwright examples, setup config, e2e structure, and interaction pa
 - Group similar element types with `:is()` and apply single negations rather than repeating `:not()` per type:
   - ✓ `:is(button, input, select, textarea):not([disabled]), a[href], [tabindex]:not([tabindex='-1'])`
   - ✗ `:is(button:not([disabled]), input:not([disabled]), select:not([disabled])...)`
+- **Extract repeated locators to named variables within a test.** If the same `page.getByTestId(...)` call appears more than once in a test body, assign it to a `const` before the assertions. Child locators (`.locator()`, `.getByTestId()`) can then be derived from it rather than re-querying from `page`.
+
+  ```js
+  // ✓
+  const formInput = page.getByTestId("form-input");
+  const inputElement = formInput.locator("input");
+  const labelElement = formInput.getByTestId("form-label");
+
+  // ✗
+  const inputElement = page.getByTestId("form-input").locator("input");
+  const labelElement = page.getByTestId("form-input").getByTestId("form-label");
+  ```
 
 ## Best practices
 
