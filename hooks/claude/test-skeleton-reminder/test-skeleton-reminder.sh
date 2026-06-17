@@ -28,7 +28,7 @@ is_test_file() {
 	local name="$2"
 
 	[[ "$name" =~ \.(test|spec)\.(js|ts|tsx|vue)$ ]] && return 0
-	[[ "$name" =~ \.e2e\.(js|ts|tsx)$ ]] && return 0
+	[[ "$name" =~ \.(pw|ct|cy|e2e)\.(js|ts|tsx)$ ]] && return 0
 	[[ "$name" =~ Tests?\.(swift|js|ts)$ ]] && return 0
 	[[ "$path" =~ /(__tests__|test|tests|e2e)/ ]] && return 0
 
