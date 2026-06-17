@@ -1,7 +1,7 @@
 ---
 name: agent-config
 description: >
-  Use this skill when maintaining this specific agent configuration repository, including .claude/PROGRESS.md, .claude/skills/agent-config/SKILL.md, rules/**, adapters/**, hooks/claude/**/**, skills/*/SKILL.body.md, skills/*/skill.json, scripts/*.sh, scripts/*.py, docs/**, and templates/**. Covers this repo's source layout, skill conventions, hook conventions, trigger patterns, and generated dist files. Pair with bash or writing as needed.
+  Use this skill when maintaining this specific agent configuration repository, including AGENTS.md, PROGRESS.md, .claude/skills/agent-config/SKILL.md, rules/**, adapters/**, hooks/claude/**/**, skills/*/SKILL.body.md, skills/*/skill.json, scripts/*.sh, scripts/*.py, docs/**, and templates/**. Covers this repo's source layout, skill conventions, hook conventions, trigger patterns, and generated dist files. Pair with bash or writing as needed.
 related-skills:
   - bash
   - writing
@@ -155,4 +155,4 @@ Source for `dist/claude/settings.json`. Contains `env`, hook registrations, `ena
 
 ## Progress tracking
 
-This repo uses `.claude/PROGRESS.md` (not root `PROGRESS.md`). See the `project-continue` skill for session-resume conventions and the template at `.claude/templates/PROGRESS.md.template` if it exists.
+This repo uses root `PROGRESS.md` for local session state. `AGENTS.md` is also root-local maintenance guidance for this repo, not generated output. See the `project-continue` skill for session-resume conventions and the template at `.claude/templates/PROGRESS.md.template` if it exists.

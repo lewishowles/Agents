@@ -2,7 +2,7 @@
 #
 # progress-resume — UserPromptSubmit hook
 #
-# Detects continue-intent phrases and injects .claude/PROGRESS.md content
+# Detects continue-intent phrases and injects root PROGRESS.md content
 # into context so Claude can resume without the user pasting the file manually.
 
 if ! command -v jq &>/dev/null; then
@@ -18,7 +18,7 @@ if ! printf '%s' "$prompt" | grep -qiE '\b(continue|carry on|pick up|resume|wher
 	exit 0
 fi
 
-progress_file="$PWD/.claude/PROGRESS.md"
+progress_file="$PWD/PROGRESS.md"
 [ -f "$progress_file" ] || exit 0
 
 content=$(cat "$progress_file")

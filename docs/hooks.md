@@ -91,7 +91,7 @@ Recognised test stacks:
 
 ### progress-resume.sh
 
-Fires on every user message. Detects continue-intent phrases ("continue", "pick up", "resume", "next step", "carry on", "where were we", "what's next") and injects the contents of `.claude/PROGRESS.md` from the current working directory into Claude's context. This lets Claude resume in-progress work without the user needing to paste the file manually.
+Fires on every user message. Detects continue-intent phrases ("continue", "pick up", "resume", "next step", "carry on", "where were we", "what's next") and injects the contents of root `PROGRESS.md` from the current working directory into Claude's context. This lets Claude resume in-progress work without the user needing to paste the file manually.
 
 Silent if the phrase doesn't match, if no `PROGRESS.md` exists in the project, or if `jq` is missing.
 
