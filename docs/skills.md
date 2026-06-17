@@ -25,6 +25,7 @@ Official external skills are listed in `external-skills.json` and synced into `s
 | `error-handling` | When validating input, graceful fallbacks, error handling | `error handling`, `try-catch`, `try catch`, `validate`, `validation`, `guard let`, `api call`, `api request`, `fetch`, `async function`, `optional chaining`, `nil coalescing`, `throw`, `Result<`, `throws` |
 | `frontend-design` | When designing UI or making aesthetic decisions for a public-facing interface | `design`, `visual design`, `aesthetic`, `landing page`, `hero`, `marketing page`, `typography`, `colour palette`, `color palette`, `brand`, `look and feel`, `motion design`, `animation design`, `layout design`, `design system`, `visual identity`, `UI design`, `composition` |
 | `frontend-security` | When writing or reviewing client-side code for security: XSS, CSP, auth tokens, secrets hygiene | `xss`, `injection`, `security`, `csp`, `content security policy`, `v-html`, `authentication`, `auth token`, `secrets`, `sensitive data`, `sanitize`, `sanitise`, `csrf` |
+| `library-update` | When checking for updates to @lewishowles/components or @lewishowles/helpers after a new release | (manual only) |
 | `project-archive-progress` | When moving completed PROGRESS.md sections into archived milestones to reduce document size | (manual only) |
 | `project-compact-progress` | When PROGRESS.md has grown noisy or hard to scan; preserves decisions and rewrites active sections | (manual only) |
 | `project-continue` | When resuming work from an existing PROGRESS.md | (manual only) |

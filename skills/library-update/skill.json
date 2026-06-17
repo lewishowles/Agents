@@ -1,0 +1,15 @@
+{
+  "name": "library-update",
+  "title": "Library update check",
+  "description": "Use this skill to check whether @lewishowles/components or @lewishowles/helpers has new releases since the installed version, review the release notes, and identify what to update in the current project.",
+  "when": "When checking for updates to @lewishowles/components or @lewishowles/helpers after a new release",
+  "triggers": [],
+  "filePatterns": [],
+  "pathPatterns": [],
+  "dependencies": [],
+  "capabilities": {
+    "promptTriggering": false,
+    "fileTriggering": false
+  },
+  "targets": ["claude", "codex"]
+}
