@@ -40,6 +40,8 @@ Optimise for context density, like caveman-style compression, but keep normal pr
 - `### Current goal` — one sentence; update if the goal has shifted
 - `### Previous step` — what changed most recently, with verification when useful
 - `### Next step` — the first concrete action for the next session
+- `### Context` — project-specific patterns, commands, or constraints needed for the next step; omit when AGENTS.md and project skills are sufficient
+- `### Verify with` — the scoped command to confirm the step is complete; omit when there is no automated check
 - `### Stop here` — preserve guidance to stop reading unless deeper context is needed
 - `## Parking lot` — remove items that are no longer relevant; promote items that have become urgent
 
@@ -58,10 +60,30 @@ Read this section first. Stop after this section unless the task needs deeper co
 
 ### Next step
 
+### Context
+
+Project-specific patterns, scaffolding commands, or known constraints needed for the next step. Omit if the next step needs nothing beyond AGENTS.md and the loaded skills.
+
+### Verify with
+
+The scoped command to confirm the step is complete. Single line; pipe through `tail -5` or equivalent to avoid flooding context. Omit if there is no automated check.
+
 ### Stop here
 
 Only continue reading if the next step is unclear, the user asks for planning/review/history, or implementation needs decisions, discoveries, risks, or file lists below.
 ```
+
+## Populating Context and Verify with
+
+`### Context` is not a summary of Discoveries — it is the minimum a fresh agent needs to _execute the next step correctly_ without reading below `### Stop here`. Populate it when:
+
+- The next step uses a project-specific scaffold command or CLI tool
+- There is a known constraint that would silently produce wrong output (e.g. slot format restrictions, attribute value quirks)
+- A co-location or naming convention differs from the global skill default
+
+Keep it to 3–5 bullets. If a bullet would be equally obvious from AGENTS.md, omit it.
+
+`### Verify with` should be a single runnable command scoped to the changed file or path, not a full suite. Pipe output to suppress noise: `2>&1 | tail -5`. The goal is a one-line pass/fail check the next agent can run without printing large output to context.
 
 ## Refresh file lists
 

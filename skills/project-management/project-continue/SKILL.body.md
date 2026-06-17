@@ -25,7 +25,7 @@ If none exist, say so and ask the user where to create one.
 
 Before starting new work, read only enough to orient:
 
-- Start with `## Session handoff`
+- Read the full `## Session handoff` — every subsection above `### Stop here` is minimum required reading, including `### Context` and `### Verify with`
 - Continue into `## Active work`, `## Decisions`, `## Discoveries`, or `## Risks` only when needed
 - Do not read completed or archived sections unless the current task depends on their history
 - Confirm branch state and any uncommitted work
