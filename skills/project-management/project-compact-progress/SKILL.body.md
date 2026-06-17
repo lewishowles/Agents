@@ -12,6 +12,8 @@ Use this skill to reduce a growing `PROGRESS.md` that is noisy or hard to scan. 
 - Decisions — especially rationale that would otherwise be re-debated
 - Discoveries — unexpected findings that affect current or future work
 - Completed milestones — brief summary only; move detail to `## Archived milestones`
+- **Future roadmap sections with concrete task lists** — do not collapse these into a one-liner. If the tasks are not done, the detail is the point. Only archive a roadmap section once it is complete.
+- **Acceptance criteria** — these are constraints, not narrative. Preserve them verbatim even when compressing surrounding prose.
 
 ## What to remove
 
