@@ -24,7 +24,6 @@
   },
   "skillOverrides": {
     "accessibility": "name-only",
-    "project-archive-progress": "name-only",
     "bash": "name-only",
     "project-compact-progress": "name-only",
     "project-continue": "name-only",

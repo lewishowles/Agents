@@ -1,13 +1,15 @@
 {
   "name": "project-compact-progress",
   "title": "Project compact progress",
-  "description": "Use this skill to refactor a growing PROGRESS.md \u2014 removes noise, preserves decisions and discoveries, and rewrites active sections for clarity.",
-  "when": "When PROGRESS.md has grown noisy or hard to scan; preserves decisions and rewrites active sections",
+  "description": "Use this skill to reduce a growing PROGRESS.md without losing context or meaning \u2014 compacts wording, preserves decisions and discoveries, refreshes handoff, and archives completed sections when useful.",
+  "when": "When PROGRESS.md has grown noisy or hard to scan; reduces word count while preserving context and meaning",
   "triggers": [
     "compact progress",
     "progress.md noisy",
     "progress.md grown",
-    "tidy progress"
+    "tidy progress",
+    "reduce progress word count",
+    "progress too long"
   ],
   "filePatterns": [],
   "pathPatterns": [],

@@ -3,11 +3,11 @@
 name: project-compact-progress
 displayName: Project compact progress
 description: >
-  Use this skill to refactor a growing PROGRESS.md — removes noise, preserves decisions and discoveries, and rewrites active sections for clarity.
+  Use this skill to reduce a growing PROGRESS.md without losing context or meaning — compacts wording, preserves decisions and discoveries, refreshes handoff, and archives completed sections when useful.
 ---
 # Project compact progress
 
-Use this skill to clean a growing `PROGRESS.md` that is noisy or hard to scan. Preserve what matters, remove what doesn't, and clarify active sections.
+Use this skill to reduce a growing `PROGRESS.md` that is noisy or hard to scan. Cut word count aggressively without losing context, decisions, meaning, or the next concrete action.
 
 ## File location
 
@@ -26,6 +26,18 @@ Use this skill to clean a growing `PROGRESS.md` that is noisy or hard to scan. P
 - Resolved risks and obsolete TODOs
 - Stale investigations that led nowhere
 - Implementation details already visible in the code
+- Wording that explains process without preserving a decision, result, blocker, or next action
+
+## Compression target
+
+Optimise for context density, like caveman-style compression, but keep normal professional prose. Reduce words first; do not reduce meaning.
+
+- Prefer one precise sentence over a paragraph
+- Replace narrative history with outcome, evidence, and current implication
+- Collapse completed task lists into one outcome summary
+- Keep names, paths, commands, dates, decisions, risks, and blockers exact
+- Preserve enough context for the next agent to continue without re-discovery
+- Do not make the file cryptic, jokey, or persona-driven
 
 ## What to rewrite
 
@@ -64,6 +76,40 @@ If scope changed, update "files likely to change" in the current section.
 
 When compacting after work finishes, treat the work as incomplete unless the handoff is refreshed. Mark completed tasks, update `### Previous step`, set the next concrete action in `### Next step`, and archive or remove stale active notes.
 
+## Archive mode
+
+Archiving is part of compacting when completed work is making active work hard to find.
+
+Archive completed sections when:
+
+- Tasks are done and the commit has landed
+- The section is no longer relevant to current or upcoming work
+- Detailed implementation notes are redundant with the code
+- Starting a new major phase and old phases are settled
+
+Do not archive:
+
+- `## Session handoff`
+- Decisions that prevent re-debating resolved questions
+- Discoveries that still affect active work
+- Anything needed to resume the current section
+
+To archive:
+
+1. Summarise the completed section in 1–3 bullet points
+2. Move the summary to `## Archived milestones` with a date stamp
+3. Delete the full section from the main document
+4. Update `## Session handoff` so `### Previous step` and `### Next step` reflect the new state
+
+```markdown
+## Archived milestones
+
+### <Section name> — <YYYY-MM-DD>
+
+- Brief summary of what was delivered
+- Key decision or discovery worth keeping
+```
+
 ## When to run
 
 Run compact-progress when:
@@ -72,7 +118,4 @@ Run compact-progress when:
 - The current section has grown unwieldy with resolved tasks
 - Returning to a project after a gap and the document feels stale
 - Before starting a new section with a clean context
-
-## Relationship with archive-progress
-
-Compact-progress cleans in place. Use `archive-progress` to move large completed sections out of the main document.
+- Completed sections make active work hard to find

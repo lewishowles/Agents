@@ -42,8 +42,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/frontend-design` | `frontend-design` | When designing UI or making aesthetic decisions for a public-facing interface |
 | `/frontend-security` | `frontend-security` | When writing or reviewing client-side code for security: XSS, CSP, auth tokens, secrets hygiene |
 | `/library-update` | `library-update` | When checking for updates to @lewishowles/components or @lewishowles/helpers after a new release |
-| `/project-archive-progress` | `project-archive-progress` | When moving completed PROGRESS.md sections into archived milestones to reduce document size |
-| `/project-compact-progress` | `project-compact-progress` | When PROGRESS.md has grown noisy or hard to scan; preserves decisions and rewrites active sections |
+| `/project-compact-progress` | `project-compact-progress` | When PROGRESS.md has grown noisy or hard to scan; reduces word count while preserving context and meaning |
 | `/project-continue` | `project-continue` | When resuming work from an existing PROGRESS.md |
 | `/project-plan-task` | `project-plan-task` | When introducing new work into an existing plan |
 | `/project-setup` | `project-setup` | When starting a new project or feature; explores repo, asks questions, creates PROGRESS.md before coding |

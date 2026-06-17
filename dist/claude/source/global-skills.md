@@ -2,8 +2,7 @@
 
 Apply across all projects. See individual skills for detailed rules. Per-project `.claude/settings.json` can disable skills via `skillOverrides` — useful if a skill's tech (Vue, Swift) isn't used in that project.
 
-- `/project-archive-progress` — When moving completed PROGRESS.md sections into archived milestones to reduce document size
-- `/project-compact-progress` — When PROGRESS.md has grown noisy or hard to scan; preserves decisions and rewrites active sections
+- `/project-compact-progress` — When PROGRESS.md has grown noisy or hard to scan; reduces word count while preserving context and meaning
 - `/project-continue` — When resuming work from an existing PROGRESS.md
 - `/project-plan-task` — When introducing new work into an existing plan
 - `/project-setup` — When starting a new project or feature; explores repo, asks questions, creates PROGRESS.md before coding
