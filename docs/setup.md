@@ -116,6 +116,7 @@ For Claude-only projects:
 
 ```bash
 cp /path/to/repository/templates/claude/AGENTS.md.template AGENTS.md
+cp /path/to/repository/templates/AGENT_CAPABILITIES.md.template AGENT_CAPABILITIES.md
 mkdir -p .claude/templates
 cp /path/to/repository/templates/claude/settings.json .claude/settings.json
 cp /path/to/repository/templates/claude/.claudeignore .claude/.claudeignore
@@ -127,13 +128,15 @@ For Codex-only projects:
 
 ```bash
 cp /path/to/repository/templates/codex/AGENTS.md.template AGENTS.md
+cp /path/to/repository/templates/AGENT_CAPABILITIES.md.template AGENT_CAPABILITIES.md
 mkdir -p .agents/skills
 ```
 
 For projects using both:
 
 ```bash
-cp /path/to/repository/templates/rules/AGENTS.md.template AGENTS.md
+cp /path/to/repository/templates/shared/AGENTS.md.template AGENTS.md
+cp /path/to/repository/templates/AGENT_CAPABILITIES.md.template AGENT_CAPABILITIES.md
 mkdir -p .claude/templates
 cp /path/to/repository/templates/claude/settings.json .claude/settings.json
 cp /path/to/repository/templates/claude/.claudeignore .claude/.claudeignore
@@ -142,4 +145,4 @@ cp /path/to/repository/templates/PLAN.md.template .claude/templates/PLAN.md.temp
 mkdir -p .agents/skills
 ```
 
-After copying, replace placeholders in `AGENTS.md` with project-specific rules.
+After copying, replace placeholders in `AGENTS.md` with project-specific rules and fill in `AGENT_CAPABILITIES.md` with the project's local commands, generated paths, diagnostics, and safety constraints.

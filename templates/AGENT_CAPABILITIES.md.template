@@ -1,0 +1,73 @@
+# Project capabilities
+
+This file describes factual repo operations for agents. Keep behavioural rules in `AGENTS.md`; keep this file limited to commands, generated files, project layout, and safety constraints.
+
+## Repo context
+
+- Primary language/framework:
+- Package manager:
+- Runtime requirements:
+- Important local services:
+
+## Source files
+
+- Main source directories:
+- Configuration files:
+- Test files:
+- Documentation files:
+
+## Generated files
+
+- Generated paths:
+- Source of truth:
+- Regeneration command:
+
+## Generators
+
+- Available generators:
+- Preview or dry-run command:
+- Overwrite behaviour:
+
+## Diagnostics and checks
+
+Prefer the narrowest command that verifies the changed area.
+
+| Purpose | Command | Notes |
+| --- | --- | --- |
+| Unit test for one file | `[command]` | Replace with a scoped project command. |
+| Lint changed files | `[command]` | Replace with a scoped project command. |
+| Typecheck changed area | `[command]` | Replace with a scoped project command. |
+
+## Preferred verification
+
+- Small code change:
+- Documentation change:
+- Configuration change:
+- UI change:
+
+## Expensive commands
+
+Ask before running broad or slow commands.
+
+- Full test suite:
+- Full build:
+- End-to-end tests:
+- Dependency installation:
+
+## Forbidden commands
+
+Do not run these commands unless the user explicitly asks for that exact action.
+
+- Destructive cleanup:
+- History-changing Git commands:
+- Production or remote operations:
+
+## Progress and plans
+
+- Progress file:
+- Planning file:
+- Session handoff location:
+
+## Missing information
+
+If this file is incomplete, inspect `AGENTS.md`, package scripts, and nearby docs with targeted searches. Ask the user before guessing about expensive, destructive, remote, or history-changing commands.

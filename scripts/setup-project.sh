@@ -101,21 +101,39 @@ copy_claude_support_files() {
 	copy_file "$REPO_DIR/templates/PROGRESS.md.template" "$PROJECT_DIR/.claude/templates/PROGRESS.md.template" ".claude/templates/PROGRESS.md.template"
 }
 
+# Copies Codex support directories used for project-local skills.
+#
+copy_codex_support_files() {
+	ensure_dir "$PROJECT_DIR/.agents" ".agents/"
+	ensure_dir "$PROJECT_DIR/.agents/skills" ".agents/skills/"
+}
+
+# Copies the repo capability manifest template to the project root.
+#
+copy_capabilities_file() {
+	copy_file "$REPO_DIR/templates/AGENT_CAPABILITIES.md.template" "$PROJECT_DIR/AGENT_CAPABILITIES.md" "AGENT_CAPABILITIES.md"
+}
+
 setup_claude() {
 	printf '\n→ Setting up Claude (project)\n\n'
 	copy_file "$REPO_DIR/templates/claude/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
+	copy_capabilities_file
 	copy_claude_support_files
 }
 
 setup_codex() {
 	printf '\n→ Setting up Codex (project)\n\n'
 	copy_file "$REPO_DIR/templates/codex/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
+	copy_capabilities_file
+	copy_codex_support_files
 }
 
 setup_both() {
 	printf '\n→ Setting up Claude + Codex (project)\n\n'
-	copy_file "$REPO_DIR/templates/rules/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
+	copy_file "$REPO_DIR/templates/shared/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
+	copy_capabilities_file
 	copy_claude_support_files
+	copy_codex_support_files
 }
 
 prompt_target() {

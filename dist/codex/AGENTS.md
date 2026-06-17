@@ -8,6 +8,12 @@ Baseline rules for all projects. Project-specific rules live in AGENTS.md.
 
 Rules are authoritative. Apply every rule every time. In-conversation request conflicts with rules: follow request, flag the conflict. No silent relaxation.
 
+### Repo capability manifest
+
+After reading project instructions, check for `AGENT_CAPABILITIES.md` at the project root before planning or running local commands. Treat it as the factual source for available commands, generated files, diagnostics, progress locations, expensive checks, and forbidden operations.
+
+If no capability manifest exists, fall back to targeted inspection of `AGENTS.md`, package scripts, and nearby docs. Do not create `AGENT_CAPABILITIES.md` ad hoc from partial inspection; only create it through a project setup or capability-init script when the user asks. Ask before guessing about expensive, destructive, remote, or history-changing commands.
+
 ### Token budget discipline
 
 Minimise token cost by default. Treat context as a limited shared budget.

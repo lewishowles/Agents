@@ -23,7 +23,7 @@ This repo links `~/.agents/AGENTS.md` and `~/.codex/AGENTS.md` to `dist/codex/AG
 Project setup creates a root `AGENTS.md` using one of:
 
 - `templates/codex/AGENTS.md.template`
-- `templates/rules/AGENTS.md.template`
+- `templates/shared/AGENTS.md.template`
 
 ## Config
 
