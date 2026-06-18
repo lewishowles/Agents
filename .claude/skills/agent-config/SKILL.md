@@ -89,7 +89,6 @@ Run `python3 scripts/build-skill-mds.py` after editing `skill.json` or `SKILL.bo
 | `name`         | Yes      | Skill slug                                                     |
 | `description`  | Yes      | Starts "Use this skill when…"; action-led, includes file globs |
 | `when`         | Optional | Short one-liner for settings.json hook description             |
-| `triggers`     | Optional | Prompt-match strings used by `skill-autotrigger.sh`            |
 | `filePatterns` | Optional | Glob patterns for `skill-file-trigger.sh`                      |
 | `title`        | Optional | Human display name; generates Codex-compatible `displayName`   |
 | `capabilities` | Optional | `{"promptTriggering": bool, "fileTriggering": bool}`           |
@@ -109,21 +108,6 @@ Run `python3 scripts/build-skill-mds.py` after editing `skill.json` or `SKILL.bo
 - Each hook outputs JSON to stdout; `UserPromptSubmit` receives `{"prompt": "…"}` on stdin; `PreToolUse` receives full tool input JSON
 - Hard-fail (exit 2) only when blocking is intentional — else exit 0
 
-### skill-autotrigger.sh pattern authoring
-
-```bash
-# ─── skill-name ────────────────────────────────────────────────
-# One-line: what this skill covers and why these keywords
-if echo "$prompt" | grep -qiE '\bkeyword1\b|\bkeyword2\b'; then
-    skills+=("skill-name")
-fi
-```
-
-- Use `\b` word boundaries — avoid substring matches (`struct` matching `instructions`)
-- Case-insensitive (`-i`) always
-- Keep trigger tokens high-specificity; see `skill.json` `triggers` array as the canonical source
-- After editing: `python3 scripts/build-settings.py` to regenerate settings; then `bash scripts/sync.sh`
-
 ### skill-file-trigger.sh extension mapping
 
 Add new extensions to the `case` block; filename rules (`README`, `vite.config`) go in the `if`/`shopt` block below.
@@ -141,9 +125,8 @@ Source for `dist/claude/settings.json`. Contains `env`, hook registrations, `ena
 ## When adding or changing a skill
 
 1. Create `skills/<group>/<name>/skill.json` + `SKILL.body.md`
-2. Add keyword patterns to `skill-autotrigger.sh` and/or `skill-file-trigger.sh`
-3. Run `bash scripts/sync.sh` — regenerates `SKILL.md`, settings, docs, and dist
-4. Check `scripts/validate.sh` exits 0
+2. Run `bash scripts/sync.sh` — regenerates `SKILL.md`, settings, docs, and dist
+3. Check `scripts/validate.sh` exits 0
 
 ## When creating a new hook
 

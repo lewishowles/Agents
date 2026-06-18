@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Pre-push hook: runs validate.sh (including trigger tests) before pushing.
+# Installed via: scripts/setup-global.sh --claude|--both
+
+set -euo pipefail
+
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+REPO_DIR=$(cd "$SCRIPT_DIR/../.." && pwd)
+
+printf 'Running validate.sh before push…\n'
+bash "$REPO_DIR/scripts/validate.sh" 2>&1 | tail -30

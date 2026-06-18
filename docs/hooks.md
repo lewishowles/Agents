@@ -20,17 +20,9 @@ Hooks are shell scripts that Claude Code runs automatically at specific points i
 | `test-skeleton-reminder` | Suggests matching tests when implementation files change. | PreToolUse (`Write\|Edit`) | `silent`; requires jq |
 <!-- END GENERATED: registered-hooks -->
 
-### skill-autotrigger.sh
-
-Fires on every user message. Reads the prompt text, pattern-matches it against each skill's domain keywords, and injects an `additionalContext` instruction into Claude's context telling it to invoke the matched skills before responding.
-
-**Continuation prompts:** when the user sends something ambiguous ("yes", "continue", "next step"), Claude decides what to write independently. The hook detects these and injects *all* skills so Claude can pick whichever apply. False positives (loading unused skills) are acceptable; missing a skill is not.
-
-**Requires:** `jq` — `brew install jq`. The hook hard-fails and blocks the prompt if `jq` is missing.
-
 ### skill-file-trigger.sh
 
-Fires whenever Claude is about to write or edit a file. Checks the file extension and injects a skill reminder. Complements `skill-autotrigger.sh` for cases where Claude independently decides what to create.
+Fires whenever Claude is about to write or edit a file. Checks the file extension and path and injects a skill reminder.
 
 **Limitation:** by the time this hook fires, the file content is already planned in Claude's tool call. The reminder primarily affects subsequent edits in the same turn, not the current write.
 
@@ -82,10 +74,10 @@ The hook suggests rather than blocks. It skips test files, docs, scripts without
 
 Recognised test stacks:
 
-| Project type | Detection |
-|--------------|-----------|
+| Project type  | Detection                                                                               |
+| ------------- | --------------------------------------------------------------------------------------- |
 | JS / TS / Vue | `package.json` mentions Vitest, Jest, Playwright, or Cypress in scripts or dependencies |
-| Swift | `Tests/` exists or `Package.swift` exists |
+| Swift         | `Tests/` exists or `Package.swift` exists                                               |
 
 **Requires:** `jq` — silently skips if missing.
 
@@ -139,9 +131,7 @@ Failures are appended to `~/.claude/logs/friction.log` as tab-separated lines: t
 
 Skills aren't invoked automatically by Claude Code — they need an explicit `Skill` tool call. The trigger hooks bridge that gap by injecting a strong instruction into Claude's context at the right moment.
 
-Neither hook is perfect: `skill-autotrigger` only analyses the typed prompt, not what Claude plans to write; `skill-file-trigger` fires after the content is planned. Together they cover most cases without any manual invocation.
-
-To invoke a skill manually: type `/skill-name` in Claude Code (e.g. `/vue`, `/typescript`).
+`skill-file-trigger` fires after the file path is planned, so the reminder primarily affects subsequent edits in the same turn. To invoke a skill manually: type `/skill-name` in Claude Code (e.g. `/vue`, `/typescript`).
 
 ## Adding a new hook
 

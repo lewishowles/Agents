@@ -81,9 +81,5 @@ run_suite "skill-file-trigger" \
 	"$REPO_DIR/dist/claude/hooks/skill-file-trigger.sh" \
 	"skill-file-trigger"
 
-run_suite "skill-autotrigger" \
-	"$REPO_DIR/dist/claude/hooks/skill-autotrigger.sh" \
-	"skill-autotrigger"
-
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [[ $fail -eq 0 ]]

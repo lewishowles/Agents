@@ -255,6 +255,19 @@ ensure_codex_config() {
 	printf '  %s✓%s configured Codex MCP server (backup at %s)\n' "$GREEN" "$RESET_COLOUR" "$(display_path "$backup")"
 }
 
+# Configures git to use hooks/git/ as the hook directory for this repo.
+# This installs the pre-push hook without touching ~/.git/hooks directly.
+configure_git_hooks() {
+	printf '\n→ Configuring git hooks\n\n'
+
+	if ! git -C "$REPO_DIR" config core.hooksPath hooks/git &>/dev/null; then
+		printf '  %s!%s Could not set core.hooksPath — not a git repo?\n' "$YELLOW" "$RESET_COLOUR"
+		return
+	fi
+
+	printf '  %s✓%s git hooks path set to hooks/git/\n' "$GREEN" "$RESET_COLOUR"
+}
+
 prompt_target() {
 	printf 'Which agent(s)? [1] Claude  [2] Codex  [3] Both: '
 	read -r choice
@@ -299,5 +312,7 @@ case "$target" in
 	codex)  setup_codex ;;
 	both)   setup_claude; setup_codex ;;
 esac
+
+configure_git_hooks
 
 printf '\nDone.\n'

@@ -1,3 +1,1 @@
-code-style
-typescript
-vite-patterns
+vue-vite

@@ -1,5 +1,0 @@
-code-style
-vue
-vue-project-stack
-typescript
-unit-testing

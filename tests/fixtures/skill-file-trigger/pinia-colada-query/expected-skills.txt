@@ -1,3 +1,3 @@
 code-style
-pinia-colada
+vue-pinia-colada
 typescript

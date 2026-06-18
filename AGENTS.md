@@ -87,8 +87,7 @@ Managed external skills also live under `skills/<name>`, but are listed in `exte
 1. Create `skills/<name>/SKILL.md`
 2. Frontmatter: `name`, `description` (`Use this skill when` + action-led wording + globs), `related-skills`
 3. Write content
-4. Update `dist/claude/hooks/skill-autotrigger.sh` and `dist/claude/hooks/skill-file-trigger.sh`
-5. Re-run `setup-global.sh` to create new symlinks
+4. Re-run `setup-global.sh` to create new symlinks
 
 ## Current phase
 

@@ -16,7 +16,6 @@ Create `~/.claude/skills/`, `~/.claude/hooks/`, and `~/.claude/commands/`, then 
 
 ```bash
 ln -s /path/to/repository/skills/vue ~/.claude/skills/vue
-ln -s /path/to/repository/dist/claude/hooks/skill-autotrigger.sh ~/.claude/hooks/skill-autotrigger.sh
 ln -s /path/to/repository/dist/claude/commands/new-command.md ~/.claude/commands/new-command.md
 ```
 
