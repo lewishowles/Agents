@@ -16,6 +16,7 @@ Confirm which package is being released:
 
 - `@lewishowles/components`
 - `@lewishowles/helpers`
+- `@lewishowles/testing`
 
 Read the package root instructions, capability manifest if present, `package.json`, changelog, and release notes files before recommending commands.
 
@@ -23,10 +24,10 @@ Read the package root instructions, capability manifest if present, `package.jso
 
 Choose the version bump from observable consumer impact:
 
-| Bump | Use when |
-| ---- | -------- |
-| Patch | Bug fixes, docs fixes, internal changes, or compatible polish |
-| Minor | New exports, components, helpers, props, slots, options, or compatible behaviour |
+| Bump  | Use when                                                                                                 |
+| ----- | -------------------------------------------------------------------------------------------------------- |
+| Patch | Bug fixes, docs fixes, internal changes, or compatible polish                                            |
+| Minor | New exports, components, helpers, props, slots, options, or compatible behaviour                         |
 | Major | Removed or renamed APIs, changed defaults, incompatible behaviour, or migration-required styling changes |
 
 When unsure between two bumps, name the uncertainty and ask before editing version files.
@@ -72,7 +73,7 @@ Use dry-run or pack-style commands when available, but only after confirming the
 Stop for confirmation before each irreversible or history-changing action:
 
 - Version file edits if not already approved
-- `npm publish`
+- `bun run deploy`
 - Git tag creation
 - Git push, including tags
 - GitHub release creation
