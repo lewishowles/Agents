@@ -103,12 +103,14 @@ test_init_capabilities_previews_current_project() {
 
 test_write_capabilities_writes_current_project() {
 	local target_dir="$TEST_ROOT/init-write"
+	local output="$TEST_ROOT/init-write.out"
 	mkdir -p "$target_dir/src"
 
-	run_setup "$target_dir" --write-capabilities
+	run_setup_output "$target_dir" --write-capabilities > "$output"
 
 	assert_file "$target_dir/AGENT_CAPABILITIES.md"
 	assert_contains "$target_dir/AGENT_CAPABILITIES.md" "Project capabilities"
+	assert_contains "$output" "Review generated command safety, generated paths, and forbidden operations before relying on it."
 }
 
 test_write_capabilities_protects_existing_manifest() {

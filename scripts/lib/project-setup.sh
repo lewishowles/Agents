@@ -84,6 +84,11 @@ copy_claude_support_files() {
 	sync_file "$REPO_DIR/templates/claude/.claudeignore" "$PROJECT_DIR/.claude/.claudeignore" ".claude/.claudeignore"
 }
 
+# Prints the review warning for generated capability manifests.
+print_capability_review_note() {
+	printf '  %s!%s Review generated command safety, generated paths, and forbidden operations before relying on it.\n' "$YELLOW" "$RESET_COLOUR"
+}
+
 # Writes an inferred capability manifest when one does not already exist.
 write_capabilities_file() {
 	local target="$PROJECT_DIR/AGENT_CAPABILITIES.md"
@@ -95,6 +100,7 @@ write_capabilities_file() {
 
 	"$REPO_DIR/scripts/init-capabilities.py" --project-dir "$PROJECT_DIR" --write >/dev/null
 	printf '  %s✓%s created %s\n' "$GREEN" "$RESET_COLOUR" "AGENT_CAPABILITIES.md"
+	print_capability_review_note
 }
 
 # Previews or writes an inferred capability manifest for the current project.
@@ -112,4 +118,7 @@ init_capabilities() {
 	esac
 
 	"$REPO_DIR/scripts/init-capabilities.py" "${args[@]}"
+	if [ "$mode" != "preview" ]; then
+		print_capability_review_note
+	fi
 }
