@@ -28,6 +28,8 @@ related-skills:
 
 More tests at the bottom: fast, isolated, cheap. Fewer at the top: slow, realistic, expensive.
 
+When `.agent/scripts/project-diagnostics.py` exists, use `--list` to discover project checks before choosing a verification command. Prefer `--check <name>` for the narrowest useful layer; reserve `--all` for user-approved broad verification.
+
 ## What to test at each layer
 
 | Layer     | Test with            | Test what                                                            |

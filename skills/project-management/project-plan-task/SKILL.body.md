@@ -10,6 +10,8 @@ Use this skill to add new work to an existing plan. Insert it where it belongs, 
 
 Use `<project-root>/AGENT_CAPABILITIES.md` when it exists to choose verification commands, generated outputs, expensive checks, forbidden operations, and progress locations for the new plan section.
 
+When `<project-root>/.agent/scripts/project-diagnostics.py` exists, prefer diagnostics `--check <name>` entries in `Verify with` over raw package scripts. Use `--list` to discover check names and `--all` only when the section explicitly needs broad verification and the user agrees.
+
 Do not generate a missing capability manifest just to add work to a plan. If it is missing, continue with targeted inspection of `AGENTS.md`, package scripts, and nearby docs. If capability data would materially improve the plan, mention that the user can generate it with a global command such as:
 
 ```sh

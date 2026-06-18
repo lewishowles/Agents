@@ -26,7 +26,7 @@ related-skills:
 - Group tests by collection, e.g. "Initialisation", "Render contracts", "Computed", "Methods"
 - Static render contracts may live in unit tests when the check is materially cheaper than browser component testing and does not need layout, interaction, browser APIs, focus, keyboard behaviour, or timing. Use the "Render contracts" group for these tests.
 - Keep interaction, layout-sensitive rendered state, browser API behaviour, focus movement, keyboard behaviour, and live-region timing in browser component tests.
-- Running a single test file or focused test is fine when verifying a specific fix; output stays manageable. Ask the user for full suite runs.
+- When `.agent/scripts/project-diagnostics.py` exists, run `--list` to discover unit-test checks and `--check <name>` for the relevant one. Running a single test file or focused test is fine when verifying a specific fix; output stays manageable. Ask the user for full suite runs or diagnostics `--all`.
 
 ## Vue & Vitest
 

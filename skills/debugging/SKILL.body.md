@@ -10,13 +10,13 @@ Apply especially under time pressure or when a "quick fix" seems obvious.
 
 ## Token-discipline note
 
-Prefer scoped commands when they save more back-and-forth than they cost: a single test file, lint on a touched path, or a minimal repro. Ask the user for full suites, builds, and e2e.
+When `.agent/scripts/project-diagnostics.py` exists, run `--list` to discover checks and `--check <name>` for the specific signal needed. Prefer scoped commands when they save more back-and-forth than they cost: a single test file, lint on a touched path, or a minimal repro. Ask the user for full suites, builds, e2e, or diagnostics `--all`.
 
 ## Phase 1 — Build a feedback loop
 
 Before investigating, create a fast, deterministic, repeatable signal that confirms the failure. This is the most important investment — having a reliable way to observe the bug is 90% of fixing it.
 
-A good feedback loop is fast (seconds, not minutes), deterministic (fails consistently), and scoped (minimum setup needed). It can be a failing unit test, a minimal CLI invocation, a script, or a repro route in the app. If you can't create one, ask the user to reproduce it and describe exactly what they observe.
+A good feedback loop is fast (seconds, not minutes), deterministic (fails consistently), and scoped (minimum setup needed). It can be a diagnostics `--check`, a failing unit test, a minimal CLI invocation, a script, or a repro route in the app. If you can't create one, ask the user to reproduce it and describe exactly what they observe.
 
 ## Phase 2 — Investigate
 

@@ -20,6 +20,8 @@ Do not generate a missing capability manifest during resume unless the user asks
 
 If `PROGRESS.md` conflicts with `AGENT_CAPABILITIES.md`, surface the conflict and trust the capability manifest for command safety and generated-file facts. Update `PROGRESS.md` when the plan needs to reflect those facts.
 
+When `<project-root>/.agent/scripts/project-diagnostics.py` exists, prefer `--list` for check discovery and `--check <name>` for verification. Use `--all` only when the user asks for broad verification.
+
 ## Workflow
 
 1. **Read** — read `## Session handoff` first, then stop unless the next step is unclear or the task needs deeper context

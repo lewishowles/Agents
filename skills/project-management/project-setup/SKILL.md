@@ -17,6 +17,8 @@ Use this skill to start a new project or feature. Create initial `PROGRESS.md` a
 
 Check for `<project-root>/AGENT_CAPABILITIES.md` before planning. It is the factual source for available commands, generated files, diagnostics, progress locations, expensive checks, and forbidden operations.
 
+When `<project-root>/.agent/scripts/project-diagnostics.py` exists, list it as the preferred verification route. Plans should use `--list` for discovery and `--check <name>` for named verification; reserve `--all` for user-approved broad checks.
+
 If it is missing, generate it only when a capability generator command is discoverable by name. Example global command:
 
 ```sh

@@ -5,7 +5,8 @@ E2E and component tests verify what users experience in a real browser. Playwrig
 ## General
 
 - Avoid browser tests by default because output is token-heavy. Run focused tests only for a specific fix or failure; suggest broader user-run commands
-- Do not run full suites from plan verification steps unless the user explicitly asks
+- When `.agent/scripts/project-diagnostics.py` exists, use `--list` to discover browser/e2e checks and `--check <name>` only for a specific fix or failure
+- Do not run full suites or diagnostics `--all` from plan verification steps unless the user explicitly asks
 
 ## Which tool to use
 
