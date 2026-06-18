@@ -30,6 +30,14 @@ create_node_project() {
 	printf '# Rules\n' > "$target_dir/AGENTS.md"
 }
 
+create_javascript_library_project() {
+	local target_dir="$1"
+
+	mkdir -p "$target_dir/lib"
+	printf '{"type":"module","files":["dist","types"],"exports":{"./array":{"import":"./dist/array.js"}},"devDependencies":{"vue":"latest"},"packageManager":"bun@1.2.0"}\n' > "$target_dir/package.json"
+	printf 'lock\n' > "$target_dir/bun.lock"
+}
+
 test_preview_does_not_write() {
 	local target_dir="$TEST_ROOT/preview"
 	local output="$TEST_ROOT/preview.md"
@@ -121,6 +129,16 @@ EOF
 	assert_contains "$output" '| Lint | `bun run lint:check` |'
 }
 
+test_library_with_dev_framework_dependency_keeps_library_stack() {
+	local target_dir="$TEST_ROOT/javascript-library"
+	local output="$TEST_ROOT/javascript-library.md"
+	create_javascript_library_project "$target_dir"
+
+	run_init "$target_dir" > "$output"
+
+	assert_contains "$output" "Primary stack: JavaScript library"
+}
+
 test_missing_package_scripts_leave_unknowns() {
 	local target_dir="$TEST_ROOT/no-package"
 	local output="$TEST_ROOT/no-package.md"
@@ -147,6 +165,7 @@ test_write_creates_missing_manifest
 test_existing_manifest_requires_force
 test_force_preserves_known_existing_values
 test_placeholders_do_not_override_detected_values
+test_library_with_dev_framework_dependency_keeps_library_stack
 test_missing_package_scripts_leave_unknowns
 test_repo_preview_uses_progress_file
 

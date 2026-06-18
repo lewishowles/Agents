@@ -330,19 +330,20 @@ def detect_runtime_requirements(project_dir: Path, package: Dict[str, Any], mana
 
 
 def detect_primary_stack(project_dir: Path, package: Dict[str, Any]) -> str:
-	dependencies = {}
-	dependencies.update(package.get("dependencies", {}))
-	dependencies.update(package.get("devDependencies", {}))
-	dependencies.update(package.get("peerDependencies", {}))
+	runtime_dependencies = {}
+	runtime_dependencies.update(package.get("dependencies", {}))
+	runtime_dependencies.update(package.get("peerDependencies", {}))
 
-	if "vue" in dependencies:
+	if "vue" in runtime_dependencies:
 		return "Vue"
-	if "react" in dependencies:
+	if "react" in runtime_dependencies:
 		return "React"
-	if "svelte" in dependencies:
+	if "svelte" in runtime_dependencies:
 		return "Svelte"
-	if "next" in dependencies:
+	if "next" in runtime_dependencies:
 		return "Next.js"
+	if package.get("exports") or package.get("files"):
+		return "JavaScript library"
 	if (project_dir / "Package.swift").exists():
 		return "Swift"
 	if (project_dir / "pyproject.toml").exists():
