@@ -23,15 +23,16 @@ related-skills:
 - Separate test setup from assertions like separating variables from logic in JS
 - Keep imports at the top of the file
 - Test and group names are capitalised, human-readable, and self-contained; method/computed names may stay exact
-- Group tests by collection, e.g. "Initialisation", "Computed", "Methods"
-- **Do not** write interaction, rendered-state, or DOM-presence tests in unit tests. DOM checks like `wrapper.find("[data-test=...]").exists()` belong in browser component tests
+- Group tests by collection, e.g. "Initialisation", "Render contracts", "Computed", "Methods"
+- Static render contracts may live in unit tests when the check is materially cheaper than browser component testing and does not need layout, interaction, browser APIs, focus, keyboard behaviour, or timing. Use the "Render contracts" group for these tests.
+- Keep interaction, layout-sensitive rendered state, browser API behaviour, focus movement, keyboard behaviour, and live-region timing in browser component tests.
 - Running a single test file or focused test is fine when verifying a specific fix; output stays manageable. Ask the user for full suite runs.
 
 ## Vue & Vitest
 
 - Vitest; unit-test computed properties and heavily-used methods
 - Skip tests for methods delegating to `@lewishowles/helpers`
-- Component logic in unit tests: computed properties, emitted events, composables, and heavily-used methods. Rendered state belongs in browser component tests
+- Component logic in unit tests: computed properties, emitted events, composables, heavily-used methods, and cheap static render contracts
 - Composables: test reactive state, side effects, lifecycle hooks
 - For async updates in tests, import `nextTick` from Vue and use `await nextTick()` instead of `await wrapper.vm.$nextTick()`
 - Use `flushPromises()` when waiting for pending promises, API mocks, or async component setup
@@ -49,7 +50,8 @@ For component, composable, helper, and `test.for` input-type examples, see [refe
 
 - Top-level group names use `kebab-case` to match the component (`form-input`, not `FormInput`)
 - Only test component logic that can't reasonably be extracted to a composable or helper
-- Do not assert visible text, DOM attributes, keyboard behaviour, or rendered states — use Playwright/Cypress for those
+- Put cheap static DOM attributes, slot fallbacks, and prop-driven presence checks in "Render contracts" when they don't need a browser
+- Do not assert keyboard behaviour, focus movement, browser layout, CSS rendering, or timed live-region behaviour — use Playwright/Cypress for those
 
 ### File co-location
 
