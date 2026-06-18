@@ -11,6 +11,7 @@ Apply across all projects. See individual skills for detailed rules. Use project
 - `/bash` — When writing shell scripts, bash config, patterns
 - `/code-review` — When reviewing a PR or diff, or receiving review feedback
 - `/code-style` — When formatting code, covering naming, comments, arrays, objects
+- `/component-api-design` — When designing component props, slots, emits, v-model, expose, and public API
 - `/debugging` — When encountering any bug, test failure, or unexpected behaviour — before proposing a fix
 - `/dependencies` — When adding packages, what to choose, when to add
 - `/error-handling` — When validating input, graceful fallbacks, error handling

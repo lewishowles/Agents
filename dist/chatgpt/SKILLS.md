@@ -87,6 +87,11 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 **Avoid:** Working in plain JavaScript without JSDoc or TypeScript checking; Changing a Vue template or stylesheet with no `lang="ts"` script or type changes; Discussing data shapes conceptually without editing type definitions or type-checked code
 **Combine with:** code-style
 
+### component-api-design
+**When to use:** Use this skill when designing a new component's public API — props, slots, emits, v-model, expose — or reviewing whether an existing API is consistent and discoverable.
+**Avoid:** Editing component internals without changing its public props, slots, emits, models, or exposed methods; Fixing Vue reactivity, lifecycle, routing, store, or styling issues with no component API decision; Reviewing low-level code style where the public component contract is already settled
+**Combine with:** accessibility, code-style, typescript, vue
+
 ### vue
 **When to use:** Use this skill when working with .vue files, Vue components, composables, or Vue templates — even for small edits. Covers Vue 3 Composition API patterns, script setup, macro order, computed property organisation, component patterns, and component directory organisation. For project-specific stack choices (Bun, Vitest, Gitflow, @lewishowles/helpers, @lewishowles/components), see the vue-project-stack skill.
 **Avoid:** Editing a non-Vue TypeScript, JavaScript, Swift, or Markdown file; Discussing frontend design, accessibility, performance, or security without Vue component code changes; Working only in Vite, router, Pinia, or VueUse configuration where a narrower Vue skill applies
