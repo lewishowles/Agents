@@ -17,6 +17,7 @@ CHECKS=(
 	"scripts/validate/check-project-diagnostics.sh"
 	"scripts/validate/check-repo-context.sh"
 	"scripts/validate/check-generated-file-guard.sh"
+	"scripts/validate/check-change-impact.sh"
 )
 
 FAILED_CHECKS=0

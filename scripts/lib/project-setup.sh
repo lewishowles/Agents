@@ -99,6 +99,9 @@ copy_shared_agent_tools() {
 
 	sync_file "$REPO_DIR/scripts/repo-context.py" "$PROJECT_DIR/.agent/scripts/repo-context.py" ".agent/scripts/repo-context.py"
 	chmod +x "$PROJECT_DIR/.agent/scripts/repo-context.py"
+
+	sync_file "$REPO_DIR/scripts/change-impact.py" "$PROJECT_DIR/.agent/scripts/change-impact.py" ".agent/scripts/change-impact.py"
+	chmod +x "$PROJECT_DIR/.agent/scripts/change-impact.py"
 }
 
 # Prints the review warning for generated capability manifests.

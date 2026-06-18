@@ -773,6 +773,7 @@ def render_manifest(project_dir: Path, tree_depth: int, tree_excludes: List[str]
 		"```sh",
 		".agent/scripts/project-diagnostics.py --list",
 		".agent/scripts/project-diagnostics.py --check <name>",
+		".agent/scripts/change-impact.py",
 		"```",
 		"",
 		"Use `--all` only for broad verification after user approval. If the script is missing, use the Common checks below conservatively.",

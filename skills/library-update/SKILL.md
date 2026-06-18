@@ -19,6 +19,7 @@ Check one or both of Lewis's shared libraries for new releases, surface what cha
 /library-update              — check whichever libraries are present in package.json
 /library-update components   — check @lewishowles/components only
 /library-update helpers      — check @lewishowles/helpers only
+/library-update testing      — check @lewishowles/testing only
 /library-update both         — check both explicitly
 ```
 
@@ -28,8 +29,9 @@ If an argument was given, use it. Otherwise read `package.json` and check which 
 
 - `@lewishowles/components`
 - `@lewishowles/helpers`
+- `@lewishowles/testing`
 
-If neither is present, stop and say so.
+If none are present, stop and say so.
 
 ## Step 2 — find the installed version
 
@@ -38,9 +40,6 @@ For each library in scope:
 1. Read `package.json` to find the declared version constraint.
 2. Find the exact resolved version from the lockfile — check in order:
    - `bun.lock` or `bun.lockb` — search for the package entry
-   - `package-lock.json` — look under `packages["node_modules/@lewishowles/<name>"].version`
-   - `yarn.lock` — find the resolved block for the package
-   - `pnpm-lock.yaml` — find the entry under `packages:`
 3. Use the resolved version (e.g. `2.2.1`) as the **installed version** for comparison.
 
 ## Step 3 — find the latest release
@@ -53,6 +52,9 @@ gh release list --repo lewishowles/components --limit 20
 
 # For helpers:
 gh release list --repo lewishowles/helpers --limit 20
+
+# For testing:
+gh release list --repo lewishowles/testing --limit 20
 ```
 
 Identify the latest stable release tag. Tags follow the format `v.X.Y.Z`.
@@ -101,7 +103,7 @@ Breaking changes affecting code found in the project. Include the file path(s) a
 
 #### Worth adopting
 
-New features or components relevant to what the project already does.
+New features or components relevant to what the project already does, or functionality or boilerplate extracted that can be used instead of local implementation.
 
 #### Good to know
 

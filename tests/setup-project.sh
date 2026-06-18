@@ -42,6 +42,7 @@ test_claude_setup() {
 	assert_file "$target_dir/.agent/scripts/project-diagnostics.py"
 	assert_file "$target_dir/.agent/scripts/generated-file-guard.py"
 	assert_file "$target_dir/.agent/scripts/repo-context.py"
+	assert_file "$target_dir/.agent/scripts/change-impact.py"
 	assert_contains "$target_dir/AGENT_CAPABILITIES.md" ".agent/scripts/project-diagnostics.py"
 	assert_dir "$target_dir/.claude"
 	assert_file "$target_dir/.claude/.claudeignore"
@@ -62,6 +63,7 @@ test_codex_setup() {
 	assert_file "$target_dir/.agent/scripts/project-diagnostics.py"
 	assert_file "$target_dir/.agent/scripts/generated-file-guard.py"
 	assert_file "$target_dir/.agent/scripts/repo-context.py"
+	assert_file "$target_dir/.agent/scripts/change-impact.py"
 	assert_contains "$target_dir/AGENT_CAPABILITIES.md" ".agent/scripts/project-diagnostics.py"
 	assert_not_exists "$target_dir/.agents"
 	[ ! -e "$target_dir/.claude" ] || fail "Codex-only setup should not create .claude"
@@ -80,6 +82,7 @@ test_both_setup() {
 	assert_file "$target_dir/.agent/scripts/project-diagnostics.py"
 	assert_file "$target_dir/.agent/scripts/generated-file-guard.py"
 	assert_file "$target_dir/.agent/scripts/repo-context.py"
+	assert_file "$target_dir/.agent/scripts/change-impact.py"
 	assert_contains "$target_dir/AGENT_CAPABILITIES.md" ".agent/scripts/project-diagnostics.py"
 	assert_file "$target_dir/.claude/.claudeignore"
 	assert_not_exists "$target_dir/.claude/settings.json"
@@ -102,6 +105,7 @@ test_existing_files_are_skipped() {
 	assert_contains "$output" ".agent/scripts/project-diagnostics.py already up to date"
 	assert_contains "$output" ".agent/scripts/generated-file-guard.py already up to date"
 	assert_contains "$output" ".agent/scripts/repo-context.py already up to date"
+	assert_contains "$output" ".agent/scripts/change-impact.py already up to date"
 	assert_contains "$output" ".claude/.claudeignore already up to date"
 }
 
