@@ -14,6 +14,8 @@ After reading project instructions, check for `AGENT_CAPABILITIES.md` at the pro
 
 If no capability manifest exists, fall back to targeted inspection of `AGENTS.md`, package scripts, and nearby docs. Do not create `AGENT_CAPABILITIES.md` ad hoc from partial inspection; only create it through a project setup or capability-init script when the user asks. Ask before guessing about expensive, destructive, remote, or history-changing commands.
 
+When `.agent/scripts/project-diagnostics.py` exists, prefer it over raw build, test, typecheck, or lint commands. It is the shared project-local diagnostics entry point for Claude and Codex. Run `--list` first when discovering available checks, run `--check <name>` for the specific check needed, and use `--all` only when the user asks for broad verification. If it is missing, use `AGENT_CAPABILITIES.md` common checks or narrow manually inspected commands.
+
 ### Token budget discipline
 
 Minimise token cost by default. Treat context as a limited shared budget.

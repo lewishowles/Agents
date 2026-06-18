@@ -34,6 +34,7 @@ usage() {
 setup_claude() {
 	printf '\n→ Setting up Claude (project)\n\n'
 	copy_file "$REPO_DIR/templates/claude/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
+	copy_shared_agent_tools
 	write_capabilities_file
 	copy_claude_support_files
 }
@@ -41,12 +42,14 @@ setup_claude() {
 setup_codex() {
 	printf '\n→ Setting up Codex (project)\n\n'
 	copy_file "$REPO_DIR/templates/codex/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
+	copy_shared_agent_tools
 	write_capabilities_file
 }
 
 setup_both() {
 	printf '\n→ Setting up Claude + Codex (project)\n\n'
 	copy_file "$REPO_DIR/templates/shared/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
+	copy_shared_agent_tools
 	write_capabilities_file
 	copy_claude_support_files
 }

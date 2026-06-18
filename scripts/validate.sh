@@ -14,6 +14,7 @@ CHECKS=(
 	"scripts/validate/check-hook-sync.sh"
 	"scripts/validate/check-docs-tables.sh"
 	"scripts/validate/check-skill-triggers.sh"
+	"scripts/validate/check-project-diagnostics.sh"
 )
 
 FAILED_CHECKS=0

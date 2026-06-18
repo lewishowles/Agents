@@ -84,6 +84,14 @@ copy_claude_support_files() {
 	sync_file "$REPO_DIR/templates/claude/.claudeignore" "$PROJECT_DIR/.claude/.claudeignore" ".claude/.claudeignore"
 }
 
+# Copies shared project-local agent tooling into the target project.
+copy_shared_agent_tools() {
+	ensure_dir "$PROJECT_DIR/.agent/scripts" ".agent/scripts/"
+
+	sync_file "$REPO_DIR/scripts/project-diagnostics.py" "$PROJECT_DIR/.agent/scripts/project-diagnostics.py" ".agent/scripts/project-diagnostics.py"
+	chmod +x "$PROJECT_DIR/.agent/scripts/project-diagnostics.py"
+}
+
 # Prints the review warning for generated capability manifests.
 print_capability_review_note() {
 	printf '  %s!%s Review generated command safety, generated paths, and forbidden operations before relying on it.\n' "$YELLOW" "$RESET_COLOUR"
