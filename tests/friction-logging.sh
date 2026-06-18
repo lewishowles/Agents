@@ -6,35 +6,9 @@ SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 TEST_ROOT=$(mktemp -d)
 
-cleanup() {
-	rm -rf "$TEST_ROOT"
-}
+source "$SCRIPT_DIR/lib/test-helpers.sh"
 
 trap cleanup EXIT
-
-fail() {
-	printf '✗ %s\n' "$1" >&2
-	exit 1
-}
-
-assert_file() {
-	local path="$1"
-
-	[ -f "$path" ] || fail "Expected file: $path"
-}
-
-assert_not_file() {
-	local path="$1"
-
-	[ ! -f "$path" ] || fail "Expected no file: $path"
-}
-
-assert_contains() {
-	local path="$1"
-	local pattern="$2"
-
-	grep -q "$pattern" "$path" || fail "Expected $path to contain: $pattern"
-}
 
 write_package() {
 	local path="$1"

@@ -6,35 +6,9 @@ SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 TEST_ROOT=$(mktemp -d)
 
-cleanup() {
-	rm -rf "$TEST_ROOT"
-}
+source "$SCRIPT_DIR/lib/test-helpers.sh"
 
 trap cleanup EXIT
-
-fail() {
-	printf '✗ %s\n' "$1" >&2
-	exit 1
-}
-
-assert_file() {
-	local path="$1"
-
-	[ -f "$path" ] || fail "Expected file: $path"
-}
-
-assert_contains() {
-	local path="$1"
-	local pattern="$2"
-
-	grep -Fq "$pattern" "$path" || fail "Expected $path to contain: $pattern"
-}
-
-assert_not_file() {
-	local path="$1"
-
-	[ ! -e "$path" ] || fail "Expected no file: $path"
-}
 
 run_init() {
 	local target_dir="$1"
@@ -64,20 +38,18 @@ test_preview_does_not_write() {
 	run_init "$target_dir" > "$output"
 
 	assert_not_file "$target_dir/AGENT_CAPABILITIES.md"
-	assert_contains "$output" "Vue (detected from package.json)"
-	assert_contains "$output" "Bun (detected from bun.lock)"
-	assert_contains "$output" "Runtime requirements: Bun 1.2.0"
-	assert_contains "$output" 'Local services/dev servers: Not detected'
+	assert_contains "$output" "Primary stack: Vue"
+	assert_contains "$output" "Package manager: Bun (detected from \`bun.lock\`)"
+	assert_contains "$output" "Runtime requirements: bun@1.2.0"
+	assert_contains "$output" '- None detected.'
 	assert_contains "$output" 'vitest.config.js'
 	assert_contains "$output" 'test/playwright-ct.config.js'
-	assert_contains "$output" 'package script: test'
-	assert_contains "$output" 'package script: lint:check'
-	assert_contains "$output" 'package script: test:component'
-	assert_contains "$output" 'Regeneration command: `package script: build`'
-	assert_contains "$output" 'Available generators: None detected.'
-	assert_contains "$output" 'Small code change: `package script: test:unit` and `package script: lint:check`'
-	assert_contains "$output" 'UI change: `package script: test:component`'
-	assert_contains "$output" 'Full test suite: `package script: test:unit:run`'
+	assert_contains "$output" '| Lint | `bun run lint:check` |'
+	assert_contains "$output" '| Unit tests | `bun run test:unit` |'
+	assert_contains "$output" '| Component tests | `bun run test:component` |'
+	assert_contains "$output" '| End-to-end tests | `bun run test:e2e` |'
+	assert_contains "$output" '| Build | `bun run build` |'
+	assert_contains "$output" '| None detected |  |  |'
 }
 
 test_write_creates_missing_manifest() {
@@ -87,7 +59,7 @@ test_write_creates_missing_manifest() {
 	run_init "$target_dir" --write >/dev/null
 
 	assert_file "$target_dir/AGENT_CAPABILITIES.md"
-	assert_contains "$target_dir/AGENT_CAPABILITIES.md" "## Diagnostics and checks"
+	assert_contains "$target_dir/AGENT_CAPABILITIES.md" "## Common checks"
 }
 
 test_existing_manifest_requires_force() {
@@ -145,8 +117,8 @@ EOF
 
 	run_init "$target_dir" > "$output"
 
-	assert_contains "$output" 'package script: test:unit'
-	assert_contains "$output" 'package script: lint:check'
+	assert_contains "$output" '| Unit tests | `bun run test:unit` |'
+	assert_contains "$output" '| Lint | `bun run lint:check` |'
 }
 
 test_missing_package_scripts_leave_unknowns() {
@@ -157,8 +129,8 @@ test_missing_package_scripts_leave_unknowns() {
 	run_init "$target_dir" > "$output"
 
 	assert_contains "$output" "Not detected"
-	assert_contains "$output" "Confirm manually if this check exists"
-	assert_contains "$output" "Needs manual confirmation"
+	assert_contains "$output" "| Unit tests | Not detected |"
+	assert_contains "$output" "| Build | Not detected |"
 }
 
 test_repo_preview_uses_progress_file() {

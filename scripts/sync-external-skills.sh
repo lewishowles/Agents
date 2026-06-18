@@ -21,20 +21,23 @@ if [ "${1:-}" = "--help" ]; then
 	exit 0
 fi
 
-if ! command -v jq &>/dev/null; then
-	printf '%s✗%s sync-external-skills requires jq. Install it with: brew install jq\n' "$RED" "$RESET_COLOUR" >&2
-	exit 1
-fi
+# Ensures commands and files needed for external skill sync are available.
+require_sync_dependencies() {
+	if ! command -v jq &>/dev/null; then
+		printf '%s✗%s sync-external-skills requires jq. Install it with: brew install jq\n' "$RED" "$RESET_COLOUR" >&2
+		exit 1
+	fi
 
-if ! command -v curl &>/dev/null; then
-	printf '%s✗%s sync-external-skills requires curl.\n' "$RED" "$RESET_COLOUR" >&2
-	exit 1
-fi
+	if ! command -v curl &>/dev/null; then
+		printf '%s✗%s sync-external-skills requires curl.\n' "$RED" "$RESET_COLOUR" >&2
+		exit 1
+	fi
 
-if [ ! -f "$MANIFEST" ]; then
-	printf '%s✗%s External skills manifest not found: %s\n' "$RED" "$RESET_COLOUR" "$MANIFEST" >&2
-	exit 1
-fi
+	if [ ! -f "$MANIFEST" ]; then
+		printf '%s✗%s External skills manifest not found: %s\n' "$RED" "$RESET_COLOUR" "$MANIFEST" >&2
+		exit 1
+	fi
+}
 
 # Scans a downloaded skill file for patterns that warrant manual review before
 # the skill is trusted. Prints a warning for each match but does not block.
@@ -225,17 +228,26 @@ EOF
 	printf '\n'
 }
 
-count=$(jq 'length' "$MANIFEST")
+# Syncs every skill listed in external-skills.json.
+sync_all_skills() {
+	local count
+	count=$(jq 'length' "$MANIFEST")
 
-for index in $(seq 0 $((count - 1))); do
-	slug=$(jq -r ".[$index].slug" "$MANIFEST")
-	group=$(jq -r ".[$index].group // \"\"" "$MANIFEST")
-	name=$(jq -r ".[$index].name" "$MANIFEST")
-	source=$(jq -r ".[$index].source" "$MANIFEST")
-	skill_url=$(jq -r ".[$index].skill_url" "$MANIFEST")
-	references_api_url=$(jq -r ".[$index].references_api_url // \"\"" "$MANIFEST")
-	commit_api_url=$(jq -r ".[$index].commit_api_url // \"\"" "$MANIFEST")
-	license=$(jq -r ".[$index].license // \"unknown\"" "$MANIFEST")
+	local index
+	for index in $(seq 0 $((count - 1))); do
+		local slug group name source skill_url references_api_url commit_api_url license
+		slug=$(jq -r ".[$index].slug" "$MANIFEST")
+		group=$(jq -r ".[$index].group // \"\"" "$MANIFEST")
+		name=$(jq -r ".[$index].name" "$MANIFEST")
+		source=$(jq -r ".[$index].source" "$MANIFEST")
+		skill_url=$(jq -r ".[$index].skill_url" "$MANIFEST")
+		references_api_url=$(jq -r ".[$index].references_api_url // \"\"" "$MANIFEST")
+		commit_api_url=$(jq -r ".[$index].commit_api_url // \"\"" "$MANIFEST")
+		license=$(jq -r ".[$index].license // \"unknown\"" "$MANIFEST")
 
-	sync_skill "$slug" "$group" "$name" "$source" "$skill_url" "$references_api_url" "$commit_api_url" "$license"
-done
+		sync_skill "$slug" "$group" "$name" "$source" "$skill_url" "$references_api_url" "$commit_api_url" "$license"
+	done
+}
+
+require_sync_dependencies
+sync_all_skills
