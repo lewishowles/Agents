@@ -33,6 +33,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/accessibility` | `accessibility` | When building interfaces, WCAG AA baseline, accessible design |
 | `/accessibility-audit` | `accessibility-audit` | When conducting an accessibility audit of a page, component, or PR; preparing a client report |
 | `/bash` | `bash` | When writing shell scripts, bash config, patterns |
+| `/boilersuit` | `boilersuit` | When using Boilersuit generators for repeatable file generation |
 | `/code-review` | `code-review` | When reviewing a PR or diff, or receiving review feedback |
 | `/code-style` | `code-style` | When formatting code, covering naming, comments, arrays, objects |
 | `/codebase-memory` | `codebase-memory` | Use this skill when answering structural code queries with the codebase knowledge graph, including architecture, callers, dependencies, impact analysis, dead code, graph query syntax, Cypher examples, edge types, and search_graph usage. |

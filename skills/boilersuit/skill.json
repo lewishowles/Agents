@@ -1,0 +1,30 @@
+{
+  "name": "boilersuit",
+  "description": "Use this skill when a project provides Boilersuit generators or when creating repeatable files from a Boilersuit boilerplate. Covers inspecting project support, listing and describing generators, previewing planned files, and only generating after preview.",
+  "when": "When using Boilersuit generators for repeatable file generation",
+  "triggers": [
+    "boilersuit",
+    "generator",
+    "generators",
+    "generate files",
+    "scaffold",
+    "scaffolding",
+    "boilerplate",
+    "repeatable file",
+    "project inspect",
+    "generator preview"
+  ],
+  "do-not-use-when": [
+    "Creating a one-off bespoke file where a generator would add overhead",
+    "Editing existing code without adding a repeatable structure",
+    "The project has no Boilersuit generators and no boilerplate setup task"
+  ],
+  "filePatterns": [],
+  "pathPatterns": [],
+  "dependencies": [],
+  "capabilities": {
+    "promptTriggering": true,
+    "fileTriggering": false
+  },
+  "targets": ["claude", "codex"]
+}

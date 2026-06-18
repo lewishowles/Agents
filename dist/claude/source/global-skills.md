@@ -9,6 +9,7 @@ Apply across all projects. See individual skills for detailed rules. Use project
 - `/accessibility` — When building interfaces, WCAG AA baseline, accessible design
 - `/accessibility-audit` — When conducting an accessibility audit of a page, component, or PR; preparing a client report
 - `/bash` — When writing shell scripts, bash config, patterns
+- `/boilersuit` — When using Boilersuit generators for repeatable file generation
 - `/code-review` — When reviewing a PR or diff, or receiving review feedback
 - `/code-style` — When formatting code, covering naming, comments, arrays, objects
 - `/component-api-design` — When designing component props, slots, emits, v-model, expose, and public API
