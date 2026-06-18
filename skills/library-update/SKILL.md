@@ -4,6 +4,10 @@ name: library-update
 displayName: Library update check
 description: >
   Use this skill to check whether @lewishowles/components or @lewishowles/helpers has new releases since the installed version, review the release notes, and identify what to update in the current project.
+do-not-use-when:
+  - Updating unrelated packages or general project dependencies
+  - Preparing or publishing a new library release
+  - Using the installed helper or component APIs without checking for newer releases
 ---
 # Library update check
 

@@ -17,6 +17,11 @@
     "edit the copy",
     "readme"
   ],
+  "do-not-use-when": [
+    "Editing executable code, configuration, or generated output without prose changes",
+    "Writing UI labels, validation messages, tooltips, or other microcopy where writing-copy is narrower",
+    "Editing a README where writing-readme is sufficient"
+  ],
   "filePatterns": [
     "*.md"
   ],

@@ -18,6 +18,11 @@
     "trace path",
     "high fan-out"
   ],
+  "do-not-use-when": [
+    "Looking up a literal string, config value, documentation line, or generated asset",
+    "Answering from a single named file or snippet already provided by the user",
+    "The codebase graph tools are unavailable in the current runtime"
+  ],
   "filePatterns": [],
   "pathPatterns": [],
   "dependencies": [],

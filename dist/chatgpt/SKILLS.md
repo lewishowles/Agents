@@ -22,6 +22,7 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 
 ### bash
 **When to use:** Use this skill when writing shell scripts, zsh functions, bash utilities, .env files, or config files. Apply even for short scripts or helper functions — covers bash patterns, minimal documentation style, and config file conventions.
+**Avoid:** Running an existing shell command without editing shell, environment, or Makefile content; Reading command output to diagnose an application issue; Editing JSON, YAML, or app configuration that is not shell-oriented
 
 ### code-review
 **When to use:** Use this skill when reviewing code — a PR, a diff, or an individual file — or when receiving review feedback. Applies your conventions (accessibility, code-style, error-handling, frontend-security, web-performance) as a checklist, and covers how to give and receive feedback.
@@ -30,6 +31,7 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 
 ### code-style
 **When to use:** Use this skill on every code change — even small snippets. Covers tabs vs spaces, quote style, semicolons, naming conventions, JSDoc comments, and documentation patterns. This is the baseline style guide for all code.
+**Avoid:** Reading or reviewing a file without proposing code changes; Editing prose-only Markdown where the writing skill is sufficient; Working in generated output that should not be edited directly
 
 ### debugging
 **When to use:** Use this skill when encountering any bug, test failure, or unexpected behaviour — before proposing a fix. Covers root-cause investigation, hypothesis testing, and minimal targeted fixes for Vue/Vite/Vitest and Swift/SwiftUI projects.
@@ -38,9 +40,11 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 
 ### dependencies
 **When to use:** Use this skill whenever a package installation, npm/bun add, or new dependency is mentioned or considered — even if just suggesting a library. Covers when to add packages, what to avoid, the @lewishowles/helpers and @lewishowles/components libraries that replace common packages, and when to discuss before installing.
+**Avoid:** Using an already-installed dependency without changing package manifests or install guidance; Reading package documentation for an API already present in the project; Updating project code after a dependency change that has already been decided
 
 ### error-handling
 **When to use:** Use this skill when writing functions that accept parameters, making API calls, or handling any response data — even if errors aren't the main topic. Covers input validation with helper utilities, API response validation, graceful fallbacks, and what NOT to handle. Apply proactively when writing JavaScript/TypeScript functions.
+**Avoid:** Discussing a user-facing error message or empty-state copy without changing validation or fallback behaviour; A test failure is being debugged and the fix is likely in the test or implementation logic, not error handling; Reviewing code style, naming, or formatting with no parameter, API, or response handling involved
 
 ### frontend-design
 **When to use:** Use this skill when designing or building any public-facing UI, landing page, marketing page, hero section, or component where visual quality and brand distinctiveness matter — before touching code. Covers design-first decision-making, aesthetic direction, typography, colour, motion, and composition. Distinct from accessibility (WCAG compliance) and web-performance (Core Web Vitals).
@@ -75,14 +79,17 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 
 ### test-unit
 **When to use:** Use this skill when writing, editing, or reviewing unit tests — Vitest, @testing-library/vue, composable testing, XCTest. Covers testing philosophy (happy and unhappy paths), what to skip (methods that delegate to @lewishowles/helpers), and meaningful assertions over snapshots. Always apply when working in *.test.js files or when the user mentions tests, specs, or coverage. For end-to-end tests, see the test-e2e skill if present.
+**Avoid:** Running or interpreting an end-to-end, browser, or integration test; Discussing test strategy without writing, editing, or reviewing unit tests; Debugging production code where no test file or test assertion is being changed
 **Combine with:** code-style, vue-pinia, vue, typescript
 
 ### typescript
 **When to use:** Use this skill when working in TypeScript files (.ts, .tsx, .vue with lang="ts") or when type errors, type definitions, or generics are involved. Covers keeping types simple, when `as any` is acceptable, avoiding type gymnastics, and always explaining type errors rather than silently suppressing them.
+**Avoid:** Working in plain JavaScript without JSDoc or TypeScript checking; Changing a Vue template or stylesheet with no `lang="ts"` script or type changes; Discussing data shapes conceptually without editing type definitions or type-checked code
 **Combine with:** code-style
 
 ### vue
 **When to use:** Use this skill when working with .vue files, Vue components, composables, or Vue templates — even for small edits. Covers Vue 3 Composition API patterns, script setup, macro order, computed property organisation, component patterns, and component directory organisation. For project-specific stack choices (Bun, Vitest, Gitflow, @lewishowles/helpers, @lewishowles/components), see the vue-project-stack skill.
+**Avoid:** Editing a non-Vue TypeScript, JavaScript, Swift, or Markdown file; Discussing frontend design, accessibility, performance, or security without Vue component code changes; Working only in Vite, router, Pinia, or VueUse configuration where a narrower Vue skill applies
 **Combine with:** code-style, vue-pinia, vue-project-stack, vue-router, vue-use, typescript
 
 ### vue-pinia
@@ -115,6 +122,7 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 
 ### writing
 **When to use:** Use this skill when writing or editing prose — blog posts, documentation, longform content, marketing copy. Covers voice, tone, structure, examples, language conventions (UK spelling, sentence case, em-dashes), and what to avoid (preachy tone, padding, opening summaries). For README files specifically, see the writing-readme skill. For UI microcopy (buttons, error messages, empty states), see the writing-copy skill.
+**Avoid:** Editing executable code, configuration, or generated output without prose changes; Writing UI labels, validation messages, tooltips, or other microcopy where writing-copy is narrower; Editing a README where writing-readme is sufficient
 
 ### writing-copy
 **When to use:** Use this skill when writing UI microcopy — button labels, error messages, empty states, tooltips, CTAs, form helper text, confirmation dialogs. Covers being specific and action-oriented, surfacing useful context, and avoiding vague filler. Pair with the writing skill for voice baselines and the accessibility skill for screen-reader-friendly phrasing.

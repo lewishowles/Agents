@@ -17,6 +17,11 @@
     "cron",
     "makefile"
   ],
+  "do-not-use-when": [
+    "Running an existing shell command without editing shell, environment, or Makefile content",
+    "Reading command output to diagnose an application issue",
+    "Editing JSON, YAML, or app configuration that is not shell-oriented"
+  ],
   "filePatterns": [
     "*.sh"
   ],

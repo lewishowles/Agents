@@ -3,6 +3,10 @@
 name: codebase-memory
 description: >
   Use this skill when answering structural code queries with the codebase knowledge graph, including architecture, callers, dependencies, impact analysis, dead code, graph query syntax, Cypher examples, edge types, and search_graph usage.
+do-not-use-when:
+  - Looking up a literal string, config value, documentation line, or generated asset
+  - Answering from a single named file or snippet already provided by the user
+  - The codebase graph tools are unavailable in the current runtime
 ---
 # Codebase Memory — Knowledge Graph Tools
 

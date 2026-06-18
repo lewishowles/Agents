@@ -3,6 +3,10 @@
 name: bash
 description: >
   Use this skill when writing shell scripts, zsh functions, bash utilities, .env files, or config files. Apply even for short scripts or helper functions — covers bash patterns, minimal documentation style, and config file conventions.
+do-not-use-when:
+  - Running an existing shell command without editing shell, environment, or Makefile content
+  - Reading command output to diagnose an application issue
+  - Editing JSON, YAML, or app configuration that is not shell-oriented
 ---
 # Bash and Python scripts
 

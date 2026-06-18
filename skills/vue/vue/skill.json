@@ -18,6 +18,11 @@
     "onMounted(",
     "composition api"
   ],
+  "do-not-use-when": [
+    "Editing a non-Vue TypeScript, JavaScript, Swift, or Markdown file",
+    "Discussing frontend design, accessibility, performance, or security without Vue component code changes",
+    "Working only in Vite, router, Pinia, or VueUse configuration where a narrower Vue skill applies"
+  ],
   "filePatterns": [
     "*.vue"
   ],

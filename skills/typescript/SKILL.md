@@ -3,6 +3,10 @@
 name: typescript
 description: >
   Use this skill when working in TypeScript files (.ts, .tsx, .vue with lang="ts") or when type errors, type definitions, or generics are involved. Covers keeping types simple, when `as any` is acceptable, avoiding type gymnastics, and always explaining type errors rather than silently suppressing them.
+do-not-use-when:
+  - Working in plain JavaScript without JSDoc or TypeScript checking
+  - Changing a Vue template or stylesheet with no `lang="ts"` script or type changes
+  - Discussing data shapes conceptually without editing type definitions or type-checked code
 related-skills:
   - code-style
 ---

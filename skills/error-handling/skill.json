@@ -19,6 +19,11 @@
     "Result<",
     "throws"
   ],
+  "do-not-use-when": [
+    "Discussing a user-facing error message or empty-state copy without changing validation or fallback behaviour",
+    "A test failure is being debugged and the fix is likely in the test or implementation logic, not error handling",
+    "Reviewing code style, naming, or formatting with no parameter, API, or response handling involved"
+  ],
   "filePatterns": [],
   "pathPatterns": [],
   "dependencies": [],

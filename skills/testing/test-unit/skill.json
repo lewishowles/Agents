@@ -21,6 +21,11 @@
     "@testing-library",
     "snapshot test"
   ],
+  "do-not-use-when": [
+    "Running or interpreting an end-to-end, browser, or integration test",
+    "Discussing test strategy without writing, editing, or reviewing unit tests",
+    "Debugging production code where no test file or test assertion is being changed"
+  ],
   "filePatterns": [
     "*.test.ts",
     "*.test.js",

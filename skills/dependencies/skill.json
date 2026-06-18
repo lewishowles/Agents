@@ -18,6 +18,11 @@
     "upgrade package",
     "package version"
   ],
+  "do-not-use-when": [
+    "Using an already-installed dependency without changing package manifests or install guidance",
+    "Reading package documentation for an API already present in the project",
+    "Updating project code after a dependency change that has already been decided"
+  ],
   "filePatterns": [],
   "pathPatterns": [],
   "dependencies": [],

@@ -3,6 +3,10 @@
 name: dependencies
 description: >
   Use this skill whenever a package installation, npm/bun add, or new dependency is mentioned or considered — even if just suggesting a library. Covers when to add packages, what to avoid, the @lewishowles/helpers and @lewishowles/components libraries that replace common packages, and when to discuss before installing.
+do-not-use-when:
+  - Using an already-installed dependency without changing package manifests or install guidance
+  - Reading package documentation for an API already present in the project
+  - Updating project code after a dependency change that has already been decided
 ---
 # Dependencies
 

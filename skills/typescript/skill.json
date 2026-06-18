@@ -24,6 +24,11 @@
     "type guard",
     "as any"
   ],
+  "do-not-use-when": [
+    "Working in plain JavaScript without JSDoc or TypeScript checking",
+    "Changing a Vue template or stylesheet with no `lang=\"ts\"` script or type changes",
+    "Discussing data shapes conceptually without editing type definitions or type-checked code"
+  ],
   "filePatterns": [
     "*.ts",
     "*.tsx"
