@@ -19,6 +19,7 @@ If no capability manifest exists, fall back to targeted inspection of `AGENTS.md
 Minimise token cost by default. Treat context as a limited shared budget.
 
 - Do not run full test suites, builds, typechecks, or e2e checks. Scoped commands are allowed when they save more tokens than asking would — e.g. a single unit test file, a lint check on a changed path, or a minimal repro script. Ask the user to run broad or slow commands.
+- When running any script that produces large output (tests, linters, build steps), pipe output through `tail`: `2>&1 | tail -20`. If a check fails, follow up with a targeted command to extract the first error — never print the full output.
 - Do not read build output, generated bundles, coverage, screenshots, or generated artefacts unless a reported failure points to a specific file or path.
 - Do not print large command output; if you do, acknowledge it briefly, switch to narrower commands, and avoid repeating the pattern.
 - For user-run failures, ask for the smallest useful excerpt: command, failing file/test, error message, and relevant stack frame.

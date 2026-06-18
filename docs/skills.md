@@ -89,7 +89,7 @@ To re-enable a skill suppressed by a parent settings file, set it to `"on"` in t
 }
 ```
 
-See `templates/claude/settings.json` for a Claude project template with non-universal skills set to `name-only`.
+Project setup does not create a local `.claude/settings.json` by default. Prefer project instructions and `AGENT_CAPABILITIES.md` for repo-specific guidance.
 
 ## Invoking a skill
 

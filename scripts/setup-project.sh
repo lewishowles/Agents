@@ -13,7 +13,21 @@ PROJECT_DIR=$(pwd)
 source "$REPO_DIR/scripts/lib/colours.sh"
 
 usage() {
-	printf 'Usage: %s [--claude|--codex|--both]\n' "$(basename "$0")"
+	local script_name
+	script_name="$(basename "$0")"
+
+	printf '\n%s\n\n' "Usage: $script_name [command]"
+	printf 'Project setup:\n'
+	printf '  %-22s %s\n' '--claude' 'Create Claude project files'
+	printf '  %-22s %s\n' '--codex' 'Create Codex project files'
+	printf '  %-22s %s\n\n' '--both' 'Create shared Claude + Codex project files'
+	printf 'Capabilities:\n'
+	printf '  %-22s %s\n' '--init-capabilities' 'Preview AGENT_CAPABILITIES.md for the current project'
+	printf '  %-22s %s\n' '--write-capabilities' 'Write AGENT_CAPABILITIES.md when it is missing'
+	printf '  %-22s %s\n\n' '--force-capabilities' 'Refresh AGENT_CAPABILITIES.md after review'
+	printf 'Examples:\n'
+	printf '  cd /path/to/project\n'
+	printf '  %s --init-capabilities\n\n' "$script_name"
 }
 
 # Copies a template to target only if target does not already exist.
@@ -93,47 +107,59 @@ ensure_dir() {
 
 copy_claude_support_files() {
 	ensure_dir "$PROJECT_DIR/.claude" ".claude/"
-	ensure_dir "$PROJECT_DIR/.claude/templates" ".claude/templates/"
 
-	sync_file "$REPO_DIR/templates/claude/settings.json" "$PROJECT_DIR/.claude/settings.json" ".claude/settings.json"
 	sync_file "$REPO_DIR/templates/claude/.claudeignore" "$PROJECT_DIR/.claude/.claudeignore" ".claude/.claudeignore"
-	copy_file "$REPO_DIR/templates/PLAN.md.template" "$PROJECT_DIR/.claude/templates/PLAN.md.template" ".claude/templates/PLAN.md.template"
-	copy_file "$REPO_DIR/templates/PROGRESS.md.template" "$PROJECT_DIR/.claude/templates/PROGRESS.md.template" ".claude/templates/PROGRESS.md.template"
 }
 
-# Copies Codex support directories used for project-local skills.
+# Writes an inferred capability manifest when one does not already exist.
 #
-copy_codex_support_files() {
-	ensure_dir "$PROJECT_DIR/.agents" ".agents/"
-	ensure_dir "$PROJECT_DIR/.agents/skills" ".agents/skills/"
+write_capabilities_file() {
+	local target="$PROJECT_DIR/AGENT_CAPABILITIES.md"
+
+	if [ -e "$target" ] || [ -L "$target" ]; then
+		printf '  %s↪%s %s already exists\n' "$PURPLE" "$RESET_COLOUR" "AGENT_CAPABILITIES.md"
+		return
+	fi
+
+	"$REPO_DIR/scripts/init-capabilities.py" --project-dir "$PROJECT_DIR" --write >/dev/null
+	printf '  %s✓%s created %s\n' "$GREEN" "$RESET_COLOUR" "AGENT_CAPABILITIES.md"
 }
 
-# Copies the repo capability manifest template to the project root.
+# Previews or writes an inferred capability manifest for the current project.
 #
-copy_capabilities_file() {
-	copy_file "$REPO_DIR/templates/AGENT_CAPABILITIES.md.template" "$PROJECT_DIR/AGENT_CAPABILITIES.md" "AGENT_CAPABILITIES.md"
+# @param  {string}  mode
+#     preview, write, or force.
+init_capabilities() {
+	local mode="$1"
+	local args=("--project-dir" "$PROJECT_DIR")
+
+	case "$mode" in
+		preview) ;;
+		write) args+=("--write") ;;
+		force) args+=("--write" "--force") ;;
+	esac
+
+	"$REPO_DIR/scripts/init-capabilities.py" "${args[@]}"
 }
 
 setup_claude() {
 	printf '\n→ Setting up Claude (project)\n\n'
 	copy_file "$REPO_DIR/templates/claude/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
-	copy_capabilities_file
+	write_capabilities_file
 	copy_claude_support_files
 }
 
 setup_codex() {
 	printf '\n→ Setting up Codex (project)\n\n'
 	copy_file "$REPO_DIR/templates/codex/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
-	copy_capabilities_file
-	copy_codex_support_files
+	write_capabilities_file
 }
 
 setup_both() {
 	printf '\n→ Setting up Claude + Codex (project)\n\n'
 	copy_file "$REPO_DIR/templates/shared/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
-	copy_capabilities_file
+	write_capabilities_file
 	copy_claude_support_files
-	copy_codex_support_files
 }
 
 prompt_target() {
@@ -151,17 +177,24 @@ prompt_target() {
 target="${1:-}"
 
 case "$target" in
-	--claude) target="claude" ;;
-	--codex)  target="codex" ;;
-	--both)   target="both" ;;
-	"")       target=$(prompt_target) ;;
-	*)        usage >&2; exit 1 ;;
+	--claude)             target="claude" ;;
+	--codex)              target="codex" ;;
+	--both)               target="both" ;;
+	--init-capabilities)  target="init-capabilities" ;;
+	--write-capabilities) target="write-capabilities" ;;
+	--force-capabilities) target="force-capabilities" ;;
+	--help|-h)            usage; exit 0 ;;
+	"")                  target=$(prompt_target) ;;
+	*)                   usage >&2; exit 1 ;;
 esac
 
 case "$target" in
-	claude) setup_claude ;;
-	codex)  setup_codex ;;
-	both)   setup_both ;;
+	claude)             setup_claude ;;
+	codex)              setup_codex ;;
+	both)               setup_both ;;
+	init-capabilities)  init_capabilities preview; exit ;;
+	write-capabilities) init_capabilities write ;;
+	force-capabilities) init_capabilities force ;;
 esac
 
 printf '\nDone.\n'

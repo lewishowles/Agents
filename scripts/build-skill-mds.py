@@ -29,7 +29,7 @@ GENERATED_HEADER = "# Generated — edit skill.json and SKILL.body.md instead."
 GLOBAL_SKILLS_HEADER = """\
 ## Global skills
 
-Apply across all projects. See individual skills for detailed rules. Per-project `.claude/settings.json` can disable skills via `skillOverrides` — useful if a skill's tech (Vue, Swift) isn't used in that project.
+Apply across all projects. See individual skills for detailed rules. Use project instructions and capability manifests to narrow the relevant skills for a repo.
 """
 
 

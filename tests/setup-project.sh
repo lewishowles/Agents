@@ -29,11 +29,17 @@ assert_dir() {
 	[ -d "$path" ] || fail "Expected directory: $path"
 }
 
+assert_not_exists() {
+	local path="$1"
+
+	[ ! -e "$path" ] || fail "Expected no path: $path"
+}
+
 assert_contains() {
 	local path="$1"
 	local pattern="$2"
 
-	grep -q "$pattern" "$path" || fail "Expected $path to contain: $pattern"
+	grep -Fq -- "$pattern" "$path" || fail "Expected $path to contain: $pattern"
 }
 
 assert_equals() {
@@ -41,6 +47,13 @@ assert_equals() {
 	local expected="$2"
 
 	[ "$actual" = "$expected" ] || fail "Expected '$expected', got '$actual'"
+}
+
+assert_not_contains() {
+	local path="$1"
+	local pattern="$2"
+
+	! grep -Fq -- "$pattern" "$path" || fail "Expected $path not to contain: $pattern"
 }
 
 run_setup() {
@@ -53,49 +66,59 @@ run_setup() {
 	)
 }
 
+run_setup_output() {
+	local target_dir="$1"
+	local flag="$2"
+
+	(
+		cd "$target_dir"
+		"$REPO_DIR/scripts/setup-project.sh" "$flag"
+	)
+}
+
 test_claude_setup() {
 	local target_dir="$TEST_ROOT/claude"
-	mkdir -p "$target_dir"
+	mkdir -p "$target_dir/src"
 
 	run_setup "$target_dir" --claude
 
 	assert_file "$target_dir/AGENTS.md"
 	assert_file "$target_dir/AGENT_CAPABILITIES.md"
+	assert_contains "$target_dir/AGENT_CAPABILITIES.md" "Main source directories: \`src\`"
 	assert_dir "$target_dir/.claude"
-	assert_dir "$target_dir/.claude/templates"
-	assert_file "$target_dir/.claude/settings.json"
 	assert_file "$target_dir/.claude/.claudeignore"
-	assert_file "$target_dir/.claude/templates/PLAN.md.template"
+	assert_not_exists "$target_dir/.claude/settings.json"
+	assert_not_exists "$target_dir/.claude/templates"
 	assert_contains "$target_dir/AGENTS.md" "Claude Code"
 }
 
 test_codex_setup() {
 	local target_dir="$TEST_ROOT/codex"
-	mkdir -p "$target_dir"
+	mkdir -p "$target_dir/src"
 
 	run_setup "$target_dir" --codex
 
 	assert_file "$target_dir/AGENTS.md"
 	assert_file "$target_dir/AGENT_CAPABILITIES.md"
-	assert_dir "$target_dir/.agents"
-	assert_dir "$target_dir/.agents/skills"
+	assert_contains "$target_dir/AGENT_CAPABILITIES.md" "Main source directories: \`src\`"
+	assert_not_exists "$target_dir/.agents"
 	[ ! -e "$target_dir/.claude" ] || fail "Codex-only setup should not create .claude"
 	assert_contains "$target_dir/AGENTS.md" "Codex"
 }
 
 test_both_setup() {
 	local target_dir="$TEST_ROOT/both"
-	mkdir -p "$target_dir"
+	mkdir -p "$target_dir/src"
 
 	run_setup "$target_dir" --both
 
 	assert_file "$target_dir/AGENTS.md"
 	assert_file "$target_dir/AGENT_CAPABILITIES.md"
-	assert_file "$target_dir/.claude/settings.json"
+	assert_contains "$target_dir/AGENT_CAPABILITIES.md" "Main source directories: \`src\`"
 	assert_file "$target_dir/.claude/.claudeignore"
-	assert_file "$target_dir/.claude/templates/PLAN.md.template"
-	assert_dir "$target_dir/.agents"
-	assert_dir "$target_dir/.agents/skills"
+	assert_not_exists "$target_dir/.claude/settings.json"
+	assert_not_exists "$target_dir/.claude/templates"
+	assert_not_exists "$target_dir/.agents"
 	assert_contains "$target_dir/AGENTS.md" "Claude Code and Codex"
 }
 
@@ -108,12 +131,66 @@ test_existing_files_are_skipped() {
 	run_setup "$target_dir" --both
 
 	assert_equals "$(cat "$target_dir/AGENTS.md")" "custom rules"
-	assert_file "$target_dir/.claude/settings.json"
+	assert_file "$target_dir/.claude/.claudeignore"
+}
+
+test_init_capabilities_previews_current_project() {
+	local target_dir="$TEST_ROOT/init-preview"
+	local output="$TEST_ROOT/init-preview.md"
+	mkdir -p "$target_dir/src"
+
+	run_setup_output "$target_dir" --init-capabilities > "$output"
+
+	assert_contains "$output" "Project capabilities"
+	assert_contains "$output" "Main source directories"
+	assert_not_contains "$output" "Done."
+	[ ! -e "$target_dir/AGENT_CAPABILITIES.md" ] || fail "Preview should not write AGENT_CAPABILITIES.md"
+}
+
+test_write_capabilities_writes_current_project() {
+	local target_dir="$TEST_ROOT/init-write"
+	mkdir -p "$target_dir/src"
+
+	run_setup "$target_dir" --write-capabilities
+
+	assert_file "$target_dir/AGENT_CAPABILITIES.md"
+	assert_contains "$target_dir/AGENT_CAPABILITIES.md" "Project capabilities"
+}
+
+test_write_capabilities_protects_existing_manifest() {
+	local target_dir="$TEST_ROOT/init-existing"
+	mkdir -p "$target_dir"
+	printf 'custom\n' > "$target_dir/AGENT_CAPABILITIES.md"
+
+	if run_setup "$target_dir" --write-capabilities; then
+		fail "Expected existing manifest write to fail without force"
+	fi
+
+	assert_equals "$(cat "$target_dir/AGENT_CAPABILITIES.md")" "custom"
+	run_setup "$target_dir" --force-capabilities
+	assert_contains "$target_dir/AGENT_CAPABILITIES.md" "Project capabilities"
+}
+
+test_help_lists_commands() {
+	local output="$TEST_ROOT/help.txt"
+
+	"$REPO_DIR/scripts/setup-project.sh" --help > "$output"
+
+	assert_contains "$output" "Usage: setup-project.sh [command]"
+	assert_contains "$output" "Project setup:"
+	assert_contains "$output" "--both"
+	assert_contains "$output" "Capabilities:"
+	assert_contains "$output" "--init-capabilities"
+	assert_contains "$output" "Examples:"
 }
 
 test_claude_setup
 test_codex_setup
 test_both_setup
 test_existing_files_are_skipped
+test_init_capabilities_previews_current_project
+test_write_capabilities_writes_current_project
+test_write_capabilities_protects_existing_manifest
+test_help_lists_commands
 
 printf '✓ setup-project tests passed\n'

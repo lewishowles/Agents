@@ -116,33 +116,41 @@ For Claude-only projects:
 
 ```bash
 cp /path/to/repository/templates/claude/AGENTS.md.template AGENTS.md
-cp /path/to/repository/templates/AGENT_CAPABILITIES.md.template AGENT_CAPABILITIES.md
-mkdir -p .claude/templates
-cp /path/to/repository/templates/claude/settings.json .claude/settings.json
+/path/to/repository/scripts/setup-project.sh --write-capabilities
+mkdir -p .claude
 cp /path/to/repository/templates/claude/.claudeignore .claude/.claudeignore
-cp /path/to/repository/templates/claude/.oxfmtrc.jsonc .oxfmtrc.jsonc
-cp /path/to/repository/templates/PLAN.md.template .claude/templates/PLAN.md.template
 ```
 
 For Codex-only projects:
 
 ```bash
 cp /path/to/repository/templates/codex/AGENTS.md.template AGENTS.md
-cp /path/to/repository/templates/AGENT_CAPABILITIES.md.template AGENT_CAPABILITIES.md
-mkdir -p .agents/skills
+/path/to/repository/scripts/setup-project.sh --write-capabilities
 ```
 
 For projects using both:
 
 ```bash
 cp /path/to/repository/templates/shared/AGENTS.md.template AGENTS.md
-cp /path/to/repository/templates/AGENT_CAPABILITIES.md.template AGENT_CAPABILITIES.md
-mkdir -p .claude/templates
-cp /path/to/repository/templates/claude/settings.json .claude/settings.json
+/path/to/repository/scripts/setup-project.sh --write-capabilities
+mkdir -p .claude
 cp /path/to/repository/templates/claude/.claudeignore .claude/.claudeignore
-cp /path/to/repository/templates/claude/.oxfmtrc.jsonc .oxfmtrc.jsonc
-cp /path/to/repository/templates/PLAN.md.template .claude/templates/PLAN.md.template
-mkdir -p .agents/skills
 ```
 
-After copying, replace placeholders in `AGENTS.md` with project-specific rules and fill in `AGENT_CAPABILITIES.md` with the project's local commands, generated paths, diagnostics, and safety constraints.
+After setup, replace placeholders in `AGENTS.md` with project-specific rules and review the generated `AGENT_CAPABILITIES.md`.
+
+For an existing project, preview a capabilities draft before writing it:
+
+```bash
+cd /path/to/project
+/path/to/repository/scripts/setup-project.sh --init-capabilities
+```
+
+Write the draft only when the preview is useful:
+
+```bash
+cd /path/to/project
+/path/to/repository/scripts/setup-project.sh --write-capabilities
+```
+
+Use `--force-capabilities` only after reviewing the existing `AGENT_CAPABILITIES.md`. Recognised manual values are preserved when the draft is refreshed.

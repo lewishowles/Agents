@@ -1,6 +1,6 @@
 ## Global skills
 
-Apply across all projects. See individual skills for detailed rules. Per-project `.claude/settings.json` can disable skills via `skillOverrides` — useful if a skill's tech (Vue, Swift) isn't used in that project.
+Apply across all projects. See individual skills for detailed rules. Use project instructions and capability manifests to narrow the relevant skills for a repo.
 
 - `/project-compact-progress` — When PROGRESS.md has grown noisy or hard to scan; reduces word count while preserving context and meaning
 - `/project-continue` — When resuming work from an existing PROGRESS.md
