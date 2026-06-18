@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Tests hook fixtures for required and forbidden skill reminders.
 
 set -euo pipefail
 
@@ -11,6 +12,38 @@ fail=0
 
 command -v jq &>/dev/null || { printf 'skill-triggers tests require jq\n' >&2; exit 1; }
 
+# Reads a newline-delimited skill list, ignoring blank lines.
+#
+# @param  {string}  file
+#     The skill list path.
+read_skill_list() {
+	local file="$1"
+	local skills=()
+
+	[[ -f "$file" ]] || return 0
+
+	while IFS= read -r line || [[ -n "$line" ]]; do
+		[[ -n "${line// }" ]] && skills+=("$line")
+	done < "$file"
+
+	if [[ ${#skills[@]} -gt 0 ]]; then
+		printf '%s\n' "${skills[@]}"
+	fi
+}
+
+# Returns 0 when the skill name appears as a complete skill token in context.
+#
+# @param  {string}  context
+#     Hook context output.
+# @param  {string}  skill
+#     Skill name to find.
+has_skill() {
+	local context="$1"
+	local skill="$2"
+
+	printf '%s' "$context" | grep -qE "(^|[[:space:]])${skill}([[:space:]]|\.)"
+}
+
 run_fixture() {
 	local hook_script="$1"
 	local fixture_dir="$2"
@@ -18,14 +51,16 @@ run_fixture() {
 
 	local input="$fixture_dir/input.json"
 	local expected_file="$fixture_dir/expected-skills.txt"
+	local forbidden_file="$fixture_dir/forbidden-skills.txt"
 	local output
 
 	output=$(bash "$hook_script" < "$input" 2>/dev/null || true)
 
 	local expected_skills=()
-	while IFS= read -r line || [[ -n "$line" ]]; do
-		[[ -n "${line// }" ]] && expected_skills+=("$line")
-	done < "$expected_file"
+	mapfile -t expected_skills < <(read_skill_list "$expected_file")
+
+	local forbidden_skills=()
+	mapfile -t forbidden_skills < <(read_skill_list "$forbidden_file")
 
 	if [[ ${#expected_skills[@]} -eq 0 ]]; then
 		if [[ -z "$output" ]]; then
@@ -50,8 +85,15 @@ run_fixture() {
 
 	local case_pass=true
 	for skill in "${expected_skills[@]}"; do
-		if ! printf '%s' "$context" | grep -qE "(^|[[:space:]])${skill}([[:space:]]|\.)"; then
+		if ! has_skill "$context" "$skill"; then
 			printf '  ✗ %s: skill "%s" not found in output\n' "$case_name" "$skill" >&2
+			case_pass=false
+		fi
+	done
+
+	for skill in "${forbidden_skills[@]}"; do
+		if has_skill "$context" "$skill"; then
+			printf '  ✗ %s: forbidden skill "%s" found in output\n' "$case_name" "$skill" >&2
 			case_pass=false
 		fi
 	done

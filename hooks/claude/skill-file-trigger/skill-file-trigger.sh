@@ -63,5 +63,5 @@ done < <(jq -rn '
 readarray -t unique < <(printf '%s\n' "${skills[@]}" | sort -u)
 
 jq -n \
-	--arg ctx "SKILL REMINDER (${filename}): If not already invoked this turn, use these skills now: ${unique[*]}." \
+	--arg ctx "SKILL REMINDER (${filename}): Consider these skills for the current file: ${unique[*]}." \
 	'{hookSpecificOutput: {hookEventName: "PreToolUse", additionalContext: $ctx}}'
