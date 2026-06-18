@@ -6,6 +6,18 @@ Use this skill to add new work to an existing plan. Insert it where it belongs, 
 
 `PROGRESS.md` lives at the **project root** — not in `.claude/`. Always look for `<project-root>/PROGRESS.md` first. Do not assume `.claude/PROGRESS.md`.
 
+## Capability manifest
+
+Use `<project-root>/AGENT_CAPABILITIES.md` when it exists to choose verification commands, generated outputs, expensive checks, forbidden operations, and progress locations for the new plan section.
+
+Do not generate a missing capability manifest just to add work to a plan. If it is missing, continue with targeted inspection of `AGENTS.md`, package scripts, and nearby docs. If capability data would materially improve the plan, mention that the user can generate it with a global command such as:
+
+```sh
+agents:capabilities --write
+```
+
+Only run that command when the user asks and `agents:capabilities` exists in the current shell.
+
 ## Workflow
 
 1. **Discuss** — clarify requirements, scope, and dependencies before touching `PROGRESS.md`

@@ -6,9 +6,23 @@ Use this skill to start a new project or feature. Create initial `PROGRESS.md` a
 
 `PROGRESS.md` lives at the **project root** — not in `.claude/`. Create and read it at `<project-root>/PROGRESS.md`. Do not assume `.claude/PROGRESS.md`.
 
+## Capability manifest
+
+Check for `<project-root>/AGENT_CAPABILITIES.md` before planning. It is the factual source for available commands, generated files, diagnostics, progress locations, expensive checks, and forbidden operations.
+
+If it is missing, generate it only when a capability generator command is discoverable by name. Example global command:
+
+```sh
+agents:capabilities --write
+```
+
+Before running it, confirm `agents:capabilities` exists in the current shell, then run the command from the project root. After generating the file, tell the user it was generated from detected repo facts and should be reviewed before relying on command safety, generated paths, or forbidden-operation classifications.
+
+If no generator command with that name exists, do not guess its path or create the file manually. Continue with targeted inspection of `AGENTS.md`, package scripts, and nearby docs, and mention that adding `AGENT_CAPABILITIES.md` would improve future sessions.
+
 ## Workflow
 
-1. **Explore** — read the repository; identify patterns, tech choices, and relevant files; check for root `PROGRESS.md`, `AGENTS.md`, `CONTEXT.md`, and `README.md`
+1. **Explore** — read the repository; identify patterns, tech choices, and relevant files; check for root `PROGRESS.md`, `AGENTS.md`, `AGENT_CAPABILITIES.md`, `CONTEXT.md`, and `README.md`
 2. **Ask** — clarify ambiguous requirements and constraints before planning; surface tradeoffs and alternatives
 3. **Discuss** — if multiple approaches exist, present them; don't pick silently
 4. **Plan** — produce an initial `PROGRESS.md` following the standard schema (see below)

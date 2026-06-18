@@ -21,6 +21,14 @@ Look in this order and use the first match:
 
 If none exist, say so and ask the user where to create one.
 
+## Capability manifest
+
+Read `<project-root>/AGENT_CAPABILITIES.md` during startup when it exists. Treat it as the factual source for available commands, generated files, diagnostics, progress locations, expensive checks, and forbidden operations.
+
+Do not generate a missing capability manifest during resume unless the user asks for repo setup or a new manifest. If it is missing, continue with targeted inspection of `AGENTS.md`, package scripts, and nearby docs.
+
+If `PROGRESS.md` conflicts with `AGENT_CAPABILITIES.md`, surface the conflict and trust the capability manifest for command safety and generated-file facts. Update `PROGRESS.md` when the plan needs to reflect those facts.
+
 ## Workflow
 
 1. **Read** — read `## Session handoff` first, then stop unless the next step is unclear or the task needs deeper context
@@ -38,6 +46,7 @@ Before starting new work, read only enough to orient:
 - Continue into `## Active work`, `## Decisions`, `## Discoveries`, or `## Risks` only when needed
 - Do not read completed or archived sections unless the current task depends on their history
 - Confirm branch state and any uncommitted work
+- Read `AGENT_CAPABILITIES.md` if it exists before running local commands
 - Verify unfinished tasks belong to the current section
 
 ## Starting the next task
