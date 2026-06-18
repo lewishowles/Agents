@@ -15,6 +15,7 @@ CHECKS=(
 	"scripts/validate/check-docs-tables.sh"
 	"scripts/validate/check-skill-triggers.sh"
 	"scripts/validate/check-project-diagnostics.sh"
+	"scripts/validate/check-repo-context.sh"
 )
 
 FAILED_CHECKS=0

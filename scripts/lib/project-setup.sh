@@ -42,19 +42,22 @@ sync_file() {
 		return
 	fi
 
-	if ! cmp -s "$source" "$target"; then
-		printf '\n  %s⚠%s %s exists locally but differs from the default\n' "$PURPLE" "$RESET_COLOUR" "$label"
-		printf '  This usually means either:\n'
-		printf '    • You have customised it for this project\n'
-		printf '    • The default template has been updated\n\n'
-		printf '  Overwrite with the default? (y/n): '
-		read -r response
-		if [[ $response == y ]]; then
-			cp "$source" "$target"
-			printf '  %s✓%s updated %s\n\n' "$GREEN" "$RESET_COLOUR" "$label"
-		else
-			printf '  %s↪%s skipped %s\n\n' "$PURPLE" "$RESET_COLOUR" "$label"
-		fi
+	if cmp -s "$source" "$target"; then
+		printf '  %s↪%s %s already up to date\n' "$PURPLE" "$RESET_COLOUR" "$label"
+		return
+	fi
+
+	printf '\n  %s⚠%s %s exists locally but differs from the default\n' "$PURPLE" "$RESET_COLOUR" "$label"
+	printf '  This usually means either:\n'
+	printf '    • You have customised it for this project\n'
+	printf '    • The default template has been updated\n\n'
+	printf '  Overwrite with the default? (y/n): '
+	read -r response
+	if [[ $response == y ]]; then
+		cp "$source" "$target"
+		printf '  %s✓%s updated %s\n\n' "$GREEN" "$RESET_COLOUR" "$label"
+	else
+		printf '  %s↪%s skipped %s\n\n' "$PURPLE" "$RESET_COLOUR" "$label"
 	fi
 }
 
@@ -90,6 +93,9 @@ copy_shared_agent_tools() {
 
 	sync_file "$REPO_DIR/scripts/project-diagnostics.py" "$PROJECT_DIR/.agent/scripts/project-diagnostics.py" ".agent/scripts/project-diagnostics.py"
 	chmod +x "$PROJECT_DIR/.agent/scripts/project-diagnostics.py"
+
+	sync_file "$REPO_DIR/scripts/repo-context.py" "$PROJECT_DIR/.agent/scripts/repo-context.py" ".agent/scripts/repo-context.py"
+	chmod +x "$PROJECT_DIR/.agent/scripts/repo-context.py"
 }
 
 # Prints the review warning for generated capability manifests.

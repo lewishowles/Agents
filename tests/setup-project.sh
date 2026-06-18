@@ -40,6 +40,7 @@ test_claude_setup() {
 	assert_file "$target_dir/AGENT_CAPABILITIES.md"
 	assert_contains "$target_dir/AGENT_CAPABILITIES.md" "Main source directories: \`src\`"
 	assert_file "$target_dir/.agent/scripts/project-diagnostics.py"
+	assert_file "$target_dir/.agent/scripts/repo-context.py"
 	assert_contains "$target_dir/AGENT_CAPABILITIES.md" ".agent/scripts/project-diagnostics.py"
 	assert_dir "$target_dir/.claude"
 	assert_file "$target_dir/.claude/.claudeignore"
@@ -58,6 +59,7 @@ test_codex_setup() {
 	assert_file "$target_dir/AGENT_CAPABILITIES.md"
 	assert_contains "$target_dir/AGENT_CAPABILITIES.md" "Main source directories: \`src\`"
 	assert_file "$target_dir/.agent/scripts/project-diagnostics.py"
+	assert_file "$target_dir/.agent/scripts/repo-context.py"
 	assert_contains "$target_dir/AGENT_CAPABILITIES.md" ".agent/scripts/project-diagnostics.py"
 	assert_not_exists "$target_dir/.agents"
 	[ ! -e "$target_dir/.claude" ] || fail "Codex-only setup should not create .claude"
@@ -74,6 +76,7 @@ test_both_setup() {
 	assert_file "$target_dir/AGENT_CAPABILITIES.md"
 	assert_contains "$target_dir/AGENT_CAPABILITIES.md" "Main source directories: \`src\`"
 	assert_file "$target_dir/.agent/scripts/project-diagnostics.py"
+	assert_file "$target_dir/.agent/scripts/repo-context.py"
 	assert_contains "$target_dir/AGENT_CAPABILITIES.md" ".agent/scripts/project-diagnostics.py"
 	assert_file "$target_dir/.claude/.claudeignore"
 	assert_not_exists "$target_dir/.claude/settings.json"
@@ -84,14 +87,18 @@ test_both_setup() {
 
 test_existing_files_are_skipped() {
 	local target_dir="$TEST_ROOT/existing"
+	local output="$TEST_ROOT/existing-second.out"
 	mkdir -p "$target_dir"
 	printf 'custom rules\n' > "$target_dir/AGENTS.md"
 
 	run_setup "$target_dir" --both
-	run_setup "$target_dir" --both
+	run_setup_output "$target_dir" --both > "$output"
 
 	assert_equals "$(cat "$target_dir/AGENTS.md")" "custom rules"
 	assert_file "$target_dir/.claude/.claudeignore"
+	assert_contains "$output" ".agent/scripts/project-diagnostics.py already up to date"
+	assert_contains "$output" ".agent/scripts/repo-context.py already up to date"
+	assert_contains "$output" ".claude/.claudeignore already up to date"
 }
 
 test_init_capabilities_previews_current_project() {
