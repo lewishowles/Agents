@@ -29,7 +29,7 @@ Component tests sit between Vitest unit tests and full e2e. They mount one compo
 
 ### What to test
 
-- Rendered output: visible text, ARIA attributes, element presence driven by props or slots
+- Rendered output that depends on browser behaviour, integration between components, layout, focus, keyboard use, or timing
 - User interaction: click, type, keyboard navigation, focus movement
 - Slot-driven behaviour: content appears when a slot is populated, absent when it isn't
 - Accessibility attributes: `aria-invalid`, `aria-disabled`, `aria-expanded`, `role`, etc.
@@ -39,6 +39,7 @@ Component tests sit between Vitest unit tests and full e2e. They mount one compo
 - Framework internals: computed values, reactive refs, `wrapper.vm.*` belong in Vitest
 - Implementation details: internal state, method calls, component structure not visible to the user
 - DOM structure for its own sake: assert that an element communicates something, not that a specific tag was used
+- Cheap static render contracts such as root styling hooks, slot fallback text, and prop-driven element presence belong in Vitest when they don't need browser behaviour
 
 For Cypress/Playwright examples, setup config, e2e structure, and interaction patterns, see [references/patterns.md](references/patterns.md).
 
