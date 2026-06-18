@@ -37,6 +37,19 @@ create_config_repo() {
 	init_repo "$target_dir"
 }
 
+create_skill_repo() {
+	local target_dir="$1"
+
+	mkdir -p "$target_dir/dist/claude/source" "$target_dir/docs" "$target_dir/rules" "$target_dir/scripts" "$target_dir/skills/example/example"
+	printf '#!/usr/bin/env bash\n' > "$target_dir/scripts/sync.sh"
+	printf 'source\n' > "$target_dir/skills/example/example/skill.json"
+	printf 'body\n' > "$target_dir/skills/example/example/SKILL.body.md"
+	printf 'generated skill\n' > "$target_dir/skills/example/example/SKILL.md"
+	printf 'global skills\n' > "$target_dir/dist/claude/source/global-skills.md"
+	printf 'docs\n' > "$target_dir/docs/skills.md"
+	init_repo "$target_dir"
+}
+
 test_generated_only_change_fails() {
 	local target_dir="$TEST_ROOT/generated-only"
 	local output="$TEST_ROOT/generated-only.md"
@@ -92,6 +105,20 @@ test_generic_generated_only_change_fails() {
 	assert_contains "$output" "Generated output changed without any source change"
 }
 
+test_skill_source_with_generated_outputs_does_not_require_claude_or_chatgpt() {
+	local target_dir="$TEST_ROOT/skill"
+	local output="$TEST_ROOT/skill.md"
+	create_skill_repo "$target_dir"
+	printf 'changed\n' >> "$target_dir/skills/example/example/skill.json"
+	printf 'changed\n' >> "$target_dir/skills/example/example/SKILL.md"
+	printf 'changed\n' >> "$target_dir/dist/claude/source/global-skills.md"
+	printf 'changed\n' >> "$target_dir/docs/skills.md"
+
+	run_guard "$target_dir" > "$output"
+
+	assert_contains "$output" "No generated-file issues detected."
+}
+
 test_json_output_is_machine_readable() {
 	local target_dir="$TEST_ROOT/json"
 	local output="$TEST_ROOT/guard.json"
@@ -116,6 +143,7 @@ test_generated_only_change_fails
 test_source_without_generated_fails
 test_source_and_generated_passes
 test_generic_generated_only_change_fails
+test_skill_source_with_generated_outputs_does_not_require_claude_or_chatgpt
 test_json_output_is_machine_readable
 
 printf '✓ generated-file-guard tests passed\n'

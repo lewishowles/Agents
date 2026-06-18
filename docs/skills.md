@@ -29,6 +29,7 @@ Official external skills are listed in `external-skills.json` and synced into `s
 | `frontend-security` | When writing or reviewing client-side code for security: XSS, CSP, auth tokens, secrets hygiene | `xss`, `injection`, `security`, `csp`, `content security policy`, `v-html`, `authentication`, `auth token`, `secrets`, `sensitive data`, `sanitize`, `sanitise`, `csrf` |
 | `library-release` | When releasing @lewishowles/components or @lewishowles/helpers | `library release`, `release library`, `publish package`, `npm publish`, `release components`, `release helpers`, `@lewishowles/components release`, `@lewishowles/helpers release`, `version bump`, `semver`, `changelog` |
 | `library-update` | When checking for updates to @lewishowles/components or @lewishowles/helpers after a new release | (manual only) |
+| `project-audit` | When auditing a project for setup drift, stale generated output, missing diagnostics, command-safety gaps, or agent-readiness issues | (manual only) |
 | `project-compact-progress` | When PROGRESS.md has grown noisy or hard to scan; reduces word count while preserving context and meaning | (manual only) |
 | `project-continue` | When resuming work from an existing PROGRESS.md | (manual only) |
 | `project-plan-task` | When introducing new work into an existing plan | (manual only) |

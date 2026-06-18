@@ -2,6 +2,7 @@
 
 Apply across all projects. See individual skills for detailed rules. Use project instructions and capability manifests to narrow the relevant skills for a repo.
 
+- `/project-audit` — When auditing a project for setup drift, stale generated output, missing diagnostics, command-safety gaps, or agent-readiness issues
 - `/project-compact-progress` — When PROGRESS.md has grown noisy or hard to scan; reduces word count while preserving context and meaning
 - `/project-continue` — When resuming work from an existing PROGRESS.md
 - `/project-plan-task` — When introducing new work into an existing plan

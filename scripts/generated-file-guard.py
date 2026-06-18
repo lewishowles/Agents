@@ -25,7 +25,7 @@ COMMON_GENERATED_PATHS = [
 CONFIG_REPO_RULES = [
 	{
 		"generated": ["dist/claude/CLAUDE.md"],
-		"sources": ["rules/", "dist/claude/source/"],
+		"sources": ["rules/", "dist/claude/source/header.md"],
 		"label": "Claude global instructions",
 	},
 	{
@@ -45,7 +45,7 @@ CONFIG_REPO_RULES = [
 	},
 	{
 		"generated": ["dist/chatgpt/"],
-		"sources": ["dist/chatgpt/source/", "skills/"],
+		"sources": ["dist/chatgpt/source/"],
 		"label": "ChatGPT target",
 	},
 	{
