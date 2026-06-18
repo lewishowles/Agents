@@ -94,6 +94,9 @@ copy_shared_agent_tools() {
 	sync_file "$REPO_DIR/scripts/project-diagnostics.py" "$PROJECT_DIR/.agent/scripts/project-diagnostics.py" ".agent/scripts/project-diagnostics.py"
 	chmod +x "$PROJECT_DIR/.agent/scripts/project-diagnostics.py"
 
+	sync_file "$REPO_DIR/scripts/generated-file-guard.py" "$PROJECT_DIR/.agent/scripts/generated-file-guard.py" ".agent/scripts/generated-file-guard.py"
+	chmod +x "$PROJECT_DIR/.agent/scripts/generated-file-guard.py"
+
 	sync_file "$REPO_DIR/scripts/repo-context.py" "$PROJECT_DIR/.agent/scripts/repo-context.py" ".agent/scripts/repo-context.py"
 	chmod +x "$PROJECT_DIR/.agent/scripts/repo-context.py"
 }
