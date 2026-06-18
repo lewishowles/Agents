@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Validates all skill.json and hook.json manifests, checks that generated files
-# exist, and confirms dist/claude/hooks/ matches the hook sources.
+# Validates manifests, generated files, hook sync, docs tables, and skill
+# trigger fixtures.
 # Run directly or via scripts/sync.sh after generation.
 
 set -euo pipefail
@@ -220,6 +220,13 @@ else
 	fail "Generated docs tables out of sync (run scripts/sync.sh)"
 fi
 
+section 'Checking skill trigger fixtures...'
+
+if bash "$REPO_DIR/tests/skill-triggers.sh" 2>&1 | tail -20; then
+	printf '%s✓%s Skill trigger fixtures passed\n' "$GREEN" "$RESET_COLOUR"
+else
+	fail "Skill trigger fixtures failed"
+fi
 
 printf '\n'
 if [ "$ERRORS" -gt 0 ]; then
