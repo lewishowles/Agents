@@ -53,7 +53,7 @@ Components import from the feature folder, not implementation files:
 import { useAuth, useCurrentUser } from "@/queries/auth";
 ```
 
-Name reusable definitions `*QueryOptions` / `*MutationOptions`; name live return values after the resource/action:
+Name reusable definitions `*QueryOptions` / `*MutationOptions`; name live return values after resource/action:
 
 ```js
 export const currentUserQueryOptions = defineQueryOptions({
@@ -72,11 +72,11 @@ Mental model:
 - `currentUser` — live query state from `useQuery()`
 - `userDetails` — derived data object exposed to components
 
-Use wrappers when they remove repeated setup or expose derived values. Use route middleware for access decisions, not data preloading: for auth, prefer a token-only guard; components/layouts calling `useCurrentUser()` activate the query when `enabled` is true.
+Use wrappers when they remove repeated setup or expose derived values. Use route middleware for access decisions, not data preloading: for auth, prefer token-only guard; components/layouts calling `useCurrentUser()` activate query when `enabled` is true.
 
 ## Key factories
 
-Centralise cache keys in the query file. Parent keys create hierarchy: invalidating a parent invalidates its children.
+Centralise cache keys in query file. Parent keys create hierarchy: invalidating parent invalidates children.
 
 ```js
 // src/queries/contacts.js
@@ -87,7 +87,7 @@ export const CONTACT_KEYS = {
 };
 ```
 
-Invalidating `CONTACT_KEYS.root` invalidates every contacts query. Invalidating `CONTACT_KEYS.byId(id)` invalidates that contact and its notes.
+Invalidating `CONTACT_KEYS.root` invalidates every contacts query. Invalidating `CONTACT_KEYS.byId(id)` invalidates that contact and notes.
 
 For singleton resources, keep keys simple:
 
@@ -107,11 +107,11 @@ export const ALERT_KEYS = {
 
 ## API patterns
 
-Use the detailed examples in **[references/api.md](references/api.md)** when choosing between `defineQueryOptions`, `useQuery`, `useMutation`, `defineMutationOptions`, `defineMutation`, `defineQuery`, `refresh()`, `refetch()`, `state`, and `asyncStatus`.
+Use **[references/api.md](references/api.md)** when choosing between `defineQueryOptions`, `useQuery`, `useMutation`, `defineMutationOptions`, `defineMutation`, `defineQuery`, `refresh()`, `refetch()`, `state`, and `asyncStatus`.
 
 ## Active queries
 
-A query is active while live Vue code uses it through `useQuery()` or a wrapper. Invalidating an active query refetches it; invalidating an inactive one marks it stale for next use.
+Query is active while live Vue code uses it through `useQuery()` or wrapper. Invalidating active query refetches; inactive query becomes stale for next use.
 
 ## Folder structure
 
@@ -139,4 +139,4 @@ State management responsibilities:
 
 ## Completion
 
-For server-state changes that affect rendered UI, run the accessibility gate in [the accessibility checklist](../../accessibility/references/checklist.md) before handoff.
+For server-state changes that affect rendered UI, run [the accessibility checklist](../../accessibility/references/checklist.md) before handoff.

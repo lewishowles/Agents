@@ -8,16 +8,16 @@
 | **CLS** | < 0.1   | Layout shift from elements loading or resizing      |
 | **INP** | < 200ms | Responsiveness: time from interaction to next paint |
 
-Measure with Lighthouse (DevTools → Lighthouse) or [web.dev/measure](https://web.dev/measure). Ask the user to run Lighthouse against production; dev numbers are unreliable.
+Measure with Lighthouse (DevTools → Lighthouse) or [web.dev/measure](https://web.dev/measure). Ask user to run Lighthouse against production; dev numbers are unreliable.
 
 ## LCP
 
-LCP is usually a hero image or large heading above the fold.
+LCP is usually hero image or large heading above fold.
 
 - **Preload the LCP image**: `<link rel="preload" as="image" href="/hero.webp">`
 - **Use modern formats**: WebP or AVIF. Provide a fallback with `<picture>` + `<source>`
 - **Don't lazy-load the LCP image** — it is already in the viewport
-- **Set explicit width/height** on all images to reserve space before load
+- **Set explicit width/height** on images to reserve space before load
 
 ```html
 <img src="/hero.webp" width="1200" height="630" alt="…" fetchpriority="high" />
@@ -25,11 +25,11 @@ LCP is usually a hero image or large heading above the fold.
 
 ## CLS
 
-Layout shift happens when elements change size or position after initial paint.
+Layout shift happens when elements change size/position after initial paint.
 
 - **Set width/height on images and video** — or use `aspect-ratio`
 - **Reserve space for async content**: skeleton loaders, min-height on dynamic areas
-- **Avoid inserting content above existing content** (banners, cookie bars loading late)
+- **Avoid inserting content above existing content**: banners, late cookie bars
 - **Use `font-display: swap` or `optional`** to prevent invisible text during font load
 
 ## INP
@@ -43,7 +43,7 @@ INP measures response time for clicks, taps, and keyboard input.
 
 ## Vue reactivity cost
 
-- Use `shallowRef` for large objects, fetched payloads, and library instances that don't need deep reactivity
+- Use `shallowRef` for large objects, fetched payloads, and library instances not needing deep reactivity
 - Avoid deeply reactive objects (`reactive({...})`) for data with many nested properties
 - Use `v-memo` on expensive list rows when the template is costly to re-evaluate
 - `defineAsyncComponent` to defer component initialisation until needed:
@@ -96,7 +96,7 @@ Prefer variable fonts over multiple static weights.
 
 ## GitHub Pages specifics
 
-- Hashed asset filenames get a 1-year `Cache-Control` via CDN — Vite does this by default
+- Hashed asset filenames get 1-year `Cache-Control` via CDN — Vite does this by default
 - `index.html` is short-lived — keep it small and don't inline critical data in it
 - No server-side rendering or edge caching — all optimisation is client-side
 - Use the `404.html` redirect trick for SPA routing (copy `index.html` to `404.html`)
@@ -105,4 +105,4 @@ For measurement tooling and Lighthouse CI setup, see [references/measurement.md]
 
 ## Completion
 
-For UI-facing performance changes, run the accessibility gate in [the accessibility checklist](../accessibility/references/checklist.md) before handoff.
+For UI-facing performance changes, run [the accessibility checklist](../accessibility/references/checklist.md) before handoff.

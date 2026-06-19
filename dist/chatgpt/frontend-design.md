@@ -9,11 +9,11 @@ related-skills:
 ---
 # Frontend design
 
-Before writing any UI code, establish a clear design direction. Aesthetic decisions made upfront cost nothing to change; undoing mismatched typography or colour after implementation is expensive.
+Before UI code, establish design direction. Aesthetic decisions are cheap upfront; mismatched typography/colour is expensive after implementation.
 
 ## Decision sequence
 
-Work through these in order. If an answer is missing, ask — don't guess and proceed.
+Work through in order. If answer is missing, ask — don't guess.
 
 1. **Purpose** — what must this page or component achieve? (inform, convert, demonstrate, delight)
 2. **Tone** — what feeling should it produce? (confident, calm, playful, minimal, authoritative)
@@ -21,14 +21,14 @@ Work through these in order. If an answer is missing, ask — don't guess and pr
 4. **Differentiation** — what makes this distinct from the generic version of this UI pattern?
 5. **Code** — only then, reach for the editor
 
-If the answer to (4) is "nothing yet", resolve it before proceeding. A landing page that could belong to any product is a failure.
+If (4) is "nothing yet", resolve before proceeding. A landing page that could belong to any product fails.
 
 ## Typography
 
 Choose type that reflects tone, not type that avoids controversy.
 
-- **Default pairings to avoid**: Inter + anything, Roboto + anything. Both signal "I picked the safe option".
-- Pick a scale with intention: establish a modular ratio (1.25, 1.333, 1.5) and stick to it
+- **Default pairings to avoid**: Inter + anything, Roboto + anything. Both signal "safe option".
+- Pick scale intentionally: modular ratio (1.25, 1.333, 1.5), then stick to it
 - Limit to two typefaces: one for display/headings, one for body. Use weight and size for hierarchy before reaching for a third face
 - Line height: 1.4–1.6 for body, tighter (1.1–1.2) for large display headings
 - Measure (line length): 60–75 characters for body, no constraint on short display lines
@@ -39,31 +39,31 @@ Colour should carry meaning, not just decoration.
 
 - Start from the purpose: a medical dashboard needs restraint; a food brand can be saturated
 - Establish a palette with one dominant hue, one accent used sparingly, and neutral surface tones
-- **Contrast is non-negotiable**: 4.5:1 for body text, 3:1 for large text and UI components (WCAG AA). Check both light and dark variants
-- Don't reach for purple-to-blue gradients or teal-to-green gradients by default — they are the visual equivalent of Inter
+- **Contrast is non-negotiable**: 4.5:1 body text, 3:1 large text and UI components (WCAG AA). Check light and dark variants
+- Don't default to purple-blue or teal-green gradients — visual equivalent of Inter
 - If using a gradient, make sure it has a clear directional rationale (light source, brand direction)
 
 ## Motion and animation
 
 Motion should reinforce meaning, not demonstrate capability.
 
-- Define the motion vocabulary before animating anything: what is entering, leaving, transitioning?
+- Define motion vocabulary before animating: what enters, leaves, transitions?
 - Prefer `transform` and `opacity`; avoid animating layout properties (`width`, `height`, `padding`, `top/left`)
 - Duration guide: micro-interactions 100–150ms; component transitions 200–350ms; page-level transitions 400–500ms
 - Easing: ease-out for things entering (fast start, gentle stop); ease-in for things leaving; ease-in-out for reversible transitions
-- Always provide `prefers-reduced-motion` fallbacks — remove or replace animations, don't just slow them down
+- Always provide `prefers-reduced-motion` fallbacks — remove/replace animations, don't just slow them
 
 ## Layout and composition
 
-- Establish a grid before placing elements. An 8pt grid (or 4pt for dense UIs) enforces visual rhythm
+- Establish grid before placing elements. 8pt grid (or 4pt for dense UIs) enforces rhythm
 - Use whitespace as a design element, not just padding to fill
-- Hierarchy should be readable in 3 seconds: what is the primary action, secondary, tertiary?
+- Hierarchy should read in 3 seconds: primary action, secondary, tertiary?
 - Avoid symmetrical layouts by default — asymmetry creates tension and movement; symmetry signals formality or stasis. Choose deliberately
-- For hero sections: lead with a specific claim, not a generic value proposition. "Build accessible Vue components in minutes" beats "The modern component library"
+- For heroes: lead with specific claim, not generic value prop. "Build accessible Vue components in minutes" beats "The modern component library"
 
 ## Anti-patterns
 
-These are defaults to reject, not rules to follow:
+Defaults to reject, not rules to follow:
 
 | Avoid                                     | Because                                                     | Instead                                                                                     |
 | ----------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------- |

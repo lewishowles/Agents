@@ -15,9 +15,9 @@ Stack used across Vue projects. Each choice includes *why* so stale tools or bet
 ## Core stack
 
 - **Vue 3 with `<script setup>`, Composition API**
-  *Why:* smaller runtime, easier composable extraction, `<script setup>` cuts boilerplate, reactive primitives compose naturally
+  *Why:* smaller runtime, easier composable extraction, less boilerplate, composable reactive primitives
 - **Tailwind (utility-first)**
-  *Why:* colocates styles with markup, removes class-naming overhead, fast iteration, easy consistency audit
+  *Why:* colocates styles with markup, removes class-naming overhead, fast iteration, easy audits
 - **Vitest**
   *Why:* Vite-native (no dual config), fast watcher, modern API; natural pairing for Vue 3 + Vite
 - **Vue Router**
@@ -25,19 +25,19 @@ Stack used across Vue projects. Each choice includes *why* so stale tools or bet
 - **Pinia**
   *Why:* official client-side store for Vue; simple Composition API model and strong TypeScript support
 - **VueUse**
-  *Why:* proven Vue composables for browser/reactive patterns; reduces bespoke code for common behaviours
+  *Why:* proven Vue composables for browser/reactive patterns; less bespoke code
 - **Bun (package manager)**
-  *Why:* fast installs, npm-compatible registry, drop-in replacement; npm/pnpm valid fallbacks if workflow breaks
+  *Why:* fast installs, npm-compatible registry, drop-in replacement; npm/pnpm valid fallbacks
 - **Gitflow branching**
   *Why:* release/develop separation suits static-hosted deployment style
 - **GitHub Pages**
-  *Why:* free static hosting, simple branch-based deploy, no extra infrastructure
+  *Why:* free static hosting, branch-based deploy, no extra infrastructure
 - **Node.js (server-side) / vanilla JS (browser, VS Code extensions)**
   *Why:* Node for tooling/scripts; vanilla JS where bundle size or runtime constraints matter
 
 ## Helpers library — `@lewishowles/helpers`
 
-Replaces ad-hoc utility packages with one internal collection. Check before writing helpers or adding utility dependencies. Full docs in the package README.
+Replaces ad-hoc utility packages. Check before writing helpers or adding utility dependencies. Full docs in package README.
 
 Import path: `import { getNextIndex } from "@lewishowles/helpers/array"`
 
@@ -50,7 +50,7 @@ Key helpers:
 - URLs: `getUrlParameter`, `updateUrlParameter`
 - Vue: `runComponentMethod`
 
-Missing helper — discuss adding to `@lewishowles/helpers` rather than inlining or adding a third-party dependency.
+Missing helper — discuss adding to `@lewishowles/helpers`, not inlining or adding dependency.
 
 ## Component library — `@lewishowles/components`
 
@@ -78,4 +78,4 @@ State management responsibilities:
 
 ## Completion
 
-For frontend UI changes, run the accessibility gate in [the accessibility checklist](../../accessibility/references/checklist.md) before handoff.
+For frontend UI changes, run [the accessibility checklist](../../accessibility/references/checklist.md) before handoff.

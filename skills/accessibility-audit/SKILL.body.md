@@ -1,14 +1,14 @@
 # Accessibility audit
 
-WCAG 2.2 AA baseline; AAA where feasible. Choose the mode by context.
+WCAG 2.2 AA baseline; AAA where feasible. Choose mode by context.
 
 ## Quick triage (PR / pre-release)
 
-Fast check before release or PR merge. Not a compliance audit.
+Fast check before release or PR merge. Not compliance audit.
 
 ### Automated scan first
 
-Ask the user to run one of:
+Ask user to run one:
 
 ```bash
 npx @axe-core/cli <url>
@@ -77,7 +77,7 @@ Or use Lighthouse: DevTools → Lighthouse → Accessibility.
 
 ## Full client audit
 
-Systematic WCAG 2.2 AA audit with a client-ready report.
+Systematic WCAG 2.2 AA audit with client-ready report.
 
 ### 1. Confirm scope
 
@@ -88,7 +88,7 @@ Systematic WCAG 2.2 AA audit with a client-ready report.
 
 ### 2. Automated baseline
 
-Ask the user to run axe, pa11y, or Lighthouse across in-scope pages. Automated tools catch roughly 30–50% of issues; manually verify the rest.
+Ask user to run axe, pa11y, or Lighthouse across in-scope pages. Automated tools catch roughly 30–50%; manually verify rest.
 
 ### 3. Manual verification
 
@@ -101,7 +101,7 @@ Priority areas:
 - **Understandable**: error messages, form labels, consistent navigation, plain language
 - **Robust**: valid HTML, ARIA used correctly, works with screen readers
 
-Screen reader testing is manual and needs the AT on a real device. For VoiceOver, NVDA, and JAWS commands, see [references/screen-reader-testing.md](references/screen-reader-testing.md).
+Screen reader testing is manual and needs AT on real device. For VoiceOver, NVDA, and JAWS commands, see [references/screen-reader-testing.md](references/screen-reader-testing.md).
 
 ### 4. Map findings to severity
 

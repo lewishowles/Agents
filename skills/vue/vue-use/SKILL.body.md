@@ -1,11 +1,11 @@
 # VueUse Functions
 
-Decision and implementation guide for VueUse composables in Vue.js / Nuxt projects. Map requirements to the right function, apply its invocation rule, and prefer composables over bespoke code.
+Decision guide for VueUse composables in Vue.js / Nuxt projects. Map requirement to function, apply invocation rule, prefer composables over bespoke code.
 
 ## When to Apply
 
 - Apply for Vue.js / Nuxt development work.
-- Check whether VueUse already covers the requirement before writing custom code.
+- Check whether VueUse covers requirement before custom code.
 - Follow the table's `Invocation` value:
   - `AUTO`: use when applicable
   - `EXTERNAL`: use only if the dependency already exists; ask to install only when needed
@@ -15,8 +15,8 @@ User instructions in the prompt or `AGENTS.md` override these defaults.
 
 ## Finding a composable
 
-When you need to find a composable for a specific requirement, read `./SKILL.ref.md` — it lists every function by category (State, Elements, Browser, Sensors, Network, Animation, Component, Watch, Reactivity, Array, Time, Utilities, and integration packages). Before using a function, consult its `./references` document for usage and types.
+To find a composable, read `./SKILL.ref.md` — all functions by category. Before using one, consult its `./references` document for usage and types.
 
 ## Completion
 
-For composables that affect UI behaviour, run the accessibility gate in [the accessibility checklist](../../accessibility/references/checklist.md) before handoff.
+For composables affecting UI behaviour, run [the accessibility checklist](../../accessibility/references/checklist.md) before handoff.

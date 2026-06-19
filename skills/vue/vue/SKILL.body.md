@@ -7,10 +7,10 @@
 - Prefer `v-bind="{ prop: value }"` for variable/expression bindings, especially multiple bindings
 - Use regular attributes for literal strings, including classes and ARIA values: `class="..."`, `aria-live="polite"`
 - Lowercase component names in templates
-- Always two-word minimum component names per Vue best practices
+- Always two-word component names
 - Max 5 attributes per line (single); 1 per line (multiline)
-- Import groups: destructurable → non-destructurable → Components, blank line between
-- Always wrap named slot content in an explicit `<template #name>` tag — never pass bare content to a named slot without a wrapper
+- Import groups: destructurable → non-destructurable → Components; blank line between
+- Always wrap named slot content in explicit `<template #name>`; never pass bare named-slot content
 
 ## Macro order
 
@@ -18,16 +18,16 @@
 
 ## Reactivity
 
-- Prefer `ref()` over `reactive()` by default. Refs destructure safely and make `.value` mutations explicit
+- Prefer `ref()` over `reactive()`. Refs destructure safely and make `.value` mutations explicit
 - Use `reactive()` only when object identity and deep object ergonomics matter
 - Do not destructure reactive objects unless using `toRefs()` or `storeToRefs()`
-- Use `shallowRef()` for large objects, fetched payloads, component/library instances, maps, charts, editors, and other values that do not need deep reactivity
+- Use `shallowRef()` for large objects, fetched payloads, component/library instances, maps, charts, editors, and values not needing deep reactivity
 - Use `markRaw()` for external class instances or third-party objects Vue should not proxy
 - Prefer VueUse composables before writing custom browser/reactive utilities
 
 ## Props
 
-Every prop gets a concise, user-focused JSDoc block:
+Every prop gets concise, user-focused JSDoc:
 
 ```vue
 const props = defineProps({ /** * The date to display, formatted as ISO 8601. */ date: { type:
@@ -37,7 +37,7 @@ the user's locale. */ locale: { type: String, default: undefined, }, });
 
 ### Prop bindings
 
-Prefer object `v-bind` over `:` shorthand for variable/expression prop bindings:
+Prefer object `v-bind` over `:` shorthand for variable/expression bindings:
 
 ```vue
 <!-- ✓ -->
@@ -54,8 +54,8 @@ Prefer object `v-bind` over `:` shorthand for variable/expression prop bindings:
 
 - Non-simple computed: multiline with blank lines around
 - Order: variables and single-line computed, then multi-line computed, then functions
-- Every computed property gets a single-line comment explaining what it represents
-- Computed properties must be pure: no API calls, no mutations, no timers, no async side effects
+- Every computed property gets single-line comment explaining what it represents
+- Computed properties must be pure: no API calls, mutations, timers, or async side effects
 - Use computed values for filtered/sorted lists and complex class maps
 - Copy arrays before sorting or reversing inside computed values
 
@@ -74,9 +74,9 @@ Date(props.date).toLocaleDateString(props.locale); });
 
 ## provide / inject
 
-- Key by the providing component's name: `provide("dropdown-menu", { selectMenuItem })`
-- Provide an object, not a bare value — keeps related functionality under one key and additions non-breaking
-- At the inject site, destructure with an empty object default: `const { selectMenuItem } = inject("dropdown-menu", {})`
+- Key by provider component name: `provide("dropdown-menu", { selectMenuItem })`
+- Provide object, not bare value — keeps related functionality under one key and additions non-breaking
+- At inject site, destructure with empty object default: `const { selectMenuItem } = inject("dropdown-menu", {})`
 
 ## Component organisation
 
@@ -89,21 +89,21 @@ Date(props.date).toLocaleDateString(props.locale); });
 ## Component naming
 
 - Lowercase kebab-case (`form-input`, `data-table`)
-- Always two words minimum — single-word names conflict with native HTML elements
-- Name from general to specific — most specific word last: `form-date-picker` not `date-picker-form`
+- Always two words — single-word names conflict with native HTML elements
+- Name general to specific — most specific word last: `form-date-picker` not `date-picker-form`
 
 ## Conventions
 
 - Named exports for composables and utilities — `export function useX` not `export default function useX`
-- Named functions for component methods; arrow functions for inline handlers and callbacks only
+- Named functions for component methods; arrow functions only for inline handlers/callbacks
 - Do not combine `v-if` and `v-for` on the same element — filter with a computed value or wrap in `<template>`
 - Treat `v-html` as a security risk. Use only with trusted, sanitised content
-- Avoid dynamic Tailwind class string construction that prevents class detection. Map states to complete class names
+- Avoid dynamic Tailwind class strings that prevent class detection. Map states to complete class names
 - In Markdown docs, do not place a literal `</script>` inside Vue SFC code fences if the renderer may parse it as HTML. Escape it or split the closing tag.
 
 ## File-based routing
 
-Vue Router file-based routing generates routes from `src/pages/`; the file path is the URL. Requires the build plugin.
+Vue Router file-based routing generates routes from `src/pages/`; file path is URL. Requires build plugin.
 
 ```
 src/pages/
@@ -119,7 +119,7 @@ src/pages/
 
 - Avoid `index.vue` — use route groups like `(home).vue` for meaningful names
 - Name params explicitly: `[userId]` not `[id]`
-- Optional params: `[[slug]].vue` matches with or without the segment
+- Optional params: `[[slug]].vue` matches with/without segment
 - Catch-all: `[...path].vue` matches any remaining path including slashes
 - `definePage()` inside a page component sets per-route `meta`, `name`, or `alias`
 
@@ -140,4 +140,4 @@ Fragment composition, composables as global state, computed chains, reusable tem
 
 ## Completion
 
-For UI changes, run the accessibility gate in [the accessibility checklist](../../accessibility/references/checklist.md) before handoff.
+For UI changes, run [the accessibility checklist](../../accessibility/references/checklist.md) before handoff.

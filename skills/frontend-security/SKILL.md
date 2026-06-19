@@ -15,13 +15,13 @@ related-skills:
 
 ## XSS prevention
 
-Cross-site scripting is the highest-impact frontend vulnerability. Never put untrusted data into HTML without escaping or sanitisation.
+Cross-site scripting is highest-impact frontend vulnerability. Never put untrusted data into HTML without escaping or sanitisation.
 
 **Vue templates are safe by default** — `{{ value }}` HTML-encodes output. Risk comes from bypasses:
 
 - `v-html` renders raw HTML — only use with content you control or have sanitised
 - `innerHTML` bypasses Vue escaping
-- Dynamic `href`/`src` attributes can carry `javascript:` URIs — validate URLs before binding
+- Dynamic `href`/`src` can carry `javascript:` URIs — validate URLs before binding
 
 When `v-html` is unavoidable, sanitise with DOMPurify first:
 
@@ -39,7 +39,7 @@ Never pass `props.richContent` directly to `v-html`.
 
 ## Content Security Policy
 
-CSP is a browser-enforced allowlist for scripts, styles, and resources. It is the second line of defence after output encoding.
+CSP is browser-enforced allowlist for scripts, styles, and resources. It is second line of defence after output encoding.
 
 Key directives:
 
@@ -54,13 +54,13 @@ Content-Security-Policy:
 ```
 
 - Avoid `'unsafe-inline'` and `'unsafe-eval'` — they defeat the purpose
-- Use nonce-based CSP for inline scripts/styles that cannot move to external files
+- Use nonce CSP for inline scripts/styles that cannot move to external files
 - Start in `Content-Security-Policy-Report-Only` mode to catch violations before enforcing
 - Set `frame-ancestors 'none'` to prevent clickjacking
 
 ## URL and redirect safety
 
-- Validate `href`/`src` against an allowlist before binding; reject `javascript:`, `data:`, and protocol-relative URLs
+- Validate `href`/`src` against allowlist before binding; reject `javascript:`, `data:`, and protocol-relative URLs
 - Never build redirect targets from unvalidated query parameters
 
 ```javascript
@@ -77,13 +77,13 @@ function isSafeUrl(url) {
 ## Authentication token handling
 
 - Store auth tokens in server-set `httpOnly` cookies, not script-readable `localStorage` or `sessionStorage`
-- If cookies aren't viable (SPA with separate API), use memory-only storage (a module-scoped ref, not `window.*`) and accept that tokens don't survive page refresh
+- If cookies are not viable (SPA with separate API), use memory-only storage: module-scoped ref, not `window.*`. Tokens will not survive refresh
 - Never log tokens, include them in URLs, or put them in error messages
 - Include CSRF tokens for any state-mutating requests when using cookie auth
 
 ## Secrets hygiene
 
-Any `VITE_` env var is statically inlined into the client bundle. It is **not** secret; anyone can extract it from shipped JavaScript.
+Any `VITE_` env var is statically inlined into client bundle. It is **not** secret; anyone can extract it from shipped JavaScript.
 
 Rules:
 

@@ -23,7 +23,7 @@ Use Vue Router for production Vue SPAs and route-driven state. Keep URL state me
 ## Navigation guards
 
 - Prefer modern guards that return a value or throw
-- Avoid legacy `next()` unless maintaining existing code that already uses it
+- Avoid legacy `next()` unless maintaining code already using it
 - Guard redirects against loops by checking the target route
 - Keep API-heavy guard work minimal; prefer page-level loading when possible
 
@@ -37,10 +37,10 @@ router.beforeEach((to) => {
 
 ## Same-route updates
 
-Vue reuses the same component when only params or query values change.
+Vue reuses component when only params or query values change.
 
 - Watch specific route params or query values, not the whole route object
-- Use `onBeforeRouteUpdate()` when navigation should be accepted, rejected, or used to reload data
+- Use `onBeforeRouteUpdate()` when navigation should be accepted, rejected, or reload data
 - Cancel stale async work when params change
 
 ```typescript
@@ -62,10 +62,10 @@ watch(
 
 ## Accessibility
 
-- Move focus to the page heading or main region after route changes when the app does not fully reload
+- Move focus to page heading or main region after route changes when app does not fully reload
 - Update document titles from route metadata or page setup
 - Preserve meaningful browser history for user-triggered navigation
 
 ## Completion
 
-For route or page UI changes, run the accessibility gate in [the accessibility checklist](../../accessibility/references/checklist.md) before handoff.
+For route or page UI changes, run [the accessibility checklist](../../accessibility/references/checklist.md) before handoff.

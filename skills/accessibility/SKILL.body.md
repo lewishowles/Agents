@@ -7,24 +7,24 @@ WCAG AA baseline; AAA where feasible. Inaccessible = incorrect. Covers blind/low
 - **Colour contrast**: min 4.5:1 (normal text), 3:1 (large text). Use colorcontrast.app. Check text vs background and button vs page
 - **Don't rely on colour alone**: pair colour with icon or text
 - **Text readability**: line-height ~1.5, line length ~65 chars, readable font sizes
-- **Responsive design**: works on small screens and at 400% zoom; still navigable below 250px wide
-- **Robust text layout**: set `min-width: 0` in flex/grid children that contain long text; choose wrapping, truncation, or scrolling deliberately
+- **Responsive design**: works on small screens and 400% zoom; still navigable below 250px wide
+- **Robust text layout**: set `min-width: 0` in flex/grid children with long text; choose wrapping, truncation, or scrolling deliberately
 - **Images**: set dimensions or aspect ratio so layout does not jump. Lazy-load below-fold images
 
 ## Content & copy
 
 - **Clear language**: no jargon; assume zero context. Provide hints and links
 - **Descriptive links & buttons**: link text alone explains action. Not "Delete" — "Delete user Lewis Howles". Not "Learn more" — "Visit MDN docs for the `button` tag"
-- **Confirmation & reassurance**: show chosen option (e.g. plan name). Success messages with identifiable info: "User 'Lewis Howles' successfully deleted", not "User deleted"
+- **Confirmation & reassurance**: show chosen option (e.g. plan name). Success messages use identifiable info: "User 'Lewis Howles' successfully deleted", not "User deleted"
 - **Vue components**: prefer `@lewishowles/components` before bespoke UI. Follow the Vue skill and check live component docs when available
 
 ## Documentation
 
 - Treat accessibility fixes as bug fixes, not announceable features
-- Don't update docs, README files, changelogs, or UI copy just to say something is now accessible or "now does" the accessible behaviour
+- Don't update docs, README files, changelogs, or UI copy just to say something is accessible or "now does" accessible behaviour
 - Only update documentation when the user-facing workflow, API, configuration, or support guidance genuinely changed
 
-Test: if a sighted developer using the component normally needs to know it, document it. If it only explains accessibility mechanics, omit it.
+Test: if a sighted developer using component normally needs to know it, document it. If it only explains accessibility mechanics, omit it.
 
 ```
 ❌ "Each option is labelled with a unit-aware string so screen readers announce meaningful names."
@@ -37,7 +37,7 @@ Test: if a sighted developer using the component normally needs to know it, docu
 
 ## Structure & semantics
 
-- **Heading hierarchy**: no `h1` to `h4` jumps. Use the correct level; change appearance if needed. Looks like heading → make it heading
+- **Heading hierarchy**: no `h1` to `h4` jumps. Use correct level; change appearance if needed. Looks like heading → make it heading
 - **Landmark regions**: use `main`, `article`, `aside`, `nav`
 - **DOM order matches visual order**: tab order should match screen layout. Focus must not jump backwards
 
@@ -50,12 +50,12 @@ Test: if a sighted developer using the component normally needs to know it, docu
 
 ## Interaction
 
-- **Keyboard access**: every action works by keyboard. For drag-drop, provide a button alternative. For focusable selectors, see code-style
-- **Visible focus**: show keyboard focus. Ring indicator, no outline removal. Delete in table? Move focus sensibly (next row), not page top
+- **Keyboard access**: every action works by keyboard. For drag-drop, provide button alternative. For focusable selectors, see code-style
+- **Visible focus**: show keyboard focus. Ring indicator, no outline removal. Delete in table? Move focus sensibly: next row, not page top
 - **Focus after errors**: after failed form submission, move focus to the error summary or first invalid field
 - **Skip links**: `<a href="#main">Skip to main content</a>` with `<main id="main" tabindex="-1">`
 - **Motion**: respect `prefers-reduced-motion`. Guard animations: `@media (prefers-reduced-motion: reduce) { ... }`
-- **Transitions**: avoid `transition: all`; animate explicit properties and keep reduced-motion fallbacks
+- **Transitions**: avoid `transition: all`; animate explicit properties with reduced-motion fallbacks
 - **Timing**: no auto-dismiss messages. User closes them
 - **Touch targets**: min 44×44px; add space to avoid accidental taps
 - **Focus trap in modals**: on open, save `document.activeElement` and move focus into dialog; on close, restore saved element. Without restoration, keyboard users lose page position
@@ -72,7 +72,7 @@ Test: if a sighted developer using the component normally needs to know it, docu
 ## Forms & inputs
 
 - **Label association**: `<label for="inputId">` → `<input id="inputId">`, or wrap. Never placeholder alone
-- **Input type and mode**: use the most specific `type`, `inputmode`, and `autocomplete` for the expected data
+- **Input type and mode**: use most specific `type`, `inputmode`, and `autocomplete` for expected data
 - **Grouped inputs**: `<fieldset>` + `<legend>` for radio, checkboxes, related fields
 - **Help text & instructions**: `aria-describedby="helpId"` pointing at `<span id="helpId">`
 - **Validation & errors**: `aria-invalid="true"` + `aria-errormessage="errorId"` pointing at error text. Error summary at top, linked to fields
@@ -107,12 +107,12 @@ Test: if a sighted developer using the component normally needs to know it, docu
 - **Live regions**: `aria-live="polite"` for validation feedback, success messages, notifications. Use `assertive` only for urgent alerts
 - **Region announcement**: pair with `aria-label`: `<div aria-live="polite" aria-label="Form errors">`
 - **No auto-dismiss**: messages stay until user closes them
-- **Screenreader-only content**: `.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); }` — hides visually, announced to assistive tech
+- **Screenreader-only content**: `.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); }` — hidden visually, announced to assistive tech
 
 ## Controls
 
 - Icon-only buttons need an accessible name via visible text, `aria-label`, or `aria-labelledby`
-- Do not put click handlers on non-interactive elements when a button or link is the correct semantic control
+- Do not put click handlers on non-interactive elements when button/link is correct semantic control
 - Do not block paste in form fields
 - Destructive actions need confirmation, undo, or both
 
@@ -126,7 +126,7 @@ Test: if a sighted developer using the component normally needs to know it, docu
 
 ## Quick-reference checklist
 
-A standalone PR-pasteable checklist is at [`references/checklist.md`](references/checklist.md).
+PR-pasteable checklist: [`references/checklist.md`](references/checklist.md).
 
 ## Content warnings & safety
 

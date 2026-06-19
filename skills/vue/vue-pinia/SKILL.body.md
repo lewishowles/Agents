@@ -33,7 +33,7 @@ export const usePreferencesStore = defineStore("preferences", () => {
 
 - Use `storeToRefs()` when destructuring state or getters
 - Destructure actions directly from the store
-- Avoid mutating store state from unrelated components when an action would name the behaviour clearly
+- Avoid mutating store state from unrelated components when action would name behaviour clearly
 
 ```typescript
 import { storeToRefs } from "pinia";
@@ -47,13 +47,13 @@ const { setColourMode } = preferencesStore;
 ## VueUse in stores
 
 - VueUse composables fit setup stores when they model client state directly: storage, breakpoints, online state, dark mode, media queries
-- Guard browser-only behaviour in SSR contexts where the project renders on the server
+- Guard browser-only behaviour in SSR contexts
 - Prefer VueUse storage composables over hand-written `localStorage` watchers
 
 ## SSR and lifecycle
 
-- In SSR-capable apps, call `useStore()` inside setup, actions, middleware, or functions with the active app context
-- Avoid module-scope `useStore()` calls in files that can run before Pinia is installed
+- In SSR-capable apps, call `useStore()` inside setup, actions, middleware, or functions with active app context
+- Avoid module-scope `useStore()` in files that can run before Pinia is installed
 - Clean up watchers or subscriptions created outside component scope
 
 ## HMR
@@ -70,9 +70,9 @@ if (import.meta.hot) {
 
 - Configure a fresh Pinia instance for each test
 - Use `@pinia/testing` for component tests that need store behaviour without real action side effects
-- Test store actions and derived state directly when they contain meaningful logic
+- Test store actions and derived state directly when they contain logic
 - Keep server cache behaviour in Pinia Colada tests, not Pinia tests
 
 ## Completion
 
-For stores that affect UI state or interaction, run the accessibility gate in [the accessibility checklist](../../accessibility/references/checklist.md) before handoff.
+For stores that affect UI state or interaction, run [the accessibility checklist](../../accessibility/references/checklist.md) before handoff.
