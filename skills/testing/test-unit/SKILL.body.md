@@ -5,7 +5,7 @@
 - Over-test: happy/unhappy paths, valid/invalid variants
 - Meaningful assertions over snapshots for volatile content
 - For JSON or serialised output, assert decoded structure or user-visible behaviour unless key order is a deliberate contract. Do not test standard encoder key order.
-- Separate test setup from assertions like separating variables from logic in JS
+- Separate test setup from assertions like separating variables from logic in JS — use a blank line between the action and any `expect()` calls
 - Keep imports at the top of the file
 - Test and group names are capitalised, human-readable, and self-contained; method/computed names may stay exact
 - Group tests by collection, e.g. "Initialisation", "Render contracts", "Computed", "Methods"
