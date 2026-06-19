@@ -38,6 +38,12 @@ Only run that command when the user asks and `agents:capabilities` exists in the
 - After implementing one section, stop for review with changed files, verification performed, and the suggested commit message
 - Do not combine release code, repo policy, tooling, docs, and roadmap sections into one working-tree change unless the plan explicitly defines them as one expected commit
 
+## Feature specs
+
+For larger spikes or ambiguous features, create or reference a per-feature spec under `.agent/specs/` instead of expanding `PROGRESS.md` with design history. Keep `PROGRESS.md` focused on execution state and add a `### Spec` link in the relevant section. Do not create specs for small changes, direct bug fixes, routine docs edits, or work that already fits in one progress section.
+
+The spec should explain why the work matters now, the problem, goals, non-goals, proposed approach, API/schema/interface changes, acceptance criteria, risks, and verification. Read or update that file only when working on that feature.
+
 ## Section structure
 
 ```markdown
@@ -52,6 +58,10 @@ Only run that command when the user asks and `agents:capabilities` exists in the
 ### Files likely to change
 
 ### Related files to inspect
+
+### Spec
+
+Optional. Link to `.agent/specs/<feature>.md` only when this section needs heavier feature context.
 
 ### Tasks
 

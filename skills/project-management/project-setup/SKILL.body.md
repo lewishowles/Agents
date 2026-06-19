@@ -38,6 +38,56 @@ If no generator command with that name exists, do not guess its path or create t
 - Don't plan more than 2–3 sections ahead; detailed planning happens when work starts
 - Keep the session handoff at the top current at all times. Future agents should be able to read from the top and stop after the handoff when it gives enough context.
 
+## Feature specs
+
+Use a linked spec file only for larger spikes or ambiguous features where `PROGRESS.md` would otherwise carry too much rationale. Do not create a spec for small changes, direct bug fixes, routine docs edits, or work that fits cleanly in one progress section.
+
+Specs are per feature or spike, not global project documents. Put them under `.agent/specs/<feature>.md`, then reference that path from `PROGRESS.md`. `PROGRESS.md` stays operational: current goal, next step, verification, blockers. The spec carries the heavier context and is read only when its feature is active.
+
+Use this outline when a spec is warranted:
+
+```markdown
+# <Feature or spike name>
+
+## Why now
+
+Why this work matters now, what triggered it, and what changes if it is not done.
+
+## Problem
+
+The user or system problem being solved.
+
+## Goals
+
+- Outcome that must be true
+
+## Non-goals
+
+- Work deliberately out of scope
+
+## Proposed approach
+
+The intended shape of the solution, including important alternatives or tradeoffs.
+
+## API, schema, or interface
+
+Commands, routes, data shape, UI states, or public contracts affected by the work.
+
+## Acceptance criteria
+
+- Observable condition that proves the work is done
+
+## Risks
+
+- Risk, uncertainty, or dependency to monitor
+
+## Verification
+
+Focused checks, manual review steps, or evidence needed before handoff.
+```
+
+When permanent decisions emerge from a spec, move them into the right long-lived place: `AGENTS.md`, architecture docs, user docs, or an ADR only when the ADR criteria are met.
+
 ## CONTEXT.md — domain glossary
 
 `CONTEXT.md` at the project root is a pure glossary of domain terms. It is not a spec, a scratch pad, or an implementation guide — only canonical names, what to avoid calling them, and resolved ambiguities.
@@ -94,6 +144,10 @@ Brief description: purpose, tech, constraints.
 ### Files likely to change
 
 ### Related files to inspect
+
+### Spec
+
+Optional. Link to `.agent/specs/<feature>.md` only when the work is large or ambiguous enough to need one.
 
 ### Tasks
 

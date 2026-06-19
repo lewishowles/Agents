@@ -46,6 +46,7 @@ Before starting new work, read only enough to orient:
 
 - Read the full `## Session handoff` — every subsection above `### Stop here` is minimum required reading, including `### Context` and `### Verify with`
 - Continue into `## Active work`, `## Decisions`, `## Discoveries`, or `## Risks` only when needed
+- If the active section links a feature spec, read that spec only when needed to understand the current work; do not read unrelated specs
 - Do not read completed or archived sections unless the current task depends on their history
 - Confirm branch state and any uncommitted work
 - Read `AGENT_CAPABILITIES.md` if it exists before running local commands

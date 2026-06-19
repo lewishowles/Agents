@@ -21,6 +21,7 @@ Use this skill to reduce a growing `PROGRESS.md` that is noisy or hard to scan. 
 - Completed milestones — brief summary only; move detail to `## Archived milestones`
 - **Future roadmap sections with concrete task lists** — do not collapse these into a one-liner. If the tasks are not done, the detail is the point. Only archive a roadmap section once it is complete.
 - **Acceptance criteria** — these are constraints, not narrative. Preserve them verbatim even when compressing surrounding prose.
+- **Spec links** — preserve links from `PROGRESS.md` to feature specs and make sure each linked spec still explains why the work matters.
 
 ## What to remove
 
@@ -51,6 +52,36 @@ Optimise for context density, like caveman-style compression, but keep normal pr
 - `### Verify with` — the scoped command to confirm the step is complete; omit when there is no automated check
 - `### Stop here` — preserve guidance to stop reading unless deeper context is needed
 - `## Parking lot` — remove items that are no longer relevant; promote items that have become urgent
+
+## Splitting into specs
+
+When a future section has grown large because it contains feature rationale, alternatives, acceptance criteria, API sketches, or risk analysis, move that heavy context into a per-feature spec such as `.agent/specs/<feature>.md`. Keep `PROGRESS.md` as the execution tracker and add a short `### Spec` link to the section.
+
+Do not split small changes into specs. Use specs for larger spikes or ambiguous features where future agents should read the deeper context only when that feature is active.
+
+Spec files should keep this outline:
+
+```markdown
+# <Feature or spike name>
+
+## Why now
+
+## Problem
+
+## Goals
+
+## Non-goals
+
+## Proposed approach
+
+## API, schema, or interface
+
+## Acceptance criteria
+
+## Risks
+
+## Verification
+```
 
 ## Handoff-first format
 
