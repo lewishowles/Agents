@@ -82,3 +82,7 @@ if (import.meta.hot) {
 - Use `@pinia/testing` for component tests that need store behaviour without real action side effects
 - Test store actions and derived state directly when they contain meaningful logic
 - Keep server cache behaviour in Pinia Colada tests, not Pinia tests
+
+## Completion
+
+For stores that affect UI state or interaction, run the accessibility gate in [the accessibility checklist](../../accessibility/references/checklist.md) before handoff.

@@ -38,6 +38,15 @@ boilersuit project open [<project-path>] (--editor | --terminal | --file-manager
 
 Opening an editor, terminal, or file manager may need user approval in sandboxed environments.
 
+## Generator path model
+
+- `default_path` is a base output directory, not a token-rendered file path.
+- `files[].output_path` is rendered with field tokens and may include directories.
+- If `output_path` has no directory, Boilersuit writes into `<default_path>/<NAME | kebab>/`.
+- If `output_path` includes directories, that path owns the generated subdirectories and Boilersuit does not add the name folder.
+- For flat files under a tokenised directory, set `default_path` to `""` and put the full path in each `output_path`, e.g. `lib/{{ CATEGORY }}/{{ NAME | kebab }}.js`.
+- Use `--path` only to override or prefix the base path; always preview because explicit `output_path` directories can make the final path different from a naive base-plus-file join.
+
 ## Generation workflow
 
 1. Run `boilersuit project inspect --json`.

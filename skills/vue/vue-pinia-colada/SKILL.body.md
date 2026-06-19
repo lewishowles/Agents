@@ -136,3 +136,7 @@ State management responsibilities:
 - **[references/advanced-patterns.md](references/advanced-patterns.md)** — optimistic updates, infinite queries, paginated queries, query cancellation, SSR, Nuxt
 - **[references/plugins.md](references/plugins.md)** — retry, delay, auto-refetch, cache persistence, query hooks, custom plugins
 - **[references/query-cache.md](references/query-cache.md)** — direct cache access, `invalidateQueries` variants, mutation cache
+
+## Completion
+
+For server-state changes that affect rendered UI, run the accessibility gate in [the accessibility checklist](../../accessibility/references/checklist.md) before handoff.

@@ -65,3 +65,7 @@ watch(
 - Move focus to the page heading or main region after route changes when the app does not fully reload
 - Update document titles from route metadata or page setup
 - Preserve meaningful browser history for user-triggered navigation
+
+## Completion
+
+For route or page UI changes, run the accessibility gate in [the accessibility checklist](../../accessibility/references/checklist.md) before handoff.

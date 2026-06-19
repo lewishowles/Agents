@@ -154,3 +154,7 @@ definePage({
 ## Advanced patterns
 
 Fragment composition, composables as global state, computed chains, reusable templates, dynamic slots, skeleton loaders, Pinia setup store, keep-alive, Suspense, Teleport, v-memo, watch/watchEffect — see [references/advanced-patterns.md](references/advanced-patterns.md).
+
+## Completion
+
+For UI changes, run the accessibility gate in [the accessibility checklist](../../accessibility/references/checklist.md) before handoff.

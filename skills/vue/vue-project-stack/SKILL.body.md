@@ -65,3 +65,7 @@ State management responsibilities:
 | Pinia Colada | Server data — fetching, caching, revalidation |
 | VueUse | Reusable reactive/browser utilities — storage, observers, media queries, timers |
 | Plain composables | Project-specific local shared state that doesn't need caching |
+
+## Completion
+
+For frontend UI changes, run the accessibility gate in [the accessibility checklist](../../accessibility/references/checklist.md) before handoff.

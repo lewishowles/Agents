@@ -144,3 +144,7 @@ import shaderSource from "./shader.glsl?raw";
 - Check current Vite docs before version-specific migration guidance, especially around Rolldown, Oxc, and major-version beta features
 
 For library mode, SSR, and common pitfalls (stale chunks, Docker, monorepo, barrel files, import extensions, stale cache), see [references/advanced.md](references/advanced.md).
+
+## Completion
+
+For Vite changes that affect rendered UI, run the accessibility gate in [the accessibility checklist](../../accessibility/references/checklist.md) before handoff.

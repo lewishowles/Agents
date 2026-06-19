@@ -102,3 +102,7 @@ Prefer variable fonts over multiple static weights.
 - Use the `404.html` redirect trick for SPA routing (copy `index.html` to `404.html`)
 
 For measurement tooling and Lighthouse CI setup, see [references/measurement.md](references/measurement.md).
+
+## Completion
+
+For UI-facing performance changes, run the accessibility gate in [the accessibility checklist](../accessibility/references/checklist.md) before handoff.

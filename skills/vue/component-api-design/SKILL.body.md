@@ -61,3 +61,4 @@ Require explicit `<template #name>` usage for named slots, as covered by the Vue
 - Are names consistent with neighbouring components?
 - Does UI text that may need translation live in slots with enough slot props?
 - Does the API preserve accessibility needs: labels, descriptions, focus, and error messaging?
+- For UI components, has the accessibility gate in [the accessibility checklist](../../accessibility/references/checklist.md) been run before handoff?

@@ -25,3 +25,7 @@ User instructions in the prompt or `AGENTS.md` override these defaults.
 ## Finding a composable
 
 When you need to find a composable for a specific requirement, read `./SKILL.ref.md` — it lists every function by category (State, Elements, Browser, Sensors, Network, Animation, Component, Watch, Reactivity, Array, Time, Utilities, and integration packages). Before using a function, consult its `./references` document for usage and types.
+
+## Completion
+
+For composables that affect UI behaviour, run the accessibility gate in [the accessibility checklist](../../accessibility/references/checklist.md) before handoff.
