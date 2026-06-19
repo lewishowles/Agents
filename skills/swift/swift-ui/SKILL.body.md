@@ -1,6 +1,6 @@
 # SwiftUI patterns
 
-Modern SwiftUI, iOS 26+ / macOS 26+. Prefer `@Observable` over `ObservableObject`, type-safe navigation, and performance-aware composition.
+Modern SwiftUI, iOS 26+ / macOS 26+. Prefer `@Observable` over `ObservableObject`, type-safe navigation, performance-aware composition.
 
 ## State management
 
@@ -54,7 +54,7 @@ struct ProjectView: View {
 
 ### Environment injection pattern
 
-Inject Observable models via `@Environment`, access with `@Bindable`:
+Inject Observable models via `@Environment`; access with `@Bindable`:
 
 ```swift
 // In parent
@@ -78,6 +78,6 @@ struct SettingsView: View {
 }
 ```
 
-For view composition, navigation, performance optimisation, previews, and anti-patterns, see [references/patterns.md](references/patterns.md).
+For view composition, navigation, performance, previews, and anti-patterns, see [references/patterns.md](references/patterns.md).
 
 > Modified from [ECC `swiftui-patterns`](https://github.com/affaan-m/everything-claude-code/blob/main/skills/swiftui-patterns/SKILL.md) — MIT © 2026 Affaan Mustafa.

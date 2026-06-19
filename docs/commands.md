@@ -6,21 +6,21 @@ Commands are typed directly into Claude Code with a `/` prefix. They fall into t
 
 These are provided by Claude Code itself and are always available.
 
-| Command | What it does |
-|---------|-------------|
-| `/help` | List available commands and keyboard shortcuts |
-| `/clear` | Clear the current conversation context |
-| `/compact` | Summarise the conversation to free up context space |
-| `/config` | Open Claude Code settings (theme, model, etc.) |
-| `/model` | Switch the active model (e.g. `/model claude-sonnet-4-6`) |
-| `/cost` | Show token usage and estimated cost for the session |
-| `/status` | Show current session status |
-| `/init` | Initialise a new `CLAUDE.md` in the current project |
-| `/review` | Review a pull request |
-| `/fast` | Toggle fast mode (Opus 4.6 with faster output) |
-| `/vim` | Toggle Vim keybindings |
-| `/bug` | Report a Claude Code bug |
-| `/pr_comments` | Fetch comments from a GitHub pull request |
+| Command        | What it does                                              |
+| -------------- | --------------------------------------------------------- |
+| `/help`        | List available commands and keyboard shortcuts            |
+| `/clear`       | Clear the current conversation context                    |
+| `/compact`     | Summarise the conversation to free up context space       |
+| `/config`      | Open Claude Code settings (theme, model, etc.)            |
+| `/model`       | Switch the active model (e.g. `/model claude-sonnet-4-6`) |
+| `/cost`        | Show token usage and estimated cost for the session       |
+| `/status`      | Show current session status                               |
+| `/init`        | Initialise a new `CLAUDE.md` in the current project       |
+| `/review`      | Review a pull request                                     |
+| `/fast`        | Toggle fast mode (Opus 4.6 with faster output)            |
+| `/vim`         | Toggle Vim keybindings                                    |
+| `/bug`         | Report a Claude Code bug                                  |
+| `/pr_comments` | Fetch comments from a GitHub pull request                 |
 
 ## Skills as commands
 
@@ -43,8 +43,8 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/error-handling` | `error-handling` | When validating input, graceful fallbacks, error handling |
 | `/frontend-design` | `frontend-design` | When designing UI or making aesthetic decisions for a public-facing interface |
 | `/frontend-security` | `frontend-security` | When writing or reviewing client-side code for security: XSS, CSP, auth tokens, secrets hygiene |
-| `/library-release` | `library-release` | When releasing @lewishowles/components or @lewishowles/helpers |
-| `/library-update` | `library-update` | When checking for updates to @lewishowles/components or @lewishowles/helpers after a new release |
+| `/library-release` | `library-release` | When releasing @lewishowles/components, @lewishowles/helpers, or @lewishowles/testing |
+| `/library-update` | `library-update` | When checking for updates to @lewishowles/components, @lewishowles/helpers, or @lewishowles/testing after a new release |
 | `/project-audit` | `project-audit` | When auditing a project for setup drift, stale generated output, missing diagnostics, command-safety gaps, or agent-readiness issues |
 | `/project-compact-progress` | `project-compact-progress` | When PROGRESS.md has grown noisy or hard to scan; reduces word count while preserving context and meaning |
 | `/project-continue` | `project-continue` | When resuming work from an existing PROGRESS.md |
@@ -81,8 +81,8 @@ Slash commands can be defined as plain markdown files. Claude Code reads them as
 
 The file name becomes the command: `new-command.md` → `/new-command`.
 
-| Command | What it does |
-|---------|-------------|
+| Command        | What it does                                                  |
+| -------------- | ------------------------------------------------------------- |
 | `/new-command` | Scaffold a new slash command file with the standard structure |
 
 ## Plugin commands

@@ -19,8 +19,8 @@ Apply across all projects. See individual skills for detailed rules. Use project
 - `/error-handling` — When validating input, graceful fallbacks, error handling
 - `/frontend-design` — When designing UI or making aesthetic decisions for a public-facing interface
 - `/frontend-security` — When writing or reviewing client-side code for security: XSS, CSP, auth tokens, secrets hygiene
-- `/library-release` — When releasing @lewishowles/components or @lewishowles/helpers
-- `/library-update` — When checking for updates to @lewishowles/components or @lewishowles/helpers after a new release
+- `/library-release` — When releasing @lewishowles/components, @lewishowles/helpers, or @lewishowles/testing
+- `/library-update` — When checking for updates to @lewishowles/components, @lewishowles/helpers, or @lewishowles/testing after a new release
 - `/refactoring` — When refactoring existing code or triaging technical debt
 - `/swift` — When writing Swift, style, SwiftUI patterns, concurrency
 - `/swift-ui` — When writing/reviewing SwiftUI code, views, state management

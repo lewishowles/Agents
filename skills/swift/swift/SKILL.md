@@ -10,9 +10,9 @@ related-skills:
 
 ## Comments
 
-Swift comments use a strict two-tier system.
+Swift comments use strict two-tier system.
 
-**Types and functions** — always use `/** */` block form, even for one sentence. Never one-line `/** Description. */` or `//`.
+**Types and functions** — always use `/** */` block form, even one sentence. Never one-line `/** Description. */` or `//`.
 
 ```swift
 /**
@@ -26,7 +26,7 @@ struct Foo { ... }
 func doSomething() { ... }
 ```
 
-**Properties and inline logic** — `//` only. Multi-line `//` blocks are fine. Never `/** */` on a property or inside a function body.
+**Properties and inline logic** — `//` only. Multi-line `//` blocks fine. Never `/** */` on property or inside function body.
 
 ```swift
 // ID of the currently selected project.
@@ -40,20 +40,20 @@ let projects = projects
 
 ## Spacing
 
-- Blank line between logical sections in function body — state mutation vs `save()`, setup vs execution, `guard` vs main logic.
-- Blank line between declarations of different "weight": single-line property before multi-line property or function, or between two multi-line declarations.
+- Blank line between logical sections in function body: state mutation vs `save()`, setup vs execution, `guard` vs main logic.
+- Blank line between declarations of different "weight": single-line property before multi-line property/function, or between two multi-line declarations.
 - No blank line between two single-line properties of similar weight.
 
 ## Naming
 
-- Full, descriptive names — no abbreviations (`project` not `proj`, `index` not `i`).
+- Full descriptive names — no abbreviations (`project` not `proj`, `index` not `i`).
 - Bool properties/parameters: prefix `is`, `has`, `should`, `can` where natural (`isLoading`, `showSheet`).
-- Async fetch functions: name by return value (`currentBranch`, `readPackageJSON`) not mechanism (`fetchBranch`, `loadJSON`).
+- Async fetch functions: name by return value (`currentBranch`, `readPackageJSON`), not mechanism (`fetchBranch`, `loadJSON`).
 
 ## Concurrency
 
-- Mark UI-driving classes `@MainActor` — don't sprinkle `await MainActor.run` at call sites.
-- `async let` for concurrent fetches that are parallel and needed together.
+- Mark UI-driving classes `@MainActor`; don't sprinkle `await MainActor.run` at call sites.
+- Use `async let` for parallel fetches needed together.
 - Capture value-type snapshots before `Task` body to avoid Swift 6 actor-isolation errors:
   ```swift
   let projects = projects  // captured copy
@@ -61,8 +61,8 @@ let projects = projects
       Persistence.save(projects, filename: "projects.json")
   }
   ```
-- Actors protect internal state — one instance per operation, not a global serialisation queue.
-- `AsyncStream` with `continuation` to bridge callback-based APIs (`Process`, `DispatchSource`) into structured concurrency.
+- Actors protect internal state — one instance per operation, not global serialisation queue.
+- Use `AsyncStream` + `continuation` to bridge callback APIs (`Process`, `DispatchSource`) into structured concurrency.
 
 ## Error handling
 

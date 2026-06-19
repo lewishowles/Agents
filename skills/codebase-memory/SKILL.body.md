@@ -1,6 +1,6 @@
 # Codebase Memory — Knowledge Graph Tools
 
-Graph tools return precise structural results in ~500 tokens vs ~80K for grep.
+Graph tools return structural results in ~500 tokens vs ~80K for grep.
 
 ## Quick decision matrix
 
@@ -14,7 +14,7 @@ Graph tools return precise structural results in ~500 tokens vs ~80K for grep.
 | Cross-service edges | `query_graph` with Cypher |
 | Impact of local changes | `detect_changes()` |
 | Risk-classified trace | `trace_path(risk_labels=true)` |
-| Text search | `search_code` or Grep |
+| Text search | `search_code` or grep |
 
 ## Exploration workflow
 1. `list_projects` — check if project is indexed

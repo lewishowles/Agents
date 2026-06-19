@@ -1,14 +1,14 @@
 # Library release
 
-Use this as conservative release guardrails for `@lewishowles/components` and `@lewishowles/helpers`. Do not treat the current repo process as automatically correct; inspect it first and preserve explicit user approval for irreversible steps.
+Conservative release guardrails for `@lewishowles/components`, `@lewishowles/helpers` and `@lewishowles/testing`. Inspect current repo process first; preserve explicit approval for irreversible steps.
 
 ## Release stance
 
 - Release the smallest coherent change set.
-- Decide semver from user-facing impact, not amount of code changed.
-- Use existing package scripts and docs; do not invent release tooling during a release unless asked.
+- Decide semver from user-facing impact, not code volume.
+- Use existing package scripts/docs; do not invent release tooling unless asked.
 - Keep publish, tag, push, and registry actions as explicit confirmation points.
-- Record rough edges found during release instead of baking in workarounds.
+- Record release rough edges instead of baking in workarounds.
 
 ## Step 1 — identify the package
 
@@ -18,11 +18,11 @@ Confirm which package is being released:
 - `@lewishowles/helpers`
 - `@lewishowles/testing`
 
-Read the package root instructions, capability manifest if present, `package.json`, changelog, and release notes files before recommending commands.
+Read package root instructions, capability manifest if present, `package.json`, changelog, and release notes before recommending commands.
 
 ## Step 2 — classify the release
 
-Choose the version bump from observable consumer impact:
+Choose version bump from observable consumer impact:
 
 | Bump  | Use when                                                                                                 |
 | ----- | -------------------------------------------------------------------------------------------------------- |
@@ -30,11 +30,11 @@ Choose the version bump from observable consumer impact:
 | Minor | New exports, components, helpers, props, slots, options, or compatible behaviour                         |
 | Major | Removed or renamed APIs, changed defaults, incompatible behaviour, or migration-required styling changes |
 
-When unsure between two bumps, name the uncertainty and ask before editing version files.
+When unsure between bumps, name uncertainty and ask before editing version files.
 
 ## Step 3 — prepare notes
 
-Write changelog or release notes before publishing. Include only externally relevant changes:
+Write changelog/release notes before publishing. Include only externally relevant changes:
 
 - Breaking changes and migration notes
 - New APIs, components, helpers, props, slots, or options
@@ -45,7 +45,7 @@ Do not include internal refactors unless they explain consumer-visible behaviour
 
 ## Step 4 — verify locally
 
-Use the package's existing scripts and documented release checks. Prefer scoped checks first; ask before broad, slow, networked, or destructive commands.
+Use package's existing scripts and documented release checks. Prefer scoped checks; ask before broad, slow, networked, or destructive commands.
 
 Minimum verification to look for:
 
@@ -54,11 +54,11 @@ Minimum verification to look for:
 - Package or export validation if present
 - Generated docs or build output freshness if the package publishes generated assets
 
-If a useful check is missing, mention the gap rather than inventing a release blocker.
+If useful check is missing, mention gap rather than inventing release blocker.
 
 ## Step 5 — inspect publish contents
 
-Before publishing, confirm the package contents and metadata:
+Before publishing, confirm package contents and metadata:
 
 - Version and package name
 - Entry points and export map
@@ -66,20 +66,20 @@ Before publishing, confirm the package contents and metadata:
 - Changelog or release notes
 - README or docs affected by the release
 
-Use dry-run or pack-style commands when available, but only after confirming the package's tooling.
+Use dry-run/pack commands when available, after confirming package tooling.
 
 ## Step 6 — explicit release actions
 
-These packages publish to GitHub Packages via CI — pushing to the main branch triggers the publish workflow. There is no manual `npm publish` step.
+These packages publish to GitHub Packages via CI: pushing `main` triggers publish workflow. No manual `npm publish`.
 
-Stop for confirmation before each irreversible or history-changing action:
+Stop for confirmation before each irreversible/history-changing action:
 
 - Version file edits if not already approved
 - Git tag creation
 - Git push (this triggers CI publish — treat it as the publish step)
 - GitHub release creation
 
-Show the exact command and expected effect before asking.
+Show exact command and expected effect before asking.
 
 ## Step 7 — after release
 
@@ -90,4 +90,4 @@ Report:
 - Publish/tag/release status
 - Any release-process rough edges worth fixing later
 
-Do not immediately update consuming projects unless the user asks; use `library-update` for that follow-up.
+Do not update consuming projects unless user asks; use `library-update` for follow-up.
