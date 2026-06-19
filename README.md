@@ -76,7 +76,7 @@ From a project root:
 
 Use `--claude`, `--codex`, or `--both`:
 
-- `--claude` creates `AGENTS.md`, `.claude/settings.json`, `.claude/.claudeignore`, and `.claude/templates/PLAN.md.template`
+- `--claude` creates `AGENTS.md`, `.claude/settings.json`, and `.claude/.claudeignore`
 - `--codex` creates `AGENTS.md`
 - `--both` creates shared `AGENTS.md` and the Claude `.claude/` files
 

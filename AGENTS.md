@@ -39,8 +39,7 @@ Configuration/Agents/
 ├── templates/
 │   ├── claude/
 │   ├── codex/
-│   ├── rules/
-│   └── PLAN.md.template
+│   └── rules/
 ├── scripts/
 │   ├── sync.sh
 │   ├── sync-external-skills.sh
