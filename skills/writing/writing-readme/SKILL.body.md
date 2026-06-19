@@ -5,16 +5,16 @@ README job: help someone who just landed — what it is, why it exists, how to u
 ## What belongs
 
 - **Purpose** — one or two sentences: what this is, who it's for
-- **Setup / install** — copyable steps. macOS-only? Say once. No Windows alternatives that don't exist
+- **Setup / install** — copyable steps. macOS-only? Say once. No fake Windows alternatives
 - **Usage** — most common one or two uses, with examples
 - **Where to look next** — links to deeper docs, contributing guide, license
 
 ## What doesn't belong
 
-- Marketing prose, long origin stories, repeated value-prop sentences
+- Marketing prose, origin stories, repeated value-prop sentences
 - Step-by-step for unsupported platforms
 - Long feature lists — link to dedicated docs file instead
-- Internal-only notes (decisions, history, TODOs) — use commit messages, ADRs, or project docs
+- Internal notes (decisions, history, TODOs) — use commits, ADRs, or project docs
 
 ## Tone
 
@@ -25,7 +25,7 @@ README job: help someone who just landed — what it is, why it exists, how to u
 
 ## Quick checklist before publishing
 
-- Can new reader run setup from clean machine using only what's here?
+- Can new reader run setup from clean machine using only this?
 - Platform assumptions stated explicitly?
 - Cut anything that doesn't help the average reader?
 

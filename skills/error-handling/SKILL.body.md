@@ -2,7 +2,7 @@
 
 ## Input validation
 
-- JS: use helpers for basic input validation (`isNonEmptyObject`, `isNonEmptyArray`)
+- JS: use helpers for basic validation (`isNonEmptyObject`, `isNonEmptyArray`)
 - Critical params: validate + early return if invalid
 - Non-critical params: default in signature, no explicit check
 - Uncertain types: use `validateOrFallback` or similar
@@ -30,18 +30,18 @@ async function loadProjects(userId, limit = 20) {
 ## API responses
 
 - Validate structurally (object, array)
-- Don't validate deep structure — use `get` helper to safely navigate missing props
+- Don't validate deep structure — use `get` to safely navigate missing props
 - Missing prop: `get` returns null; decide by context
 
 ## Graceful fallbacks
 
-- Handle gracefully when possible. Surface "No items" states in UI.
+- Handle gracefully when possible. Surface "No items" UI states.
 - User can't resolve failure → show fallback
 
 ## Don't handle
 
 - Structurally impossible failures
-- Cases where entire flow must change — crash loudly instead
+- Cases where entire flow must change — crash loudly
 
 ## Logging
 

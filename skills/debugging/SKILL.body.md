@@ -1,38 +1,38 @@
 # Debugging
 
-**Root cause first. Always.** Fixing before finding the cause is guessing; it wastes time and creates bugs.
+**Root cause first. Always.** Fixing before cause is guessing; it wastes time and creates bugs.
 
 ## When to apply
 
-Any technical failure: test failures, runtime bugs, unexpected output, build errors, integration failures.
+Any technical failure: tests, runtime bugs, unexpected output, build errors, integration failures.
 
-Apply especially under time pressure or when a "quick fix" seems obvious.
+Apply especially under pressure or when "quick fix" seems obvious.
 
 ## Token-discipline note
 
-When `.agent/scripts/project-diagnostics.py` exists, run `--list` to discover checks and `--check <name>` for the specific signal needed. Prefer scoped commands when they save more back-and-forth than they cost: a single test file, lint on a touched path, or a minimal repro. Ask the user for full suites, builds, e2e, or diagnostics `--all`.
+When `.agent/scripts/project-diagnostics.py` exists, run `--list` then `--check <name>` for needed signal. Prefer scoped commands when they save back-and-forth: single test file, lint on touched path, minimal repro. Ask user for full suites, builds, e2e, or diagnostics `--all`.
 
 ## Phase 1 — Build a feedback loop
 
-Before investigating, create a fast, deterministic, repeatable signal that confirms the failure. This is the most important investment — having a reliable way to observe the bug is 90% of fixing it.
+Before investigating, create fast, deterministic, repeatable signal confirming failure. Reliable observation is 90% of fix.
 
-A good feedback loop is fast (seconds, not minutes), deterministic (fails consistently), and scoped (minimum setup needed). It can be a diagnostics `--check`, a failing unit test, a minimal CLI invocation, a script, or a repro route in the app. If you can't create one, ask the user to reproduce it and describe exactly what they observe.
+Good loop is fast (seconds), deterministic (fails consistently), and scoped (minimum setup). It can be diagnostics `--check`, failing unit test, minimal CLI invocation, script, or app repro route. If none possible, ask user for exact reproduction and observation.
 
 ## Phase 2 — Investigate
 
 Do not skip this phase.
 
 1. **Read the error fully.** Stack traces, line numbers, and error codes often contain the answer.
-2. **Ask the user to reproduce it.** Get exact steps. If unreliable, gather more data before forming a hypothesis.
+2. **Ask user to reproduce it.** Get exact steps. If unreliable, gather more data before hypothesis.
 3. **Check recent changes.** What changed? Git diff, new dependency, config edit, environment difference.
 4. **Trace data flow.** Find where the bad value originates; fix the source, not the symptom.
 
-When adding temporary logging to trace the issue, tag each entry with a short unique prefix — e.g. `[DBG-a4f2]` — so you can grep for it and remove it cleanly at the end.
+For temporary logging, tag each entry with short unique prefix like `[DBG-a4f2]` so grep/removal is clean.
 
 ### Vue/Vite/Vitest specifics
 
 - Check for reactivity loss: was a reactive object destructured without `toRefs`?
-- Check `shallowRef` vs `ref` — deep mutations on a `shallowRef` don't trigger updates
+- Check `shallowRef` vs `ref` — deep mutations on `shallowRef` don't trigger updates
 - Vite dev/build differences: CJS interop, `import.meta.env`, `define` substitution
 - In Vitest, check if the module needs `vi.mock()` or `flushPromises()` before asserting
 
@@ -53,12 +53,12 @@ State a single, specific hypothesis: _"I think X is the root cause because Y."_
 ## Phase 4 — Fix
 
 1. Run the feedback loop to confirm the failure is reproducible.
-2. Write a regression test that fails against the current code. Confirm it fails before changing anything.
+2. Write regression test failing against current code. Confirm failure before changing code.
 3. Implement the smallest fix that makes it pass.
 4. One change at a time — no bundled improvements.
-5. Ask the user to verify the fix and that no other tests broke.
+5. Ask user to verify fix and no other tests broke.
 
-If the fix fails, return to Phase 2 with new information. After three failed fixes, stop; the architecture may be wrong. Discuss before trying again.
+If fix fails, return to Phase 2 with new info. After three failed fixes, stop; architecture may be wrong. Discuss before trying again.
 
 ## Cleanup
 

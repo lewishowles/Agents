@@ -14,14 +14,14 @@ related-skills:
 ---
 # Refactoring
 
-**Refactoring changes structure, not behaviour.** Tests must pass before the first change and after each step. If a step breaks tests, revert it.
+**Refactoring changes structure, not behaviour.** Tests pass before first change and after each step. If step breaks tests, revert it.
 
 ## Behaviour-preserving technique
 
-1. **Confirm tests exist** for the code being refactored. If not, write them first.
-2. **One change at a time.** Each change should be independently reviewable and revertable.
-3. **Run tests after each step.** Ask the user to run the relevant test command; don't move forward until they pass.
-4. **No scope creep.** A refactor PR does one structural thing. Spotted a bug? Note it, fix it separately.
+1. **Confirm tests exist** for code being refactored. If not, write them first.
+2. **One change at a time.** Each change independently reviewable and revertable.
+3. **Run tests after each step.** Ask user to run relevant test command; don't continue until pass.
+4. **No scope creep.** Refactor PR does one structural thing. Spotted bug? Note it, fix separately.
 
 ### Common moves (in order of safety)
 
@@ -36,27 +36,27 @@ related-skills:
 
 ## Module structure vocabulary
 
-Use these terms when discussing or proposing structural changes. Consistent language avoids ambiguity.
+Use these terms for structural changes. Consistent language avoids ambiguity.
 
-- **Module** — anything with an interface and an implementation: a function, class, composable, package, or slice. Scale-agnostic.
-- **Interface** — everything a caller must know to use the module correctly: type signatures, invariants, ordering constraints, error modes, and config. Not just the TypeScript type.
-- **Depth** — how much behaviour a caller can exercise per unit of interface complexity. A **deep** module has a lot of behaviour behind a small interface; a **shallow** one has an interface nearly as complex as its implementation.
-- **Seam** — where a module's interface lives; a place you can alter behaviour without editing in that place. Prefer "seam" over "boundary" (which is overloaded with DDD's bounded context).
-- **Adapter** — a concrete thing satisfying an interface at a seam. Describes role, not internals.
-- **Leverage** — what callers gain from depth: more capability per unit of interface they need to learn.
-- **Locality** — what maintainers gain from depth: change, bugs, and knowledge concentrated in one place.
+- **Module** — anything with interface and implementation: function, class, composable, package, slice. Scale-agnostic.
+- **Interface** — everything caller must know to use module correctly: type signatures, invariants, ordering constraints, error modes, config. Not just TypeScript type.
+- **Depth** — behaviour per unit of interface complexity. **Deep** module has much behaviour behind small interface; **shallow** interface is nearly as complex as implementation.
+- **Seam** — where module interface lives; place to alter behaviour without editing there. Prefer "seam" over overloaded "boundary".
+- **Adapter** — concrete thing satisfying interface at seam. Role, not internals.
+- **Leverage** — caller gain from depth: more capability per unit of interface learned.
+- **Locality** — maintainer gain from depth: change, bugs, and knowledge concentrated in one place.
 
 ### Three tests for structural decisions
 
-**Deletion test** — imagine deleting a module. If complexity vanishes, it was a pass-through. If complexity reappears across callers, it was earning its keep.
+**Deletion test** — delete module mentally. If complexity vanishes, it was pass-through. If complexity reappears across callers, it earned its keep.
 
-**Interface as test surface** — callers and tests cross the same seam. If you feel compelled to test past the interface, the module is probably the wrong shape.
+**Interface as test surface** — callers and tests cross same seam. If compelled to test past interface, module is likely wrong shape.
 
-**One adapter vs two** — one adapter means a hypothetical seam; two means a real one. Don't introduce a seam unless something actually varies across it.
+**One adapter vs two** — one adapter means hypothetical seam; two means real seam. Don't introduce seam unless something varies.
 
 ## Technical debt triage
 
-Use this to assess what to address, not while actively refactoring.
+Use this to assess what to address, not during active refactor.
 
 ### Categories
 
@@ -74,13 +74,13 @@ Score each item by impact and effort:
 | **High impact** | Fix now (quick win)     | Plan and schedule |
 | **Low impact**  | Batch with related work | Defer or drop     |
 
-Do not refactor low-impact, high-effort items unless the surrounding code is already changing.
+Do not refactor low-impact, high-effort items unless surrounding code is already changing.
 
 ### Prevention
 
 - Enforce standards in CI (lint, type-check) so debt does not accumulate silently
-- Address debt incrementally when you're already touching a file — the "campsite rule"
-- Note spotted debt with a `// TODO:` comment so it's findable; don't fix it mid-PR unless it's a blocker
+- Address debt incrementally when already touching file — "campsite rule"
+- Note spotted debt with `// TODO:` so findable; don't fix mid-PR unless blocker
 
 For worked examples of common refactoring sequences in Vue and Swift, see [references/examples.md](references/examples.md).
 

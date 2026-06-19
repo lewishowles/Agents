@@ -85,12 +85,13 @@ Use dry-run or pack-style commands when available, but only after confirming the
 
 ## Step 6 — explicit release actions
 
+These packages publish to GitHub Packages via CI — pushing to the main branch triggers the publish workflow. There is no manual `npm publish` step.
+
 Stop for confirmation before each irreversible or history-changing action:
 
 - Version file edits if not already approved
-- `bun run deploy`
 - Git tag creation
-- Git push, including tags
+- Git push (this triggers CI publish — treat it as the publish step)
 - GitHub release creation
 
 Show the exact command and expected effect before asking.

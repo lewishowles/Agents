@@ -15,12 +15,12 @@ related-skills:
 - No complex type gymnastics; manual runtime checks for external data
 - Simplest acceptable types, not clever/complex ones
 - Prefer built-in types over framework-specific when no meaningful safety gained
-- `as any` / `as unknown` OK as named local escapes, but smelly. May need for proper input validation
+- `as any` / `as unknown` OK as named local escapes, but smelly. May be needed for input validation
 - Always explain why type error occurs — never silently fix
 
 ## Useful utility types
 
-Use these before writing a manual type; they are vocabulary, not gymnastics:
+Use these before manual type; vocabulary, not gymnastics:
 
 | Type             | Use for                                          |
 | ---------------- | ------------------------------------------------ |
@@ -35,7 +35,7 @@ Use these before writing a manual type; they are vocabulary, not gymnastics:
 
 ## `satisfies` operator
 
-Use `satisfies` to validate a value against a type without widening it. Useful for config objects that need autocomplete, type checking, and preserved literals:
+Use `satisfies` to validate value against type without widening. Good for config objects needing autocomplete, type checking, and preserved literals:
 
 ```typescript
 const routes = {

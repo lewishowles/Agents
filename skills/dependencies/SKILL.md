@@ -20,21 +20,21 @@ Add only for complex work needing real skill/effort:
 
 ## Approved ecosystem packages
 
-Default Vue project choices when they fit:
+Default Vue choices when they fit:
 
 - `vue`, `vue-router`, `pinia`, `@pinia/colada`
 - `@vueuse/core` and focused `@vueuse/*` packages
 - `vite`, `vitest`, `@vitejs/plugin-vue`
 
-Agents may recommend these without the full proposal template. Do not install without permission. If already installed, use them before bespoke equivalents.
+Agents may recommend these without full proposal template. Do not install without permission. If installed, use before bespoke equivalents.
 
 Use VueUse before custom reactive/browser utilities: storage, media queries, breakpoints, focus, clipboard, observers, timers, network state, throttling/debouncing, event listeners.
 
 ## When not to add packages
 
 - Single-function or trivial packages
-- JS helper libraries — `@lewishowles/helpers` replaces them (discuss adding to helpers if missing)
-- UI component libraries — `@lewishowles/components` replaces them (discuss adding to components if missing)
+- JS helper libraries — `@lewishowles/helpers` replaces them; discuss adding there if missing
+- UI component libraries — `@lewishowles/components` replaces them; discuss adding there if missing
 - Simple data manipulation — write in project or add to `@lewishowles/helpers`
 
 ## Before adding

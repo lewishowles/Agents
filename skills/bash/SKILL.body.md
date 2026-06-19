@@ -1,6 +1,6 @@
 # Bash and Python scripts
 
-Applies to standalone bash scripts and Python build/utility scripts. Keep both consistent in this repo.
+Applies to standalone bash scripts and Python build/utility scripts. Keep both consistent.
 
 ## Shared conventions
 
@@ -10,7 +10,7 @@ Applies to standalone bash scripts and Python build/utility scripts. Keep both c
 
 ## Script-level comments
 
-Every script opens with a `#` purpose comment after the shebang. For build scripts, include execution order or key constraints.
+Every script opens with `#` purpose comment after shebang. For build scripts, include execution order or key constraints.
 
 ```bash
 #!/usr/bin/env bash
@@ -31,11 +31,11 @@ Every script opens with a `#` purpose comment after the shebang. For build scrip
 
 ## Function comments
 
-Every function gets a purpose comment and JSDoc-style `@param` lines before the definition. Bash and Python lack a universal JSDoc standard; use the code-style skill's parameter format:
+Every function gets purpose comment and JSDoc-style `@param` lines before definition. Bash/Python use code-style parameter format:
 
 `# @param  {type}  name`
 
-Put the description on the next indented line, even for a few words. Add a blank `#` line between purpose prose and the first `@param`.
+Put description on next indented line, even for few words. Add blank `#` line between purpose and first `@param`.
 
 ```bash
 # Moves a file to its backup location and prints the backup path.
@@ -58,11 +58,11 @@ def load_manifest(skill_dir: Path) -> dict:
 	…
 ```
 
-Only comment when purpose is not obvious from the name and signature. A one-line file reader needs none; a function with side effects or constraints does.
+Only comment when purpose is not obvious from name/signature. One-line file reader needs none; side effects/constraints need comment.
 
 ## Top-level variables
 
-Use one trailing `#` comment when a variable's purpose is not obvious from its name.
+Use trailing `#` comment when variable purpose is not obvious from name.
 
 ```bash
 MANIFEST="$REPO_DIR/external-skills.json"  # List of skills to sync, with URLs and metadata.
@@ -83,7 +83,7 @@ declare -A SKILL_NAMES
 
 ## Extract repeated logic
 
-If a pattern appears more than once, extract a named function. Name it after what it resolves, not how it works.
+If pattern appears more than once, extract named function. Name after what it resolves, not how it works.
 
 ```bash
 # Returns 0 if the value is in the allowed list, 1 otherwise.
@@ -104,14 +104,14 @@ is_valid() {
 
 ## Inline scripts in heredocs
 
-When bash embeds Python or awk inline, add a comment explaining what it does and, if needed, why it is inline.
+When bash embeds Python/awk inline, add comment explaining what it does and why inline if needed.
 
 ```bash
 # Strips YAML frontmatter and writes the body to the output file.
 strip_frontmatter "$temp_file" "$skill_dir/SKILL.body.md"
 ```
 
-If the logic is complex, wrap the heredoc in a named function so the call site stays readable.
+If logic is complex, wrap heredoc in named function so call site stays readable.
 
 ## Bash boilerplate
 
