@@ -1,35 +1,29 @@
 {
-  "name": "vue-project-stack",
-  "description": "Use this skill when working in a Vue project that uses the wider Lewis Howles stack. Covers the chosen tools (Vue 3 with script setup, Tailwind, Vitest, Bun, Gitflow, GitHub Pages) with the *why* for each so suggestions can flag outdated choices, plus the @lewishowles/helpers and @lewishowles/components libraries that replace common packages.",
-  "when": "When working in Vue + Bun + Vitest + Tailwind + Gitflow stack",
-  "triggers": [
-    "@lewishowles",
-    "vue-router",
-    "vitejs",
-    "vite",
-    "gitflow",
-    "tailwind",
-    "vue project stack",
-    "lewishowles",
-    ".vue",
-    "vue",
-    "composable",
-    "script setup",
-    "defineProps",
-    "defineEmits",
-    "defineExpose"
-  ],
-  "filePatterns": [
-    "*.vue"
-  ],
-  "pathPatterns": [],
-  "dependencies": [
-    "vue",
-    "code-style",
-    "dependencies"
-  ],
-  "capabilities": {
-    "promptTriggering": true,
-    "fileTriggering": true
-  }
+	"name": "vue-project-stack",
+	"description": "Use this skill when working in a Vue project that uses the wider Lewis Howles stack. Covers the chosen tools (Vue 3 with script setup, Tailwind, Vitest, Bun, Gitflow, GitHub Pages) with the *why* for each so suggestions can flag outdated choices, plus the @lewishowles/helpers and @lewishowles/components libraries that replace common packages.",
+	"when": "When working in Vue + Bun + Vitest + Tailwind + Gitflow stack",
+	"triggers": [
+		"@lewishowles",
+		"vue-router",
+		"vitejs",
+		"vite",
+		"gitflow",
+		"tailwind",
+		"vue project stack",
+		"lewishowles",
+		".vue",
+		"vue",
+		"composable",
+		"script setup",
+		"defineProps",
+		"defineEmits",
+		"defineExpose"
+	],
+	"filePatterns": ["*.vue"],
+	"pathPatterns": [],
+	"dependencies": ["vue", "code-style", "dependencies"],
+	"capabilities": {
+		"promptTriggering": true,
+		"fileTriggering": true
+	}
 }

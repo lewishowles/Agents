@@ -1,37 +1,32 @@
 {
-  "name": "component-api-design",
-  "description": "Use this skill when designing a new component's public API — props, slots, emits, v-model, expose — or reviewing whether an existing API is consistent and discoverable.",
-  "when": "When designing component props, slots, emits, v-model, expose, and public API",
-  "triggers": [
-    "component api",
-    "component public api",
-    "prop design",
-    "props design",
-    "slot design",
-    "slots design",
-    "emit design",
-    "emits design",
-    "defineProps",
-    "defineEmits",
-    "defineExpose",
-    "defineModel",
-    "v-model"
-  ],
-  "do-not-use-when": [
-    "Editing component internals without changing its public props, slots, emits, models, or exposed methods",
-    "Fixing Vue reactivity, lifecycle, routing, store, or styling issues with no component API decision",
-    "Reviewing low-level code style where the public component contract is already settled"
-  ],
-  "filePatterns": [],
-  "pathPatterns": [],
-  "dependencies": [
-    "accessibility",
-    "code-style",
-    "typescript",
-    "vue"
-  ],
-  "capabilities": {
-    "promptTriggering": true,
-    "fileTriggering": false
-  }
+	"name": "component-api-design",
+	"description": "Use this skill when designing a new component's public API — props, slots, emits, v-model, expose — or reviewing whether an existing API is consistent and discoverable.",
+	"when": "When designing component props, slots, emits, v-model, expose, and public API",
+	"triggers": [
+		"component api",
+		"component public api",
+		"prop design",
+		"props design",
+		"slot design",
+		"slots design",
+		"emit design",
+		"emits design",
+		"defineProps",
+		"defineEmits",
+		"defineExpose",
+		"defineModel",
+		"v-model"
+	],
+	"do-not-use-when": [
+		"Editing component internals without changing its public props, slots, emits, models, or exposed methods",
+		"Fixing Vue reactivity, lifecycle, routing, store, or styling issues with no component API decision",
+		"Reviewing low-level code style where the public component contract is already settled"
+	],
+	"filePatterns": [],
+	"pathPatterns": [],
+	"dependencies": ["accessibility", "code-style", "typescript", "vue"],
+	"capabilities": {
+		"promptTriggering": true,
+		"fileTriggering": false
+	}
 }

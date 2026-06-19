@@ -1,14 +1,14 @@
 {
-  "name": "auto-format",
-  "description": "Runs oxfmt after supported file writes when available.",
-  "runtime": "claude",
-  "events": [
-    {
-      "event": "PostToolUse",
-      "matcher": "Edit|Write",
-      "timeout": 10
-    }
-  ],
-  "dependencies": [],
-  "failureMode": "silent"
+	"name": "auto-format",
+	"description": "Runs oxfmt after supported file writes when available.",
+	"runtime": "claude",
+	"events": [
+		{
+			"event": "PostToolUse",
+			"matcher": "Edit|Write",
+			"timeout": 10
+		}
+	],
+	"dependencies": [],
+	"failureMode": "silent"
 }

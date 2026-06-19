@@ -1,13 +1,13 @@
 {
-  "name": "cbm-session-reminder",
-  "description": "One-time session advisory to prefer codebase-memory graph tools for code discovery.",
-  "command": "~/.claude/hooks/cbm-session-reminder",
-  "runtime": "claude",
-  "events": [
-    {
-      "event": "SessionStart"
-    }
-  ],
-  "dependencies": [],
-  "failureMode": "silent"
+	"name": "cbm-session-reminder",
+	"description": "One-time session advisory to prefer codebase-memory graph tools for code discovery.",
+	"command": "~/.claude/hooks/cbm-session-reminder",
+	"runtime": "claude",
+	"events": [
+		{
+			"event": "SessionStart"
+		}
+	],
+	"dependencies": [],
+	"failureMode": "silent"
 }

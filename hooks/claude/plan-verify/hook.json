@@ -1,14 +1,14 @@
 {
-  "name": "plan-verify",
-  "description": "Warns when an exited plan is missing a validation section.",
-  "runtime": "claude",
-  "events": [
-    {
-      "event": "PostToolUse",
-      "matcher": "ExitPlanMode",
-      "timeout": 5
-    }
-  ],
-  "dependencies": [],
-  "failureMode": "silent"
+	"name": "plan-verify",
+	"description": "Warns when an exited plan is missing a validation section.",
+	"runtime": "claude",
+	"events": [
+		{
+			"event": "PostToolUse",
+			"matcher": "ExitPlanMode",
+			"timeout": 5
+		}
+	],
+	"dependencies": [],
+	"failureMode": "silent"
 }
