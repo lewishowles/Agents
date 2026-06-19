@@ -7,7 +7,7 @@ description: >
 ---
 # Project audit
 
-Use this skill to audit a project for agent-readiness and maintenance drift. Default to findings and recommendations, not implementation.
+Audit project agent-readiness and maintenance drift. Default to findings and recommendations, not implementation.
 
 ## Scope
 
@@ -21,7 +21,7 @@ Audit:
 - `PROGRESS.md` handoff quality when multi-session work is active
 - setup drift after this configuration repo changes
 
-Do not turn this into a broad code-quality review. Use `code-review` for code diffs and `accessibility-audit` for UI/WCAG audits.
+Do not turn this into broad code-quality review. Use `code-review` for code diffs and `accessibility-audit` for UI/WCAG audits.
 
 ## Startup
 
@@ -34,7 +34,7 @@ Read in this order, stopping as soon as you have enough context:
 5. `<project-root>/.agent/scripts/project-diagnostics.py --list`, if present
 6. `PROGRESS.md` handoff only, when active work or session continuity is part of the audit
 
-If `AGENT_CAPABILITIES.md` is missing, do not create it unless the user asks. Report that the project lacks a reviewed capability manifest and continue with targeted inspection of `AGENTS.md`, package scripts, and nearby docs.
+If `AGENT_CAPABILITIES.md` is missing, do not create it unless asked. Report missing reviewed capability manifest, then inspect `AGENTS.md`, package scripts, and nearby docs.
 
 ## Tooling checks
 
@@ -46,19 +46,19 @@ When these scripts exist, prefer them over manual inference:
 .agent/scripts/project-diagnostics.py --list
 ```
 
-Do not run `.agent/scripts/project-diagnostics.py --all` unless the user asks for broad verification. For a focused audit, `--list` is enough unless a specific check is relevant to a finding.
+Do not run `.agent/scripts/project-diagnostics.py --all` unless asked for broad verification. For focused audits, `--list` is enough unless a specific check matters to a finding.
 
-If a generated-file guard reports findings, treat them as high priority because they often mean review will happen against generated output or stale output.
+If generated-file guard reports findings, treat them as high priority: review may target generated or stale output.
 
 ## Findings
 
-Lead with findings, ordered by risk:
+Lead with findings ordered by risk:
 
 - **High** — unsafe commands, missing capability manifest in an active project, generated/source mismatch, stale diagnostics, broken setup scripts
 - **Medium** — incomplete project instructions, missing progress handoff for active multi-session work, stale generated paths, unclear package manager/runtime facts
 - **Low** — minor wording drift, convenience tooling not installed, non-blocking docs gaps
 
-Each finding should include:
+Each finding includes:
 
 - exact file or command involved
 - why it matters for future agents
@@ -82,4 +82,4 @@ Recommended next step
 <one concrete action>
 ```
 
-If no issues are found, say that clearly and list the checks run. Do not invent improvements.
+If no issues found, say so and list checks run. Do not invent improvements.

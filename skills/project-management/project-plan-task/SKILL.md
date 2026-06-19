@@ -7,49 +7,49 @@ description: >
 ---
 # Project plan task
 
-Use this skill to add new work to an existing plan. Insert it where it belongs, not necessarily at the end, and reorganise future sections if understanding changed.
+Add new work to existing plan. Insert where it belongs, not necessarily at the end; reorganise future sections when understanding changed.
 
 ## File location
 
-`PROGRESS.md` lives at the **project root** — not in `.claude/`. Always look for `<project-root>/PROGRESS.md` first. Do not assume `.claude/PROGRESS.md`.
+`PROGRESS.md` lives at **project root**, not `.claude/`. Look for `<project-root>/PROGRESS.md` first.
 
 ## Capability manifest
 
-Use `<project-root>/AGENT_CAPABILITIES.md` when it exists to choose verification commands, generated outputs, expensive checks, forbidden operations, and progress locations for the new plan section.
+Use `<project-root>/AGENT_CAPABILITIES.md` when present to choose verification commands, generated outputs, expensive checks, forbidden operations, and progress locations.
 
-When `<project-root>/.agent/scripts/project-diagnostics.py` exists, prefer diagnostics `--check <name>` entries in `Verify with` over raw package scripts. Use `--list` to discover check names and `--all` only when the section explicitly needs broad verification and the user agrees.
+When `<project-root>/.agent/scripts/project-diagnostics.py` exists, prefer diagnostics `--check <name>` in `Verify with` over raw package scripts. Use `--list` for names; use `--all` only when section needs broad verification and user agrees.
 
-Do not generate a missing capability manifest just to add work to a plan. If it is missing, continue with targeted inspection of `AGENTS.md`, package scripts, and nearby docs. If capability data would materially improve the plan, mention that the user can generate it with a global command such as:
+Do not generate missing capability manifest just to add plan work. If missing, inspect `AGENTS.md`, package scripts, and nearby docs. If capability data would materially improve plan, mention global command:
 
 ```sh
 agents:capabilities --write
 ```
 
-Only run that command when the user asks and `agents:capabilities` exists in the current shell.
+Run only when user asks and `agents:capabilities` exists in current shell.
 
 ## Workflow
 
-1. **Discuss** — clarify requirements, scope, and dependencies before touching `PROGRESS.md`
+1. **Discuss** — clarify requirements, scope, and dependencies before editing `PROGRESS.md`
 2. **Locate** — identify whether the work fits before, after, or between upcoming sections
 3. **Reorganise** — if the new work changes what's needed later, update upcoming sections to match
-4. **Insert** — add a new section using the standard structure (purpose, expected commit, files likely to change, tasks, risks, notes)
+4. **Insert** — add a section using standard structure: purpose, expected commit, files likely to change, tasks, risks, notes
 5. **Update parking lot** — move related ideas into the new section or leave them parked
 
 ## Placement principles
 
 - Insert before other upcoming sections if this work is a prerequisite
 - Split into two sections if the task spans more than one commit
-- Avoid appending by default — order should reflect dependencies, not arrival
+- Avoid appending by default; order reflects dependencies, not arrival
 - Treat each section with its own `### Expected commit` as an execution boundary
-- If asked to implement a multi-section plan, implement only the first incomplete section unless the user explicitly says to implement all chunks in one pass
+- If asked to implement multi-section plan, implement only first incomplete section unless user explicitly asks for all chunks
 - After implementing one section, stop for review with changed files, verification performed, and the suggested commit message
 - Do not combine release code, repo policy, tooling, docs, and roadmap sections into one working-tree change unless the plan explicitly defines them as one expected commit
 
 ## Feature specs
 
-For larger spikes or ambiguous features, create or reference a per-feature spec under `.agent/specs/` instead of expanding `PROGRESS.md` with design history. Keep `PROGRESS.md` focused on execution state and add a `### Spec` link in the relevant section. Do not create specs for small changes, direct bug fixes, routine docs edits, or work that already fits in one progress section.
+For larger spikes or ambiguous features, create/reference a per-feature spec under `.agent/specs/` instead of expanding `PROGRESS.md` with design history. Keep `PROGRESS.md` focused on execution state and add `### Spec` link in relevant section. Do not create specs for small changes, direct bug fixes, routine docs edits, or work fitting one progress section.
 
-The spec should explain why the work matters now, the problem, goals, non-goals, proposed approach, API/schema/interface changes, acceptance criteria, risks, and verification. Read or update that file only when working on that feature.
+Spec explains why now, problem, goals, non-goals, approach, API/schema/interface changes, acceptance criteria, risks, and verification. Read/update only when working on that feature.
 
 ## Section structure
 
