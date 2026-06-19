@@ -71,6 +71,7 @@ Skill files, reference docs, and inline code documentation follow a different st
 - Prefer a short code snippet over a paragraph when both convey the same thing.
 - Use tables for comparisons and trade-offs; bullet lists for independent items that don't have a comparative relationship.
 - Reference descriptions (props, slots, options) are terse, noun-led, and present tense: "Any title to display with this table.", "The label to use for the search box."
+- Only document parameters callers are expected to pass. Omit internal or implementation-only parameters even if technically accessible — if a parameter exists to enable code reuse internally, leave it out of the public signature in docs.
 - Describe what a thing is and where it sits, not framework mechanics. Drop "rendered" or "displayed" when placement already says it.
 - Match sibling scope. Don't add how-to, override, or translation guidance to one entry when neighbours don't share it.
 - In reference docs and JSDoc, write instructions in the imperative: "Pass a getter function", not "You should pass a getter function". In prose, frame the step instead (see Structure).
