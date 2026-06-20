@@ -61,6 +61,15 @@ create_nested_test_project() {
 	printf 'test("ok", () => {})\n' > "$target_dir/src/render/template.spec.js"
 }
 
+create_project_with_diagnostics() {
+	local target_dir="$1"
+
+	create_nested_test_project "$target_dir"
+	mkdir -p "$target_dir/.agent/scripts"
+	printf '#!/usr/bin/env python3\n' > "$target_dir/.agent/scripts/project-diagnostics.py"
+	printf '#!/usr/bin/env python3\n' > "$target_dir/.agent/scripts/change-impact.py"
+}
+
 test_preview_does_not_write() {
 	local target_dir="$TEST_ROOT/preview"
 	local output="$TEST_ROOT/preview.md"
@@ -220,6 +229,20 @@ EOF
 	assert_contains "$output" '| Single test file | `bun run test src/analyser/index.test.js` |'
 }
 
+test_diagnostics_guidance_discourages_direct_commands() {
+	local target_dir="$TEST_ROOT/diagnostics"
+	local output="$TEST_ROOT/diagnostics.md"
+	create_project_with_diagnostics "$target_dir"
+
+	run_init "$target_dir" > "$output"
+
+	assert_contains "$output" '.agent/scripts/project-diagnostics.py --list'
+	assert_contains "$output" '.agent/scripts/project-diagnostics.py --check <name>'
+	assert_contains "$output" '.agent/scripts/change-impact.py'
+	assert_contains "$output" 'Run checks through this script rather than direct package commands.'
+	assert_contains "$output" 'extract details from the returned log path'
+}
+
 test_missing_package_scripts_leave_unknowns() {
 	local target_dir="$TEST_ROOT/no-package"
 	local output="$TEST_ROOT/no-package.md"
@@ -250,6 +273,7 @@ test_library_with_dev_framework_dependency_keeps_library_stack
 test_xcode_project_detects_swift_paths
 test_nested_test_files_are_summarised
 test_config_overrides_detected_values
+test_diagnostics_guidance_discourages_direct_commands
 test_missing_package_scripts_leave_unknowns
 test_repo_preview_uses_progress_file
 

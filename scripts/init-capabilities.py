@@ -828,7 +828,9 @@ def diagnostics_lines(project_dir: Path) -> List[str]:
 		[
 			"```",
 			"",
-			"Use `--all` only for broad verification after user approval. If the script is missing, use the Common checks below conservatively.",
+			"Run checks through this script rather than direct package commands. It keeps stdout compact and writes full logs to `.agent/diagnostics/`.",
+			"",
+			"Use `--all` only for broad verification after user approval. If a check fails, extract details from the returned log path with targeted search commands instead of re-running the check.",
 		]
 	)
 
