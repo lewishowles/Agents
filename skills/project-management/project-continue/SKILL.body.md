@@ -28,8 +28,9 @@ When `<project-root>/.agent/scripts/project-diagnostics.py` exists, use `--list`
 2. **Compact** — repair a stale or missing handoff before continuing; remove duplicate notes and obsolete TODOs; compress completed sub-tasks to a single line
 3. **Verify** — spot-check that recently-completed work landed
 4. **Reorient** — confirm the active work still fits; move it to upcoming if priorities changed
-5. **Continue** — work through the current section; update `PROGRESS.md` as discoveries are made
-6. **Wrap up** — refresh the handoff before stopping
+5. **Present** — state the next task (name, why, any unknowns) and wait for the user to confirm before starting; do not skip this even when the next step is explicit in `PROGRESS.md`
+6. **Continue** — work through the confirmed task; update `PROGRESS.md` as discoveries are made
+7. **Wrap up** — refresh the handoff before stopping
 
 ## Session startup
 
