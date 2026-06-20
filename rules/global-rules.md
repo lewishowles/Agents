@@ -78,6 +78,8 @@ Every changed line traces directly to the request.
 
 **Evidence before claims.** Don't say tests pass or a fix is resolved unless you have seen output confirming it. When work is done, say what changed and what the user should verify.
 
+**Always state what's next.** After completing any step — or finishing everything — close with what comes next: the next planned step, an open question to resolve, or an explicit "nothing remains" if there is no more planned work. This applies even between task boundaries.
+
 ## Communication
 
 - **UK spelling** — colour, organise, behaviour, grey, etc.
