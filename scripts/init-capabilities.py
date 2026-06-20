@@ -77,7 +77,10 @@ COMMON_DOC_FILES = [
 	"README.md",
 	"AGENTS.md",
 	"PROGRESS.md",
+	"ARCHITECTURE.md",
 	"CHANGELOG.md",
+	"CONTRIBUTING.md",
+	"DESIGN.md",
 	"docs",
 ]
 
@@ -237,6 +240,13 @@ def config_list(config: Dict[str, Any], key: str) -> List[str]:
 	return [str(item) for item in value if str(item).strip()]
 
 
+def config_string(config: Dict[str, Any], key: str) -> str:
+	value = config.get(key, "")
+	if isinstance(value, str):
+		return value.strip()
+	return ""
+
+
 def is_placeholder_value(value: str) -> bool:
 	normalised = value.strip().strip("`").lower()
 	return normalised in {"", "[command]", "[unknown]", "unknown", "not detected"}
@@ -321,12 +331,19 @@ def detect_runtime_requirements(project_dir: Path, package: Dict[str, Any], mana
 
 	if (project_dir / "Package.swift").exists():
 		requirements.append("Swift")
+	if detect_xcode_paths(project_dir):
+		requirements.extend(["Xcode", "Swift"])
 	if (project_dir / "pyproject.toml").exists():
 		requirements.append("Python")
 	if (project_dir / "Cargo.toml").exists():
 		requirements.append("Rust")
 
-	return "; ".join(requirements) if requirements else NOT_DETECTED
+	unique_requirements = []
+	for requirement in requirements:
+		if requirement not in unique_requirements:
+			unique_requirements.append(requirement)
+
+	return "; ".join(unique_requirements) if unique_requirements else NOT_DETECTED
 
 
 def detect_primary_stack(project_dir: Path, package: Dict[str, Any]) -> str:
@@ -334,6 +351,8 @@ def detect_primary_stack(project_dir: Path, package: Dict[str, Any]) -> str:
 	runtime_dependencies.update(package.get("dependencies", {}))
 	runtime_dependencies.update(package.get("peerDependencies", {}))
 
+	if detect_xcode_paths(project_dir):
+		return "Swift / Xcode app"
 	if "vue" in runtime_dependencies:
 		return "Vue"
 	if "react" in runtime_dependencies:
@@ -354,6 +373,55 @@ def detect_primary_stack(project_dir: Path, package: Dict[str, Any]) -> str:
 	return UNKNOWN
 
 
+def relative_path(project_dir: Path, path: Path) -> str:
+	return str(path.relative_to(project_dir))
+
+
+def detect_xcode_paths(project_dir: Path) -> List[str]:
+	paths = []
+	for pattern in ["*.xcodeproj", "*.xcworkspace", "*.xctestplan"]:
+		for candidate in project_dir.glob(f"*/*{pattern.removeprefix('*')}"):
+			if candidate.exists():
+				paths.append(relative_path(project_dir, candidate))
+		for candidate in project_dir.glob(pattern):
+			if candidate.exists():
+				paths.append(candidate.name)
+
+	return sorted(set(paths))
+
+
+def detect_source_dirs(project_dir: Path) -> List[str]:
+	paths = existing_names(project_dir, COMMON_SOURCE_DIRS)
+
+	for xcode_project in project_dir.glob("*/*.xcodeproj"):
+		container = xcode_project.parent
+		for child in sorted(container.iterdir(), key=lambda item: item.name.lower()):
+			if child.is_dir() and any(grandchild.suffix == ".swift" for grandchild in child.glob("*.swift")):
+				paths.append(relative_path(project_dir, child))
+
+	return sorted(set(paths))
+
+
+def summarise_test_file_paths(project_dir: Path) -> List[str]:
+	patterns = []
+
+	for suffix_pattern in ["*.test.*", "*.spec.*"]:
+		for candidate in project_dir.glob(f"**/{suffix_pattern}"):
+			if not candidate.is_file():
+				continue
+
+			relative = candidate.relative_to(project_dir)
+			if any(part in DEFAULT_TREE_EXCLUDES for part in relative.parts):
+				continue
+
+			if len(relative.parts) > 1:
+				patterns.append(f"{relative.parts[0]}/**/{suffix_pattern}")
+			else:
+				patterns.append(candidate.name)
+
+	return patterns
+
+
 def detect_test_paths(project_dir: Path) -> List[str]:
 	paths = []
 
@@ -361,10 +429,15 @@ def detect_test_paths(project_dir: Path) -> List[str]:
 		if (project_dir / name).exists():
 			paths.append(name)
 
-	for pattern in ["*.test.*", "*.spec.*"]:
-		for candidate in project_dir.glob(pattern):
-			if candidate.is_file():
-				paths.append(candidate.name)
+	for candidate in project_dir.glob("*/*Tests"):
+		if candidate.is_dir():
+			paths.append(relative_path(project_dir, candidate))
+
+	for candidate in project_dir.glob("*/*UITests"):
+		if candidate.is_dir():
+			paths.append(relative_path(project_dir, candidate))
+
+	paths.extend(summarise_test_file_paths(project_dir))
 
 	return sorted(set(paths))
 
@@ -626,6 +699,32 @@ def common_check_rows(scripts: Dict[str, str], manager: PackageManager) -> List[
 	return rows
 
 
+def config_common_check_rows(config: Dict[str, Any]) -> List[str]:
+	checks = config.get("commonChecks", {})
+	rows = []
+
+	if isinstance(checks, dict):
+		for purpose in sorted(checks):
+			command = str(checks[purpose]).strip()
+			if command:
+				rows.append(f"| {purpose} | `{command}` |")
+		return rows
+
+	if not isinstance(checks, list):
+		return []
+
+	for check in checks:
+		if not isinstance(check, dict):
+			continue
+
+		purpose = str(check.get("purpose", "")).strip()
+		command = str(check.get("command", "")).strip()
+		if purpose and command:
+			rows.append(f"| {purpose} | `{command}` |")
+
+	return rows
+
+
 def package_script_rows(scripts: Dict[str, str], manager: PackageManager) -> List[str]:
 	if not scripts:
 		return ["| None detected |  |  |"]
@@ -703,6 +802,51 @@ def render_generator_table(generators: List[Generator]) -> List[str]:
 	return rows
 
 
+def diagnostics_lines(project_dir: Path) -> List[str]:
+	diagnostics_path = project_dir / ".agent" / "scripts" / "project-diagnostics.py"
+	change_impact_path = project_dir / ".agent" / "scripts" / "change-impact.py"
+
+	if not diagnostics_path.exists():
+		return [
+			"Project diagnostics script: Not detected.",
+			"",
+			"Use the Common checks below conservatively.",
+		]
+
+	lines = [
+		"Preferred local command:",
+		"",
+		"```sh",
+		".agent/scripts/project-diagnostics.py --list",
+		".agent/scripts/project-diagnostics.py --check <name>",
+	]
+
+	if change_impact_path.exists():
+		lines.append(".agent/scripts/change-impact.py")
+
+	lines.extend(
+		[
+			"```",
+			"",
+			"Use `--all` only for broad verification after user approval. If the script is missing, use the Common checks below conservatively.",
+		]
+	)
+
+	return lines
+
+
+def fallback_files(project_dir: Path) -> List[str]:
+	candidates = [
+		"AGENTS.md",
+		"PROGRESS.md",
+		"package.json",
+	]
+	existing = [name for name in candidates if (project_dir / name).exists()]
+	existing.append("nearby README/docs files")
+
+	return existing
+
+
 def render_manifest(project_dir: Path, tree_depth: int, tree_excludes: List[str]) -> str:
 	package = package_json(project_dir)
 	scripts = package.get("scripts", {})
@@ -710,16 +854,20 @@ def render_manifest(project_dir: Path, tree_depth: int, tree_excludes: List[str]
 	preserved = preserved_values(project_dir)
 
 	manager = detect_package_manager(project_dir, package)
-	stack = detect_primary_stack(project_dir, package)
-	runtime = detect_runtime_requirements(project_dir, package, manager)
+	stack = config_string(config, "primaryStack") or detect_primary_stack(project_dir, package)
+	runtime = config_string(config, "runtimeRequirements") or detect_runtime_requirements(project_dir, package, manager)
 
 	config_tree_excludes = config_list(config, "treeExclude")
 	config_generated_paths = config_list(config, "generatedPaths")
+	config_source_dirs = config_list(config, "sourceDirs")
+	config_test_paths = config_list(config, "testPaths")
+	config_config_paths = config_list(config, "configPaths")
+	config_doc_paths = config_list(config, "docPaths")
 
-	source_dirs = existing_names(project_dir, COMMON_SOURCE_DIRS)
-	config_paths = existing_names(project_dir, COMMON_CONFIG_FILES)
-	doc_paths = existing_names(project_dir, COMMON_DOC_FILES)
-	test_paths = detect_test_paths(project_dir)
+	source_dirs = sorted(set(detect_source_dirs(project_dir) + existing_names(project_dir, config_source_dirs)))
+	config_paths = sorted(set(existing_names(project_dir, COMMON_CONFIG_FILES) + detect_xcode_paths(project_dir) + existing_names(project_dir, config_config_paths)))
+	doc_paths = sorted(set(existing_names(project_dir, COMMON_DOC_FILES) + existing_names(project_dir, config_doc_paths)))
+	test_paths = sorted(set(detect_test_paths(project_dir) + existing_names(project_dir, config_test_paths)))
 	generated_paths = sorted(
 		set(existing_names(project_dir, COMMON_GENERATED_PATHS) + existing_names(project_dir, config_generated_paths))
 	)
@@ -768,15 +916,7 @@ def render_manifest(project_dir: Path, tree_depth: int, tree_excludes: List[str]
 		"",
 		"## Diagnostics",
 		"",
-		"Preferred local command:",
-		"",
-		"```sh",
-		".agent/scripts/project-diagnostics.py --list",
-		".agent/scripts/project-diagnostics.py --check <name>",
-		".agent/scripts/change-impact.py",
-		"```",
-		"",
-		"Use `--all` only for broad verification after user approval. If the script is missing, use the Common checks below conservatively.",
+		*diagnostics_lines(project_dir),
 		"",
 		"## Package scripts",
 		"",
@@ -801,6 +941,7 @@ def render_manifest(project_dir: Path, tree_depth: int, tree_excludes: List[str]
 		"| Purpose | Command |",
 		"| --- | --- |",
 		*common_check_rows(scripts, manager),
+		*config_common_check_rows(config),
 		*preserved.common_check_rows,
 		"",
 		"## Local services",
@@ -832,7 +973,9 @@ def render_manifest(project_dir: Path, tree_depth: int, tree_excludes: List[str]
 			"",
 			"## Generators",
 			"",
-			"Detected generators come from `.boilersuit`.",
+			"Detected generators come from `.boilersuit`."
+				if (project_dir / BOILERSUIT_DIR_NAME).is_dir()
+				else "No `.boilersuit` generators detected.",
 			"",
 			"| Name | Command | Notes |",
 			"| --- | --- | --- |",
@@ -864,10 +1007,7 @@ def render_manifest(project_dir: Path, tree_depth: int, tree_excludes: List[str]
 			"",
 			"If this file is incomplete, inspect these in order:",
 			"",
-			"1. `AGENTS.md`",
-			"2. `PROGRESS.md`",
-			"3. `package.json`",
-			"4. nearby README/docs files",
+			*[f"{index}. `{name}`" if name != "nearby README/docs files" else f"{index}. {name}" for index, name in enumerate(fallback_files(project_dir), start=1)],
 			"",
 			"Ask before guessing about expensive, destructive, remote, or history-changing commands.",
 			"",
