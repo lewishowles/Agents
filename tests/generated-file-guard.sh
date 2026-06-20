@@ -40,11 +40,15 @@ create_config_repo() {
 create_skill_repo() {
 	local target_dir="$1"
 
-	mkdir -p "$target_dir/dist/claude/source" "$target_dir/docs" "$target_dir/rules" "$target_dir/scripts" "$target_dir/skills/example/example"
+	mkdir -p "$target_dir/dist/chatgpt" "$target_dir/dist/claude/source" "$target_dir/docs" "$target_dir/rules" "$target_dir/scripts" "$target_dir/skills/example/example" "$target_dir/skills/example/excluded"
 	printf '#!/usr/bin/env bash\n' > "$target_dir/scripts/sync.sh"
-	printf 'source\n' > "$target_dir/skills/example/example/skill.json"
+	printf '{"name":"example"}\n' > "$target_dir/skills/example/example/skill.json"
 	printf 'body\n' > "$target_dir/skills/example/example/SKILL.body.md"
 	printf 'generated skill\n' > "$target_dir/skills/example/example/SKILL.md"
+	printf '{"name":"excluded","targets":["claude","codex"]}\n' > "$target_dir/skills/example/excluded/skill.json"
+	printf 'excluded body\n' > "$target_dir/skills/example/excluded/SKILL.body.md"
+	printf 'excluded generated skill\n' > "$target_dir/skills/example/excluded/SKILL.md"
+	printf 'chatgpt skill\n' > "$target_dir/dist/chatgpt/example.md"
 	printf 'global skills\n' > "$target_dir/dist/claude/source/global-skills.md"
 	printf 'docs\n' > "$target_dir/docs/skills.md"
 	init_repo "$target_dir"
@@ -109,14 +113,56 @@ test_skill_source_with_generated_outputs_does_not_require_claude_or_chatgpt() {
 	local target_dir="$TEST_ROOT/skill"
 	local output="$TEST_ROOT/skill.md"
 	create_skill_repo "$target_dir"
-	printf 'changed\n' >> "$target_dir/skills/example/example/skill.json"
+	printf '{"name":"example","description":"changed"}\n' > "$target_dir/skills/example/example/skill.json"
 	printf 'changed\n' >> "$target_dir/skills/example/example/SKILL.md"
+	printf 'changed\n' >> "$target_dir/dist/chatgpt/example.md"
 	printf 'changed\n' >> "$target_dir/dist/claude/source/global-skills.md"
 	printf 'changed\n' >> "$target_dir/docs/skills.md"
 
 	run_guard "$target_dir" > "$output"
 
 	assert_contains "$output" "No generated-file issues detected."
+}
+
+test_skill_body_with_generated_skill_and_chatgpt_output_does_not_require_indexes() {
+	local target_dir="$TEST_ROOT/skill-body"
+	local output="$TEST_ROOT/skill-body.md"
+	create_skill_repo "$target_dir"
+	printf 'changed\n' >> "$target_dir/skills/example/example/SKILL.body.md"
+	printf 'changed\n' >> "$target_dir/skills/example/example/SKILL.md"
+	printf 'changed\n' >> "$target_dir/dist/chatgpt/example.md"
+
+	run_guard "$target_dir" > "$output"
+
+	assert_contains "$output" "No generated-file issues detected."
+}
+
+test_excluded_skill_body_does_not_require_chatgpt_output() {
+	local target_dir="$TEST_ROOT/excluded-skill-body"
+	local output="$TEST_ROOT/excluded-skill-body.md"
+	create_skill_repo "$target_dir"
+	printf 'changed\n' >> "$target_dir/skills/example/excluded/SKILL.body.md"
+	printf 'changed\n' >> "$target_dir/skills/example/excluded/SKILL.md"
+
+	run_guard "$target_dir" > "$output"
+
+	assert_contains "$output" "No generated-file issues detected."
+}
+
+test_skill_metadata_without_indexes_fails() {
+	local target_dir="$TEST_ROOT/skill-metadata"
+	local output="$TEST_ROOT/skill-metadata.md"
+	create_skill_repo "$target_dir"
+	printf '{"name":"example","description":"changed"}\n' > "$target_dir/skills/example/example/skill.json"
+	printf 'changed\n' >> "$target_dir/skills/example/example/SKILL.md"
+	printf 'changed\n' >> "$target_dir/dist/chatgpt/example.md"
+
+	if run_guard "$target_dir" > "$output"; then
+		fail "Expected skill metadata change without docs or index updates to fail"
+	fi
+
+	assert_contains "$output" "Claude skill index source changed but generated output is not changed"
+	assert_contains "$output" "generated docs tables source changed but generated output is not changed"
 }
 
 test_json_output_is_machine_readable() {
@@ -144,6 +190,9 @@ test_source_without_generated_fails
 test_source_and_generated_passes
 test_generic_generated_only_change_fails
 test_skill_source_with_generated_outputs_does_not_require_claude_or_chatgpt
+test_skill_body_with_generated_skill_and_chatgpt_output_does_not_require_indexes
+test_excluded_skill_body_does_not_require_chatgpt_output
+test_skill_metadata_without_indexes_fails
 test_json_output_is_machine_readable
 
 printf '✓ generated-file-guard tests passed\n'

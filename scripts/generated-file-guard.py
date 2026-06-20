@@ -40,17 +40,17 @@ CONFIG_REPO_RULES = [
 	},
 	{
 		"generated": ["dist/claude/source/global-skills.md"],
-		"sources": ["skills/"],
+		"sources": ["scripts/build-skill-mds.py"],
 		"label": "Claude skill index",
 	},
 	{
 		"generated": ["dist/chatgpt/"],
-		"sources": ["dist/chatgpt/source/"],
+		"sources": ["dist/chatgpt/source/", "scripts/build-chatgpt-target.py"],
 		"label": "ChatGPT target",
 	},
 	{
 		"generated": ["docs/agents.md", "docs/commands.md", "docs/hooks.md", "docs/plugins.md", "docs/skills.md"],
-		"sources": ["scripts/build-docs.py", "skills/", "hooks/claude/"],
+		"sources": ["scripts/build-docs.py"],
 		"label": "generated docs tables",
 	},
 ]
@@ -164,7 +164,35 @@ def config_repo_rules(project_dir: Path) -> list[dict[str, Any]]:
 	if not (project_dir / "dist" / "claude").exists():
 		return []
 
-	rules = list(CONFIG_REPO_RULES)
+	skill_manifests = [
+		str(skill_json.relative_to(project_dir))
+		for skill_json in sorted((project_dir / "skills").glob("*/*/skill.json"))
+	]
+	chatgpt_skill_sources = []
+	for skill_json in sorted((project_dir / "skills").glob("*/*/skill.json")):
+		manifest = json.loads(skill_json.read_text())
+		targets = manifest.get("targets")
+		if targets is not None and "chatgpt" not in targets:
+			continue
+		skill_md = skill_json.with_name("SKILL.md")
+		chatgpt_skill_sources.append(str(skill_json.relative_to(project_dir)))
+		if skill_md.exists():
+			chatgpt_skill_sources.append(str(skill_md.relative_to(project_dir)))
+	hook_manifests = [
+		str(hook_json.relative_to(project_dir))
+		for hook_json in sorted((project_dir / "hooks" / "claude").glob("*/hook.json"))
+	]
+
+	rules = []
+	for rule in CONFIG_REPO_RULES:
+		rule_copy = dict(rule)
+		if rule["label"] == "Claude skill index":
+			rule_copy["sources"] = rule["sources"] + skill_manifests
+		elif rule["label"] == "ChatGPT target":
+			rule_copy["sources"] = rule["sources"] + chatgpt_skill_sources
+		elif rule["label"] == "generated docs tables":
+			rule_copy["sources"] = rule["sources"] + skill_manifests + hook_manifests
+		rules.append(rule_copy)
 
 	for hook_script in sorted((project_dir / "hooks" / "claude").glob("*/*.sh")):
 		rules.append(
