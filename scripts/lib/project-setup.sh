@@ -61,6 +61,45 @@ sync_file() {
 	fi
 }
 
+# Symlinks a shared tool into the target project so every project tracks the central
+# source. Replaces an existing plain copy, prompting first if that copy has diverged.
+#
+# @param  {string}  source
+#     Absolute path to the central script.
+# @param  {string}  target
+#     Destination path in the project.
+# @param  {string}  label
+#     Human-readable name for output messages.
+link_file() {
+	local source="$1"
+	local target="$2"
+	local label="$3"
+
+	if [ -L "$target" ]; then
+		if [ "$(readlink "$target")" = "$source" ]; then
+			printf '  %s↪%s %s already linked\n' "$PURPLE" "$RESET_COLOUR" "$label"
+			return
+		fi
+
+		ln -sf "$source" "$target"
+		printf '  %s✓%s relinked %s\n' "$GREEN" "$RESET_COLOUR" "$label"
+		return
+	fi
+
+	if [ -e "$target" ] && ! cmp -s "$source" "$target"; then
+		printf '\n  %s⚠%s %s exists as a local copy that differs from the default\n' "$PURPLE" "$RESET_COLOUR" "$label"
+		printf '  Replace it with a symlink to the shared script? (y/n): '
+		read -r response
+		if [[ $response != y ]]; then
+			printf '  %s↪%s kept local copy of %s\n\n' "$PURPLE" "$RESET_COLOUR" "$label"
+			return
+		fi
+	fi
+
+	ln -sf "$source" "$target"
+	printf '  %s✓%s linked %s\n' "$GREEN" "$RESET_COLOUR" "$label"
+}
+
 # Creates a directory at path if it doesn't already exist.
 #
 # @param  {string}  path
@@ -87,21 +126,15 @@ copy_claude_support_files() {
 	sync_file "$REPO_DIR/templates/claude/.claudeignore" "$PROJECT_DIR/.claude/.claudeignore" ".claude/.claudeignore"
 }
 
-# Copies shared project-local agent tooling into the target project.
+# Links shared project-local agent tooling into the target project. Symlinks keep every
+# project tracking the central source, so improvements and fixes propagate without re-copying.
 copy_shared_agent_tools() {
 	ensure_dir "$PROJECT_DIR/.agent/scripts" ".agent/scripts/"
 
-	sync_file "$REPO_DIR/scripts/project-diagnostics.py" "$PROJECT_DIR/.agent/scripts/project-diagnostics.py" ".agent/scripts/project-diagnostics.py"
-	chmod +x "$PROJECT_DIR/.agent/scripts/project-diagnostics.py"
-
-	sync_file "$REPO_DIR/scripts/generated-file-guard.py" "$PROJECT_DIR/.agent/scripts/generated-file-guard.py" ".agent/scripts/generated-file-guard.py"
-	chmod +x "$PROJECT_DIR/.agent/scripts/generated-file-guard.py"
-
-	sync_file "$REPO_DIR/scripts/repo-context.py" "$PROJECT_DIR/.agent/scripts/repo-context.py" ".agent/scripts/repo-context.py"
-	chmod +x "$PROJECT_DIR/.agent/scripts/repo-context.py"
-
-	sync_file "$REPO_DIR/scripts/change-impact.py" "$PROJECT_DIR/.agent/scripts/change-impact.py" ".agent/scripts/change-impact.py"
-	chmod +x "$PROJECT_DIR/.agent/scripts/change-impact.py"
+	link_file "$REPO_DIR/scripts/project-diagnostics.py" "$PROJECT_DIR/.agent/scripts/project-diagnostics.py" ".agent/scripts/project-diagnostics.py"
+	link_file "$REPO_DIR/scripts/generated-file-guard.py" "$PROJECT_DIR/.agent/scripts/generated-file-guard.py" ".agent/scripts/generated-file-guard.py"
+	link_file "$REPO_DIR/scripts/repo-context.py" "$PROJECT_DIR/.agent/scripts/repo-context.py" ".agent/scripts/repo-context.py"
+	link_file "$REPO_DIR/scripts/change-impact.py" "$PROJECT_DIR/.agent/scripts/change-impact.py" ".agent/scripts/change-impact.py"
 }
 
 # Prints the review warning for generated capability manifests.

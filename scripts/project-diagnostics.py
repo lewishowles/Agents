@@ -6,8 +6,10 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import os
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -68,12 +70,49 @@ SKIPPED_SCRIPT_NAMES = {
 MUTATING_COMMAND_HINTS = ("--fix", "--write", "format", "publish", "release", "deploy", "migrate")
 ANSI_PATTERN = re.compile(r"\x1b\[[0-9;]*m")
 
+# Directories never worth walking when locating an Xcode project.
+EXCLUDED_DIRS = {".git", ".agent", ".build", ".swiftpm", "build", "DerivedData", "Pods", "node_modules", "dist", "vendor"}
+
+# How deep to look for an Xcode container. Projects live at the root or one level down in practice.
+XCODE_SCAN_DEPTH = 3
+
+# Xcode builds and test runs are far slower than Node checks, so they get their own ceiling.
+XCODE_TIMEOUT = 600
+
+# Test destination. Targets macOS; override here (or extend detection) for iOS/other platforms.
+XCODE_DESTINATION = os.environ.get("PROJECT_DIAGNOSTICS_XCODE_DESTINATION", "platform=macOS")
+
+# Lines worth keeping from a verbose xcodebuild log when building the compact summary.
+# Deliberately excludes the per-suite "started"/"passed" chatter, which floods the output.
+XCODE_SUMMARY_TOKENS = (
+	"error:",
+	"** build",
+	"** test",
+	"failed on",
+	"failing tests",
+	"testing failed",
+)
+
+# Substrings that mark a failure reason inside an xcresult test-details node name.
+XCRESULT_FAILURE_MARKERS = (
+	"expectation failed",
+	"issue recorded",
+	"xctassert",
+	"fatal error",
+	"error:",
+	"caught error",
+	"threw error",
+	"failed:",
+)
+
 
 @dataclass
 class Check:
 	name: str
 	command: list[str]
 	reason: str
+	timeout: int | None = None
+	xcresult: bool = False
 
 
 @dataclass
@@ -107,6 +146,74 @@ def detect_package_runner(project_dir: Path) -> list[str] | None:
 	if (project_dir / "package-lock.json").exists() or (project_dir / "package.json").exists():
 		return ["npm", "run"]
 	return None
+
+
+def scan_xcode_layout(project_dir: Path) -> tuple[list[Path], list[Path], list[str]]:
+	# Single shallow walk that prunes heavy directories and never descends into .xcodeproj or
+	# .xcworkspace bundles. Returns (projects, workspaces, UI-test target names).
+	projects: list[Path] = []
+	workspaces: list[Path] = []
+	ui_targets: set[str] = set()
+	base_depth = len(project_dir.parts)
+
+	for root, dirs, _files in os.walk(project_dir):
+		root_path = Path(root)
+		depth = len(root_path.parts) - base_depth
+
+		keep: list[str] = []
+		for name in dirs:
+			if name.endswith(".xcodeproj"):
+				projects.append(root_path / name)
+				continue
+			if name.endswith(".xcworkspace"):
+				workspaces.append(root_path / name)
+				continue
+			if name in EXCLUDED_DIRS or name.startswith("."):
+				continue
+			if name.endswith("UITests"):
+				ui_targets.add(name)
+			keep.append(name)
+
+		dirs[:] = [] if depth >= XCODE_SCAN_DEPTH else keep
+
+	return projects, workspaces, sorted(ui_targets)
+
+
+def find_xcode_scheme(container: Path) -> str:
+	scheme_dir = container / "xcshareddata" / "xcschemes"
+	schemes = sorted(path.stem for path in scheme_dir.glob("*.xcscheme")) if scheme_dir.is_dir() else []
+	if container.stem in schemes:
+		return container.stem
+	return schemes[0] if schemes else container.stem
+
+
+def detect_xcode_checks(project_dir: Path) -> list[Check]:
+	projects, workspaces, ui_targets = scan_xcode_layout(project_dir)
+	containers = workspaces or projects
+	if not containers:
+		return []
+
+	# Prefer the shallowest container, breaking ties deterministically by path.
+	container = min(containers, key=lambda path: (len(path.parts), str(path)))
+	scheme = find_xcode_scheme(container)
+	container_flag = "-workspace" if container.suffix == ".xcworkspace" else "-project"
+	container_path = str(container.relative_to(project_dir))
+
+	# No -quiet: it hides the per-assertion "error:" lines that explain *why* a test failed.
+	base = ["xcodebuild", container_flag, container_path, "-scheme", scheme, "-destination", XCODE_DESTINATION]
+	skip_args = [f"-skip-testing:{target}" for target in ui_targets]
+	skip_reason = " (UI tests skipped)" if skip_args else ""
+
+	return [
+		Check("build", ["xcodebuild", "build", *base[1:]], "Xcode build", timeout=XCODE_TIMEOUT),
+		Check(
+			"test:unit",
+			["xcodebuild", "test", *base[1:], *skip_args],
+			f"Xcode unit tests{skip_reason}",
+			timeout=XCODE_TIMEOUT,
+			xcresult=True,
+		),
+	]
 
 
 def script_is_safe(name: str, command: str) -> bool:
@@ -146,6 +253,8 @@ def discover_checks(project_dir: Path) -> tuple[list[Check], list[str]]:
 
 		if runner and script_is_safe(name, command):
 			checks.append(Check(name, [*runner, name], "conservative package script"))
+
+	checks.extend(detect_xcode_checks(project_dir))
 
 	if not checks:
 		skipped.append("no conservative diagnostics command found")
@@ -207,31 +316,129 @@ def summarise_output(output: str, limit: int = 8) -> list[str]:
 	return lines[-limit:]
 
 
+def summarise_xcode(output: str, limit: int = 15) -> list[str]:
+	# xcodebuild's tail is linker noise. Prefer lines that name an error or a test result.
+	clean = redact(output).strip()
+	if not clean:
+		return ["No output."]
+
+	lines = [line for line in clean.splitlines() if line.strip()]
+	relevant = [line for line in lines if any(token in line.lower() for token in XCODE_SUMMARY_TOKENS)]
+	return (relevant or lines)[-limit:]
+
+
+def summarise_for(check: Check, output: str) -> list[str]:
+	if check.command and check.command[0] == "xcodebuild":
+		return summarise_xcode(output)
+	return summarise_output(output)
+
+
+def _iter_nodes(node: Any):
+	if isinstance(node, dict):
+		yield node
+		for value in node.values():
+			yield from _iter_nodes(value)
+	elif isinstance(node, list):
+		for value in node:
+			yield from _iter_nodes(value)
+
+
+def _xcresulttool_json(args: list[str]) -> Any:
+	try:
+		completed = subprocess.run(
+			["xcrun", "xcresulttool", *args],
+			text=True,
+			stdout=subprocess.PIPE,
+			stderr=subprocess.PIPE,
+			timeout=60,
+			check=False,
+		)
+	except (FileNotFoundError, subprocess.TimeoutExpired):
+		return None
+
+	if completed.returncode != 0 or not completed.stdout:
+		return None
+
+	try:
+		return json.loads(completed.stdout)
+	except json.JSONDecodeError:
+		return None
+
+
+def extract_xcresult_failures(bundle: Path, max_tests: int = 12) -> list[str]:
+	# Swift Testing writes expectation failures only to the result bundle, never to the
+	# console, so read the reason for each failed test back out via xcresulttool.
+	tests = _xcresulttool_json(["get", "test-results", "tests", "--path", str(bundle)])
+	if not isinstance(tests, dict):
+		return []
+
+	failed: list[str] = []
+	for node in _iter_nodes(tests.get("testNodes", [])):
+		if node.get("nodeType") == "Test Case" and node.get("result") == "Failed":
+			identifier = node.get("nodeIdentifier") or node.get("name")
+			if identifier and identifier not in failed:
+				failed.append(identifier)
+
+	lines: list[str] = []
+	for identifier in failed[:max_tests]:
+		details = _xcresulttool_json(["get", "test-results", "test-details", "--test-id", identifier, "--path", str(bundle)])
+		message = None
+		for node in _iter_nodes(details):
+			name = node.get("name")
+			if isinstance(name, str) and any(marker in name.lower() for marker in XCRESULT_FAILURE_MARKERS):
+				message = " ".join(name.split())
+				break
+
+		lines.append(f"{identifier}: {message[:240]}" if message else f"{identifier}: failed (reason not captured)")
+
+	remaining = len(failed) - max_tests
+	if remaining > 0:
+		lines.append(f"... and {remaining} more failing test(s).")
+
+	return lines
+
+
 def run_check(project_dir: Path, log_dir: Path, check: Check, timeout: int) -> Result:
 	started = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%d-%H%M%S")
 	log_path = log_dir / f"{started}-{check.name.replace(':', '-')}.log"
+	effective_timeout = check.timeout or timeout
+
+	# For xcodebuild test runs, write a result bundle we can mine for Swift Testing failure
+	# reasons. xcodebuild refuses a pre-existing path, so clear any stale bundle first.
+	command = list(check.command)
+	bundle: Path | None = None
+	if check.xcresult:
+		bundle = log_dir / f"{started}-{check.name.replace(':', '-')}.xcresult"
+		shutil.rmtree(bundle, ignore_errors=True)
+		command = [*command, "-resultBundlePath", str(bundle)]
 
 	try:
 		completed = subprocess.run(
-			check.command,
+			command,
 			cwd=project_dir,
 			text=True,
 			stdout=subprocess.PIPE,
 			stderr=subprocess.STDOUT,
-			timeout=timeout,
+			timeout=effective_timeout,
 			check=False,
 		)
 		output = completed.stdout or ""
 		log_path.write_text(redact(output))
 
 		status = "passed" if completed.returncode == 0 else "failed"
+		summary = summarise_for(check, output)
+		if status != "passed" and bundle is not None and bundle.exists():
+			failures = extract_xcresult_failures(bundle)
+			if failures:
+				summary = failures
+
 		return Result(
 			name=check.name,
 			command=check.command,
 			status=status,
 			exit_code=completed.returncode,
 			log_path=str(log_path.relative_to(project_dir)),
-			summary=summarise_output(output),
+			summary=summary,
 		)
 	except subprocess.TimeoutExpired as error:
 		output = error.stdout or ""
@@ -245,7 +452,7 @@ def run_check(project_dir: Path, log_dir: Path, check: Check, timeout: int) -> R
 			status="timeout",
 			exit_code=None,
 			log_path=str(log_path.relative_to(project_dir)),
-			summary=[f"Timed out after {timeout}s."],
+			summary=[f"Timed out after {effective_timeout}s."],
 		)
 	except FileNotFoundError:
 		log_path.write_text("")
@@ -257,6 +464,9 @@ def run_check(project_dir: Path, log_dir: Path, check: Check, timeout: int) -> R
 			log_path=str(log_path.relative_to(project_dir)),
 			summary=[f"Command not found: {check.command[0]}"],
 		)
+	finally:
+		if bundle is not None:
+			shutil.rmtree(bundle, ignore_errors=True)
 
 
 def render_markdown(project_dir: Path, results: list[Result], skipped: list[str]) -> str:
