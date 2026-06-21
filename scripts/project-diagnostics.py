@@ -79,8 +79,9 @@ XCODE_SCAN_DEPTH = 3
 # Xcode builds and test runs are far slower than Node checks, so they get their own ceiling.
 XCODE_TIMEOUT = 600
 
-# Test destination. Targets macOS; override here (or extend detection) for iOS/other platforms.
-XCODE_DESTINATION = os.environ.get("PROJECT_DIAGNOSTICS_XCODE_DESTINATION", "platform=macOS")
+# Test destination. Pins arch=arm64 so xcodebuild doesn't warn about the ambiguous arm64/x86_64
+# match (x86_64 is dropped in the next macOS). Override here (or via env) for iOS/other platforms.
+XCODE_DESTINATION = os.environ.get("PROJECT_DIAGNOSTICS_XCODE_DESTINATION", "platform=macOS,arch=arm64")
 
 # Lines worth keeping from a verbose xcodebuild log when building the compact summary.
 # Deliberately excludes the per-suite "started"/"passed" chatter, which floods the output.
