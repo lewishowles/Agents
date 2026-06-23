@@ -24,7 +24,9 @@ from tools import (
     tool_git_status,
     tool_health,
     tool_list,
+    tool_list_skills,
     tool_read_file,
+    tool_read_skill,
     tool_search,
     tool_tree,
 )
@@ -97,6 +99,16 @@ def git_status(repo_id: str):
 @app.get("/repos/{repo_id}/git/diff", dependencies=[Security(_auth)], operation_id="git_diff")
 def git_diff(repo_id: str, path: str = ""):
     return tool_git_diff(_repo(repo_id), {"path": path})
+
+
+@app.get("/skills", dependencies=[Security(_auth)], operation_id="list_skills")
+def list_skills():
+    return tool_list_skills({})
+
+
+@app.get("/skills/{slug}", dependencies=[Security(_auth)], operation_id="read_skill")
+def read_skill(slug: str):
+    return tool_read_skill({"slug": slug})
 
 
 if __name__ == "__main__":

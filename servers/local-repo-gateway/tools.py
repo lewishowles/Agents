@@ -184,6 +184,50 @@ def tool_git_status(repo: dict, arguments: dict) -> str:
 	return result.stdout.strip() or "Working tree clean."
 
 
+SKILLS_DIR = Path(__file__).resolve().parent.parent.parent / "skills"
+
+
+def tool_list_skills(arguments: dict) -> str:
+	if not SKILLS_DIR.exists():
+		return "No skills/ directory found."
+
+	skills = []
+	for skill_json in sorted(SKILLS_DIR.rglob("skill.json")):
+		try:
+			data = json.loads(skill_json.read_text(encoding="utf-8"))
+		except Exception:
+			continue
+		slug = skill_json.parent.name
+		skills.append({
+			"slug": slug,
+			"title": data.get("title") or data.get("name", slug),
+			"description": data.get("description", ""),
+			"triggers": data.get("triggers", []),
+			"filePatterns": data.get("filePatterns", []),
+		})
+
+	if not skills:
+		return "No skills found."
+
+	return json.dumps(skills, indent=2)
+
+
+def tool_read_skill(arguments: dict) -> str:
+	slug = arguments.get("slug", "")
+	if not slug:
+		return "slug is required."
+
+	matches = list(SKILLS_DIR.rglob(f"{slug}/SKILL.md")) if SKILLS_DIR.exists() else []
+	if not matches:
+		return f"Skill {slug!r} not found."
+
+	raw = matches[0].read_bytes()
+	try:
+		return raw[:MAX_FILE_BYTES].decode("utf-8")
+	except UnicodeDecodeError:
+		return f"Skill {slug!r} is not valid UTF-8."
+
+
 def tool_git_diff(repo: dict, arguments: dict) -> str:
 	root = Path(repo["path"]).resolve()
 	relative = arguments.get("path")
