@@ -6,6 +6,7 @@ Apply across all projects. See individual skills for detailed rules. Use project
 - `/project-compact-progress` — When PROGRESS.md has grown noisy or hard to scan; reduces word count while preserving context and meaning
 - `/project-continue` — When resuming work from an existing PROGRESS.md
 - `/project-plan-task` — When introducing new work into an existing plan
+- `/project-review-progress` — When reviewing an existing PROGRESS.md plan or project roadmap
 - `/project-review-worktree` — When reviewing uncommitted work before commit
 - `/project-setup` — When starting a new project or feature; explores repo, asks questions, creates PROGRESS.md before coding
 - `/accessibility` — When building interfaces, WCAG AA baseline, accessible design

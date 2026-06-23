@@ -49,6 +49,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/project-compact-progress` | `project-compact-progress` | When PROGRESS.md has grown noisy or hard to scan; reduces word count while preserving context and meaning |
 | `/project-continue` | `project-continue` | When resuming work from an existing PROGRESS.md |
 | `/project-plan-task` | `project-plan-task` | When introducing new work into an existing plan |
+| `/project-review-progress` | `project-review-progress` | When reviewing an existing PROGRESS.md plan or project roadmap |
 | `/project-review-worktree` | `project-review-worktree` | When reviewing uncommitted work before commit |
 | `/project-setup` | `project-setup` | When starting a new project or feature; explores repo, asks questions, creates PROGRESS.md before coding |
 | `/refactoring` | `refactoring` | When refactoring existing code or triaging technical debt |
