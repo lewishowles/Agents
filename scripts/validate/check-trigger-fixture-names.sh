@@ -25,8 +25,6 @@ is_known_skill() {
 	[ -n "${SKILL_NAMES[$skill]+_}" ]
 }
 
-validate_section 'Checking trigger fixture skill names...'
-
 FIXTURE_SKILL_COUNT=0
 UNRESOLVED_FIXTURE_SKILL_COUNT=0
 
@@ -47,8 +45,3 @@ while IFS= read -r -d '' fixture_file; do
 	done < "$fixture_file"
 done < <(find "$REPO_DIR/tests/fixtures" \( -name "expected-skills.txt" -o -name "forbidden-skills.txt" \) -print0 | sort -z)
 
-if [ "$UNRESOLVED_FIXTURE_SKILL_COUNT" -eq 0 ]; then
-	printf '%s✓%s %d trigger fixture skill names resolved\n' "$GREEN" "$RESET_COLOUR" "$FIXTURE_SKILL_COUNT"
-else
-	printf '%s⚠%s %d unresolved trigger fixture skill name(s)\n' "$YELLOW" "$RESET_COLOUR" "$UNRESOLVED_FIXTURE_SKILL_COUNT"
-fi

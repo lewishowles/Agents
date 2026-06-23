@@ -7,8 +7,6 @@ source "$(cd "$(dirname "$0")/.." && pwd)/lib/validate.sh"
 
 validate_require_jq
 
-validate_section 'Checking dist/claude/hooks/ in sync...'
-
 STALE=0
 
 while IFS= read -r -d '' manifest; do
@@ -31,9 +29,5 @@ while IFS= read -r -d '' manifest; do
 		fi
 	done
 done < <(find "$REPO_DIR/hooks/claude" -name "hook.json" -print0 | sort -z)
-
-if [ "$STALE" -eq 0 ]; then
-	printf '%s✓%s dist/claude/hooks/ in sync\n' "$GREEN" "$RESET_COLOUR"
-fi
 
 validate_finish

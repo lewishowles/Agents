@@ -18,8 +18,6 @@ while IFS= read -r -d '' manifest; do
 	fi
 done < <(find "$REPO_DIR/skills" -name "skill.json" -print0 | sort -z)
 
-validate_section 'Checking skill manifests...'
-
 SKILL_COUNT=0
 
 while IFS= read -r -d '' manifest; do
@@ -85,7 +83,5 @@ while IFS= read -r -d '' manifest; do
 
 	SKILL_COUNT=$((SKILL_COUNT + 1))
 done < <(find "$REPO_DIR/skills" -name "skill.json" -print0 | sort -z)
-
-printf '%s✓%s %d skill manifests valid\n' "$GREEN" "$RESET_COLOUR" "$SKILL_COUNT"
 
 validate_finish

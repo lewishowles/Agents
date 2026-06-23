@@ -9,8 +9,6 @@ validate_require_jq
 
 VALID_FAILURE_MODES=("block" "ignore" "silent")
 
-validate_section 'Checking hook manifests...'
-
 HOOK_COUNT=0
 
 while IFS= read -r -d '' manifest; do
@@ -63,7 +61,5 @@ while IFS= read -r -d '' manifest; do
 
 	HOOK_COUNT=$((HOOK_COUNT + 1))
 done < <(find "$REPO_DIR/hooks/claude" -name "hook.json" -print0 | sort -z)
-
-printf '%s✓%s %d hook manifests valid\n' "$GREEN" "$RESET_COLOUR" "$HOOK_COUNT"
 
 validate_finish
