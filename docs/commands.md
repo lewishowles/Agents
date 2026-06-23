@@ -52,6 +52,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/project-review-progress` | `project-review-progress` | When reviewing an existing PROGRESS.md plan or project roadmap |
 | `/project-review-worktree` | `project-review-worktree` | When reviewing uncommitted work before commit |
 | `/project-setup` | `project-setup` | When starting a new project or feature; explores repo, asks questions, creates PROGRESS.md before coding |
+| `/project-synthesise-feedback` | `project-synthesise-feedback` | When critically synthesising another agent's suggestions with current recommendations |
 | `/refactoring` | `refactoring` | When refactoring existing code or triaging technical debt |
 | `/swift` | `swift` | When writing Swift, style, SwiftUI patterns, concurrency |
 | `/swift-ui` | `swift-ui` | When writing/reviewing SwiftUI code, views, state management |
