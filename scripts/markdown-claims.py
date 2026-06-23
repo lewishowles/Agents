@@ -8,8 +8,10 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -47,6 +49,13 @@ RE_INLINE_CODE = re.compile(r'(?<!`)`([^`\n]+)`(?!`)')
 RE_CODE_FENCE = re.compile(r'```.*?```', re.DOTALL)
 
 
+@dataclass
+class Issue:
+	file: str    # repo-relative path of the markdown file
+	claim: str   # the path string as written in the source
+	kind: str    # missing_path | missing_script | not_executable
+
+
 def collect_files(dirs: list[str]) -> list[Path]:
 	files = []
 	for d in dirs:
@@ -81,9 +90,9 @@ def extract_link_claims(text: str, source_file: Path) -> list[tuple[str, Path]]:
 # Paths are resolved from the repo root. Trailing arguments are stripped so
 # `scripts/foo.sh --flag` resolves to scripts/foo.sh.
 #
-# @param  {str}            text
+# @param  {str}        text
 #     Markdown source with fences already stripped.
-# @param  {tuple[str]}     prefixes
+# @param  {tuple[str]} prefixes
 #     Only inline code starting with one of these prefixes is included.
 def extract_code_claims(
 	text: str,
@@ -94,7 +103,6 @@ def extract_code_claims(
 		code = m.group(1).strip()
 		if not code.startswith(prefixes):
 			continue
-		# Strip trailing arguments (e.g. `scripts/setup.sh --flag`)
 		path_part = code.split()[0].rstrip("/")
 		if "<" in path_part:
 			continue
@@ -103,43 +111,54 @@ def extract_code_claims(
 	return claims
 
 
-def check_paths() -> int:
+# Checks relative path claims in agent instruction files.
+# Returns one Issue per missing path.
+def check_paths() -> list[Issue]:
 	files = collect_files(PATH_SCAN_DIRS)
-	failures = 0
+	issues = []
 
 	for md_file in files:
 		text = strip_fences(md_file.read_text(encoding="utf-8"))
-		rel = md_file.relative_to(REPO_ROOT)
+		rel = str(md_file.relative_to(REPO_ROOT))
 
 		link_claims = extract_link_claims(text, md_file)
 		code_claims = extract_code_claims(text, REPO_PATH_PREFIXES)
 
 		for claim, resolved in link_claims + code_claims:
 			if not resolved.exists():
-				print(f"  {rel}: missing path '{claim}'")
-				failures += 1
+				issues.append(Issue(file=rel, claim=claim, kind="missing_path"))
 
-	return failures
+	return issues
 
 
-def check_commands() -> int:
+# Checks that scripts/ references in markdown exist and are executable.
+# Returns one Issue per missing or non-executable script.
+def check_commands() -> list[Issue]:
 	dirs = PATH_SCAN_DIRS + COMMAND_EXTRA_DIRS
 	files = collect_files(dirs)
-	failures = 0
+	issues = []
 
 	for md_file in files:
 		text = strip_fences(md_file.read_text(encoding="utf-8"))
-		rel = md_file.relative_to(REPO_ROOT)
+		rel = str(md_file.relative_to(REPO_ROOT))
 
 		for claim, resolved in extract_code_claims(text, ("scripts/",)):
 			if not resolved.exists():
-				print(f"  {rel}: missing script '{claim}'")
-				failures += 1
+				issues.append(Issue(file=rel, claim=claim, kind="missing_script"))
 			elif not resolved.stat().st_mode & 0o111:
-				print(f"  {rel}: script not executable '{claim}'")
-				failures += 1
+				issues.append(Issue(file=rel, claim=claim, kind="not_executable"))
 
-	return failures
+	return issues
+
+
+def _print_issues(issues: list[Issue]) -> None:
+	for issue in issues:
+		if issue.kind == "missing_path":
+			print(f"  {issue.file}: missing path '{issue.claim}'")
+		elif issue.kind == "missing_script":
+			print(f"  {issue.file}: missing script '{issue.claim}'")
+		elif issue.kind == "not_executable":
+			print(f"  {issue.file}: script not executable '{issue.claim}'")
 
 
 def main() -> None:
@@ -150,18 +169,29 @@ def main() -> None:
 		default="all",
 		help="Which claims to check (default: all)",
 	)
+	parser.add_argument(
+		"--json",
+		action="store_true",
+		help="Output findings as JSON",
+	)
 	args = parser.parse_args()
 
-	failures = 0
+	issues: list[Issue] = []
 
 	if args.mode in ("paths", "all"):
-		failures += check_paths()
+		issues.extend(check_paths())
 
 	if args.mode in ("commands", "all"):
-		failures += check_commands()
+		issues.extend(check_commands())
 
-	if failures:
-		print(f"\n  {failures} issue(s) found")
+	if args.json:
+		print(json.dumps({"issues": [asdict(i) for i in issues]}, indent=2))
+	else:
+		_print_issues(issues)
+		if issues:
+			print(f"\n  {len(issues)} issue(s) found")
+
+	if issues:
 		sys.exit(1)
 
 
