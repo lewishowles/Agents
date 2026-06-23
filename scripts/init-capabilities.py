@@ -194,16 +194,6 @@ class Generator:
 	notes: str = ""
 
 
-@dataclass
-class PreservedManifestValues:
-	package_manager: str = ""
-	common_check_rows: List[str] = None
-
-	def __post_init__(self) -> None:
-		if self.common_check_rows is None:
-			self.common_check_rows = []
-
-
 def read_json(path: Path) -> Dict[str, Any]:
 	try:
 		return json.loads(path.read_text())
@@ -245,49 +235,6 @@ def config_string(config: Dict[str, Any], key: str) -> str:
 	if isinstance(value, str):
 		return value.strip()
 	return ""
-
-
-def is_placeholder_value(value: str) -> bool:
-	normalised = value.strip().strip("`").lower()
-	return normalised in {"", "[command]", "[unknown]", "unknown", "not detected"}
-
-
-def preserved_values(project_dir: Path) -> PreservedManifestValues:
-	path = project_dir / MANIFEST_NAME
-	if not path.exists():
-		return PreservedManifestValues()
-
-	values = PreservedManifestValues()
-	in_common_checks = False
-
-	for raw_line in path.read_text().splitlines():
-		line = raw_line.strip()
-
-		if line.startswith("## "):
-			in_common_checks = line in {"## Common checks", "## Diagnostics and checks"}
-			continue
-
-		if line.startswith("- Package manager: "):
-			package_manager = line.removeprefix("- Package manager: ").strip()
-			if not is_placeholder_value(package_manager):
-				values.package_manager = package_manager
-			continue
-
-		if not in_common_checks or not line.startswith("|"):
-			continue
-
-		cells = [cell.strip() for cell in line.strip("|").split("|")]
-		if len(cells) < 2 or cells[0] in {"Purpose", "---"}:
-			continue
-
-		purpose = cells[0]
-		command = cells[1]
-		if is_placeholder_value(command):
-			continue
-
-		values.common_check_rows.append(f"| {purpose} | {command} (Preserved from existing) |")
-
-	return values
 
 
 def existing_names(project_dir: Path, names: List[str]) -> List[str]:
@@ -853,7 +800,6 @@ def render_manifest(project_dir: Path, tree_depth: int, tree_excludes: List[str]
 	package = package_json(project_dir)
 	scripts = package.get("scripts", {})
 	config = load_config(project_dir)
-	preserved = preserved_values(project_dir)
 
 	manager = detect_package_manager(project_dir, package)
 	stack = config_string(config, "primaryStack") or detect_primary_stack(project_dir, package)
@@ -891,10 +837,8 @@ def render_manifest(project_dir: Path, tree_depth: int, tree_excludes: List[str]
 		"## Repo summary",
 		"",
 		f"- Primary stack: {stack}",
-		f"- Package manager: {preserved.package_manager}"
-			if preserved.package_manager
-			else f"- Package manager: {manager.name if manager.name != UNKNOWN else UNKNOWN}"
-				+ (f" (detected from `{manager.source}`)" if manager.source != UNKNOWN else ""),
+		f"- Package manager: {manager.name if manager.name != UNKNOWN else UNKNOWN}"
+			+ (f" (detected from `{manager.source}`)" if manager.source != UNKNOWN else ""),
 		f"- Script runner: `{manager.run_prefix} <script>`" if manager.name != UNKNOWN else "- Script runner: Not detected",
 		f"- Runtime requirements: {runtime}",
 		*bullet_values("Progress files", progress_files),
@@ -944,7 +888,6 @@ def render_manifest(project_dir: Path, tree_depth: int, tree_excludes: List[str]
 		"| --- | --- |",
 		*common_check_rows(scripts, manager),
 		*config_common_check_rows(config),
-		*preserved.common_check_rows,
 		"",
 		"## Local services",
 		"",
