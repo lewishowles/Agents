@@ -57,16 +57,17 @@ ensure_container_dir() {
 	local path="$1"
 	local label="$2"
 
-	if [ -L "$path" ]; then
-		local backup
-		backup=$(backup_path "$path")
-		mkdir -p "$path"
-		printf '  %s⟳%s replaced %s (backup at %s)\n' "$YELLOW" "$RESET_COLOUR" "$label" "$(display_path "$backup")"
-	elif [ -e "$path" ] && [ ! -d "$path" ]; then
-		local backup
-		backup=$(backup_path "$path")
-		mkdir -p "$path"
-		printf '  %s⟳%s replaced %s (backup at %s)\n' "$YELLOW" "$RESET_COLOUR" "$label" "$(display_path "$backup")"
+	if [ -L "$path" ] || { [ -e "$path" ] && [ ! -d "$path" ]; }; then
+		if [ "${SKIP_BACKUP:-0}" = "1" ]; then
+			rm -rf "$path"
+			mkdir -p "$path"
+			printf '  %s⟳%s replaced %s\n' "$YELLOW" "$RESET_COLOUR" "$label"
+		else
+			local backup
+			backup=$(backup_path "$path")
+			mkdir -p "$path"
+			printf '  %s⟳%s replaced %s (backup at %s)\n' "$YELLOW" "$RESET_COLOUR" "$label" "$(display_path "$backup")"
+		fi
 	else
 		mkdir -p "$path"
 	fi
@@ -121,15 +122,27 @@ link_path() {
 			return
 		fi
 
-		local backup
-		backup=$(backup_path "$target")
-		ln -s "$source" "$target"
-		printf '  %s⟳%s relinked %s (backup at %s)\n' "$YELLOW" "$RESET_COLOUR" "$label" "$(display_path "$backup")"
+		if [ "${SKIP_BACKUP:-0}" = "1" ]; then
+			rm "$target"
+			ln -s "$source" "$target"
+			printf '  %s⟳%s relinked %s\n' "$YELLOW" "$RESET_COLOUR" "$label"
+		else
+			local backup
+			backup=$(backup_path "$target")
+			ln -s "$source" "$target"
+			printf '  %s⟳%s relinked %s (backup at %s)\n' "$YELLOW" "$RESET_COLOUR" "$label" "$(display_path "$backup")"
+		fi
 	elif [ -e "$target" ]; then
-		local backup
-		backup=$(backup_path "$target")
-		ln -s "$source" "$target"
-		printf '  %s⟳%s replaced %s (backup at %s)\n' "$YELLOW" "$RESET_COLOUR" "$label" "$(display_path "$backup")"
+		if [ "${SKIP_BACKUP:-0}" = "1" ]; then
+			rm -rf "$target"
+			ln -s "$source" "$target"
+			printf '  %s⟳%s replaced %s\n' "$YELLOW" "$RESET_COLOUR" "$label"
+		else
+			local backup
+			backup=$(backup_path "$target")
+			ln -s "$source" "$target"
+			printf '  %s⟳%s replaced %s (backup at %s)\n' "$YELLOW" "$RESET_COLOUR" "$label" "$(display_path "$backup")"
+		fi
 	else
 		ln -s "$source" "$target"
 		printf '  %s✓%s linked %s\n' "$GREEN" "$RESET_COLOUR" "$label"

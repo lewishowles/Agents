@@ -13,7 +13,7 @@ source "$REPO_DIR/scripts/lib/colours.sh"
 source "$REPO_DIR/scripts/lib/setup-links.sh"
 
 usage() {
-	printf 'Usage: %s [--claude|--codex|--both] [--skip-external]\n' "$(basename "$0")"
+	printf 'Usage: %s [--claude|--codex|--both] [--skip-external] [--no-backup]\n' "$(basename "$0")"
 }
 
 setup_claude() {
@@ -89,10 +89,15 @@ ensure_codex_config() {
 		return
 	fi
 
-	local backup="$config.bak.$(timestamp)"
-	cp "$config" "$backup"
-	mv "$temp" "$config"
-	printf '  %s✓%s configured Codex MCP server (backup at %s)\n' "$GREEN" "$RESET_COLOUR" "$(display_path "$backup")"
+	if [ "${SKIP_BACKUP:-0}" = "1" ]; then
+		mv "$temp" "$config"
+		printf '  %s✓%s configured Codex MCP server\n' "$GREEN" "$RESET_COLOUR"
+	else
+		local backup="$config.bak.$(timestamp)"
+		cp "$config" "$backup"
+		mv "$temp" "$config"
+		printf '  %s✓%s configured Codex MCP server (backup at %s)\n' "$GREEN" "$RESET_COLOUR" "$(display_path "$backup")"
+	fi
 }
 
 # Configures git to use hooks/git/ as the hook directory for this repo.
@@ -122,6 +127,7 @@ prompt_target() {
 
 target=""
 sync_external=true
+SKIP_BACKUP=0
 
 while [ $# -gt 0 ]; do
 	case "$1" in
@@ -129,11 +135,14 @@ while [ $# -gt 0 ]; do
 		--codex)         target="codex" ;;
 		--both)          target="both" ;;
 		--skip-external) sync_external=false ;;
+		--no-backup)     SKIP_BACKUP=1 ;;
 		--help)          usage; exit 0 ;;
 		*)               usage >&2; exit 1 ;;
 	esac
 	shift
 done
+
+export SKIP_BACKUP
 
 if [ -z "$target" ]; then
 	target=$(prompt_target)
