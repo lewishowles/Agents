@@ -118,3 +118,11 @@ _Three-gate criteria inspired by [mattpocock/skills](https://github.com/mattpoco
 **Maintain PROGRESS.md** for multi-file, multi-session, or complex-scope work. Update after every significant change; mark items done as they complete; compact completed sections when starting the next chunk.
 
 **Work in committable chunks.** Before: summarise and wait for confirmation if requested. After: explain what changed, provide a `feat(scope): description` commit message, update PROGRESS.md, and wait for confirmation before the next chunk.
+
+Default to small, directly related chunks. Each chunk should fit one reviewable idea and one expected commit.
+
+- Split broad roadmap items before implementation.
+- Keep source, tests, docs, capability updates, and adoption work separate unless the same change requires them.
+- Prefer one primitive family, one profile behaviour, or one capability concern per chunk.
+- Stop after each chunk with files changed, verification performed, next step, and suggested commit message.
+- Do not continue into the next chunk until the user confirms.

@@ -125,6 +125,14 @@ _Three-gate criteria inspired by [mattpocock/skills](https://github.com/mattpoco
 
 **Work in committable chunks.** Before: summarise and wait for confirmation if requested. After: explain what changed, provide a `feat(scope): description` commit message, update PROGRESS.md, and wait for confirmation before the next chunk.
 
+Default to small, directly related chunks. Each chunk should fit one reviewable idea and one expected commit.
+
+- Split broad roadmap items before implementation.
+- Keep source, tests, docs, capability updates, and adoption work separate unless the same change requires them.
+- Prefer one primitive family, one profile behaviour, or one capability concern per chunk.
+- Stop after each chunk with files changed, verification performed, next step, and suggested commit message.
+- Do not continue into the next chunk until the user confirms.
+
 ## Identity & expertise
 
 Designer, front-end dev, strong full-stack. Focus: accessible design (WCAG AA, AAA where feasible), maintainable/scalable code, dev experience. UK-based. Exploring freelance, tooling, accessibility audits.
