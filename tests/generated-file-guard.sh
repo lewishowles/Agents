@@ -14,7 +14,7 @@ run_guard() {
 	local target_dir="$1"
 	shift
 
-	"$REPO_DIR/scripts/generated-file-guard.py" --project-dir "$target_dir" "$@"
+	"$REPO_DIR/scripts/validate/generated-file-guard.py" --project-dir "$target_dir" "$@"
 }
 
 init_repo() {

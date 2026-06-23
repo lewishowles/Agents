@@ -41,7 +41,7 @@ class Issue:
 # Runs markdown-claims.py and returns its findings as Issue objects.
 def run_claims_check() -> list[Issue]:
 	result = subprocess.run(
-		[sys.executable, str(REPO_ROOT / "scripts" / "markdown-claims.py"), "--mode", "all", "--json"],
+		[sys.executable, str(REPO_ROOT / "scripts" / "validate" / "markdown-claims.py"), "--mode", "all", "--json"],
 		capture_output=True,
 		text=True,
 	)

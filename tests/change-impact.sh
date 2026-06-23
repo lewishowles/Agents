@@ -15,7 +15,7 @@ run_impact() {
 	local target_dir="$1"
 	shift
 
-	"$REPO_DIR/scripts/change-impact.py" --project-dir "$target_dir" "$@"
+	"$REPO_DIR/scripts/validate/change-impact.py" --project-dir "$target_dir" "$@"
 }
 
 init_repo() {

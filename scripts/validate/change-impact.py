@@ -264,11 +264,14 @@ def verification_gaps(grouped: dict[str, list[str]], guard_result: dict[str, Any
 	return gaps
 
 
-def suggested_checks(diagnostics_result: dict[str, Any], guard_result: dict[str, Any]) -> list[str]:
+def suggested_checks(project_dir: Path, diagnostics_result: dict[str, Any], guard_result: dict[str, Any]) -> list[str]:
 	checks = []
 
 	if guard_result.get("available"):
-		checks.append("scripts/generated-file-guard.py")
+		checks.append("scripts/validate/generated-file-guard.py")
+
+	if (project_dir / "scripts" / "validate.sh").exists():
+		checks.append("bash scripts/validate.sh")
 
 	for check in diagnostics_result.get("checks", []):
 		command = check.get("command", [])
@@ -293,7 +296,7 @@ def build_report(project_dir: Path) -> dict[str, Any]:
 		"ok": not any(risk.severity == "high" for risk in risks),
 		"project_dir": str(project_dir),
 		"risks": [risk.__dict__ for risk in risks],
-		"suggested_checks": suggested_checks(diagnostics_result, guard_result),
+		"suggested_checks": suggested_checks(project_dir, diagnostics_result, guard_result),
 		"verification_gaps": verification_gaps(grouped, guard_result),
 	}
 
