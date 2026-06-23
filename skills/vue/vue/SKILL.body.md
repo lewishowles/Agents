@@ -30,24 +30,39 @@
 Every prop gets concise, user-focused JSDoc:
 
 ```vue
-const props = defineProps({ /** * The date to display, formatted as ISO 8601. */ date: { type:
-String, required: true, }, /** * The locale to use when formatting the date. If not provided, uses
-the user's locale. */ locale: { type: String, default: undefined, }, });
+const props = defineProps({
+	/**
+	 * The date to display, formatted as ISO 8601.
+	 */
+	date: {
+		type: String,
+		required: true,
+	},
+	/**
+	 * The locale to use when formatting the date. If not provided, uses the user's locale.
+	 */
+	locale: {
+		type: String,
+		default: undefined,
+	},
+});
 ```
 
 ### Prop bindings
 
-Prefer object `v-bind` over `:` shorthand for variable/expression bindings:
+Prefer object `v-bind` over `:` shorthand for variable/expression bindings. Use `v-model` for two-way bindings — do not replace it with explicit `v-bind` + `@update:model-value`:
 
 ```vue
 <!-- ✓ -->
 <my-component v-bind="{ count }" />
 <my-component class="compact" aria-live="polite" />
+<form-input v-model="searchQuery" />
 
 <!-- ✗ -->
 <my-component :count />
 <my-component :count="count" />
 <my-component v-bind="{ class: 'compact', ariaLive: 'polite' }" />
+<form-input v-bind="{ modelValue: searchQuery }" @update:model-value="searchQuery = $event" />
 ```
 
 ## Computed properties
@@ -60,10 +75,17 @@ Prefer object `v-bind` over `:` shorthand for variable/expression bindings:
 - Copy arrays before sorting or reversing inside computed values
 
 ```vue
-// Whether an error slot has been provided. const haveError = computed(() =>
-isNonEmptySlot(slots.error)); // The formatted date string, ready for display. const displayDate =
-computed(() => { if (!isNonEmptyString(props.date)) { return null; } return new
-Date(props.date).toLocaleDateString(props.locale); });
+// Whether an error slot has been provided.
+const haveError = computed(() => isNonEmptySlot(slots.error));
+
+// The formatted date string, ready for display.
+const displayDate = computed(() => {
+	if (!isNonEmptyString(props.date)) {
+		return null;
+	}
+
+	return new Date(props.date).toLocaleDateString(props.locale);
+});
 ```
 
 ## Component patterns
@@ -129,7 +151,9 @@ src/pages/
 import { definePage } from "vue-router";
 
 definePage({
-  meta: { requiresAuth: true },
+	meta: {
+		requiresAuth: true,
+	},
 });
 </script>
 ```
