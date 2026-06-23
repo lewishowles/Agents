@@ -34,7 +34,7 @@ run_check "trigger fixture names" bash "$REPO_DIR/scripts/validate/check-trigger
 run_check "hook manifests"        bash "$REPO_DIR/scripts/validate/check-hook-manifests.sh"
 run_check "generated files"       bash "$REPO_DIR/scripts/validate/check-generated-files.sh"
 run_check "hook sync"             bash "$REPO_DIR/scripts/validate/check-hook-sync.sh"
-run_check "docs tables"           python3 "$REPO_DIR/scripts/build-docs.py" --check
+run_check "docs tables"           python3 "$REPO_DIR/scripts/build/build-docs.py" --check
 run_check "skill triggers"        bash "$REPO_DIR/tests/skill-triggers.sh"
 run_check "project diagnostics"   bash "$REPO_DIR/tests/project-diagnostics.sh"
 run_check "repo context"          bash "$REPO_DIR/tests/repo-context.sh"

@@ -14,7 +14,7 @@ import json
 import shutil
 from pathlib import Path
 
-REPO_DIR = Path(__file__).resolve().parent.parent
+REPO_DIR = Path(__file__).resolve().parent.parent.parent
 SKILLS_DIR = REPO_DIR / "skills"
 TARGET_DIR = REPO_DIR / "dist" / "chatgpt"
 SOURCE_DIR = TARGET_DIR / "source"

@@ -12,7 +12,7 @@
 import json
 from pathlib import Path
 
-REPO_DIR = Path(__file__).resolve().parent.parent
+REPO_DIR = Path(__file__).resolve().parent.parent.parent
 BASE_FILE = REPO_DIR / "adapters" / "claude" / "settings.base.json"  # Editable settings source.
 HOOKS_DIR = REPO_DIR / "hooks" / "claude"
 OUT_FILE = REPO_DIR / "dist" / "claude" / "settings.json"

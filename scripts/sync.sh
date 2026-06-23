@@ -86,13 +86,13 @@ copy_hooks() {
 
 mkdir -p "$REPO_DIR/dist/claude" "$REPO_DIR/dist/codex"
 
-python3 "$REPO_DIR/scripts/build-skill-mds.py"
-python3 "$REPO_DIR/scripts/build-docs.py"
+python3 "$REPO_DIR/scripts/build/build-skill-mds.py"
+python3 "$REPO_DIR/scripts/build/build-docs.py"
 copy_hooks
 write_target "$CLAUDE_TARGET" "${CLAUDE_PARTS[@]}"
 write_target "$CODEX_TARGET" "${CODEX_PARTS[@]}"
-python3 "$REPO_DIR/scripts/build-chatgpt-target.py"
-python3 "$REPO_DIR/scripts/build-settings.py"
+python3 "$REPO_DIR/scripts/build/build-chatgpt-target.py"
+python3 "$REPO_DIR/scripts/build/build-settings.py"
 
 printf '%s✓%s synced %sdist/claude/CLAUDE.md%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"
 printf '%s✓%s synced %sdist/codex/AGENTS.md%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"

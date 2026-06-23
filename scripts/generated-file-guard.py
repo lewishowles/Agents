@@ -40,17 +40,17 @@ CONFIG_REPO_RULES = [
 	},
 	{
 		"generated": ["dist/claude/source/global-skills.md"],
-		"sources": ["scripts/build-skill-mds.py"],
+		"sources": ["scripts/build/build-skill-mds.py"],
 		"label": "Claude skill index",
 	},
 	{
 		"generated": ["dist/chatgpt/"],
-		"sources": ["dist/chatgpt/source/", "scripts/build-chatgpt-target.py"],
+		"sources": ["dist/chatgpt/source/", "scripts/build/build-chatgpt-target.py"],
 		"label": "ChatGPT target",
 	},
 	{
 		"generated": ["docs/agents.md", "docs/commands.md", "docs/hooks.md", "docs/plugins.md", "docs/skills.md"],
-		"sources": ["scripts/build-docs.py"],
+		"sources": ["scripts/build/build-docs.py"],
 		"label": "generated docs tables",
 	},
 ]

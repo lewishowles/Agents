@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Downloads and updates skills listed in external-skills.json.
 # Each skill's SKILL.body.md is overwritten on sync; SKILL.md is regenerated
-# by build-skill-mds.py. A SYNC.md file records provenance and upstream SHA
+# by scripts/build/build-skill-mds.py. A SYNC.md file records provenance and upstream SHA
 # so subsequent runs can skip skills that haven't changed.
 
 set -euo pipefail
