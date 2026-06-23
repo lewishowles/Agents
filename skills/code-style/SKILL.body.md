@@ -40,6 +40,7 @@
 - No banner/divider comments (`// ---`) — use JSDoc or equivalent and blank lines for structure
 - **In-code comments explain purpose, not mechanics** — say what value, prop, branch, or check is for. Explain internals only when needed.
 - Avoid comments that repeat syntax, narrate control flow, or describe workaround mechanics. Prefer purpose comments.
+- Don't justify a fix by explaining the mechanism it avoids (reactivity loops, render timing, re-entrancy). State the rule the code follows, not the failure it prevents. Keep a "why" only as a guardrail against a likely future edit (e.g. "declared after initialise() so the initial seeding doesn't emit") — one clause, no mechanism, no em-dash addendum restating the consequence.
 - Remove stale/transactional bug-fix comments once code expresses behaviour.
 - Block comments for functions explain purpose and externally relevant constraints; avoid internal implementation trivia.
 - Comments use plain-language voice — see `/writing`. No unexplained jargon, no "etc"; write for newcomer. Purpose over cleverness.

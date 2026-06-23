@@ -18,6 +18,8 @@ CHECKS=(
 	"scripts/validate/check-repo-context.sh"
 	"scripts/validate/check-generated-file-guard.sh"
 	"scripts/validate/check-change-impact.sh"
+	"scripts/validate/check-dead-refs.sh"
+	"scripts/validate/check-command-refs.sh"
 )
 
 FAILED_CHECKS=0
