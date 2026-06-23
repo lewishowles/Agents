@@ -33,15 +33,15 @@ Edit `servers/local-repo-gateway/repos.json` so each entry points at a local rep
 
 ```json
 {
-  "repos": [
-    {
-      "id": "agents-config",
-      "name": "Agent configuration",
-      "path": "/Users/lewis/Dev/Configuration/Agents",
-      "description": "Shared Claude, Codex, and ChatGPT configuration source",
-      "operations": ["read", "git_status", "git_diff"]
-    }
-  ]
+	"repos": [
+		{
+			"id": "agents-config",
+			"name": "Agent configuration",
+			"path": "/Users/lewis/Dev/Configuration/Agents",
+			"description": "Shared Claude, Codex, and ChatGPT configuration source",
+			"operations": ["read", "git_status", "git_diff"]
+		}
+	]
 }
 ```
 
@@ -53,23 +53,88 @@ scripts/local-repo-gateway-mcp.sh
 
 The script checks for `repos.json`, creates a Python 3.12 virtual environment at `servers/local-repo-gateway/.venv` if one does not exist, installs requirements via `uv`, then starts `servers/local-repo-gateway/server.py`. Stop it with `Ctrl+C`. Requires `uv` on `PATH`.
 
-## ChatGPT connector workflow
+## ChatGPT setup (Custom GPT with Actions)
 
-Add a local MCP connector in ChatGPT that uses stdio transport and starts this server script:
+ChatGPT connects via an HTTP server exposed through a Cloudflare tunnel. This is a one-time setup. You need a Cloudflare account with a domain managed by Cloudflare DNS.
+
+### 1. Create a Cloudflare tunnel
+
+Install cloudflared if you haven't already:
 
 ```sh
-/path/to/Agents/scripts/local-repo-gateway-mcp.sh
+brew install cloudflare/cloudflare/cloudflared
 ```
 
-Use the repository path that matches this checkout on your machine. The connector should launch the command directly over stdio; no HTTP tunnel or arbitrary filesystem bridge is needed.
+Authenticate with your Cloudflare account (opens a browser):
 
-After connecting:
+```sh
+cloudflared login
+```
 
-1. Ask ChatGPT to use Local Repo Gateway.
-2. ChatGPT calls `local_repo_health` to confirm the server is reachable.
-3. ChatGPT calls `local_repo_list` to show configured repositories.
-4. Choose the `repo_id` ChatGPT should inspect.
-5. ChatGPT uses the read-only tools for planning or review.
+Create a named tunnel and route a subdomain to it — replace `yourdomain.com` with your Cloudflare-managed domain:
+
+```sh
+cloudflared tunnel create local-repo-gateway
+cloudflared tunnel route dns local-repo-gateway local-repo-gateway.yourdomain.com
+```
+
+Note the tunnel ID printed by the first command. Then update `servers/local-repo-gateway/cloudflared/config.yml` with your tunnel ID, credentials file path, hostname, and local port:
+
+```yaml
+tunnel: <your-tunnel-id>
+credentials-file: /Users/<you>/.cloudflared/<your-tunnel-id>.json
+
+ingress:
+  - hostname: local-repo-gateway.yourdomain.com
+    service: http://127.0.0.1:8754
+  - service: http_status:404
+```
+
+Also update the `servers` field in `servers/local-repo-gateway/openapi.json` to match your hostname:
+
+```json
+"servers": [{ "url": "https://local-repo-gateway.yourdomain.com" }]
+```
+
+### 2. Generate an auth token
+
+```sh
+openssl rand -hex 32
+```
+
+Add the result to `~/.zshrc` (or your shell profile):
+
+```sh
+export GATEWAY_TOKEN="<paste token here>"
+```
+
+Then reload: `source ~/.zshrc`.
+
+### 3. Install and start the services
+
+```sh
+source ~/.zshrc
+bash scripts/local-repo-gateway-install.sh
+```
+
+This writes two LaunchAgents to `~/Library/LaunchAgents/` and loads them — one for the HTTP server on port 8754, one for the Cloudflare tunnel. Both start automatically on login. Re-run the install script whenever `GATEWAY_TOKEN` or the repo path changes.
+
+Logs:
+
+```sh
+tail -f /tmp/local-repo-gateway-http.log
+tail -f /tmp/local-repo-gateway-tunnel.log
+```
+
+### 4. Create the Custom GPT
+
+The schema in `servers/local-repo-gateway/openapi.json` has the tunnel hostname baked in as the server address. If the tunnel domain ever changes, update that file and re-run the install script.
+
+1. Go to ChatGPT → **Explore GPTs** → **Create**
+2. Under **Configure** → **Actions** → **Create new action**
+3. Paste the contents of `servers/local-repo-gateway/openapi.json` directly into the schema editor (do not use Import from URL — that requires the server to be running at import time)
+4. Under **Authentication**: API Key → set header name to `X-Gateway-Token` → paste the token
+5. Save the GPT and test with: _"List my local repos"_
 
 ## Available tools
 
@@ -103,28 +168,31 @@ After connecting:
 
 ## Troubleshooting
 
-If the server does not start:
+If the HTTP server does not start:
 
-- Check that `servers/local-repo-gateway/repos.json` exists.
-- Check that `repos.json` is valid JSON.
-- Check that each repo entry has an `id`, `name`, `path`, `description`, and `operations`.
-- Check that every configured `path` exists on disk.
-- Run `scripts/local-repo-gateway-mcp.sh` from a terminal and read the first error.
-- Check that `uv` is on `PATH` (`which uv`).
-- Check that `uv` can create a Python 3.12 environment: `uv python install 3.12`.
+- Check `GATEWAY_TOKEN` is set: `echo $GATEWAY_TOKEN`
+- Check `servers/local-repo-gateway/repos.json` exists and is valid JSON
+- Check every configured `path` exists on disk
+- Run `bash scripts/local-repo-gateway-http.sh` in a terminal and read the first error
+- Check logs: `tail -20 /tmp/local-repo-gateway-http.log`
+- Check `uv` is on `PATH` (`which uv`) and can create Python 3.12: `uv python install 3.12`
 
-If the ChatGPT connector cannot reach it:
+If the tunnel does not connect:
 
-- Check that the connector uses stdio transport.
-- Check that the command points at the absolute path to `scripts/local-repo-gateway-mcp.sh`.
-- Check that the script is executable.
-- Start the same command manually in a terminal to confirm it launches.
-- Check that ChatGPT is not configured for an HTTP URL or tunnel for this connector.
-- Check connector logs for `repos.json not found`, Python dependency errors, or JSON parse errors.
+- Check logs: `tail -20 /tmp/local-repo-gateway-tunnel.log`
+- Run `bash scripts/local-repo-gateway-tunnel.sh` in a terminal to see errors directly
+- Check `cloudflared` is installed: `which cloudflared`
+- Verify the tunnel still exists: `cloudflared tunnel list`
+- Confirm DNS is routed correctly: `cloudflared tunnel info local-repo-gateway`
+
+If ChatGPT cannot reach the gateway:
+
+- Confirm the HTTP server is reachable through the tunnel: `curl -s -H "X-Gateway-Token: $GATEWAY_TOKEN" https://<your-tunnel-hostname>/health`
+- Check the token in the Custom GPT Action matches `$GATEWAY_TOKEN` exactly
+- Re-run `bash scripts/local-repo-gateway-install.sh` if you've changed the token
 
 If a tool cannot read a path:
 
-- Use `local_repo_list` to confirm the `repo_id`.
-- Use repo-relative paths, not absolute paths.
-- Check that the path does not escape the repo root.
-- Check that the path is not excluded as Git data, dependency output, generated output, cache data, or secret-looking content.
+- Use `local_repo_list` to confirm the `repo_id`
+- Use repo-relative paths, not absolute paths
+- Check the path is not excluded as Git data, dependency output, generated output, cache, or secret-looking content
