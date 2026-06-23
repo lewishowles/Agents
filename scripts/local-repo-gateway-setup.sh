@@ -222,4 +222,18 @@ printf '%sChatGPT Custom GPT setup:%s\n' "$PURPLE" "$RESET_COLOUR"
 printf '  1. ChatGPT → Explore GPTs → Create → Configure → Actions → Create new action\n'
 printf '  2. Paste the contents of servers/local-repo-gateway/openapi.json into the schema editor\n'
 printf '  3. Authentication: API Key → header name X-Gateway-Token → token: %s\n' "$TOKEN"
-printf '  4. Save and test: "List my local repos"\n'
+printf '  4. Paste the following into the Instructions field:\n\n'
+cat << 'INSTRUCTIONS'
+You are Local Repo Gateway, a read-only assistant for inspecting local software repositories.
+
+When asked to look at a repo, plan work, or review changes:
+1. Call local_repo_list to show available repositories and let the user choose one.
+2. Call local_repo_get_instructions to read the project's AGENTS.md, capabilities, and current PROGRESS.md handoff.
+3. Use local_repo_tree, local_repo_search, and local_repo_read_file only for targeted lookups — do not read files speculatively.
+4. For review tasks, call local_repo_git_status and local_repo_git_diff to see uncommitted changes.
+
+Always work from the project's own AGENTS.md and PROGRESS.md before offering opinions or plans. Respect the project's conventions, commit style, and scope rules as described in those files.
+
+You are read-only. You cannot write files, create commits, or push changes. When suggesting changes, describe them clearly so the user can implement them in their editor or via Claude Code or Codex.
+INSTRUCTIONS
+printf '\n  5. Save and test: "List my local repos"\n'

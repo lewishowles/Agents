@@ -41,6 +41,7 @@ app = FastAPI(
     title="Local Repo Gateway",
     version=VERSION,
     description="Read-only access to allowlisted local repositories.",
+    openapi_version="3.1.0",
 )
 
 _api_key_header = APIKeyHeader(name="X-Gateway-Token", auto_error=True)
@@ -58,42 +59,42 @@ def _repo(repo_id: str) -> dict:
         raise HTTPException(status_code=404, detail=str(e))
 
 
-@app.get("/health", dependencies=[Security(_auth)])
+@app.get("/health", dependencies=[Security(_auth)], operation_id="health")
 def health():
     return tool_health(_repos, {})
 
 
-@app.get("/repos", dependencies=[Security(_auth)])
+@app.get("/repos", dependencies=[Security(_auth)], operation_id="list_repos")
 def list_repos():
     return tool_list(_repos, {})
 
 
-@app.get("/repos/{repo_id}/instructions", dependencies=[Security(_auth)])
+@app.get("/repos/{repo_id}/instructions", dependencies=[Security(_auth)], operation_id="get_instructions")
 def get_instructions(repo_id: str):
     return tool_get_instructions(_repo(repo_id), {})
 
 
-@app.get("/repos/{repo_id}/tree", dependencies=[Security(_auth)])
+@app.get("/repos/{repo_id}/tree", dependencies=[Security(_auth)], operation_id="tree")
 def tree(repo_id: str, path: str = ""):
     return tool_tree(_repo(repo_id), {"path": path})
 
 
-@app.get("/repos/{repo_id}/search", dependencies=[Security(_auth)])
+@app.get("/repos/{repo_id}/search", dependencies=[Security(_auth)], operation_id="search")
 def search(repo_id: str, pattern: str, path: str = ""):
     return tool_search(_repo(repo_id), {"pattern": pattern, "path": path})
 
 
-@app.get("/repos/{repo_id}/file", dependencies=[Security(_auth)])
+@app.get("/repos/{repo_id}/file", dependencies=[Security(_auth)], operation_id="read_file")
 def read_file(repo_id: str, path: str):
     return tool_read_file(_repo(repo_id), {"path": path})
 
 
-@app.get("/repos/{repo_id}/git/status", dependencies=[Security(_auth)])
+@app.get("/repos/{repo_id}/git/status", dependencies=[Security(_auth)], operation_id="git_status")
 def git_status(repo_id: str):
     return tool_git_status(_repo(repo_id), {})
 
 
-@app.get("/repos/{repo_id}/git/diff", dependencies=[Security(_auth)])
+@app.get("/repos/{repo_id}/git/diff", dependencies=[Security(_auth)], operation_id="git_diff")
 def git_diff(repo_id: str, path: str = ""):
     return tool_git_diff(_repo(repo_id), {"path": path})
 

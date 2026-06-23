@@ -5,11 +5,16 @@
     "description": "Read-only access to allowlisted local repositories.",
     "version": "0.1.0"
   },
+  "servers": [
+    {
+      "url": "https://local-repo-gateway.howles.dev"
+    }
+  ],
   "paths": {
     "/health": {
       "get": {
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -30,7 +35,7 @@
     "/repos": {
       "get": {
         "summary": "List Repos",
-        "operationId": "list_repos_repos_get",
+        "operationId": "list_repos",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -51,7 +56,7 @@
     "/repos/{repo_id}/instructions": {
       "get": {
         "summary": "Get Instructions",
-        "operationId": "get_instructions_repos__repo_id__instructions_get",
+        "operationId": "get_instructions",
         "security": [
           {
             "APIKeyHeader": []
@@ -93,7 +98,7 @@
     "/repos/{repo_id}/tree": {
       "get": {
         "summary": "Tree",
-        "operationId": "tree_repos__repo_id__tree_get",
+        "operationId": "tree",
         "security": [
           {
             "APIKeyHeader": []
@@ -145,7 +150,7 @@
     "/repos/{repo_id}/search": {
       "get": {
         "summary": "Search",
-        "operationId": "search_repos__repo_id__search_get",
+        "operationId": "search",
         "security": [
           {
             "APIKeyHeader": []
@@ -206,7 +211,7 @@
     "/repos/{repo_id}/file": {
       "get": {
         "summary": "Read File",
-        "operationId": "read_file_repos__repo_id__file_get",
+        "operationId": "read_file",
         "security": [
           {
             "APIKeyHeader": []
@@ -257,7 +262,7 @@
     "/repos/{repo_id}/git/status": {
       "get": {
         "summary": "Git Status",
-        "operationId": "git_status_repos__repo_id__git_status_get",
+        "operationId": "git_status",
         "security": [
           {
             "APIKeyHeader": []
@@ -299,7 +304,7 @@
     "/repos/{repo_id}/git/diff": {
       "get": {
         "summary": "Git Diff",
-        "operationId": "git_diff_repos__repo_id__git_diff_get",
+        "operationId": "git_diff",
         "security": [
           {
             "APIKeyHeader": []
@@ -412,10 +417,5 @@
         "name": "X-Gateway-Token"
       }
     }
-  },
-  "servers": [
-    {
-      "url": "https://local-repo-gateway.howles.dev"
-    }
-  ]
+  }
 }
