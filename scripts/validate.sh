@@ -42,6 +42,7 @@ run_check "generated-file guard"  bash "$REPO_DIR/tests/generated-file-guard.sh"
 run_check "change impact"         bash "$REPO_DIR/tests/change-impact.sh"
 run_check "dead path refs"        python3 "$REPO_DIR/scripts/markdown-claims.py" --mode paths
 run_check "script command refs"   python3 "$REPO_DIR/scripts/markdown-claims.py" --mode commands
+run_check "setup drift"           python3 "$REPO_DIR/scripts/validate/check-setup-drift.py"
 run_check "staleness"             python3 "$REPO_DIR/scripts/validate/check-staleness.py"
 
 printf '\n'

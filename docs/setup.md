@@ -111,41 +111,33 @@ If external skill sync fails because the network is unavailable, keep the existi
 
 ## Project setup
 
-For Claude-only projects:
+Run `setup-project.sh` from the project root, passing the agent flag that matches the project:
 
 ```bash
-cp /path/to/repository/templates/claude/AGENTS.md.template AGENTS.md
-/path/to/repository/scripts/setup-project.sh --write-capabilities
-mkdir -p .claude
-cp /path/to/repository/templates/claude/.claudeignore .claude/.claudeignore
+cd /path/to/project
+
+# Claude-only
+/path/to/repository/scripts/setup-project.sh --claude
+
+# Codex-only
+/path/to/repository/scripts/setup-project.sh --codex
+
+# Both
+/path/to/repository/scripts/setup-project.sh --both
 ```
 
-For Codex-only projects:
+Each flag copies the matching `AGENTS.md` template, links `.agent/scripts/`, writes `AGENT_CAPABILITIES.md`, and (for Claude targets) copies `.claudeignore`. After setup, replace the placeholders in `AGENTS.md` with project-specific rules and review the generated `AGENT_CAPABILITIES.md`.
 
-```bash
-cp /path/to/repository/templates/codex/AGENTS.md.template AGENTS.md
-/path/to/repository/scripts/setup-project.sh --write-capabilities
-```
+### Repair paths for existing projects
 
-For projects using both:
-
-```bash
-cp /path/to/repository/templates/shared/AGENTS.md.template AGENTS.md
-/path/to/repository/scripts/setup-project.sh --write-capabilities
-mkdir -p .claude
-cp /path/to/repository/templates/claude/.claudeignore .claude/.claudeignore
-```
-
-After setup, replace placeholders in `AGENTS.md` with project-specific rules and review the generated `AGENT_CAPABILITIES.md`.
-
-For an existing project, preview a capabilities draft before writing it:
+To preview a capabilities draft without writing it:
 
 ```bash
 cd /path/to/project
 /path/to/repository/scripts/setup-project.sh --init-capabilities
 ```
 
-Write the draft only when the preview is useful:
+To write capabilities only (when `AGENTS.md` is already in place):
 
 ```bash
 cd /path/to/project
