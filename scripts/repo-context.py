@@ -272,9 +272,25 @@ def build_context(project_dir: Path) -> dict[str, Any]:
 		"generators": generators_from_capabilities(body) if has_capabilities else inferred_generators(project_dir),
 		"git": parse_git_state(project_dir),
 		"project_dir": str(project_dir),
+		"repo_dir": str(project_dir),
 		"source": "AGENT_CAPABILITIES.md" if has_capabilities else "inferred",
 		"summary": summary_from_capabilities(body) if has_capabilities else inferred_summary(project_dir),
 	}
+
+
+def _drift_score(repo_dir: Path) -> str:
+    drift_script = repo_dir / "scripts" / "repo-drift.py"
+    if not drift_script.exists():
+        return "n/a"
+    try:
+        result = subprocess.run(
+            ["python3", str(drift_script), "--json"],
+            capture_output=True, text=True, timeout=10, cwd=repo_dir,
+        )
+        data = json.loads(result.stdout)
+        return f"{data['score']}/{data['max']}"
+    except Exception:
+        return "n/a"
 
 
 def format_count(label: str, count: int) -> str:
@@ -303,6 +319,7 @@ def render_markdown(context: dict[str, Any]) -> str:
 		f"- Progress files: {summary.get('progress_files', 'Not detected')}",
 		f"- Diagnostics: `{context['diagnostics']}`" if context["diagnostics"] != "Not detected" else "- Diagnostics: Not detected",
 		f"- Git: {git['branch']}{upstream}; ahead {git['ahead']}, behind {git['behind']}; {changed_text}",
+		f"- Drift score: {_drift_score(Path(context['repo_dir']))}",
 		"",
 		"## Generated output",
 		"",
