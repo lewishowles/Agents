@@ -33,6 +33,7 @@ Official external skills are listed in `external-skills.json` and synced into `s
 | `project-compact-progress` | When PROGRESS.md has grown noisy or hard to scan; reduces word count while preserving context and meaning | (manual only) |
 | `project-continue` | When resuming work from an existing PROGRESS.md | (manual only) |
 | `project-plan-task` | When introducing new work into an existing plan | (manual only) |
+| `project-review-worktree` | When reviewing uncommitted work before commit | `review worktree`, `review working tree`, `review uncommitted`, `before commit`, `ready to commit`, `check this before commit`, `review these changes`, `review against progress` |
 | `project-setup` | When starting a new project or feature; explores repo, asks questions, creates PROGRESS.md before coding | (manual only) |
 | `refactoring` | When refactoring existing code or triaging technical debt | `refactor`, `technical debt`, `tech debt`, `clean up`, `code smell`, `simplify`, `restructure` |
 | `swift` | When writing Swift, style, SwiftUI patterns, concurrency | `.swift`, `swift`, `swiftui`, `xcode`, `actor`, `struct`, `@observable`, `@state`, `@mainactor`, `@environment`, `@binding`, `nsworkspace`, `dispatchsource`, `macos app`, `appkit`, `uikit`, `swiftdata`, `xctest`, `async await swift` |
