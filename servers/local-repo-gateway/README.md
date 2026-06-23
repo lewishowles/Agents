@@ -55,69 +55,27 @@ The script checks for `repos.json`, creates a Python 3.12 virtual environment at
 
 ## ChatGPT setup (Custom GPT with Actions)
 
-ChatGPT connects via an HTTP server exposed through a Cloudflare tunnel. This is a one-time setup. You need a Cloudflare account with a domain managed by Cloudflare DNS.
+ChatGPT connects via an HTTP server exposed through a Cloudflare tunnel. You need a Cloudflare account with a domain managed by Cloudflare DNS, and `cloudflared` installed (`brew install cloudflare/cloudflare/cloudflared`).
 
-### 1. Create a Cloudflare tunnel
-
-Install cloudflared if you haven't already:
+Run the setup script from the repo root:
 
 ```sh
-brew install cloudflare/cloudflare/cloudflared
+bash scripts/local-repo-gateway-setup.sh
 ```
 
-Authenticate with your Cloudflare account (opens a browser):
+The script will:
 
-```sh
-cloudflared login
-```
+1. Check prerequisites (`cloudflared`, `uv`, `rg`)
+2. Ask for the Cloudflare domain and hostname prefix
+3. Create the tunnel and DNS route
+4. Generate an auth token and tell you where to store it
+5. Write all config files
+6. Install and start the LaunchAgents
+7. Print the ChatGPT Custom GPT wiring instructions
 
-Create a named tunnel and route a subdomain to it — replace `yourdomain.com` with your Cloudflare-managed domain:
+Re-running the script is safe — existing tunnels and tokens are detected and preserved.
 
-```sh
-cloudflared tunnel create local-repo-gateway
-cloudflared tunnel route dns local-repo-gateway local-repo-gateway.yourdomain.com
-```
-
-Note the tunnel ID printed by the first command. Then update `servers/local-repo-gateway/cloudflared/config.yml` with your tunnel ID, credentials file path, hostname, and local port:
-
-```yaml
-tunnel: <your-tunnel-id>
-credentials-file: /Users/<you>/.cloudflared/<your-tunnel-id>.json
-
-ingress:
-  - hostname: local-repo-gateway.yourdomain.com
-    service: http://127.0.0.1:8754
-  - service: http_status:404
-```
-
-Also update the `servers` field in `servers/local-repo-gateway/openapi.json` to match your hostname:
-
-```json
-"servers": [{ "url": "https://local-repo-gateway.yourdomain.com" }]
-```
-
-### 2. Generate an auth token
-
-```sh
-openssl rand -hex 32
-```
-
-Add the result to `~/.zshrc` (or your shell profile):
-
-```sh
-export GATEWAY_TOKEN="<paste token here>"
-```
-
-Then reload: `source ~/.zshrc`.
-
-### 3. Install and start the services
-
-```sh
-source ~/.zshrc
-bash scripts/local-repo-gateway-install.sh
-```
-
-This writes two LaunchAgents to `~/Library/LaunchAgents/` and loads them — one for the HTTP server on port 8754, one for the Cloudflare tunnel. Both start automatically on login. Re-run the install script whenever `GATEWAY_TOKEN` or the repo path changes.
+After the script finishes, follow the printed instructions to create a Custom GPT in ChatGPT with the generated schema and token. Paste the contents of `servers/local-repo-gateway/openapi.json` directly into the schema editor rather than importing by URL.
 
 Logs:
 
@@ -125,16 +83,6 @@ Logs:
 tail -f /tmp/local-repo-gateway-http.log
 tail -f /tmp/local-repo-gateway-tunnel.log
 ```
-
-### 4. Create the Custom GPT
-
-The schema in `servers/local-repo-gateway/openapi.json` has the tunnel hostname baked in as the server address. If the tunnel domain ever changes, update that file and re-run the install script.
-
-1. Go to ChatGPT → **Explore GPTs** → **Create**
-2. Under **Configure** → **Actions** → **Create new action**
-3. Paste the contents of `servers/local-repo-gateway/openapi.json` directly into the schema editor (do not use Import from URL — that requires the server to be running at import time)
-4. Under **Authentication**: API Key → set header name to `X-Gateway-Token` → paste the token
-5. Save the GPT and test with: _"List my local repos"_
 
 ## Available tools
 
