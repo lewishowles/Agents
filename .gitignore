@@ -5,3 +5,5 @@ PROGRESS.md
 .claude/PROGRESS.md
 .agents/AGENTS.md
 .agents/PROGRESS.md
+servers/local-repo-gateway/repos.json
+servers/local-repo-gateway/.venv
