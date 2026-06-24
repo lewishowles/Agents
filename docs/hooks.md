@@ -33,6 +33,7 @@ Extension-to-skill mapping:
 | Pattern | Skills injected |
 | ------- | --------------- |
 | `*.sh` | `bash` |
+| `.boilersuit/generators/**` | `boilersuit-generator-authoring` |
 | `*.swift` | `code-style`, `swift`, `swift-ui`, `accessibility` |
 | `*.vue` | `code-style`, `vue`, `vue-pinia`, `vue-project-stack`, `vue-router`, `vue-use`, `typescript`, `dependencies` |
 | `*.ts` | `code-style`, `typescript` |
