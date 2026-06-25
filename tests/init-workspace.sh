@@ -20,14 +20,15 @@ run_init() {
 create_node_project() {
 	local target_dir="$1"
 
-	mkdir -p "$target_dir/src" "$target_dir/tests" "$target_dir/docs" "$target_dir/dist"
-	printf '{"scripts":{"test":"vitest","test:unit":"vitest","test:unit:run":"vitest run","lint":"eslint . --fix","lint:check":"eslint .","typecheck":"vue-tsc --noEmit","build":"vite build","test:e2e":"playwright test","test:component":"playwright test -c test/playwright-ct.config.js"},"peerDependencies":{"vue":"latest"},"packageManager":"bun@1.2.0"}\n' > "$target_dir/package.json"
+	mkdir -p "$target_dir/src" "$target_dir/tests" "$target_dir/docs" "$target_dir/dist" "$target_dir/.github/workflows"
+	printf '{"name":"example-app","version":"1.2.3","private":true,"type":"module","scripts":{"test":"vitest","test:unit":"vitest","test:unit:run":"vitest run","lint":"eslint . --fix","lint:check":"eslint .","typecheck":"vue-tsc --noEmit","build":"vite build","test:e2e":"playwright test","test:component":"playwright test -c test/playwright-ct.config.js"},"peerDependencies":{"vue":"latest"},"packageManager":"bun@1.2.0","exports":{".":"./src/index.js"},"bin":{"example":"./bin/example.js"}}\n' > "$target_dir/package.json"
 	printf 'lock\n' > "$target_dir/bun.lock"
 	printf 'export default {}\n' > "$target_dir/vitest.config.js"
 	mkdir -p "$target_dir/test"
 	printf 'export default {}\n' > "$target_dir/test/playwright-ct.config.js"
 	printf '# App\n' > "$target_dir/README.md"
 	printf '# Rules\n' > "$target_dir/AGENTS.md"
+	printf 'name: CI\n' > "$target_dir/.github/workflows/ci.yml"
 }
 
 create_javascript_library_project() {
@@ -91,6 +92,15 @@ test_preview_does_not_write() {
 	assert_contains "$output" '| Build | `bun run build` |'
 	assert_contains "$output" '| None detected |  |  |'
 	assert_contains "$output" 'Project diagnostics script: Not detected.'
+	assert_contains "$output" "## Package metadata"
+	assert_contains "$output" '| Name | `example-app` |'
+	assert_contains "$output" '| Private | `true` |'
+	assert_contains "$output" "## Declared entry points"
+	assert_contains "$output" '| `exports:.` | `./src/index.js` |'
+	assert_contains "$output" '| `bin:example` | `./bin/example.js` |'
+	assert_contains "$output" "## Continuous integration"
+	assert_contains "$output" '`.github/workflows/ci.yml`'
+	assert_not_contains "$output" "## File tree"
 }
 
 test_write_creates_missing_manifest() {
@@ -232,8 +242,16 @@ test_config_overrides_detected_values() {
 	"testPaths": ["src/**/*.test.js"],
 	"configPaths": ["package.json"],
 	"docPaths": ["README.md"],
+	"architectureNotes": ["Requests enter through src/index.js."],
+	"lookup": {
+		"Add analyser": "`src/analyser`"
+	},
+	"keyFiles": {
+		"`package.json`": "Package scripts and published metadata."
+	},
 	"commonChecks": {
-		"Single test file": "bun run test src/analyser/index.test.js"
+		"Single test file": "bun run test src/analyser/index.test.js",
+		"Unit tests": "bun run test:unit:run"
 	}
 }
 EOF
@@ -246,6 +264,24 @@ EOF
 	assert_contains "$output" 'Main source directories: `src`'
 	assert_contains "$output" 'Documentation paths: `README.md`'
 	assert_contains "$output" '| Single test file | `bun run test src/analyser/index.test.js` |'
+	assert_contains "$output" '| Unit tests | `bun run test:unit:run` |'
+	assert_contains "$output" "## Architecture notes"
+	assert_contains "$output" "Requests enter through src/index.js."
+	assert_contains "$output" "## Lookup"
+	assert_contains "$output" '| Add analyser | `src/analyser` |'
+	assert_contains "$output" "## Key files"
+	assert_contains "$output" '| `package.json` | Package scripts and published metadata. |'
+}
+
+test_file_tree_is_opt_in() {
+	local target_dir="$TEST_ROOT/tree"
+	local output="$TEST_ROOT/tree.md"
+	create_node_project "$target_dir"
+
+	run_init "$target_dir" --tree-depth 1 > "$output"
+
+	assert_contains "$output" "## File tree"
+	assert_contains "$output" "Generated with depth 1."
 }
 
 test_diagnostics_guidance_discourages_direct_commands() {
@@ -293,6 +329,7 @@ test_library_with_dev_framework_dependency_keeps_library_stack
 test_xcode_project_detects_swift_paths
 test_nested_test_files_are_summarised
 test_config_overrides_detected_values
+test_file_tree_is_opt_in
 test_diagnostics_guidance_discourages_direct_commands
 test_missing_package_scripts_leave_unknowns
 test_repo_preview_uses_progress_file

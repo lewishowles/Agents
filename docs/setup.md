@@ -147,3 +147,23 @@ cd /path/to/project
 Use `--force-workspace` only after reviewing the existing `WORKSPACE.md`. Recognised manual values are preserved when the draft is refreshed.
 
 The previous `--init-capabilities`, `--write-capabilities`, and `--force-capabilities` flags remain as deprecated aliases during migration.
+
+The default output omits the broad file tree. Pass `--tree-depth <number>` when a tree is useful.
+
+Add `.agent-workspace.json` for reviewed facts that cannot be detected safely:
+
+```json
+{
+	"architectureNotes": [
+		"Requests enter through src/index.js."
+	],
+	"keyFiles": {
+		"`package.json`": "Package scripts and published metadata."
+	},
+	"lookup": {
+		"Add analyser": "`src/analyser`"
+	}
+}
+```
+
+Configured notes are labelled in `WORKSPACE.md`. They should state repository facts, not recommendations or temporary plans.

@@ -87,6 +87,14 @@ COMMON_DOC_FILES = [
 	"docs",
 ]
 
+COMMON_CI_FILES = [
+	".circleci/config.yml",
+	".circleci/config.yaml",
+	".gitlab-ci.yml",
+	"azure-pipelines.yml",
+	"bitbucket-pipelines.yml",
+]
+
 COMMON_GENERATED_PATHS = [
 	"dist",
 	"dist-docs",
@@ -238,6 +246,18 @@ def config_string(config: Dict[str, Any], key: str) -> str:
 	if isinstance(value, str):
 		return value.strip()
 	return ""
+
+
+def config_dict(config: Dict[str, Any], key: str) -> Dict[str, str]:
+	value = config.get(key, {})
+	if not isinstance(value, dict):
+		return {}
+
+	return {
+		str(item_key).strip(): str(item_value).strip()
+		for item_key, item_value in value.items()
+		if str(item_key).strip() and str(item_value).strip()
+	}
 
 
 def existing_names(project_dir: Path, names: List[str]) -> List[str]:
@@ -401,6 +421,92 @@ def detect_progress_files(project_dir: Path) -> List[str]:
 			".agents/PROGRESS.md",
 		],
 	)
+
+
+def detect_ci_files(project_dir: Path) -> List[str]:
+	paths = existing_names(project_dir, COMMON_CI_FILES)
+	workflow_dir = project_dir / ".github" / "workflows"
+
+	if workflow_dir.is_dir():
+		for pattern in ["*.yml", "*.yaml"]:
+			paths.extend(
+				relative_path(project_dir, candidate)
+				for candidate in workflow_dir.glob(pattern)
+				if candidate.is_file()
+			)
+
+	return sorted(set(paths))
+
+
+def package_metadata_rows(package: Dict[str, Any]) -> List[str]:
+	rows = []
+
+	for label, key in [
+		("Name", "name"),
+		("Version", "version"),
+		("Module type", "type"),
+		("Licence", "license"),
+	]:
+		value = package.get(key)
+		if isinstance(value, str) and value.strip():
+			rows.append(f"| {label} | `{value.strip()}` |")
+
+	if isinstance(package.get("private"), bool):
+		rows.append(f"| Private | `{'true' if package['private'] else 'false'}` |")
+
+	for label, key in [
+		("Published files", "files"),
+		("Workspace packages", "workspaces"),
+	]:
+		values = package.get(key)
+		if key == "workspaces" and isinstance(values, dict):
+			values = values.get("packages", [])
+		if isinstance(values, list):
+			items = [str(value).strip() for value in values if str(value).strip()]
+			if items:
+				rows.append(f"| {label} | {', '.join(f'`{item}`' for item in items)} |")
+
+	return rows
+
+
+def package_entry_rows(package: Dict[str, Any]) -> List[str]:
+	rows = []
+
+	for key in ["main", "module", "types", "browser"]:
+		value = package.get(key)
+		if isinstance(value, str) and value.strip():
+			rows.append(f"| `{key}` | `{value.strip()}` |")
+
+	bin_value = package.get("bin")
+	if isinstance(bin_value, str) and bin_value.strip():
+		rows.append(f"| `bin` | `{bin_value.strip()}` |")
+	elif isinstance(bin_value, dict):
+		for name in sorted(bin_value):
+			value = bin_value[name]
+			if isinstance(value, str) and value.strip():
+				rows.append(f"| `bin:{name}` | `{value.strip()}` |")
+
+	exports = package.get("exports")
+	if isinstance(exports, str) and exports.strip():
+		rows.append(f"| `exports` | `{exports.strip()}` |")
+	elif isinstance(exports, dict):
+		for name in sorted(exports):
+			value = exports[name]
+			if isinstance(value, str) and value.strip():
+				rows.append(f"| `exports:{name}` | `{value.strip()}` |")
+				continue
+			if not isinstance(value, dict):
+				continue
+
+			mappings = [
+				f"{condition}: `{target}`"
+				for condition, target in sorted(value.items())
+				if isinstance(target, str) and target.strip()
+			]
+			if mappings:
+				rows.append(f"| `exports:{name}` | {'; '.join(mappings)} |")
+
+	return rows
 
 
 def script_run_command(script_name: str, manager: PackageManager) -> str:
@@ -624,8 +730,8 @@ def classify_script(name: str, command: str = "") -> str:
 	return "Unclassified"
 
 
-def common_check_rows(scripts: Dict[str, str], manager: PackageManager) -> List[str]:
-	checks = [
+def common_checks(scripts: Dict[str, str], manager: PackageManager) -> Dict[str, str]:
+	candidates_by_purpose = [
 		("Lint", ["lint:check", "lint"]),
 		("Unit tests", ["test:unit", "test:unit:run", "test"]),
 		("Component tests", ["test:component", "test:ct", "test:component:cypress"]),
@@ -634,34 +740,30 @@ def common_check_rows(scripts: Dict[str, str], manager: PackageManager) -> List[
 		("Build", ["build"]),
 	]
 
-	rows = []
+	result = {}
 
-	for purpose, candidates in checks:
-		command = NOT_DETECTED
-
+	for purpose, candidates in candidates_by_purpose:
 		for candidate in candidates:
 			if candidate in scripts:
-				command = f"`{script_run_command(candidate, manager)}`"
+				result[purpose] = script_run_command(candidate, manager)
 				break
 
-		rows.append(f"| {purpose} | {command} |")
-
-	return rows
+	return result
 
 
-def config_common_check_rows(config: Dict[str, Any]) -> List[str]:
+def config_common_checks(config: Dict[str, Any]) -> Dict[str, str]:
 	checks = config.get("commonChecks", {})
-	rows = []
+	result = {}
 
 	if isinstance(checks, dict):
 		for purpose in sorted(checks):
 			command = str(checks[purpose]).strip()
 			if command:
-				rows.append(f"| {purpose} | `{command}` |")
-		return rows
+				result[str(purpose)] = command
+		return result
 
 	if not isinstance(checks, list):
-		return []
+		return result
 
 	for check in checks:
 		if not isinstance(check, dict):
@@ -670,7 +772,24 @@ def config_common_check_rows(config: Dict[str, Any]) -> List[str]:
 		purpose = str(check.get("purpose", "")).strip()
 		command = str(check.get("command", "")).strip()
 		if purpose and command:
-			rows.append(f"| {purpose} | `{command}` |")
+			result[purpose] = command
+
+	return result
+
+
+def common_check_rows(scripts: Dict[str, str], manager: PackageManager, config: Dict[str, Any]) -> List[str]:
+	standard_purposes = ["Lint", "Unit tests", "Component tests", "End-to-end tests", "Docs build", "Build"]
+	checks = common_checks(scripts, manager)
+	checks.update(config_common_checks(config))
+
+	rows = []
+	for purpose in standard_purposes:
+		command = checks.pop(purpose, NOT_DETECTED)
+		value = f"`{command}`" if command != NOT_DETECTED else NOT_DETECTED
+		rows.append(f"| {purpose} | {value} |")
+
+	for purpose in sorted(checks):
+		rows.append(f"| {purpose} | `{checks[purpose]}` |")
 
 	return rows
 
@@ -752,6 +871,14 @@ def render_generator_table(generators: List[Generator]) -> List[str]:
 	return rows
 
 
+def configured_table(values: Dict[str, str], first_heading: str, second_heading: str) -> List[str]:
+	return [
+		f"| {first_heading} | {second_heading} |",
+		"| --- | --- |",
+		*[f"| {key} | {value} |" for key, value in sorted(values.items())],
+	]
+
+
 def diagnostics_lines(project_dir: Path) -> List[str]:
 	diagnostics_path = project_dir / ".agent" / "scripts" / "project-diagnostics.py"
 	change_impact_path = project_dir / ".agent" / "scripts" / "change-impact.py"
@@ -816,6 +943,9 @@ def render_workspace(project_dir: Path, tree_depth: int, tree_excludes: List[str
 	config_test_paths = config_list(config, "testPaths")
 	config_config_paths = config_list(config, "configPaths")
 	config_doc_paths = config_list(config, "docPaths")
+	architecture_notes = config_list(config, "architectureNotes")
+	key_files = config_dict(config, "keyFiles")
+	lookup = config_dict(config, "lookup")
 
 	source_dirs = sorted(set(detect_source_dirs(project_dir) + existing_names(project_dir, config_source_dirs)))
 	config_paths = sorted(set(existing_names(project_dir, COMMON_CONFIG_FILES) + detect_xcode_paths(project_dir) + existing_names(project_dir, config_config_paths)))
@@ -826,6 +956,9 @@ def render_workspace(project_dir: Path, tree_depth: int, tree_excludes: List[str
 	)
 	progress_files = detect_progress_files(project_dir)
 	local_services = detect_local_services(scripts, manager)
+	ci_files = detect_ci_files(project_dir)
+	metadata_rows = package_metadata_rows(package)
+	entry_rows = package_entry_rows(package)
 
 	tree_excludes = sorted(set(tree_excludes + config_tree_excludes + generated_paths))
 
@@ -849,15 +982,6 @@ def render_workspace(project_dir: Path, tree_depth: int, tree_excludes: List[str
 		*bullet_values("Progress files", progress_files),
 		*bullet_values("Agent rules", existing_names(project_dir, ["AGENTS.md"])),
 		"",
-		"## File tree",
-		"",
-		f"Generated with depth {tree_depth}.",
-		f"Excluded: {', '.join(f'`{item}`' for item in tree_excludes)}.",
-		"",
-		"```txt",
-		*render_tree(project_dir, tree_depth, tree_excludes),
-		"```",
-		"",
 		"## Important paths",
 		"",
 		*bullet_values("Main source directories", source_dirs),
@@ -865,38 +989,101 @@ def render_workspace(project_dir: Path, tree_depth: int, tree_excludes: List[str
 		*bullet_values("Test paths", test_paths),
 		*bullet_values("Documentation paths", doc_paths),
 		"",
-		"## Diagnostics",
-		"",
-		*diagnostics_lines(project_dir),
-		"",
-		"## Package scripts",
-		"",
-		"Run scripts with:",
-		"",
-		"```sh",
-		f"{manager.run_prefix} <script>" if manager.name != UNKNOWN else "<package-manager> run <script>",
-		"```",
-		"",
-		"| Script | package.json command | Run command | Safety |",
-		"| --- | --- | --- | --- |",
-		*package_script_rows(scripts, manager),
-		"",
-		"## Common checks",
-		"",
-		"Prefer the narrowest command that verifies the changed area. Classifications are conservative; inspect the script before running if behaviour is unclear.",
-		"",
-		"When project diagnostics exposes a unit-test check, narrow it with `--test-file <path>` or `--test-glob '<pattern>'`. Both arguments are repeatable; quote glob patterns so diagnostics validates and expands them.",
-		"",
-		"Broad test commands can produce large output. When only the failure summary is needed, capture output to a temp file or use shell-safe truncation such as `command 2>&1 | tail -20`, taking care not to hide the original exit status.",
-		"",
-		"| Purpose | Command |",
-		"| --- | --- |",
-		*common_check_rows(scripts, manager),
-		*config_common_check_rows(config),
-		"",
-		"## Local services",
-		"",
 	]
+
+	if tree_depth > 0:
+		lines.extend(
+			[
+				"## File tree",
+				"",
+				f"Generated with depth {tree_depth}.",
+				f"Excluded: {', '.join(f'`{item}`' for item in tree_excludes)}.",
+				"",
+				"```txt",
+				*render_tree(project_dir, tree_depth, tree_excludes),
+				"```",
+				"",
+			]
+		)
+
+	if metadata_rows:
+		lines.extend(
+			[
+				"## Package metadata",
+				"",
+				"Values below come directly from `package.json`.",
+				"",
+				"| Field | Value |",
+				"| --- | --- |",
+				*metadata_rows,
+				"",
+			]
+		)
+
+	if entry_rows:
+		lines.extend(
+			[
+				"## Declared entry points",
+				"",
+				"Values below come directly from `package.json`.",
+				"",
+				"| Declaration | Target |",
+				"| --- | --- |",
+				*entry_rows,
+				"",
+			]
+		)
+
+	if architecture_notes:
+		lines.extend(["## Architecture notes", "", "Configured in the workspace settings file.", ""])
+		lines.extend(f"- {note}" for note in architecture_notes)
+		lines.append("")
+
+	if lookup:
+		lines.extend(["## Lookup", "", "Configured in the workspace settings file.", "", *configured_table(lookup, "Task", "Path"), ""])
+
+	if key_files:
+		lines.extend(["## Key files", "", "Configured in the workspace settings file.", "", *configured_table(key_files, "Path", "Purpose"), ""])
+
+	if ci_files:
+		lines.extend(["## Continuous integration", ""])
+		lines.extend(f"- `{path}`" for path in ci_files)
+		lines.append("")
+
+	lines.extend(
+		[
+			"## Diagnostics",
+			"",
+			*diagnostics_lines(project_dir),
+			"",
+			"## Package scripts",
+			"",
+			"Run scripts with:",
+			"",
+			"```sh",
+			f"{manager.run_prefix} <script>" if manager.name != UNKNOWN else "<package-manager> run <script>",
+			"```",
+			"",
+			"| Script | package.json command | Run command | Safety |",
+			"| --- | --- | --- | --- |",
+			*package_script_rows(scripts, manager),
+			"",
+			"## Common checks",
+			"",
+			"Prefer the narrowest command that verifies the changed area. Classifications are conservative; inspect the script before running if behaviour is unclear.",
+			"",
+			"When project diagnostics exposes a unit-test check, narrow it with `--test-file <path>` or `--test-glob '<pattern>'`. Both arguments are repeatable; quote glob patterns so diagnostics validates and expands them.",
+			"",
+			"Broad test commands can produce large output. When only the failure summary is needed, capture output to a temp file or use shell-safe truncation such as `command 2>&1 | tail -20`, taking care not to hide the original exit status.",
+			"",
+			"| Purpose | Command |",
+			"| --- | --- |",
+			*common_check_rows(scripts, manager, config),
+			"",
+			"## Local services",
+			"",
+		]
+	)
 
 	if local_services:
 		lines.extend(f"- {service}" for service in local_services)
@@ -1014,7 +1201,7 @@ def main() -> None:
 	parser.add_argument("--project-dir", type=Path, default=DEFAULT_PROJECT_DIR, help="Project directory to inspect.")
 	parser.add_argument("--write", action="store_true", help="Write WORKSPACE.md instead of printing a preview.")
 	parser.add_argument("--force", action="store_true", help="Replace an existing WORKSPACE.md without prompting.")
-	parser.add_argument("--tree-depth", type=int, default=3, help="Maximum tree depth to include.")
+	parser.add_argument("--tree-depth", type=int, default=0, help="Maximum tree depth to include. Default: 0 (omit tree).")
 	parser.add_argument(
 		"--tree-exclude",
 		action="append",
@@ -1027,8 +1214,8 @@ def main() -> None:
 	if not project_dir.is_dir():
 		raise SystemExit(f"Project directory not found: {project_dir}")
 
-	if args.tree_depth < 1:
-		raise SystemExit("--tree-depth must be 1 or greater.")
+	if args.tree_depth < 0:
+		raise SystemExit("--tree-depth must be 0 or greater.")
 
 	tree_excludes = sorted(set(DEFAULT_TREE_EXCLUDES + args.tree_exclude))
 	target = project_dir / MANIFEST_NAME
