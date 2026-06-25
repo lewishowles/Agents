@@ -16,6 +16,10 @@ Hooks are shell scripts that Claude Code runs automatically at specific points i
 | `plan-verify` | Warns when an exited plan is missing a validation section. | PostToolUse (`ExitPlanMode`) | `silent` |
 | `pre-stop-checks` | Runs configured lint and unit checks before Claude stops. | Stop | `silent` |
 | `progress-resume` | Injects project progress context when the prompt asks to resume work. | UserPromptSubmit | `silent` |
+| `serena-activate` | Prompts the agent to activate the project with Serena and read its instructions at session start. | SessionStart | `silent`; requires serena-hooks |
+| `serena-auto-approve` | Auto-approves Serena tool calls in permissive permission modes (acceptEdits or auto). | PreToolUse (`mcp__serena__*`) | `silent`; requires serena-hooks |
+| `serena-cleanup` | Cleans up Serena hook session data when the Claude Code session ends. | SessionEnd | `silent`; requires serena-hooks |
+| `serena-remind` | Nudges the agent to use Serena's symbolic tools instead of overrelying on read_file and grep. | PreToolUse | `silent`; requires serena-hooks |
 | `skill-file-trigger` | Injects matching skill reminders before file writes and edits. | PreToolUse (`Write\|Edit`) | `silent`; requires jq |
 | `test-skeleton-reminder` | Suggests matching tests when implementation files change. | PreToolUse (`Write\|Edit`) | `silent`; requires jq |
 <!-- END GENERATED: registered-hooks -->
@@ -122,6 +126,30 @@ The hook stores a per-session marker in `/tmp` using Claude's parent process ID,
 
 Fires on Claude session startup, resume, clear, and compact. It injects a concise reminder that code discovery should start with codebase-memory-mcp graph tools and fall back to `Grep`, `Glob`, or `Read` only for text content, config values, and non-code files.
 
+### serena-activate
+
+Fires on Claude session startup, resume, clear, and compact. Prompts the agent to activate the current project with Serena and read Serena's initial instructions. This ensures the Serena language server is initialised and the project is ready for symbolic operations.
+
+**Requires:** `serena-hooks` — silently skips if not on PATH.
+
+### serena-remind
+
+Fires before every tool use. Tracks consecutive `grep`/`read_file` calls and nudges the agent to use Serena's symbolic tools (find_symbol, get_symbol_details, find_references) instead of brute-force text search. The nudge only fires after several consecutive non-Serena code-discovery calls, so it doesn't interfere with normal workflow.
+
+**Requires:** `serena-hooks` — silently skips if not on PATH.
+
+### serena-auto-approve
+
+Fires before Serena MCP tool calls (`mcp__serena__*`). Auto-approves Serena's destructive tools (e.g. `replace_symbol_body`, `rename_symbol`) when Claude Code is in a permissive permission mode (`acceptEdits` or `auto`). In default mode, Serena tools still prompt for approval as normal.
+
+**Requires:** `serena-hooks` — silently skips if not on PATH.
+
+### serena-cleanup
+
+Fires when the Claude Code session ends. Cleans up per-session hook data stored by `serena-remind` and `serena-activate`. Non-destructive — if the session data is already gone, the hook exits silently.
+
+**Requires:** `serena-hooks` — silently skips if not on PATH.
+
 ### pre-stop-checks.sh
 
 Runs when Claude finishes a response. Checks for a `package.json` (skips silently if absent — not all projects are frontend projects). If present, it runs `npm run lint` and `npm run test:unit:run` if those scripts are defined. On failure, outputs a JSON pause signal with the error output, preventing Claude from stopping until the issues are resolved.
@@ -140,4 +168,4 @@ Skills aren't invoked automatically by Claude Code — they need an explicit `Sk
 2. Add `hooks/claude/<name>/hook.json` with event, matcher, dependencies, and failure mode
 3. Run `scripts/sync.sh` to copy the hook into `dist/claude/hooks/`, regenerate `dist/claude/settings.json`, and update the hook table above
 
-Event types supported by Claude Code: `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `Stop`, `SessionStart`.
+Event types supported by Claude Code: `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `Stop`, `SessionStart`, `SessionEnd`.

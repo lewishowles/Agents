@@ -94,9 +94,14 @@ write_target "$CODEX_TARGET" "${CODEX_PARTS[@]}"
 python3 "$REPO_DIR/scripts/build/build-chatgpt-target.py"
 python3 "$REPO_DIR/scripts/build/build-settings.py"
 
+# Copy static config files from adapters to dist.
+cp "$REPO_DIR/adapters/claude/mcp.json" "$REPO_DIR/dist/claude/.mcp.json"
+cp "$REPO_DIR/adapters/codex/hooks.json" "$REPO_DIR/dist/codex/hooks.json"
+
 printf '%s✓%s synced %sdist/claude/CLAUDE.md%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"
 printf '%s✓%s synced %sdist/codex/AGENTS.md%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"
 printf '%s✓%s synced %sdist/chatgpt/%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"
-printf '%s✓%s synced %sdist/claude/settings.json%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"
+printf '%s✓%s synced %sdist/claude/settings.json%s\n'
+printf '%s✓%s synced %sdist/codex/hooks.json%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"
 
 bash "$REPO_DIR/scripts/validate.sh"

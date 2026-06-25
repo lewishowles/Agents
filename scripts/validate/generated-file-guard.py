@@ -39,6 +39,16 @@ CONFIG_REPO_RULES = [
 		"label": "Claude settings",
 	},
 	{
+		"generated": ["dist/claude/.mcp.json"],
+		"sources": ["adapters/claude/mcp.json"],
+		"label": "Claude MCP config",
+	},
+	{
+		"generated": ["dist/codex/hooks.json"],
+		"sources": ["adapters/codex/hooks.json"],
+		"label": "Codex hooks config",
+	},
+	{
 		"generated": ["dist/claude/source/global-skills.md"],
 		"sources": ["scripts/build/build-skill-mds.py"],
 		"label": "Claude skill index",

@@ -54,6 +54,7 @@ setup_codex() {
 
 	link_path "$REPO_DIR/dist/codex/AGENTS.md" "$HOME/.agents/AGENTS.md" "AGENTS.md"
 	link_path "$REPO_DIR/dist/codex/AGENTS.md" "$HOME/.codex/AGENTS.md" "Codex AGENTS.md"
+	link_path "$REPO_DIR/dist/codex/hooks.json" "$HOME/.codex/hooks.json" "Codex hooks"
 	ensure_codex_config
 
 	prune_stale_repo_links "$HOME/.agents/skills" "$REPO_DIR" "skills"
@@ -79,9 +80,9 @@ setup_stagewise() {
 	copy_skills "$skills_dir"
 }
 
-# Ensures ~/.codex/config.toml contains the codebase-memory-mcp server entry.
-# Any existing entry for that server is replaced rather than duplicated, so
-# this function is safe to run on every setup.
+# Ensures ~/.codex/config.toml contains managed MCP server entries and the
+# codex_hooks feature flag. Existing entries for managed servers are replaced
+# rather than duplicated, so this function is safe to run on every setup.
 ensure_codex_config() {
 	local config="$HOME/.codex/config.toml"
 	local temp
@@ -89,15 +90,26 @@ ensure_codex_config() {
 	temp=$(mktemp)
 	touch "$config"
 
-	# Strip any existing codebase-memory-mcp section before re-appending it,
+	# Strip managed MCP server sections before re-appending them,
 	# so re-running setup never creates duplicate entries.
 	awk '
 		/^\[mcp_servers\.codebase-memory-mcp(\.|\])/{ skip = 1; next }
+		/^\[mcp_servers\.serena(\.|\])/{ skip = 1; next }
 		/^\[/{ skip = 0 }
 		!skip { print }
 	' "$config" > "$temp"
 
+	# Re-add managed MCP server entries with canonical config.
 	printf '\n[mcp_servers.codebase-memory-mcp]\ncommand = "codebase-memory-mcp"\n' >> "$temp"
+	printf '\n[mcp_servers.serena]\nstartup_timeout_sec = 15\ncommand = "serena"\nargs = ["start-mcp-server", "--project-from-cwd", "--context=codex"]\n' >> "$temp"
+
+	# Ensure codex_hooks feature flag is present in [features].
+	if ! grep -q 'codex_hooks' "$temp"; then
+		local temp2
+		temp2=$(mktemp)
+		awk '/^\[features\]/{print; print "codex_hooks = true"; next} 1' "$temp" > "$temp2"
+		mv "$temp2" "$temp"
+	fi
 
 	if cmp -s "$config" "$temp"; then
 		rm "$temp"
@@ -107,12 +119,12 @@ ensure_codex_config() {
 
 	if [ "${SKIP_BACKUP:-0}" = "1" ]; then
 		mv "$temp" "$config"
-		printf '  %s✓%s configured Codex MCP server\n' "$GREEN" "$RESET_COLOUR"
+		printf '  %s✓%s configured Codex MCP servers and hooks\n' "$GREEN" "$RESET_COLOUR"
 	else
 		local backup="$config.bak.$(timestamp)"
 		cp "$config" "$backup"
 		mv "$temp" "$config"
-		printf '  %s✓%s configured Codex MCP server (backup at %s)\n' "$GREEN" "$RESET_COLOUR" "$(display_path "$backup")"
+		printf '  %s✓%s configured Codex MCP servers and hooks (backup at %s)\n' "$GREEN" "$RESET_COLOUR" "$(display_path "$backup")"
 	fi
 }
 

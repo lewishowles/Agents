@@ -1,6 +1,6 @@
 # Codex
 
-This repo targets Codex through global `AGENTS.md`, user skills, and project templates. Codex hooks exist, but this repo does not install Codex hook parity yet.
+This repo targets Codex through global `AGENTS.md`, user skills, project templates, and Serena MCP hooks.
 
 Official references:
 
@@ -61,6 +61,14 @@ Skill matching is description-driven. Keep frontmatter descriptions specific, ac
 
 ## Hooks
 
-Codex hooks are configured through `hooks.json` next to active config layers or inline `[hooks]` tables in `config.toml`. The official Codex hook events include `SessionStart`, `PreToolUse`, `PermissionRequest`, `PostToolUse`, `UserPromptSubmit`, and `Stop`.
+Codex hooks are configured through `~/.codex/hooks.json` (symlinked from `dist/codex/hooks.json`) and require the `codex_hooks` feature flag in `~/.codex/config.toml`. The official Codex hook events include `SessionStart`, `PreToolUse`, `PermissionRequest`, `PostToolUse`, `UserPromptSubmit`, and `Stop`.
 
-Codex hook parity is intentionally out of scope for the current repo phase. The Claude hooks remain in `dist/claude/hooks/`; Codex relies on skill descriptions and `AGENTS.md` guidance until dedicated Codex hooks are added.
+This repo installs Serena MCP hooks for Codex:
+
+- **`serena-activate`** (`SessionStart`) — prompts the agent to activate the project with Serena on session start or resume.
+- **`serena-remind`** (`PreToolUse`, `Bash` matcher) — nudges the agent to use Serena's symbolic tools instead of consecutive shell-based grep and code-file reads.
+- **`serena-cleanup`** (`Stop`) — cleans up Serena hook session data when the session ends.
+
+The `PreToolUse` matcher is intentionally restricted to `Bash` because the Serena reminder hook for Codex tracks shell-based grep and code-file reads, so running it for every tool call is unnecessary.
+
+`scripts/setup-global.sh --codex` links `~/.codex/hooks.json` to `dist/codex/hooks.json` and ensures `codex_hooks = true` is present in the `[features]` section of `~/.codex/config.toml`.

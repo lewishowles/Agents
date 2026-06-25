@@ -34,6 +34,8 @@ related-skills:
 | Simplify condition          | Flatten nested `if`s, remove double negatives | Medium — verify all branches  |
 | Split component             | Decompose large component into smaller ones   | Higher — re-test interactions |
 
+For cross-file renames or moves spanning many files, consider Serena MCP (see [docs/tools.md](../../docs/tools.md)) — an LSP-backed MCP server that updates all references atomically, reducing the risk of manual find-and-replace errors. Use codebase-memory first to trace the impact set, then Serena to apply the changes.
+
 ## Module structure vocabulary
 
 Use these terms for structural changes. Consistent language avoids ambiguity.

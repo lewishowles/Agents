@@ -20,7 +20,12 @@ LSP-backed MCP server providing atomic semantic refactoring operations: cross-fi
 
 **How it complements codebase-memory:** codebase-memory finds the references and traces the impact; Serena applies the changes atomically. Use codebase-memory for analysis, Serena for execution.
 
-**Installation:** MCP server, requires a language server for the target language. See the Serena MCP documentation for setup details.
+**Installation:** MCP server, requires a language server for the target language. This repo manages the server registration and lifecycle hooks for both Claude Code and Codex:
+
+- **Claude Code:** server registered in `dist/claude/.mcp.json`; hooks for activate, remind, auto-approve, and cleanup live in `hooks/claude/serena-activate/`, `hooks/claude/serena-remind/`, `hooks/claude/serena-auto-approve/`, and `hooks/claude/serena-cleanup/`
+- **Codex:** server managed in `~/.codex/config.toml` via `ensure_codex_config`; hooks in `dist/codex/hooks.json`
+
+Run `scripts/setup-global.sh --both` after cloning or pulling changes to Serena hook configuration.
 
 ## repowise
 
