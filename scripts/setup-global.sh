@@ -27,7 +27,7 @@ setup_claude() {
 	link_path "$REPO_DIR/dist/claude/settings.json" "$HOME/.claude/settings.json" "settings.json"
 	link_path "$REPO_DIR/dist/claude/.mcp.json" "$HOME/.claude/.mcp.json" ".mcp.json"
 
-	prune_stale_repo_links "$HOME/.claude/skills" "$REPO_DIR/skills" "skills"
+	prune_stale_repo_links "$HOME/.claude/skills" "$REPO_DIR" "skills"
 	link_skills "$HOME/.claude/skills"
 
 	prune_stale_repo_links "$HOME/.claude/hooks" "$REPO_DIR/dist/claude/hooks" "hooks"
@@ -56,8 +56,8 @@ setup_codex() {
 	link_path "$REPO_DIR/dist/codex/AGENTS.md" "$HOME/.codex/AGENTS.md" "Codex AGENTS.md"
 	ensure_codex_config
 
-	prune_stale_repo_links "$HOME/.agents/skills" "$REPO_DIR/skills" "skills"
-	prune_stale_repo_links "$HOME/.codex/skills" "$REPO_DIR/skills" "Codex skills"
+	prune_stale_repo_links "$HOME/.agents/skills" "$REPO_DIR" "skills"
+	prune_stale_repo_links "$HOME/.codex/skills" "$REPO_DIR" "Codex skills"
 	link_skills "$HOME/.agents/skills"
 	link_skills "$HOME/.codex/skills"
 }

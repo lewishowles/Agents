@@ -6,7 +6,7 @@ Claude loads these from `~/.claude/skills/` and can be nudged by the Claude trig
 
 ## User skills
 
-Defined in `skills/` in this repo, then symlinked into each runtime by `scripts/setup-global.sh`. The `agent-config` maintenance skill is intentionally repo-local under `.claude/skills/agent-config` and `.agents/skills/agent-config`; it is not installed globally for other projects.
+Authored as `skill.json` and `SKILL.body.md` under `skills/`. `scripts/sync.sh` generates flattened runtime directories under `dist/skills/`, which are then installed into each runtime by `scripts/setup-global.sh`. The `agent-config` maintenance skill is intentionally repo-local under `.claude/skills/agent-config` and `.agents/skills/agent-config`; it is not installed globally for other projects.
 
 Official external skills are listed in `external-skills.json` and synced into `skills/` by `scripts/sync-external-skills.sh`. Global setup runs that sync before linking skills. If the network is unavailable, setup warns and continues with the existing local copy.
 
@@ -137,7 +137,7 @@ Project setup does not create a local `.claude/settings.json` by default. Prefer
 Content here.
 ```
 
-4. Run `scripts/sync.sh` — this regenerates `SKILL.md`, the skill tables in this file and [docs/commands.md](commands.md), then rebuilds the Claude, Codex, and ChatGPT targets
+4. Run `scripts/sync.sh` — this regenerates `dist/skills/<name>/SKILL.md`, the skill tables in this file and [docs/commands.md](commands.md), then rebuilds the Claude, Codex, and ChatGPT targets
 
 After global setup, shared skills are available to Claude via `~/.claude/skills/` and to Codex via `~/.codex/skills/`, with compatibility links also kept in `~/.agents/skills/`. The ChatGPT target requires a manual re-upload to the Custom GPT knowledge base after running sync.
 
@@ -150,4 +150,4 @@ Use this only for official upstream skills that should stay managed externally.
 3. Add local trigger metadata in `skill.json` if the upstream defaults need adjustment
 4. Run `scripts/sync.sh` to regenerate docs and targets
 
-Do not edit synced external `SKILL.md` files directly; change the upstream source or local trigger/docs around it.
+Do not edit synced external `SKILL.body.md` files directly; change the upstream source or local trigger/docs around it.

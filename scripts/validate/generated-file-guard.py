@@ -44,6 +44,11 @@ CONFIG_REPO_RULES = [
 		"label": "Claude skill index",
 	},
 	{
+		"generated": ["dist/skills/"],
+		"sources": ["skills/", "scripts/build/build-skill-mds.py"],
+		"label": "runtime skills",
+	},
+	{
 		"generated": ["dist/chatgpt/"],
 		"sources": ["dist/chatgpt/source/", "scripts/build/build-chatgpt-target.py"],
 		"label": "ChatGPT target",
@@ -174,10 +179,8 @@ def config_repo_rules(project_dir: Path) -> list[dict[str, Any]]:
 		targets = manifest.get("targets")
 		if targets is not None and "chatgpt" not in targets:
 			continue
-		skill_md = skill_json.with_name("SKILL.md")
 		chatgpt_skill_sources.append(str(skill_json.relative_to(project_dir)))
-		if skill_md.exists():
-			chatgpt_skill_sources.append(str(skill_md.relative_to(project_dir)))
+		chatgpt_skill_sources.append(str(skill_json.with_name("SKILL.body.md").relative_to(project_dir)))
 	hook_manifests = [
 		str(hook_json.relative_to(project_dir))
 		for hook_json in sorted((project_dir / "hooks" / "claude").glob("*/hook.json"))
@@ -200,16 +203,6 @@ def config_repo_rules(project_dir: Path) -> list[dict[str, Any]]:
 				"generated": [f"dist/claude/hooks/{hook_script.name}"],
 				"sources": [str(hook_script.relative_to(project_dir)), str(hook_script.with_name("hook.json").relative_to(project_dir))],
 				"label": f"Claude hook {hook_script.name}",
-			}
-		)
-
-	for skill_md in sorted((project_dir / "skills").glob("*/*/SKILL.md")):
-		skill_dir = skill_md.parent
-		rules.append(
-			{
-				"generated": [str(skill_md.relative_to(project_dir))],
-				"sources": [str((skill_dir / "skill.json").relative_to(project_dir)), str((skill_dir / "SKILL.body.md").relative_to(project_dir))],
-				"label": f"skill {skill_dir.name}",
 			}
 		)
 

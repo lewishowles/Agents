@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Generate ChatGPT target files from skill manifests.
 #
-# Reads each skill's skill.json and SKILL.md, and writes:
+# Reads authored manifests and generated runtime skills, and writes:
 #   dist/chatgpt/SKILLS.md       — index of all included skills with trigger descriptions
 #   dist/chatgpt/<name>.md       — verbatim copy of each included SKILL.md
 #   dist/chatgpt/INSTRUCTIONS.md — copied from dist/chatgpt/source/system.md
@@ -16,6 +16,7 @@ from pathlib import Path
 
 REPO_DIR = Path(__file__).resolve().parent.parent.parent
 SKILLS_DIR = REPO_DIR / "skills"
+DIST_SKILLS_DIR = REPO_DIR / "dist" / "skills"
 TARGET_DIR = REPO_DIR / "dist" / "chatgpt"
 SOURCE_DIR = TARGET_DIR / "source"
 
@@ -74,24 +75,13 @@ def main() -> None:
 	instructions = (SOURCE_DIR / "instructions.md").read_text()
 	skill_entries = []
 
-	skill_dirs = []
-	for d in sorted(SKILLS_DIR.iterdir()):
-		if not d.is_dir():
-			continue
-		if (d / "SKILL.md").exists():
-			skill_dirs.append(d)
-		else:
-			for sub in sorted(d.iterdir()):
-				if sub.is_dir() and (sub / "SKILL.md").exists():
-					skill_dirs.append(sub)
-
-	for skill_dir in skill_dirs:
-		skill_file = skill_dir / "SKILL.md"
-		if not skill_file.exists():
-			continue
-
+	for manifest_file in sorted(SKILLS_DIR.rglob("skill.json")):
+		skill_dir = manifest_file.parent
 		manifest = load_manifest(skill_dir)
 		name = manifest.get("name") or skill_dir.name
+		skill_file = DIST_SKILLS_DIR / name / "SKILL.md"
+		if not skill_file.exists():
+			continue
 
 		targets = manifest.get("targets")
 		if targets is not None and "chatgpt" not in targets:

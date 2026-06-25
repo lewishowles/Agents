@@ -122,8 +122,6 @@ def classify_path(path: str) -> str:
 
 	if any(is_path_match(path, pattern) for pattern in GENERATED_PATHS):
 		return "generated"
-	if path.startswith("skills/") and name == "SKILL.md":
-		return "generated"
 	if path.startswith("tests/") or any(marker in f"/{path}" for marker in TEST_MARKERS):
 		return "tests"
 	if path.startswith("skills/"):

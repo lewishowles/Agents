@@ -149,48 +149,31 @@ link_path() {
 	fi
 }
 
-# Links all skills from this repo into the given target directory.
-# Handles both flat skills and grouped skills.
+# Links all generated runtime skills into the given target directory.
 #
 # @param  {string}  target_dir
 #     The directory to install skill symlinks into.
 link_skills() {
 	local target_dir="$1"
-	local skill sub
+	local skill
 
-	for skill in "$REPO_DIR"/skills/*; do
+	for skill in "$REPO_DIR"/dist/skills/*; do
 		[ -d "$skill" ] || continue
-		if [ -f "$skill/SKILL.md" ]; then
-			link_path "$skill" "$target_dir/$(basename "$skill")" "skills/$(basename "$skill")"
-		else
-			for sub in "$skill"/*/; do
-				[ -d "$sub" ] || continue
-				link_path "$sub" "$target_dir/$(basename "$sub")" "skills/$(basename "$skill")/$(basename "$sub")"
-			done
-		fi
+		link_path "$skill" "$target_dir/$(basename "$skill")" "skills/$(basename "$skill")"
 	done
 }
 
-# Copies all skills from this repo into the given target directory.
-# Handles both flat skills and grouped skills.
+# Copies all generated runtime skills into the given target directory.
 #
 # @param  {string}  target_dir
 #     The directory to copy skills into.
 copy_skills() {
 	local target_dir="$1"
-	local skill sub
+	local skill
 
-	for skill in "$REPO_DIR"/skills/*; do
+	for skill in "$REPO_DIR"/dist/skills/*; do
 		[ -d "$skill" ] || continue
-		if [ -f "$skill/SKILL.md" ]; then
-			cp -R "$skill" "$target_dir/$(basename "$skill")"
-			printf '  %s✓%s copied skills/%s\n' "$GREEN" "$RESET_COLOUR" "$(basename "$skill")"
-		else
-			for sub in "$skill"/*/; do
-				[ -d "$sub" ] || continue
-				cp -R "$sub" "$target_dir/$(basename "$sub")"
-				printf '  %s✓%s copied skills/%s/%s\n' "$GREEN" "$RESET_COLOUR" "$(basename "$skill")" "$(basename "$sub")"
-			done
-		fi
+		cp -R "$skill" "$target_dir/$(basename "$skill")"
+		printf '  %s✓%s copied skills/%s\n' "$GREEN" "$RESET_COLOUR" "$(basename "$skill")"
 	done
 }

@@ -2,7 +2,7 @@
 # Generates all dist/ output from source files.
 #
 # Build order:
-#   1. SKILL.md files + global-skills.md (build-skill-mds.py)
+#   1. dist/skills/ runtime skills + global-skills.md (build-skill-mds.py)
 #   2. Docs tables generated from skill/hook manifests (build-docs.py)
 #   3. dist/claude/hooks/ (copied from hooks/claude/ source)
 #   4. dist/claude/CLAUDE.md and dist/codex/AGENTS.md (assembled from rules/)

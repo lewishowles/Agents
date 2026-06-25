@@ -1,30 +1,31 @@
 #!/usr/bin/env python3
-# Generate SKILL.md for each skill and the global-skills index for Claude.
+# Generate runtime skill directories and the global-skills index for Claude.
 #
 # Sources per skill:
 #   skill.json    — metadata (name, description, dependencies, capabilities)
 #   SKILL.body.md — instructional content (the part Claude actually reads)
 #
 # Output per skill:
-#   SKILL.md      — generated frontmatter from skill.json + body from SKILL.body.md
-#
-# Bootstrap: if SKILL.body.md is missing, the body is extracted from the existing
-# SKILL.md (stripping its frontmatter) to create it, then SKILL.md is regenerated.
+#   dist/skills/<name>/SKILL.md — generated frontmatter and instructional body
+#   dist/skills/<name>/*        — copied runtime references and supporting files
 #
 # Skill discovery supports two layouts:
 #   skills/<name>/           — flat skill
 #   skills/<group>/<name>/   — grouped skill (e.g. skills/vue/vue-pinia/)
 
 import json
+import shutil
 from pathlib import Path
 
 REPO_DIR = Path(__file__).resolve().parent.parent.parent
 SKILLS_DIR = REPO_DIR / "skills"
+DIST_SKILLS_DIR = REPO_DIR / "dist" / "skills"
 GLOBAL_SKILLS_OUT = REPO_DIR / "dist" / "claude" / "source" / "global-skills.md"
 
 PM_GROUP = "project-management"  # Listed first in the global index so it appears near slash-command docs.
 
 GENERATED_HEADER = "# Generated — edit skill.json and SKILL.body.md instead."
+SOURCE_FILENAMES = {"skill.json", "SKILL.body.md", "SKILL.md", "SYNC.md"}
 
 GLOBAL_SKILLS_HEADER = """\
 ## Global skills
@@ -49,38 +50,19 @@ def discover_skill_dirs() -> list[Path]:
 	return dirs
 
 
-# Return the content of a SKILL.md after stripping its YAML frontmatter.
-#
-# @param  {Path}  skill_file
-#     Path to the SKILL.md to extract body from.
-def extract_body(skill_file: Path) -> str:
-	lines = skill_file.read_text().splitlines()
-	dash_indices = [i for i, line in enumerate(lines) if line.strip() == "---"]
-	if len(dash_indices) < 2:
-		return skill_file.read_text()
-	body_start = dash_indices[1] + 1
-	while body_start < len(lines) and not lines[body_start].strip():
-		body_start += 1
-	return "\n".join(lines[body_start:]) + "\n"
-
-
-# Write SKILL.md by combining skill.json metadata with SKILL.body.md.
-# If SKILL.body.md does not exist, the body is bootstrapped from the existing
-# SKILL.md so the first sync run on an existing skill is non-destructive.
+# Write a runtime skill directory from authored metadata, body, and support files.
 #
 # @param  {Path}  skill_dir
-#     The skill directory to generate SKILL.md for.
+#     The authored skill directory.
 def generate_skill_md(skill_dir: Path) -> None:
 	manifest_file = skill_dir / "skill.json"
 	body_file = skill_dir / "SKILL.body.md"
-	output_file = skill_dir / "SKILL.md"
-
 	manifest = json.loads(manifest_file.read_text())
-
-	if not body_file.exists():
-		body_file.write_text(extract_body(output_file) if output_file.exists() else "")
-
 	body = body_file.read_text()
+	output_dir = DIST_SKILLS_DIR / manifest["name"]
+	output_file = output_dir / "SKILL.md"
+
+	output_dir.mkdir(parents=True, exist_ok=True)
 
 	parts = [
 		"---",
@@ -111,6 +93,16 @@ def generate_skill_md(skill_dir: Path) -> None:
 	parts.append("")
 
 	output_file.write_text("\n".join(parts) + body)
+
+	for source in skill_dir.iterdir():
+		if source.name in SOURCE_FILENAMES:
+			continue
+
+		target = output_dir / source.name
+		if source.is_dir():
+			shutil.copytree(source, target)
+		elif source.is_file():
+			shutil.copy2(source, target)
 
 
 # Write the global-skills index consumed by Claude's CLAUDE.md.
@@ -144,10 +136,14 @@ def generate_global_skills_md() -> None:
 
 
 def main() -> None:
+	if DIST_SKILLS_DIR.exists():
+		shutil.rmtree(DIST_SKILLS_DIR)
+	DIST_SKILLS_DIR.mkdir(parents=True)
+
 	skill_dirs = discover_skill_dirs()
 	for skill_dir in skill_dirs:
 		generate_skill_md(skill_dir)
-	print(f"Generated {len(skill_dirs)} SKILL.md files.")
+	print(f"Generated {len(skill_dirs)} runtime skills in dist/skills/.")
 
 	generate_global_skills_md()
 	print("Generated dist/claude/source/global-skills.md.")

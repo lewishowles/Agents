@@ -185,6 +185,7 @@ def tool_git_status(repo: dict, arguments: dict) -> str:
 
 
 SKILLS_DIR = Path(__file__).resolve().parent.parent.parent / "skills"
+DIST_SKILLS_DIR = Path(__file__).resolve().parent.parent.parent / "dist" / "skills"
 
 
 def tool_list_skills(arguments: dict) -> str:
@@ -217,11 +218,11 @@ def tool_read_skill(arguments: dict) -> str:
 	if not slug:
 		return "slug is required."
 
-	matches = list(SKILLS_DIR.rglob(f"{slug}/SKILL.md")) if SKILLS_DIR.exists() else []
-	if not matches:
+	skill_file = DIST_SKILLS_DIR / slug / "SKILL.md"
+	if not skill_file.exists():
 		return f"Skill {slug!r} not found."
 
-	raw = matches[0].read_bytes()
+	raw = skill_file.read_bytes()
 	try:
 		return raw[:MAX_FILE_BYTES].decode("utf-8")
 	except UnicodeDecodeError:

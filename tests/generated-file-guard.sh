@@ -40,14 +40,14 @@ create_config_repo() {
 create_skill_repo() {
 	local target_dir="$1"
 
-	mkdir -p "$target_dir/dist/chatgpt" "$target_dir/dist/claude/source" "$target_dir/docs" "$target_dir/rules" "$target_dir/scripts" "$target_dir/skills/example/example" "$target_dir/skills/example/excluded"
+	mkdir -p "$target_dir/dist/chatgpt" "$target_dir/dist/claude/source" "$target_dir/dist/skills/example" "$target_dir/dist/skills/excluded" "$target_dir/docs" "$target_dir/rules" "$target_dir/scripts" "$target_dir/skills/example/example" "$target_dir/skills/example/excluded"
 	printf '#!/usr/bin/env bash\n' > "$target_dir/scripts/sync.sh"
 	printf '{"name":"example"}\n' > "$target_dir/skills/example/example/skill.json"
 	printf 'body\n' > "$target_dir/skills/example/example/SKILL.body.md"
-	printf 'generated skill\n' > "$target_dir/skills/example/example/SKILL.md"
+	printf 'generated skill\n' > "$target_dir/dist/skills/example/SKILL.md"
 	printf '{"name":"excluded","targets":["claude","codex"]}\n' > "$target_dir/skills/example/excluded/skill.json"
 	printf 'excluded body\n' > "$target_dir/skills/example/excluded/SKILL.body.md"
-	printf 'excluded generated skill\n' > "$target_dir/skills/example/excluded/SKILL.md"
+	printf 'excluded generated skill\n' > "$target_dir/dist/skills/excluded/SKILL.md"
 	printf 'chatgpt skill\n' > "$target_dir/dist/chatgpt/example.md"
 	printf 'global skills\n' > "$target_dir/dist/claude/source/global-skills.md"
 	printf 'docs\n' > "$target_dir/docs/skills.md"
@@ -114,7 +114,7 @@ test_skill_source_with_generated_outputs_does_not_require_claude_or_chatgpt() {
 	local output="$TEST_ROOT/skill.md"
 	create_skill_repo "$target_dir"
 	printf '{"name":"example","description":"changed"}\n' > "$target_dir/skills/example/example/skill.json"
-	printf 'changed\n' >> "$target_dir/skills/example/example/SKILL.md"
+	printf 'changed\n' >> "$target_dir/dist/skills/example/SKILL.md"
 	printf 'changed\n' >> "$target_dir/dist/chatgpt/example.md"
 	printf 'changed\n' >> "$target_dir/dist/claude/source/global-skills.md"
 	printf 'changed\n' >> "$target_dir/docs/skills.md"
@@ -129,7 +129,7 @@ test_skill_body_with_generated_skill_and_chatgpt_output_does_not_require_indexes
 	local output="$TEST_ROOT/skill-body.md"
 	create_skill_repo "$target_dir"
 	printf 'changed\n' >> "$target_dir/skills/example/example/SKILL.body.md"
-	printf 'changed\n' >> "$target_dir/skills/example/example/SKILL.md"
+	printf 'changed\n' >> "$target_dir/dist/skills/example/SKILL.md"
 	printf 'changed\n' >> "$target_dir/dist/chatgpt/example.md"
 
 	run_guard "$target_dir" > "$output"
@@ -142,7 +142,7 @@ test_excluded_skill_body_does_not_require_chatgpt_output() {
 	local output="$TEST_ROOT/excluded-skill-body.md"
 	create_skill_repo "$target_dir"
 	printf 'changed\n' >> "$target_dir/skills/example/excluded/SKILL.body.md"
-	printf 'changed\n' >> "$target_dir/skills/example/excluded/SKILL.md"
+	printf 'changed\n' >> "$target_dir/dist/skills/excluded/SKILL.md"
 
 	run_guard "$target_dir" > "$output"
 
@@ -154,7 +154,7 @@ test_skill_metadata_without_indexes_fails() {
 	local output="$TEST_ROOT/skill-metadata.md"
 	create_skill_repo "$target_dir"
 	printf '{"name":"example","description":"changed"}\n' > "$target_dir/skills/example/example/skill.json"
-	printf 'changed\n' >> "$target_dir/skills/example/example/SKILL.md"
+	printf 'changed\n' >> "$target_dir/dist/skills/example/SKILL.md"
 	printf 'changed\n' >> "$target_dir/dist/chatgpt/example.md"
 
 	if run_guard "$target_dir" > "$output"; then

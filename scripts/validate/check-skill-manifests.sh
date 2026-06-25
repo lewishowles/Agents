@@ -70,12 +70,17 @@ while IFS= read -r -d '' manifest; do
 		validate_fail "Missing SKILL.body.md for $name"
 	fi
 
-	if [ ! -f "$dir/SKILL.md" ]; then
-		validate_fail "Missing SKILL.md for $name (run scripts/sync.sh)"
+	generated_skill="$REPO_DIR/dist/skills/$name/SKILL.md"
+	if [ ! -f "$generated_skill" ]; then
+		validate_fail "Missing dist/skills/$name/SKILL.md (run scripts/sync.sh)"
 	fi
 
 	if [ -f "$dir/SKILL.md" ]; then
-		line_count=$(wc -l < "$dir/SKILL.md")
+		validate_fail "Generated SKILL.md must not exist in source directory for $name"
+	fi
+
+	if [ -f "$generated_skill" ]; then
+		line_count=$(wc -l < "$generated_skill")
 		if [ "$line_count" -gt 500 ]; then
 			validate_warn "SKILL.md for $name is ${line_count} lines (limit: 500) — consider splitting"
 		fi

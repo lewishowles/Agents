@@ -12,7 +12,8 @@ The included scripts generate the target files each tool expects for global and 
 - `dist/claude/` - generated `CLAUDE.md`, Claude settings, hooks, and Claude-only source fragments
 - `dist/codex/` - generated `AGENTS.md` and Codex-only source fragments
 - `dist/chatgpt/` - generated `SKILLS.md` index and per-skill files for upload to a ChatGPT Custom GPT knowledge base
-- `skills/` - user skills, either flat (`skills/<name>/`) or grouped (`skills/<group>/<name>/`)
+- `skills/` - authored skill manifests and bodies, either flat (`skills/<name>/`) or grouped (`skills/<group>/<name>/`)
+- `dist/skills/` - generated, flattened runtime skill directories
 - `external-skills.json` - official upstream skills synced into `skills/`
 - `scripts/` - sync and setup scripts
 - `templates/` - project templates for Claude, Codex, or both
@@ -34,12 +35,13 @@ The global setup script syncs official external skills, runs `scripts/sync.sh`, 
 - `~/.claude/CLAUDE.md` to `dist/claude/CLAUDE.md`
 - `~/.claude/settings.json` to `dist/claude/settings.json`
 - `~/.claude/.mcp.json` to `dist/claude/.mcp.json`
-- `~/.claude/skills/<name>` to `skills/<name>` or `skills/<group>/<name>`
+- `~/.claude/skills/<name>` to `dist/skills/<name>`
 - `~/.claude/hooks/<file>` to `dist/claude/hooks/<file>`
 - `~/.agents/AGENTS.md` to `dist/codex/AGENTS.md`
 - `~/.codex/AGENTS.md` to `dist/codex/AGENTS.md`
-- `~/.agents/skills/<name>` to `skills/<name>` or `skills/<group>/<name>`
-- `~/.codex/skills/<name>` to `skills/<name>` or `skills/<group>/<name>`
+- `~/.agents/skills/<name>` to `dist/skills/<name>`
+- `~/.codex/skills/<name>` to `dist/skills/<name>`
+- `~/.stagewise/skills/<name>` as a copy of `dist/skills/<name>`
 
 It also ensures `~/.codex/config.toml` has the `codebase-memory-mcp` MCP server entry.
 
