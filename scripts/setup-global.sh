@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# Installs global agent configuration by symlinking dist/ output and skills
-# into ~/.claude/ and/or ~/.agents/. Safe to re-run — existing links are
-# backed up rather than overwritten, and stale links are pruned automatically.
+# Installs global agent configuration into Claude, Codex, and Stagewise.
+# Claude and Codex use symlinks; Stagewise receives a fresh copy of skills.
 
 set -euo pipefail
 
@@ -61,6 +60,23 @@ setup_codex() {
 	prune_stale_repo_links "$HOME/.codex/skills" "$REPO_DIR/skills" "Codex skills"
 	link_skills "$HOME/.agents/skills"
 	link_skills "$HOME/.codex/skills"
+}
+
+# Replaces Stagewise skills with a fresh copy from this repository.
+setup_stagewise() {
+	local agents_file="$HOME/.stagewise/AGENTS.md"
+	local skills_dir="$HOME/.stagewise/skills"
+
+	printf '\n→ Setting up Stagewise\n\n'
+
+	if [ -e "$skills_dir" ] || [ -L "$skills_dir" ]; then
+		trash "$skills_dir"
+	fi
+
+	mkdir -p "$skills_dir"
+	copy_skills "$skills_dir"
+	cp "$REPO_DIR/dist/codex/AGENTS.md" "$agents_file"
+	printf '  %s✓%s copied AGENTS.md\n' "$GREEN" "$RESET_COLOUR"
 }
 
 # Ensures ~/.codex/config.toml contains the codebase-memory-mcp server entry.
@@ -162,6 +178,7 @@ case "$target" in
 	both)   setup_claude; setup_codex ;;
 esac
 
+setup_stagewise
 configure_git_hooks
 
 printf '\nDone.\n'

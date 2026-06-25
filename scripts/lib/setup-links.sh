@@ -170,3 +170,27 @@ link_skills() {
 		fi
 	done
 }
+
+# Copies all skills from this repo into the given target directory.
+# Handles both flat skills and grouped skills.
+#
+# @param  {string}  target_dir
+#     The directory to copy skills into.
+copy_skills() {
+	local target_dir="$1"
+	local skill sub
+
+	for skill in "$REPO_DIR"/skills/*; do
+		[ -d "$skill" ] || continue
+		if [ -f "$skill/SKILL.md" ]; then
+			cp -R "$skill" "$target_dir/$(basename "$skill")"
+			printf '  %s✓%s copied skills/%s\n' "$GREEN" "$RESET_COLOUR" "$(basename "$skill")"
+		else
+			for sub in "$skill"/*/; do
+				[ -d "$sub" ] || continue
+				cp -R "$sub" "$target_dir/$(basename "$sub")"
+				printf '  %s✓%s copied skills/%s/%s\n' "$GREEN" "$RESET_COLOUR" "$(basename "$skill")" "$(basename "$sub")"
+			done
+		fi
+	done
+}
