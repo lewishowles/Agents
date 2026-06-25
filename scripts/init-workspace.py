@@ -1072,7 +1072,7 @@ def render_workspace(project_dir: Path, tree_depth: int, tree_excludes: List[str
 			"",
 			"Prefer the narrowest command that verifies the changed area. Classifications are conservative; inspect the script before running if behaviour is unclear.",
 			"",
-			"When project diagnostics exposes a unit-test check, narrow it with `--test-file <path>` or `--test-glob '<pattern>'`. Both arguments are repeatable; quote glob patterns so diagnostics validates and expands them.",
+			"When project diagnostics exposes a unit-test check, narrow it with `--test-file <path>` or `--test-glob '<pattern>'`. Both arguments are repeatable; quote glob patterns so diagnostics validates and expands them. For Xcode checks, the nearest directory ending in `Tests` identifies the test target and the Swift filename identifies the test suite.",
 			"",
 			"Broad test commands can produce large output. When only the failure summary is needed, capture output to a temp file or use shell-safe truncation such as `command 2>&1 | tail -20`, taking care not to hide the original exit status.",
 			"",

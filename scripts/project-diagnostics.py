@@ -32,6 +32,9 @@ EPILOG = """Commands:
   --all               Run all conservative checks. Use only after approval for broad verification.
   --json              Return machine-readable output for the selected mode.
 
+Xcode targeting maps the nearest directory ending in Tests to the test target
+and the Swift filename to the test suite.
+
 Examples:
   .agent/scripts/project-diagnostics.py --list
   .agent/scripts/project-diagnostics.py --check test:unit
@@ -92,6 +95,10 @@ XCODE_TIMEOUT = 600
 # match (x86_64 is dropped in the next macOS). Override here (or via env) for iOS/other platforms.
 XCODE_DESTINATION = os.environ.get("PROJECT_DIAGNOSTICS_XCODE_DESTINATION", "platform=macOS,arch=arm64")
 
+# Test target argument formats used by supported runners.
+TEST_TARGET_STYLE_PATHS = "paths"
+TEST_TARGET_STYLE_XCODE = "xcode"
+
 # Lines worth keeping from a verbose xcodebuild log when building the compact summary.
 # Deliberately excludes the per-suite "started"/"passed" chatter, which floods the output.
 XCODE_SUMMARY_TOKENS = (
@@ -123,7 +130,7 @@ class Check:
 	reason: str
 	timeout: int | None = None
 	xcresult: bool = False
-	supports_test_targets: bool = False
+	test_target_style: str | None = None
 
 
 @dataclass
@@ -223,6 +230,7 @@ def detect_xcode_checks(project_dir: Path) -> list[Check]:
 			f"Xcode unit tests{skip_reason}",
 			timeout=XCODE_TIMEOUT,
 			xcresult=True,
+			test_target_style=TEST_TARGET_STYLE_XCODE,
 		),
 	]
 
@@ -268,7 +276,7 @@ def discover_checks(project_dir: Path) -> tuple[list[Check], list[str]]:
 					name,
 					[*runner, name],
 					"conservative package script",
-					supports_test_targets=name in UNIT_TEST_SCRIPT_NAMES,
+					test_target_style=TEST_TARGET_STYLE_PATHS if name in UNIT_TEST_SCRIPT_NAMES else None,
 				)
 			)
 
@@ -365,6 +373,26 @@ def resolve_test_targets(project_dir: Path, test_files: list[str], test_globs: l
 	return sorted(targets), errors
 
 
+def xcode_test_arguments(targets: list[str]) -> tuple[list[str], list[str]]:
+	arguments: list[str] = []
+	errors: list[str] = []
+
+	for target in targets:
+		path = Path(target)
+		test_target = next((part for part in reversed(path.parent.parts) if part.endswith("Tests")), None)
+
+		if path.suffix != ".swift":
+			errors.append(f"Xcode test file must be a Swift source file: {target}")
+			continue
+		if not test_target:
+			errors.append(f"Xcode test file must be inside a directory ending in Tests: {target}")
+			continue
+
+		arguments.append(f"-only-testing:{test_target}/{path.stem}")
+
+	return arguments, errors
+
+
 def apply_test_targets(checks: list[Check], targets: list[str]) -> tuple[list[Check], list[str]]:
 	if not targets:
 		return checks, []
@@ -372,16 +400,22 @@ def apply_test_targets(checks: list[Check], targets: list[str]) -> tuple[list[Ch
 		return checks, ["test targets require exactly one check"]
 
 	check = checks[0]
-	if not check.supports_test_targets:
+	if check.test_target_style is None:
 		return checks, [f"check does not support test targets: {check.name}"]
+
+	target_arguments = ["--", *targets]
+	if check.test_target_style == TEST_TARGET_STYLE_XCODE:
+		target_arguments, errors = xcode_test_arguments(targets)
+		if errors:
+			return checks, errors
 
 	targeted = Check(
 		name=check.name,
-		command=[*check.command, "--", *targets],
+		command=[*check.command, *target_arguments],
 		reason=check.reason,
 		timeout=check.timeout,
 		xcresult=check.xcresult,
-		supports_test_targets=check.supports_test_targets,
+		test_target_style=check.test_target_style,
 	)
 	return [targeted], []
 

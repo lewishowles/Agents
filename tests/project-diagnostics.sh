@@ -67,6 +67,47 @@ test_scoped_unit_test_files_and_globs() {
 	assert_contains "$output" "src/components/button.test.js"
 }
 
+test_scoped_xcode_unit_test_files_and_globs() {
+	local target_dir="$TEST_ROOT/scoped-xcode-unit"
+	local output="$TEST_ROOT/scoped-xcode-unit.md"
+	mkdir -p "$target_dir/bin" "$target_dir/Boilersuit.xcodeproj" "$target_dir/BoilersuitTests/Rendering"
+
+	printf '#!/usr/bin/env bash\nprintf "xcodebuild mock\\n"\n' > "$target_dir/bin/xcodebuild"
+	chmod +x "$target_dir/bin/xcodebuild"
+	printf 'test\n' > "$target_dir/BoilersuitTests/TemplateEngineTests.swift"
+	printf 'test\n' > "$target_dir/BoilersuitTests/Rendering/PreviewTests.swift"
+
+	PATH="$target_dir/bin:$PATH" "$REPO_DIR/scripts/project-diagnostics.py" \
+		--project "$target_dir" \
+		--check test:unit \
+		--test-file BoilersuitTests/TemplateEngineTests.swift \
+		--test-glob 'BoilersuitTests/Rendering/*.swift' > "$output"
+
+	assert_contains "$output" "| test:unit | passed |"
+	assert_contains "$output" "-only-testing:BoilersuitTests/PreviewTests"
+	assert_contains "$output" "-only-testing:BoilersuitTests/TemplateEngineTests"
+	assert_not_contains "$output" "-- BoilersuitTests/"
+
+	printf 'test\n' > "$target_dir/BoilersuitTests/README.md"
+	if PATH="$target_dir/bin:$PATH" "$REPO_DIR/scripts/project-diagnostics.py" \
+		--project "$target_dir" \
+		--check test:unit \
+		--test-file BoilersuitTests/README.md > "$output" 2>&1; then
+		fail "Expected a non-Swift Xcode test file to be rejected"
+	fi
+	assert_contains "$output" "Xcode test file must be a Swift source file"
+
+	mkdir -p "$target_dir/Support"
+	printf 'test\n' > "$target_dir/Support/TestHelpers.swift"
+	if PATH="$target_dir/bin:$PATH" "$REPO_DIR/scripts/project-diagnostics.py" \
+		--project "$target_dir" \
+		--check test:unit \
+		--test-file Support/TestHelpers.swift > "$output" 2>&1; then
+		fail "Expected an Xcode test file outside a test target directory to be rejected"
+	fi
+	assert_contains "$output" "Xcode test file must be inside a directory ending in Tests"
+}
+
 test_scoped_unit_tests_reject_unsafe_targets() {
 	local target_dir="$TEST_ROOT/rejected-targets"
 	local output="$TEST_ROOT/rejected-targets.txt"
@@ -103,6 +144,7 @@ test_scoped_unit_tests_reject_unsafe_targets() {
 test_local_validate_script
 test_json_skipped_when_no_safe_checks
 test_scoped_unit_test_files_and_globs
+test_scoped_xcode_unit_test_files_and_globs
 test_scoped_unit_tests_reject_unsafe_targets
 
 printf '✓ project-diagnostics tests passed\n'
