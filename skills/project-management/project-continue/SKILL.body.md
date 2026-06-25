@@ -55,6 +55,15 @@ When user signals readiness to move on ("next please", "let's continue", "what's
 
 Keep outline short: 3–5 sentences total. Give enough context to redirect without spending tokens on a full plan.
 
+## Resuming delegated work
+
+If the previous session used subagent delegation:
+
+- Check which tasks were completed and committed vs delegated but not yet reviewed
+- Unreviewed subagent output needs the review gate (inspect against acceptance criteria) before continuing
+- Do not assume subagent output is correct — verify before committing
+- If delegation is no longer appropriate (remaining tasks are interdependent or small), switch back to sequential chunked work
+
 ## During the session
 
 - Record discoveries under `## Discoveries` as they happen

@@ -46,6 +46,10 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 **When to use:** Use this skill when writing functions that accept parameters, making API calls, or handling any response data — even if errors aren't the main topic. Covers input validation with helper utilities, API response validation, graceful fallbacks, and what NOT to handle. Apply proactively when writing JavaScript/TypeScript functions.
 **Avoid:** Discussing a user-facing error message or empty-state copy without changing validation or fallback behaviour; A test failure is being debugged and the fix is likely in the test or implementation logic, not error handling; Reviewing code style, naming, or formatting with no parameter, API, or response handling involved
 
+### fallow
+**When to use:** Use this skill when analyzing JS/TS codebase health, finding dead code or unused exports, detecting code duplication, checking circular dependencies, auditing complexity hotspots, identifying architecture boundary violations, or running cleanup before a release or refactor. Covers the fallow CLI for sub-second static analysis with 122 framework plugins, zero configuration. Distinct from codebase-memory (graph traversal, language-agnostic) — use fallow for duplication detection, boundary violations, and JS/TS-specific cleanup.
+**Combine with:** codebase-memory
+
 ### frontend-design
 **When to use:** Use this skill when designing or building any public-facing UI, landing page, marketing page, hero section, or component where visual quality and brand distinctiveness matter — before touching code. Covers design-first decision-making, aesthetic direction, typography, colour, motion, and composition. Distinct from accessibility (WCAG compliance) and web-performance (Core Web Vitals).
 **Combine with:** accessibility, code-style

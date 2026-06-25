@@ -37,6 +37,34 @@ If no generator command exists, do not guess path or create file manually. Inspe
 4. **Plan** — create initial `PROGRESS.md` using standard schema below
 5. **Wait** — do not begin implementation until the plan is reviewed and approved
 
+## Subagent delegation (optional)
+
+After plan approval, consider delegating implementation tasks to subagents when:
+
+- The plan has 3+ independent tasks that don't share files
+- Tasks are well-specified with clear acceptance criteria
+- The work is mechanical: scaffolding, repeated pattern changes, test writing
+
+**Do not delegate when:**
+
+- Tasks share files or have high interdependency
+- Single-file changes or quick fixes
+- The task requires nuanced judgment or architectural decisions
+- The agent runtime doesn't support subagents
+
+### Review gate
+
+For each delegated task:
+
+1. **Delegate** — give the subagent the task description, acceptance criteria, and relevant file paths from `PROGRESS.md`
+2. **Review** — inspect the subagent's output against acceptance criteria; do not trust blindly
+3. **Approve or request changes** — if output is correct, proceed; if not, send specific feedback
+4. **Commit** — after approval, commit the task's output before delegating the next
+
+This enables autonomous multi-hour execution while maintaining quality control. The main agent stays in context as architect and reviewer; subagents handle implementation.
+
+**Token tradeoff:** subagents re-read files the main agent already has in context. This costs extra tokens but preserves main-context budget for planning and review. Use when the plan is too large for a single context window.
+
 ## Planning principles
 
 - Treat commits as unit of work; each PROGRESS.md section should roughly match one Conventional Commit

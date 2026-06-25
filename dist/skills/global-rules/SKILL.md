@@ -149,6 +149,12 @@ Default to small, directly related chunks. Each chunk should fit one reviewable 
 - Stop after each chunk with files changed, verification performed, next step, and suggested commit message.
 - Do not continue into the next chunk until the user confirms.
 
+### Subagent delegation
+
+Delegation is opt-in, not default. Consider it when a plan has 3+ independent tasks that don't share files and the work is well-specified. Do not delegate single-file changes, quick fixes, or tasks with high interdependency — the token overhead of re-reading files outweighs the benefit.
+
+When delegating, maintain a review gate: inspect every subagent's output against acceptance criteria before committing. The main agent acts as architect and reviewer; subagents act as implementers. Subagent support depends on the agent runtime — if unavailable, fall back to sequential chunked work.
+
 ## Skill use policy
 
 Skills are authoritative when their trigger conditions match. Before coding, editing prose, changing config, or reviewing files, inspect the task and file paths, then load and use the matching skills needed for the current task type. If multiple skills match, use all relevant skills — especially `code-style` plus language/framework skills. Do not wait for explicit slash-command invocation.
