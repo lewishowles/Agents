@@ -766,6 +766,8 @@ def diagnostics_lines(project_dir: Path) -> List[str]:
 		"```sh",
 		".agent/scripts/project-diagnostics.py --list",
 		".agent/scripts/project-diagnostics.py --check <name>",
+		".agent/scripts/project-diagnostics.py --check test:unit --test-file <path>",
+		".agent/scripts/project-diagnostics.py --check test:unit --test-glob '<pattern>'",
 	]
 
 	if change_impact_path.exists():
@@ -880,7 +882,7 @@ def render_manifest(project_dir: Path, tree_depth: int, tree_excludes: List[str]
 		"",
 		"Prefer the narrowest command that verifies the changed area. Classifications are conservative; inspect the script before running if behaviour is unclear.",
 		"",
-		"Some test runners support passing a changed file path after the script command. Inspect the script/config before running a broad suite.",
+		"When project diagnostics exposes a unit-test check, narrow it with `--test-file <path>` or `--test-glob '<pattern>'`. Both arguments are repeatable; quote glob patterns so diagnostics validates and expands them.",
 		"",
 		"Broad test commands can produce large output. When only the failure summary is needed, capture output to a temp file or use shell-safe truncation such as `command 2>&1 | tail -20`, taking care not to hide the original exit status.",
 		"",

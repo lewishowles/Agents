@@ -24,7 +24,7 @@ Apply especially under pressure or when "quick fix" seems obvious.
 
 ## Token-discipline note
 
-When `.agent/scripts/project-diagnostics.py` exists, run `--list` then `--check <name>` for needed signal. Prefer scoped commands when they save back-and-forth: single test file, lint on touched path, minimal repro. Ask user for full suites, builds, e2e, or diagnostics `--all`.
+When `.agent/scripts/project-diagnostics.py` exists, run `--list` then `--check <name>` for needed signal. Narrow unit-test checks with `--test-file <path>` or `--test-glob '<pattern>'`; both arguments are repeatable, and glob patterns must be quoted. Prefer scoped commands when they save back-and-forth: single test file, lint on touched path, minimal repro. Ask user for full suites, builds, e2e, or diagnostics `--all`.
 
 ## Phase 1 — Build a feedback loop
 

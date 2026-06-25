@@ -27,16 +27,25 @@ requested.
 EPILOG = """Commands:
   --list              Discover available diagnostics without running them.
   --check NAME        Run one named check, such as test:unit or lint:check.
+  --test-file PATH    Run a unit-test check against one test file. Repeat for multiple files.
+  --test-glob PATTERN Run a unit-test check against matching files. Repeat for multiple globs.
   --all               Run all conservative checks. Use only after approval for broad verification.
   --json              Return machine-readable output for the selected mode.
 
 Examples:
   .agent/scripts/project-diagnostics.py --list
   .agent/scripts/project-diagnostics.py --check test:unit
+  .agent/scripts/project-diagnostics.py --check test:unit --test-file src/example.test.ts
+  .agent/scripts/project-diagnostics.py --check test:unit --test-glob 'src/**/*.test.ts'
   .agent/scripts/project-diagnostics.py --check lint:check --check test:unit
   .agent/scripts/project-diagnostics.py --all
   .agent/scripts/project-diagnostics.py --json --list
 """
+
+UNIT_TEST_SCRIPT_NAMES = {
+	"test:unit",
+	"test:unit:run",
+}
 
 SAFE_SCRIPT_NAMES = {
 	"attw",
@@ -114,6 +123,7 @@ class Check:
 	reason: str
 	timeout: int | None = None
 	xcresult: bool = False
+	supports_test_targets: bool = False
 
 
 @dataclass
@@ -253,7 +263,14 @@ def discover_checks(project_dir: Path) -> tuple[list[Check], list[str]]:
 			continue
 
 		if runner and script_is_safe(name, command):
-			checks.append(Check(name, [*runner, name], "conservative package script"))
+			checks.append(
+				Check(
+					name,
+					[*runner, name],
+					"conservative package script",
+					supports_test_targets=name in UNIT_TEST_SCRIPT_NAMES,
+				)
+			)
 
 	checks.extend(detect_xcode_checks(project_dir))
 
@@ -291,6 +308,82 @@ def selected_checks(checks: list[Check], requested_names: list[str], run_all: bo
 			errors.append(f"unknown or unsafe check: {name}")
 
 	return selected, errors
+
+
+def resolve_test_targets(project_dir: Path, test_files: list[str], test_globs: list[str]) -> tuple[list[str], list[str]]:
+	targets: set[str] = set()
+	errors: list[str] = []
+
+	for value in test_files:
+		path = Path(value)
+		if path.is_absolute() or ".." in path.parts:
+			errors.append(f"test file must stay inside the project: {value}")
+			continue
+
+		resolved = (project_dir / path).resolve()
+		try:
+			relative = resolved.relative_to(project_dir)
+		except ValueError:
+			errors.append(f"test file must stay inside the project: {value}")
+			continue
+
+		if not resolved.is_file():
+			errors.append(f"test file not found: {value}")
+			continue
+
+		targets.add(str(relative))
+
+	for pattern in test_globs:
+		path = Path(pattern)
+		if path.is_absolute() or ".." in path.parts:
+			errors.append(f"test glob must stay inside the project: {pattern}")
+			continue
+
+		matches = []
+		try:
+			matches = sorted(project_dir.glob(pattern))
+		except (NotImplementedError, ValueError):
+			errors.append(f"invalid test glob: {pattern}")
+			continue
+
+		valid_matches = 0
+		for match in matches:
+			resolved = match.resolve()
+			try:
+				relative = resolved.relative_to(project_dir)
+			except ValueError:
+				errors.append(f"test glob matched outside the project: {pattern}")
+				continue
+
+			if resolved.is_file():
+				targets.add(str(relative))
+				valid_matches += 1
+
+		if valid_matches == 0:
+			errors.append(f"test glob matched no files: {pattern}")
+
+	return sorted(targets), errors
+
+
+def apply_test_targets(checks: list[Check], targets: list[str]) -> tuple[list[Check], list[str]]:
+	if not targets:
+		return checks, []
+	if len(checks) != 1:
+		return checks, ["test targets require exactly one check"]
+
+	check = checks[0]
+	if not check.supports_test_targets:
+		return checks, [f"check does not support test targets: {check.name}"]
+
+	targeted = Check(
+		name=check.name,
+		command=[*check.command, "--", *targets],
+		reason=check.reason,
+		timeout=check.timeout,
+		xcresult=check.xcresult,
+		supports_test_targets=check.supports_test_targets,
+	)
+	return [targeted], []
 
 
 def command_label(command: list[str]) -> str:
@@ -575,11 +668,16 @@ def main() -> int:
 	parser.add_argument("--timeout", type=int, default=120, help="Timeout per check in seconds. Default: 120.")
 	parser.add_argument("--list", action="store_true", help="List available and skipped checks without running anything. This is the default.")
 	parser.add_argument("--check", action="append", default=[], metavar="NAME", help="Run one named check. Repeat to run multiple checks.")
+	parser.add_argument("--test-file", action="append", default=[], metavar="PATH", help="Run a unit-test check against one project-relative test file. Repeat for multiple files.")
+	parser.add_argument("--test-glob", action="append", default=[], metavar="PATTERN", help="Run a unit-test check against matching project-relative files. Repeat for multiple globs.")
 	parser.add_argument("--all", action="store_true", help="Run all conservative checks. Use only after approval for broad verification.")
 	args = parser.parse_args()
 
 	if args.all and args.check:
 		print("Use either --all or --check, not both.", file=sys.stderr)
+		return 2
+	if (args.test_file or args.test_glob) and (args.all or args.list or not args.check):
+		print("Test targets require one --check and cannot be used with --list or --all.", file=sys.stderr)
 		return 2
 
 	project_dir = args.project.resolve()
@@ -600,6 +698,14 @@ def main() -> int:
 		for error in selection_errors:
 			print(error, file=sys.stderr)
 		print("Run with --list to see available checks.", file=sys.stderr)
+		return 2
+
+	test_targets, target_errors = resolve_test_targets(project_dir, args.test_file, args.test_glob)
+	checks_to_run, applicability_errors = apply_test_targets(checks_to_run, test_targets)
+	target_errors.extend(applicability_errors)
+	if target_errors:
+		for error in target_errors:
+			print(error, file=sys.stderr)
 		return 2
 
 	log_dir = project_dir / ".agent" / "diagnostics"

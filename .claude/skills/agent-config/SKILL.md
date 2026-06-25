@@ -152,6 +152,6 @@ scripts/project-diagnostics.py --list
 
 - `scripts/repo-context.py` gives compact startup context: rules, progress files, capabilities, diagnostics, generated output, generators, and Git state.
 - `scripts/validate/generated-file-guard.py` checks Git status for direct generated-output edits and stale generated files after source changes.
-- `scripts/project-diagnostics.py --list` discovers focused checks; use `--check <name>` for specific verification and reserve `--all` for user-approved broad checks.
+- `scripts/project-diagnostics.py --list` discovers focused checks; use `--check <name>` for specific verification, add repeatable `--test-file <path>` or `--test-glob '<pattern>'` arguments to narrow unit tests, and reserve `--all` for user-approved broad checks.
 
 When auditing this repo, pair `agent-config` with `project-audit`. Findings should prioritise generated/source drift, setup-script drift, stale docs tables, missing validation wiring, and unclear capability/setup guidance.

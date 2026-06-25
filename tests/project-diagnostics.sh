@@ -46,7 +46,63 @@ test_json_skipped_when_no_safe_checks() {
 	assert_contains "$output" "no conservative diagnostics command found"
 }
 
+test_scoped_unit_test_files_and_globs() {
+	local target_dir="$TEST_ROOT/scoped-unit"
+	local output="$TEST_ROOT/scoped-unit.md"
+	mkdir -p "$target_dir/src/components"
+
+	printf '{"scripts":{"test:unit":"node test-runner.js"}}\n' > "$target_dir/package.json"
+	printf 'const files = process.argv.slice(2); console.log(files.join("\\n"));\n' > "$target_dir/test-runner.js"
+	printf 'test\n' > "$target_dir/src/example.test.js"
+	printf 'test\n' > "$target_dir/src/components/button.test.js"
+
+	"$REPO_DIR/scripts/project-diagnostics.py" \
+		--project "$target_dir" \
+		--check test:unit \
+		--test-file src/example.test.js \
+		--test-glob 'src/components/*.test.js' > "$output"
+
+	assert_contains "$output" "| test:unit | passed |"
+	assert_contains "$output" "src/example.test.js"
+	assert_contains "$output" "src/components/button.test.js"
+}
+
+test_scoped_unit_tests_reject_unsafe_targets() {
+	local target_dir="$TEST_ROOT/rejected-targets"
+	local output="$TEST_ROOT/rejected-targets.txt"
+	mkdir -p "$target_dir"
+
+	printf '{"scripts":{"test:unit":"node test-runner.js","lint":"node test-runner.js"}}\n' > "$target_dir/package.json"
+	printf 'console.log("ran");\n' > "$target_dir/test-runner.js"
+
+	if "$REPO_DIR/scripts/project-diagnostics.py" \
+		--project "$target_dir" \
+		--check test:unit \
+		--test-file ../outside.test.js > "$output" 2>&1; then
+		fail "Expected an outside-project test file to be rejected"
+	fi
+	assert_contains "$output" "test file must stay inside the project"
+
+	if "$REPO_DIR/scripts/project-diagnostics.py" \
+		--project "$target_dir" \
+		--check test:unit \
+		--test-glob 'src/**/*.test.js' > "$output" 2>&1; then
+		fail "Expected an unmatched test glob to be rejected"
+	fi
+	assert_contains "$output" "test glob matched no files"
+
+	if "$REPO_DIR/scripts/project-diagnostics.py" \
+		--project "$target_dir" \
+		--check lint \
+		--test-file test-runner.js > "$output" 2>&1; then
+		fail "Expected test targeting on a non-test check to be rejected"
+	fi
+	assert_contains "$output" "check does not support test targets: lint"
+}
+
 test_local_validate_script
 test_json_skipped_when_no_safe_checks
+test_scoped_unit_test_files_and_globs
+test_scoped_unit_tests_reject_unsafe_targets
 
 printf '✓ project-diagnostics tests passed\n'
