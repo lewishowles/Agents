@@ -23,10 +23,16 @@ Run only when user asks and `agents:workspace` exists in current shell.
 ## Workflow
 
 1. **Discuss** — clarify requirements, scope, and dependencies before editing `PROGRESS.md`
-2. **Locate** — identify whether the work fits before, after, or between upcoming sections
-3. **Reorganise** — if the new work changes what's needed later, update upcoming sections to match
-4. **Insert** — add a section using standard structure: purpose, expected commit, files likely to change, tasks, risks, notes
-5. **Update parking lot** — move related ideas into the new section or leave them parked
+2. **Risk triage** (opt-in, for unfamiliar or complex areas) — identify high-risk files before planning so the section can flag them:
+   - **Git churn**: `git log --oneline --since="1 month ago" -- <path> | wc -l` — files with high recent change frequency are defect-prone
+   - **Complexity**: large files or high function counts (use codebase-memory `search_graph` with degree filters, or `wc -l` as a proxy)
+   - **Fan-in**: high caller count = high blast radius. Use codebase-memory `search_graph(min_degree=10, relationship="CALLS", direction="inbound")` for the target area
+   - If any file scores high on two or more signals, note it in the section's **Risks** with a brief reason
+   - Skip for routine work, single-file changes, or areas you've recently worked in
+3. **Locate** — identify whether the work fits before, after, or between upcoming sections
+4. **Reorganise** — if the new work changes what's needed later, update upcoming sections to match
+5. **Insert** — add a section using standard structure: purpose, expected commit, files likely to change, tasks, risks, notes
+6. **Update parking lot** — move related ideas into the new section or leave them parked
 
 ## Placement principles
 

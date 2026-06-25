@@ -10,6 +10,7 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 - Check scope: is the diff doing one thing, or several?
 - Load relevant skills for language/framework
 - For JS/TS projects, consider running `fallow health` for structural analysis (dead code, duplication, complexity, boundary violations) — see the fallow skill
+- **Risk-aware focus**: if a changed file has high git churn (`git log --oneline --since="1 month ago" -- <path> | wc -l`) or high fan-in (many callers via codebase-memory), scrutinise it more carefully — defects cluster in churn-heavy files, and high fan-in means wider blast radius
 
 ### Severity levels
 

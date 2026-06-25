@@ -42,6 +42,14 @@ Graph tools return structural results in ~500 tokens vs ~80K for grep.
 - High fan-out: `search_graph(min_degree=10, relationship="CALLS", direction="outbound")`
 - High fan-in: `search_graph(min_degree=10, relationship="CALLS", direction="inbound")`
 
+## Risk signals (pre-work triage)
+
+Before working in an unfamiliar area, combine these signals to identify high-risk files:
+- **Fan-in** (blast radius): `search_graph(min_degree=10, relationship="CALLS", direction="inbound")` — files with many callers are high-impact
+- **Fan-out** (complexity): `search_graph(min_degree=10, relationship="CALLS", direction="outbound")` — files calling many others tend to be complex
+- **Git churn**: `git log --oneline --since="1 month ago" -- <path> | wc -l` — high recent change frequency correlates with defect density
+- A file scoring high on two or more signals warrants extra care: smaller changes, more testing, explicit risk notes in the plan
+
 ## When to use fallow instead
 
 Codebase-memory is language-agnostic and excels at graph traversal — callers, callees, impact analysis. For JS/TS projects, the **fallow** skill complements this with:
