@@ -1,0 +1,34 @@
+{
+	"name": "codebase-memory",
+	"description": "Use this skill when answering structural code queries with the codebase knowledge graph, including architecture, callers, dependencies, impact analysis, dead code, graph query syntax, Cypher examples, edge types, and search_graph usage.",
+	"triggers": [
+		"explore codebase",
+		"understand architecture",
+		"codebase structure",
+		"who calls",
+		"call chain",
+		"find callers",
+		"dead code",
+		"unused functions",
+		"graph query",
+		"cypher",
+		"search_graph",
+		"impact analysis",
+		"show dependencies",
+		"trace path",
+		"high fan-out"
+	],
+	"do-not-use-when": [
+		"Looking up a literal string, config value, documentation line, or generated asset",
+		"Answering from a single named file or snippet already provided by the user",
+		"The codebase graph tools are unavailable in the current runtime"
+	],
+	"filePatterns": [],
+	"pathPatterns": [],
+	"dependencies": [],
+	"capabilities": {
+		"promptTriggering": true,
+		"fileTriggering": false
+	},
+	"targets": ["claude", "codex"]
+}

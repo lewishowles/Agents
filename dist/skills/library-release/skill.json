@@ -1,0 +1,33 @@
+{
+	"name": "library-release",
+	"title": "Library release",
+	"description": "Use this skill when preparing to release a new version of @lewishowles/components, @lewishowles/helpers, or @lewishowles/testing.",
+	"when": "When releasing @lewishowles/components, @lewishowles/helpers, or @lewishowles/testing",
+	"triggers": [
+		"library release",
+		"release library",
+		"publish package",
+		"npm publish",
+		"release components",
+		"release helpers",
+		"@lewishowles/components release",
+		"@lewishowles/helpers release",
+		"@lewishowles/testing release",
+		"version bump",
+		"semver",
+		"changelog"
+	],
+	"do-not-use-when": [
+		"Updating a project to consume an already-published library release",
+		"Publishing an unrelated package",
+		"Using installed helper or component APIs without preparing a release"
+	],
+	"filePatterns": [],
+	"pathPatterns": [],
+	"dependencies": ["dependencies", "typescript", "writing"],
+	"capabilities": {
+		"promptTriggering": true,
+		"fileTriggering": false
+	},
+	"targets": ["claude", "codex"]
+}

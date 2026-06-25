@@ -1,0 +1,25 @@
+{
+	"name": "project-synthesise-feedback",
+	"title": "Project synthesise feedback",
+	"description": "Use this skill when asked to review, compare, or combine suggestions from another agent or reviewer, especially requests like \"what do you think of this\", \"another agent suggested this\", \"combine these recommendations\", or \"review this plan and make it stronger\". Critically synthesises outside feedback with the current agent's own judgement into practical next steps.",
+	"when": "When critically synthesising another agent's suggestions with current recommendations",
+	"triggers": [
+		"what do you think of this",
+		"another agent suggested",
+		"suggestions from another agent",
+		"review these suggestions",
+		"combine these recommendations",
+		"synthesise feedback",
+		"make this stronger",
+		"compare recommendations",
+		"second opinion"
+	],
+	"filePatterns": [],
+	"pathPatterns": [],
+	"dependencies": [],
+	"capabilities": {
+		"promptTriggering": true,
+		"fileTriggering": false
+	},
+	"targets": ["claude", "codex"]
+}

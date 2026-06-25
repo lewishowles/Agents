@@ -25,7 +25,9 @@ GLOBAL_SKILLS_OUT = REPO_DIR / "dist" / "claude" / "source" / "global-skills.md"
 PM_GROUP = "project-management"  # Listed first in the global index so it appears near slash-command docs.
 
 GENERATED_HEADER = "# Generated — edit skill.json and SKILL.body.md instead."
-SOURCE_FILENAMES = {"skill.json", "SKILL.body.md", "SKILL.md", "SYNC.md"}
+# skill.json is copied to dist so the file-trigger hook can read
+# capabilities, filePatterns, and pathPatterns at runtime.
+SOURCE_FILENAMES = {"SKILL.body.md", "SKILL.md", "SYNC.md"}
 
 GLOBAL_SKILLS_HEADER = """\
 ## Global skills

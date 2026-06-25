@@ -1,0 +1,31 @@
+{
+	"name": "code-review",
+	"description": "Use this skill when reviewing code — a PR, a diff, or an individual file — or when receiving review feedback. Applies your conventions (accessibility, code-style, error-handling, frontend-security, web-performance) as a checklist, and covers how to give and receive feedback.",
+	"when": "When reviewing a PR or diff, or receiving review feedback",
+	"triggers": [
+		"review",
+		"code review",
+		"pr review",
+		"pull request review",
+		"review feedback",
+		"review this",
+		"review the"
+	],
+	"do-not-use-when": [
+		"Writing new code (apply the relevant stack skills instead)",
+		"A general question about code quality with no specific diff to review"
+	],
+	"filePatterns": [],
+	"pathPatterns": [],
+	"dependencies": [
+		"code-style",
+		"accessibility",
+		"error-handling",
+		"frontend-security",
+		"web-performance"
+	],
+	"capabilities": {
+		"promptTriggering": true,
+		"fileTriggering": false
+	}
+}

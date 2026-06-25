@@ -1,0 +1,32 @@
+{
+	"name": "frontend-design",
+	"description": "Use this skill when designing or building any public-facing UI, landing page, marketing page, hero section, or component where visual quality and brand distinctiveness matter — before touching code. Covers design-first decision-making, aesthetic direction, typography, colour, motion, and composition. Distinct from accessibility (WCAG compliance) and web-performance (Core Web Vitals).",
+	"when": "When designing UI or making aesthetic decisions for a public-facing interface",
+	"triggers": [
+		"design",
+		"visual design",
+		"aesthetic",
+		"landing page",
+		"hero",
+		"marketing page",
+		"typography",
+		"colour palette",
+		"color palette",
+		"brand",
+		"look and feel",
+		"motion design",
+		"animation design",
+		"layout design",
+		"design system",
+		"visual identity",
+		"UI design",
+		"composition"
+	],
+	"filePatterns": [],
+	"pathPatterns": [],
+	"dependencies": ["accessibility", "code-style"],
+	"capabilities": {
+		"promptTriggering": true,
+		"fileTriggering": false
+	}
+}

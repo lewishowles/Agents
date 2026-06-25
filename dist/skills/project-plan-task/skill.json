@@ -1,0 +1,21 @@
+{
+	"name": "project-plan-task",
+	"title": "Project plan task",
+	"description": "Use this skill to introduce new work into an existing plan \u2014 discusses requirements and inserts a new section at the appropriate location, not simply at the end.",
+	"when": "When introducing new work into an existing plan",
+	"triggers": [
+		"plan task",
+		"new task",
+		"add task",
+		"plan new work",
+		"plan this feature"
+	],
+	"filePatterns": [],
+	"pathPatterns": [],
+	"dependencies": [],
+	"capabilities": {
+		"promptTriggering": false,
+		"fileTriggering": false
+	},
+	"targets": ["claude", "codex"]
+}
