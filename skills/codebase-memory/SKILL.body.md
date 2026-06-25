@@ -51,6 +51,8 @@ Codebase-memory is language-agnostic and excels at graph traversal — callers, 
 
 Use fallow for cleanup and structural health audits; use codebase-memory for tracing and impact analysis.
 
+For atomic cross-file refactors (rename, move, extract), see [docs/tools.md](../../docs/tools.md) for Serena MCP — an LSP-backed MCP server that executes the changes codebase-memory identifies.
+
 ## 14 MCP Tools
 `index_repository`, `index_status`, `list_projects`, `delete_project`,
 `search_graph`, `search_code`, `trace_path`, `detect_changes`,

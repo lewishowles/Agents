@@ -29,6 +29,10 @@ Plugins are installed globally (user scope) and registered in `settings.json` un
 }
 ```
 
+## Optional runtime tools
+
+For MCP servers and CLI tools that complement this repo's skills (Serena MCP, repowise, fallow runtime), see [docs/tools.md](tools.md). These are per-project runtime dependencies — not plugins or skills managed by this repo.
+
 ## Plugin vs skill
 
 | | Plugins | Skills |
