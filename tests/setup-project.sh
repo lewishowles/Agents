@@ -16,7 +16,7 @@ run_setup() {
 
 	(
 		cd "$target_dir"
-		"$REPO_DIR/scripts/setup-project.sh" "$flag" >/dev/null
+		"$REPO_DIR/scripts/setup-project.sh" "$flag" >/dev/null </dev/null
 	)
 }
 
@@ -26,7 +26,7 @@ run_setup_output() {
 
 	(
 		cd "$target_dir"
-		"$REPO_DIR/scripts/setup-project.sh" "$flag"
+		"$REPO_DIR/scripts/setup-project.sh" "$flag" </dev/null
 	)
 }
 

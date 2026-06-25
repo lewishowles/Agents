@@ -14,7 +14,7 @@ run_init() {
 	local target_dir="$1"
 	shift
 
-	"$REPO_DIR/scripts/init-workspace.py" --project-dir "$target_dir" "$@"
+	"$REPO_DIR/scripts/init-workspace.py" --project-dir "$target_dir" "$@" </dev/null
 }
 
 create_node_project() {
