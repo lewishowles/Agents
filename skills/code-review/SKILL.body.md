@@ -9,6 +9,7 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 - Understand intent: what problem does this solve?
 - Check scope: is the diff doing one thing, or several?
 - Load relevant skills for language/framework
+- For JS/TS projects, consider running `fallow health` for structural analysis (dead code, duplication, complexity, boundary violations) — see the fallow skill
 
 ### Severity levels
 

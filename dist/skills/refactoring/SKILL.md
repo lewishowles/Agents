@@ -58,6 +58,8 @@ Use these terms for structural changes. Consistent language avoids ambiguity.
 
 Use this to assess what to address, not during active refactor.
 
+For JS/TS projects, run `fallow health` before triaging to get a structured report of dead code, duplication, complexity hotspots, and boundary violations. The fallow skill provides CLI commands with JSON output for machine-readable results.
+
 ### Categories
 
 - **Code debt** — duplication, large functions, unclear naming, dead code

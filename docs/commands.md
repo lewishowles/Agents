@@ -42,6 +42,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/debugging` | `debugging` | When encountering any bug, test failure, or unexpected behaviour — before proposing a fix |
 | `/dependencies` | `dependencies` | When adding packages, what to choose, when to add |
 | `/error-handling` | `error-handling` | When validating input, graceful fallbacks, error handling |
+| `/fallow` | `fallow` | When running fallow for codebase health, dead code, duplication, or boundary analysis in JS/TS projects |
 | `/frontend-design` | `frontend-design` | When designing UI or making aesthetic decisions for a public-facing interface |
 | `/frontend-security` | `frontend-security` | When writing or reviewing client-side code for security: XSS, CSP, auth tokens, secrets hygiene |
 | `/library-release` | `library-release` | When releasing @lewishowles/components, @lewishowles/helpers, or @lewishowles/testing |

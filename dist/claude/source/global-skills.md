@@ -21,6 +21,7 @@ Apply across all projects. See individual skills for detailed rules. Use project
 - `/debugging` — When encountering any bug, test failure, or unexpected behaviour — before proposing a fix
 - `/dependencies` — When adding packages, what to choose, when to add
 - `/error-handling` — When validating input, graceful fallbacks, error handling
+- `/fallow` — When running fallow for codebase health, dead code, duplication, or boundary analysis in JS/TS projects
 - `/frontend-design` — When designing UI or making aesthetic decisions for a public-facing interface
 - `/frontend-security` — When writing or reviewing client-side code for security: XSS, CSP, auth tokens, secrets hygiene
 - `/library-release` — When releasing @lewishowles/components, @lewishowles/helpers, or @lewishowles/testing

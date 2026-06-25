@@ -32,6 +32,17 @@ Graph tools return structural results in ~500 tokens vs ~80K for grep.
 - High fan-out: `search_graph(min_degree=10, relationship="CALLS", direction="outbound")`
 - High fan-in: `search_graph(min_degree=10, relationship="CALLS", direction="inbound")`
 
+## When to use fallow instead
+
+Codebase-memory is language-agnostic and excels at graph traversal — callers, callees, impact analysis. For JS/TS projects, the **fallow** skill complements this with:
+- Code duplication detection (4 modes)
+- Architecture boundary violations
+- Complexity hotspots with ownership and refactoring targets
+- Unused files, exports, types, and dependencies
+- Feature flag pattern detection
+
+Use fallow for cleanup and structural health audits; use codebase-memory for tracing and impact analysis.
+
 ## 14 MCP Tools
 `index_repository`, `index_status`, `list_projects`, `delete_project`,
 `search_graph`, `search_code`, `trace_path`, `detect_changes`,

@@ -1,0 +1,30 @@
+{
+	"name": "fallow",
+	"description": "Use this skill when analyzing JS/TS codebase health, finding dead code or unused exports, detecting code duplication, checking circular dependencies, auditing complexity hotspots, identifying architecture boundary violations, or running cleanup before a release or refactor. Covers the fallow CLI for sub-second static analysis with 122 framework plugins, zero configuration. Distinct from codebase-memory (graph traversal, language-agnostic) — use fallow for duplication detection, boundary violations, and JS/TS-specific cleanup.",
+	"when": "When running fallow for codebase health, dead code, duplication, or boundary analysis in JS/TS projects",
+	"triggers": [
+		"fallow",
+		"fallow health",
+		"fallow dead-code",
+		"fallow dupes",
+		"fallow audit",
+		"fallow fix",
+		"fallow flags",
+		"fallow security",
+		"dead code",
+		"unused exports",
+		"code duplication",
+		"circular dependencies",
+		"complexity hotspots",
+		"architecture boundaries",
+		"boundary violations",
+		"cleanup opportunities"
+	],
+	"filePatterns": [],
+	"pathPatterns": [],
+	"dependencies": ["codebase-memory"],
+	"capabilities": {
+		"promptTriggering": true,
+		"fileTriggering": false
+	}
+}
