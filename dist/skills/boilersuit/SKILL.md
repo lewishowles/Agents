@@ -13,6 +13,8 @@ do-not-use-when:
 
 Use existing Boilersuit generators for repeatable project structures, not bespoke one-off files. Use `boilersuit-generator-authoring` when creating or changing a generator definition.
 
+Boilersuit is project-agnostic. Follow the selected project's generator definitions and nearby conventions; do not assume Vue, JavaScript, `src/components`, or a `NAME` field unless the generator description establishes them.
+
 ## First checks
 
 Confirm the CLI exists:
@@ -34,6 +36,12 @@ If command prints `LLVM Profile Error: Failed to write file "default.profraw"`, 
 env LLVM_PROFILE_FILE=/tmp/boilersuit-%p.profraw boilersuit project inspect --json
 ```
 
+## Automation contract
+
+Treat the installed `boilersuit` CLI as the agent automation contract. Prefer its JSON commands over independently recreating generator discovery, field requirements, path resolution, collision handling, or project-opening behaviour.
+
+Use `boilersuit --help` and the relevant command help as the source of truth when an option or response shape is unclear.
+
 ## Command forms
 
 `<project-path>` optional; omitted means current directory.
@@ -49,6 +57,16 @@ boilersuit project open [<project-path>] (--editor | --terminal | --file-manager
 ```
 
 Opening editor, terminal, or file manager may need sandbox approval.
+
+## Run profiles
+
+Run profiles are separate from file generation:
+
+- Explicit profiles live in `.boilersuit/run.json`
+- Boilersuit also infers profiles from `package.json` scripts
+- Explicit profiles take precedence when IDs overlap
+
+Do not edit or run a profile as a side effect of consuming a generator. If the task also requires Run profile work, treat it as a separate requested change and inspect the project-owned configuration before acting.
 
 ## Generator path model
 

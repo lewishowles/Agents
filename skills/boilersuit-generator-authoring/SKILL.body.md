@@ -2,6 +2,8 @@
 
 Create or edit project-owned generators using the installed Boilersuit CLI as the authoritative contract. Do not rely on remembered field types, filters, schema properties, or path behaviour.
 
+Boilersuit generators are project-agnostic. Follow the target project's conventions; do not assume Vue, JavaScript, `src/components`, or a `NAME` field unless the proposed generator requires them.
+
 ## Prerequisites
 
 Confirm the CLI and authoring commands are available:
@@ -38,7 +40,21 @@ Use its structured output for:
 - Output-path behaviour and limitations
 - Valid basic and advanced examples
 
-Do not copy those details into the skill or assume a previous project uses the current contract.
+The current implementation includes `pascal`, `kebab`, `camel`, `snake`, `constant`, `upper`, and `lower`. Verify this against the loaded contract rather than relying on the list here; if they differ, the installed CLI wins and the mismatch must be reported.
+
+Do not copy other contract details into the skill or assume a previous project uses the current contract.
+
+## Project contract boundaries
+
+Treat the installed `boilersuit` CLI as the agent automation contract for generator discovery, validation, preview, path resolution, collision handling, and generation. Use command help when an option or response shape is unclear.
+
+Run profiles are a separate project-owned capability:
+
+- Explicit profiles live in `.boilersuit/run.json`
+- Boilersuit also infers profiles from `package.json` scripts
+- Explicit profiles take precedence when IDs overlap
+
+Do not add or change Run profiles as a side effect of generator authoring. If the requested generator pack also needs Run profiles, plan and review that as a separate project change.
 
 ## Authoring workflow
 
