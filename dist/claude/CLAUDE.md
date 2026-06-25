@@ -22,6 +22,9 @@ Minimise token cost by default. Treat context as a limited shared budget.
 
 - Do not run full test suites, builds, typechecks, or e2e checks directly. If `.agent/scripts/project-diagnostics.py` exists, use its `--test-file` or `--test-glob` arguments for scoped unit tests rather than passing raw runner arguments. If the diagnostics script is missing, scoped commands are allowed when they save more tokens than asking would, for example a single unit test file, a lint check on a changed path, or a minimal repro script. Ask the user to run broad or slow commands when no diagnostics wrapper exists.
 - When running any script that produces large output (tests, linters, build steps), pipe output through `tail`: `2>&1 | tail -20`. If a check fails, follow up with a targeted command to extract the first error — never print the full output.
+- When using persistent shell sessions, run `clear` before each command so poll output does not include prior scrollback. Polls that return full session history waste tokens proportional to session age.
+- For long-running commands (builds, validation suites, test runs), redirect output to a file and read targeted line ranges with the `read` tool instead of polling the shell. One `read` call on a 20-line range costs a fraction of a poll that returns thousands of lines of scrollback.
+- Always pass `--no-pager` to `git diff`, `git log`, and other git commands that invoke a pager. A pager blocks the shell session and requires an extra keystroke to resume.
 - Do not read build output, generated bundles, coverage, screenshots, or generated artefacts unless a reported failure points to a specific file or path.
 - Do not print large command output; if you do, acknowledge it briefly, switch to narrower commands, and avoid repeating the pattern.
 - For user-run failures, ask for the smallest useful excerpt: command, failing file/test, error message, and relevant stack frame.
