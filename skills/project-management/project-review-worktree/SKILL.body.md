@@ -10,7 +10,7 @@ Assess whether the current working tree is:
 - consistent with `PROGRESS.md` and any active handoff
 - safe to commit as one coherent change
 - covered by appropriate tests or verification
-- aligned with project instructions, capability facts, generated-file boundaries, and existing patterns
+- aligned with project instructions, workspace facts, generated-file boundaries, and existing patterns
 
 Look for bugs, regressions, incomplete work, weak tests, missing docs or plan updates, maintainability issues, accessibility or UX problems, performance risks, security concerns, and small polish items. Include broader ideas when they could materially improve the project, but label them as optional or exploratory unless they are necessary.
 
@@ -19,13 +19,13 @@ Look for bugs, regressions, incomplete work, weak tests, missing docs or plan up
 Read in this order:
 
 1. `<project-root>/AGENTS.md`
-2. `<project-root>/AGENT_CAPABILITIES.md`, when present
+2. `<project-root>/WORKSPACE.md`, when present
 3. `.agent/scripts/project-diagnostics.py --list`, when present
 4. `PROGRESS.md`, focusing on session handoff, active work, relevant risks, and the expected commit
 5. `git status --short`
 6. The changed source files and relevant nearby context
 
-If `AGENT_CAPABILITIES.md` is missing, do not create it. Use `AGENTS.md`, package scripts, and nearby docs only as needed.
+If `WORKSPACE.md` is missing, do not create it. Use `AGENTS.md`, package scripts, and nearby docs only as needed.
 
 Prefer codebase-memory tools for structural code questions when available. Use targeted file reads and searches; avoid broad generated, vendored, cached, build, dependency, coverage, or binary output.
 

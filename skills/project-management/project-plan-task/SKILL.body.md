@@ -6,19 +6,19 @@ Add new work to existing plan. Insert where it belongs, not necessarily at the e
 
 `PROGRESS.md` lives at **project root**, not `.claude/`. Look for `<project-root>/PROGRESS.md` first.
 
-## Capability manifest
+## Workspace file
 
-Use `<project-root>/AGENT_CAPABILITIES.md` when present to choose verification commands, generated outputs, expensive checks, forbidden operations, and progress locations.
+Use `<project-root>/WORKSPACE.md` when present to choose verification commands, generated outputs, expensive checks, forbidden operations, and progress locations.
 
 When `<project-root>/.agent/scripts/project-diagnostics.py` exists, prefer diagnostics `--check <name>` in `Verify with` over raw package scripts. Use `--list` for names; use `--all` only when section needs broad verification and user agrees.
 
-Do not generate missing capability manifest just to add plan work. If missing, inspect `AGENTS.md`, package scripts, and nearby docs. If capability data would materially improve plan, mention global command:
+Do not generate a missing workspace file just to add plan work. If missing, inspect `AGENTS.md`, package scripts, and nearby docs. If workspace context would materially improve the plan, mention the global command:
 
 ```sh
-agents:capabilities --write
+agents:workspace --write
 ```
 
-Run only when user asks and `agents:capabilities` exists in current shell.
+Run only when user asks and `agents:workspace` exists in current shell.
 
 ## Workflow
 

@@ -26,8 +26,8 @@ create_project() {
 	printf '#!/usr/bin/env python3\n' > "$target_dir/.agent/scripts/project-diagnostics.py"
 	chmod +x "$target_dir/.agent/scripts/project-diagnostics.py"
 
-	cat > "$target_dir/AGENT_CAPABILITIES.md" <<'EOF'
-# Project capabilities
+	cat > "$target_dir/WORKSPACE.md" <<'EOF'
+# Workspace
 
 ## Repo summary
 
@@ -54,7 +54,7 @@ create_project() {
 EOF
 }
 
-test_markdown_uses_capabilities_and_git_counts() {
+test_markdown_uses_workspace_and_git_counts() {
 	local target_dir="$TEST_ROOT/markdown"
 	local output="$TEST_ROOT/markdown.md"
 	create_project "$target_dir"
@@ -69,8 +69,8 @@ test_markdown_uses_capabilities_and_git_counts() {
 
 	run_context "$target_dir" > "$output"
 
-	assert_contains "$output" "Source: AGENT_CAPABILITIES.md"
-	assert_contains "$output" 'Capabilities: `AGENT_CAPABILITIES.md`'
+	assert_contains "$output" "Source: WORKSPACE.md"
+	assert_contains "$output" 'Workspace: `WORKSPACE.md`'
 	assert_contains "$output" "Primary stack: JavaScript library"
 	assert_contains "$output" 'Source dirs: `src`'
 	assert_contains "$output" 'Diagnostics: `.agent/scripts/project-diagnostics.py --list`'
@@ -99,7 +99,7 @@ assert data["generated_paths"] == ["dist"]
 PY
 }
 
-test_missing_capabilities_labels_inferred_source() {
+test_missing_workspace_labels_inferred_source() {
 	local target_dir="$TEST_ROOT/inferred"
 	local output="$TEST_ROOT/inferred.md"
 	mkdir -p "$target_dir/dist"
@@ -112,8 +112,21 @@ test_missing_capabilities_labels_inferred_source() {
 	assert_contains "$output" '`dist`'
 }
 
-test_markdown_uses_capabilities_and_git_counts
+test_legacy_manifest_is_used_as_fallback() {
+	local target_dir="$TEST_ROOT/legacy"
+	local output="$TEST_ROOT/legacy.md"
+	create_project "$target_dir"
+	mv "$target_dir/WORKSPACE.md" "$target_dir/AGENT_CAPABILITIES.md"
+
+	run_context "$target_dir" > "$output"
+
+	assert_contains "$output" "Source: AGENT_CAPABILITIES.md"
+	assert_contains "$output" 'Workspace: `AGENT_CAPABILITIES.md`'
+}
+
+test_markdown_uses_workspace_and_git_counts
 test_json_output_is_machine_readable
-test_missing_capabilities_labels_inferred_source
+test_missing_workspace_labels_inferred_source
+test_legacy_manifest_is_used_as_fallback
 
 printf '✓ repo-context tests passed\n'

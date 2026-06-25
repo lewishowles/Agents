@@ -90,7 +90,7 @@ tail -f /tmp/local-repo-gateway-tunnel.log
 | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | `local_repo_health`           | JSON with server version, mode, configured repo count, and available operations.                                                          |
 | `local_repo_list`             | JSON list of allowlisted repos with `id`, `name`, and `description`.                                                                      |
-| `local_repo_get_instructions` | `AGENTS.md`, `AGENT_CAPABILITIES.md` when present, and the `PROGRESS.md` handoff section when present.                                    |
+| `local_repo_get_instructions` | `AGENTS.md`, `WORKSPACE.md` or legacy `AGENT_CAPABILITIES.md`, and the `PROGRESS.md` handoff section when present.                       |
 | `local_repo_tree`             | Bounded directory listing for a repo-relative path, excluding Git data, dependencies, generated output, caches, and secret-looking paths. |
 | `local_repo_search`           | Bounded `rg` results for a pattern, with paths made relative to the repo root.                                                            |
 | `local_repo_read_file`        | Bounded UTF-8 file contents for one repo-relative path, or a message when the file is missing, excluded, binary, or too large.            |

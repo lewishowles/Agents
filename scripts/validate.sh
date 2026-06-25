@@ -37,6 +37,8 @@ run_check "hook sync"             bash "$REPO_DIR/scripts/validate/check-hook-sy
 run_check "docs tables"           python3 "$REPO_DIR/scripts/build/build-docs.py" --check
 run_check "skill triggers"        bash "$REPO_DIR/tests/skill-triggers.sh"
 run_check "project diagnostics"   bash "$REPO_DIR/tests/project-diagnostics.sh"
+run_check "workspace generator"   bash "$REPO_DIR/tests/init-workspace.sh"
+run_check "project setup"         bash "$REPO_DIR/tests/setup-project.sh"
 run_check "repo context"          bash "$REPO_DIR/tests/repo-context.sh"
 run_check "generated-file guard"  bash "$REPO_DIR/tests/generated-file-guard.sh"
 run_check "change impact"         bash "$REPO_DIR/tests/change-impact.sh"

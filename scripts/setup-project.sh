@@ -22,20 +22,20 @@ usage() {
 	printf '  %-22s %s\n' '--claude' 'Create Claude project files'
 	printf '  %-22s %s\n' '--codex' 'Create Codex project files'
 	printf '  %-22s %s\n\n' '--both' 'Create shared Claude + Codex project files'
-	printf 'Capabilities:\n'
-	printf '  %-22s %s\n' '--init-capabilities' 'Preview AGENT_CAPABILITIES.md for the current project'
-	printf '  %-22s %s\n' '--write-capabilities' 'Write AGENT_CAPABILITIES.md when it is missing'
-	printf '  %-22s %s\n\n' '--force-capabilities' 'Refresh AGENT_CAPABILITIES.md after review'
+	printf 'Workspace:\n'
+	printf '  %-22s %s\n' '--init-workspace' 'Preview WORKSPACE.md for the current project'
+	printf '  %-22s %s\n' '--write-workspace' 'Write WORKSPACE.md when it is missing'
+	printf '  %-22s %s\n\n' '--force-workspace' 'Refresh WORKSPACE.md after review'
 	printf 'Examples:\n'
 	printf '  cd /path/to/project\n'
-	printf '  %s --init-capabilities\n\n' "$script_name"
+	printf '  %s --init-workspace\n\n' "$script_name"
 }
 
 setup_claude() {
 	printf '\n→ Setting up Claude (project)\n\n'
 	copy_file "$REPO_DIR/templates/claude/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
 	copy_shared_agent_tools
-	write_capabilities_file
+	write_workspace_file
 	copy_claude_support_files
 }
 
@@ -43,14 +43,14 @@ setup_codex() {
 	printf '\n→ Setting up Codex (project)\n\n'
 	copy_file "$REPO_DIR/templates/codex/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
 	copy_shared_agent_tools
-	write_capabilities_file
+	write_workspace_file
 }
 
 setup_both() {
 	printf '\n→ Setting up Claude + Codex (project)\n\n'
 	copy_file "$REPO_DIR/templates/shared/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
 	copy_shared_agent_tools
-	write_capabilities_file
+	write_workspace_file
 	copy_claude_support_files
 }
 
@@ -72,9 +72,12 @@ case "$target" in
 	--claude)             target="claude" ;;
 	--codex)              target="codex" ;;
 	--both)               target="both" ;;
-	--init-capabilities)  target="init-capabilities" ;;
-	--write-capabilities) target="write-capabilities" ;;
-	--force-capabilities) target="force-capabilities" ;;
+	--init-workspace)     target="init-workspace" ;;
+	--write-workspace)    target="write-workspace" ;;
+	--force-workspace)    target="force-workspace" ;;
+	--init-capabilities)  target="init-workspace" ;;
+	--write-capabilities) target="write-workspace" ;;
+	--force-capabilities) target="force-workspace" ;;
 	--help|-h)            usage; exit 0 ;;
 	"")                  target=$(prompt_target) ;;
 	*)                   usage >&2; exit 1 ;;
@@ -84,9 +87,9 @@ case "$target" in
 	claude)             setup_claude ;;
 	codex)              setup_codex ;;
 	both)               setup_both ;;
-	init-capabilities)  init_capabilities preview; exit ;;
-	write-capabilities) init_capabilities write ;;
-	force-capabilities) init_capabilities force ;;
+	init-workspace)  init_workspace preview; exit ;;
+	write-workspace) init_workspace write ;;
+	force-workspace) init_workspace force ;;
 esac
 
 printf '\nDone.\n'

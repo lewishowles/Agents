@@ -30,7 +30,7 @@ SOURCE_FILENAMES = {"skill.json", "SKILL.body.md", "SKILL.md", "SYNC.md"}
 GLOBAL_SKILLS_HEADER = """\
 ## Global skills
 
-Apply across all projects. See individual skills for detailed rules. Use project instructions and capability manifests to narrow the relevant skills for a repo.
+Apply across all projects. See individual skills for detailed rules. Use project instructions and workspace facts to narrow the relevant skills for a repo.
 """
 
 

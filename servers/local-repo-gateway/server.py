@@ -45,7 +45,7 @@ async def list_tools() -> list[types.Tool]:
         ),
         types.Tool(
             name="local_repo_get_instructions",
-            description="Return AGENTS.md, AGENT_CAPABILITIES.md (if present), and PROGRESS.md summary (if present) for a repo.",
+            description="Return AGENTS.md, WORKSPACE.md (or legacy AGENT_CAPABILITIES.md), and the PROGRESS.md handoff for a repo.",
             inputSchema={
                 "type": "object",
                 "properties": {"repo_id": {"type": "string"}},

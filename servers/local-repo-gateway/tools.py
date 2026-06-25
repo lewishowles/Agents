@@ -105,9 +105,11 @@ def tool_get_instructions(repo: dict, arguments: dict) -> str:
 	root = Path(repo["path"]).resolve()
 	parts = []
 
-	for filename in ("AGENTS.md", "AGENT_CAPABILITIES.md", "PROGRESS.md"):
+	for filename in ("AGENTS.md", "WORKSPACE.md", "AGENT_CAPABILITIES.md", "PROGRESS.md"):
 		path = root / filename
 		if not path.exists():
+			continue
+		if filename == "AGENT_CAPABILITIES.md" and (root / "WORKSPACE.md").exists():
 			continue
 
 		content = path.read_text(encoding="utf-8", errors="replace")

@@ -37,13 +37,13 @@ test_claude_setup() {
 	run_setup "$target_dir" --claude
 
 	assert_file "$target_dir/AGENTS.md"
-	assert_file "$target_dir/AGENT_CAPABILITIES.md"
-	assert_contains "$target_dir/AGENT_CAPABILITIES.md" "Main source directories: \`src\`"
+	assert_file "$target_dir/WORKSPACE.md"
+	assert_contains "$target_dir/WORKSPACE.md" "Main source directories: \`src\`"
 	assert_link "$target_dir/.agent/scripts/project-diagnostics.py"
 	assert_link "$target_dir/.agent/scripts/generated-file-guard.py"
 	assert_link "$target_dir/.agent/scripts/repo-context.py"
 	assert_link "$target_dir/.agent/scripts/change-impact.py"
-	assert_contains "$target_dir/AGENT_CAPABILITIES.md" ".agent/scripts/project-diagnostics.py"
+	assert_contains "$target_dir/WORKSPACE.md" ".agent/scripts/project-diagnostics.py"
 	assert_dir "$target_dir/.claude"
 	assert_file "$target_dir/.claude/.claudeignore"
 	assert_not_exists "$target_dir/.claude/settings.json"
@@ -58,13 +58,13 @@ test_codex_setup() {
 	run_setup "$target_dir" --codex
 
 	assert_file "$target_dir/AGENTS.md"
-	assert_file "$target_dir/AGENT_CAPABILITIES.md"
-	assert_contains "$target_dir/AGENT_CAPABILITIES.md" "Main source directories: \`src\`"
+	assert_file "$target_dir/WORKSPACE.md"
+	assert_contains "$target_dir/WORKSPACE.md" "Main source directories: \`src\`"
 	assert_file "$target_dir/.agent/scripts/project-diagnostics.py"
 	assert_file "$target_dir/.agent/scripts/generated-file-guard.py"
 	assert_file "$target_dir/.agent/scripts/repo-context.py"
 	assert_file "$target_dir/.agent/scripts/change-impact.py"
-	assert_contains "$target_dir/AGENT_CAPABILITIES.md" ".agent/scripts/project-diagnostics.py"
+	assert_contains "$target_dir/WORKSPACE.md" ".agent/scripts/project-diagnostics.py"
 	assert_not_exists "$target_dir/.agents"
 	[ ! -e "$target_dir/.claude" ] || fail "Codex-only setup should not create .claude"
 	assert_contains "$target_dir/AGENTS.md" "Codex"
@@ -77,13 +77,13 @@ test_both_setup() {
 	run_setup "$target_dir" --both
 
 	assert_file "$target_dir/AGENTS.md"
-	assert_file "$target_dir/AGENT_CAPABILITIES.md"
-	assert_contains "$target_dir/AGENT_CAPABILITIES.md" "Main source directories: \`src\`"
+	assert_file "$target_dir/WORKSPACE.md"
+	assert_contains "$target_dir/WORKSPACE.md" "Main source directories: \`src\`"
 	assert_file "$target_dir/.agent/scripts/project-diagnostics.py"
 	assert_file "$target_dir/.agent/scripts/generated-file-guard.py"
 	assert_file "$target_dir/.agent/scripts/repo-context.py"
 	assert_file "$target_dir/.agent/scripts/change-impact.py"
-	assert_contains "$target_dir/AGENT_CAPABILITIES.md" ".agent/scripts/project-diagnostics.py"
+	assert_contains "$target_dir/WORKSPACE.md" ".agent/scripts/project-diagnostics.py"
 	assert_file "$target_dir/.claude/.claudeignore"
 	assert_not_exists "$target_dir/.claude/settings.json"
 	assert_not_exists "$target_dir/.claude/templates"
@@ -109,43 +109,52 @@ test_existing_files_are_skipped() {
 	assert_contains "$output" ".claude/.claudeignore already up to date"
 }
 
-test_init_capabilities_previews_current_project() {
+test_init_workspace_previews_current_project() {
 	local target_dir="$TEST_ROOT/init-preview"
 	local output="$TEST_ROOT/init-preview.md"
 	mkdir -p "$target_dir/src"
 
-	run_setup_output "$target_dir" --init-capabilities > "$output"
+	run_setup_output "$target_dir" --init-workspace > "$output"
 
-	assert_contains "$output" "Project capabilities"
+	assert_contains "$output" "Workspace"
 	assert_contains "$output" "Main source directories"
 	assert_not_contains "$output" "Done."
-	[ ! -e "$target_dir/AGENT_CAPABILITIES.md" ] || fail "Preview should not write AGENT_CAPABILITIES.md"
+	[ ! -e "$target_dir/WORKSPACE.md" ] || fail "Preview should not write WORKSPACE.md"
 }
 
-test_write_capabilities_writes_current_project() {
+test_write_workspace_writes_current_project() {
 	local target_dir="$TEST_ROOT/init-write"
 	local output="$TEST_ROOT/init-write.out"
 	mkdir -p "$target_dir/src"
 
-	run_setup_output "$target_dir" --write-capabilities > "$output"
+	run_setup_output "$target_dir" --write-workspace > "$output"
 
-	assert_file "$target_dir/AGENT_CAPABILITIES.md"
-	assert_contains "$target_dir/AGENT_CAPABILITIES.md" "Project capabilities"
+	assert_file "$target_dir/WORKSPACE.md"
+	assert_contains "$target_dir/WORKSPACE.md" "Workspace"
 	assert_contains "$output" "Review generated command safety, generated paths, and forbidden operations before relying on it."
 }
 
-test_write_capabilities_protects_existing_manifest() {
+test_write_workspace_protects_existing_manifest() {
 	local target_dir="$TEST_ROOT/init-existing"
 	mkdir -p "$target_dir"
-	printf 'custom\n' > "$target_dir/AGENT_CAPABILITIES.md"
+	printf 'custom\n' > "$target_dir/WORKSPACE.md"
 
-	if run_setup "$target_dir" --write-capabilities; then
+	if run_setup "$target_dir" --write-workspace; then
 		fail "Expected existing manifest write to fail without force"
 	fi
 
-	assert_equals "$(cat "$target_dir/AGENT_CAPABILITIES.md")" "custom"
-	run_setup "$target_dir" --force-capabilities
-	assert_contains "$target_dir/AGENT_CAPABILITIES.md" "Project capabilities"
+	assert_equals "$(cat "$target_dir/WORKSPACE.md")" "custom"
+	run_setup "$target_dir" --force-workspace
+	assert_contains "$target_dir/WORKSPACE.md" "Workspace"
+}
+
+test_legacy_capability_flag_writes_workspace() {
+	local target_dir="$TEST_ROOT/legacy-flag"
+	mkdir -p "$target_dir/src"
+
+	run_setup "$target_dir" --write-capabilities
+
+	assert_file "$target_dir/WORKSPACE.md"
 }
 
 test_help_lists_commands() {
@@ -156,8 +165,8 @@ test_help_lists_commands() {
 	assert_contains "$output" "Usage: setup-project.sh [command]"
 	assert_contains "$output" "Project setup:"
 	assert_contains "$output" "--both"
-	assert_contains "$output" "Capabilities:"
-	assert_contains "$output" "--init-capabilities"
+	assert_contains "$output" "Workspace:"
+	assert_contains "$output" "--init-workspace"
 	assert_contains "$output" "Examples:"
 }
 
@@ -165,9 +174,10 @@ test_claude_setup
 test_codex_setup
 test_both_setup
 test_existing_files_are_skipped
-test_init_capabilities_previews_current_project
-test_write_capabilities_writes_current_project
-test_write_capabilities_protects_existing_manifest
+test_init_workspace_previews_current_project
+test_write_workspace_writes_current_project
+test_write_workspace_protects_existing_manifest
+test_legacy_capability_flag_writes_workspace
 test_help_lists_commands
 
 printf '✓ setup-project tests passed\n'

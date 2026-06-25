@@ -13,25 +13,25 @@ Start a new project or feature. Create initial `PROGRESS.md` after exploration a
 
 `PROGRESS.md` lives at **project root**, not `.claude/`. Create/read `<project-root>/PROGRESS.md`.
 
-## Capability manifest
+## Workspace file
 
-Check `<project-root>/AGENT_CAPABILITIES.md` before planning. It is factual source for commands, generated files, diagnostics, progress locations, expensive checks, and forbidden operations.
+Check `<project-root>/WORKSPACE.md` before planning. It is factual source for commands, generated files, diagnostics, progress locations, expensive checks, and forbidden operations.
 
 When `<project-root>/.agent/scripts/project-diagnostics.py` exists, list it as preferred verification route. Plans use `--list` for discovery and `--check <name>` for named verification; reserve `--all` for user-approved broad checks.
 
-If it is missing, generate it only when a capability generator command is discoverable by name. Example global command:
+If it is missing, generate it only when a workspace generator command is discoverable by name. Example global command:
 
 ```sh
-agents:capabilities --write
+agents:workspace --write
 ```
 
-Before running, confirm `agents:capabilities` exists in current shell, then run from project root. After generation, tell user it was generated from detected repo facts and needs review before relying on command safety, generated paths, or forbidden-operation classifications.
+Before running, confirm `agents:workspace` exists in current shell, then run from project root. After generation, tell user it was generated from detected repo facts and needs review before relying on command safety, generated paths, or forbidden-operation classifications.
 
-If no generator command exists, do not guess path or create file manually. Inspect `AGENTS.md`, package scripts, and nearby docs; mention `AGENT_CAPABILITIES.md` would improve future sessions.
+If no generator command exists, do not guess path or create file manually. Inspect `AGENTS.md`, package scripts, and nearby docs; mention `WORKSPACE.md` would improve future sessions.
 
 ## Workflow
 
-1. **Explore** — read repo; identify patterns, tech choices, relevant files; check root `PROGRESS.md`, `AGENTS.md`, `AGENT_CAPABILITIES.md`, `CONTEXT.md`, and `README.md`
+1. **Explore** — read repo; identify patterns, tech choices, relevant files; check root `PROGRESS.md`, `AGENTS.md`, `WORKSPACE.md`, `CONTEXT.md`, and `README.md`
 2. **Ask** — clarify ambiguous requirements and constraints before planning; surface tradeoffs and alternatives
 3. **Discuss** — if multiple approaches exist, present them; don't pick silently
 4. **Plan** — create initial `PROGRESS.md` using standard schema below

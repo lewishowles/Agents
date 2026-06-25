@@ -33,7 +33,7 @@ Confirm which package is being released:
 - `@lewishowles/helpers`
 - `@lewishowles/testing`
 
-Read package root instructions, capability manifest if present, `package.json`, changelog, and release notes before recommending commands.
+Read package root instructions, workspace file if present, `package.json`, changelog, and release notes before recommending commands.
 
 ## Step 2 — classify the release
 

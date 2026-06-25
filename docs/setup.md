@@ -126,22 +126,24 @@ cd /path/to/project
 /path/to/repository/scripts/setup-project.sh --both
 ```
 
-Each flag copies the matching `AGENTS.md` template, links `.agent/scripts/`, writes `AGENT_CAPABILITIES.md`, and (for Claude targets) copies `.claudeignore`. After setup, replace the placeholders in `AGENTS.md` with project-specific rules and review the generated `AGENT_CAPABILITIES.md`.
+Each flag copies the matching `AGENTS.md` template, links `.agent/scripts/`, writes `WORKSPACE.md`, and (for Claude targets) copies `.claudeignore`. After setup, replace the placeholders in `AGENTS.md` with project-specific rules and review the generated `WORKSPACE.md`.
 
 ### Repair paths for existing projects
 
-To preview a capabilities draft without writing it:
+To preview a workspace draft without writing it:
 
 ```bash
 cd /path/to/project
-/path/to/repository/scripts/setup-project.sh --init-capabilities
+/path/to/repository/scripts/setup-project.sh --init-workspace
 ```
 
-To write capabilities only (when `AGENTS.md` is already in place):
+To write workspace context only (when `AGENTS.md` is already in place):
 
 ```bash
 cd /path/to/project
-/path/to/repository/scripts/setup-project.sh --write-capabilities
+/path/to/repository/scripts/setup-project.sh --write-workspace
 ```
 
-Use `--force-capabilities` only after reviewing the existing `AGENT_CAPABILITIES.md`. Recognised manual values are preserved when the draft is refreshed.
+Use `--force-workspace` only after reviewing the existing `WORKSPACE.md`. Recognised manual values are preserved when the draft is refreshed.
+
+The previous `--init-capabilities`, `--write-capabilities`, and `--force-capabilities` flags remain as deprecated aliases during migration.

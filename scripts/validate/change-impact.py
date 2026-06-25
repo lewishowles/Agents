@@ -49,6 +49,7 @@ CONFIG_FILENAMES = {
 	".prettierrc",
 	"AGENTS.md",
 	"AGENT_CAPABILITIES.md",
+	"WORKSPACE.md",
 	"package.json",
 	"pyproject.toml",
 	"tsconfig.json",

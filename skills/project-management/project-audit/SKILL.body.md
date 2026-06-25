@@ -7,7 +7,7 @@ Audit project agent-readiness and maintenance drift. Default to findings and rec
 Audit:
 
 - project instruction health (`AGENTS.md`)
-- factual capability coverage (`AGENT_CAPABILITIES.md`)
+- factual workspace coverage (`WORKSPACE.md`)
 - project-local agent tools under `.agent/scripts/`
 - diagnostics discoverability and command safety
 - generated/source boundaries
@@ -21,13 +21,13 @@ Do not turn this into broad code-quality review. Use `code-review` for code diff
 Read in this order, stopping as soon as you have enough context:
 
 1. `<project-root>/AGENTS.md`
-2. `<project-root>/AGENT_CAPABILITIES.md`
+2. `<project-root>/WORKSPACE.md`
 3. `<project-root>/.agent/scripts/repo-context.py` output, if present
 4. `<project-root>/.agent/scripts/generated-file-guard.py` output, if present
 5. `<project-root>/.agent/scripts/project-diagnostics.py --list`, if present
 6. `PROGRESS.md` handoff only, when active work or session continuity is part of the audit
 
-If `AGENT_CAPABILITIES.md` is missing, do not create it unless asked. Report missing reviewed capability manifest, then inspect `AGENTS.md`, package scripts, and nearby docs.
+If `WORKSPACE.md` is missing, do not create it unless asked. Report missing reviewed workspace file, then inspect `AGENTS.md`, package scripts, and nearby docs.
 
 ## Tooling checks
 
@@ -47,7 +47,7 @@ If generated-file guard reports findings, treat them as high priority: review ma
 
 Lead with findings ordered by risk:
 
-- **High** — unsafe commands, missing capability manifest in an active project, generated/source mismatch, stale diagnostics, broken setup scripts
+- **High** — unsafe commands, missing workspace file in an active project, generated/source mismatch, stale diagnostics, broken setup scripts
 - **Medium** — incomplete project instructions, missing progress handoff for active multi-session work, stale generated paths, unclear package manager/runtime facts
 - **Low** — minor wording drift, convenience tooling not installed, non-blocking docs gaps
 

@@ -12,13 +12,13 @@ Look in this order and use the first match:
 
 If none exist, say so and ask where to create one.
 
-## Capability manifest
+## Workspace file
 
-Read `<project-root>/AGENT_CAPABILITIES.md` during startup when present. Treat it as factual source for commands, generated files, diagnostics, progress locations, expensive checks, and forbidden operations.
+Read `<project-root>/WORKSPACE.md` during startup when present. Treat it as factual source for commands, generated files, diagnostics, progress locations, expensive checks, and forbidden operations.
 
-Do not generate missing capability manifest during resume unless user asks for repo setup or new manifest. If missing, inspect `AGENTS.md`, package scripts, and nearby docs.
+Do not generate missing workspace file during resume unless user asks for repo setup or new manifest. If missing, inspect `AGENTS.md`, package scripts, and nearby docs.
 
-If `PROGRESS.md` conflicts with `AGENT_CAPABILITIES.md`, surface the conflict and trust the capability manifest for command safety and generated-file facts. Update `PROGRESS.md` when the plan needs to reflect those facts.
+If `PROGRESS.md` conflicts with `WORKSPACE.md`, surface the conflict and trust the workspace file for command safety and generated-file facts. Update `PROGRESS.md` when the plan needs to reflect those facts.
 
 When `<project-root>/.agent/scripts/project-diagnostics.py` exists, use `--list` for check discovery and `--check <name>` for verification. Use `--all` only when asked for broad verification.
 
@@ -41,7 +41,7 @@ Before new work, read only enough to orient:
 - If active section links a feature spec, read it only when needed; do not read unrelated specs
 - Do not read completed or archived sections unless the current task depends on their history
 - Confirm branch state and any uncommitted work
-- Read `AGENT_CAPABILITIES.md` if it exists before running local commands
+- Read `WORKSPACE.md` if it exists before running local commands
 - Verify unfinished tasks belong to the current section
 
 ## Starting the next task

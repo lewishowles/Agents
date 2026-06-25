@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # Print a compact repo briefing for session startup.
 #
-# This complements AGENT_CAPABILITIES.md. Capability and safety facts stay in
-# that manifest; this command lifts the most useful startup facts and adds
+# This complements WORKSPACE.md. Workspace and safety facts stay in that file;
+# this command lifts the most useful startup facts and adds
 # current Git state without printing diffs or file contents.
 
 from __future__ import annotations
@@ -52,12 +52,15 @@ STATUS_GROUPS = {
 }
 
 
-def capability_path(project_dir: Path) -> Path:
+def workspace_path(project_dir: Path) -> Path:
+	path = project_dir / "WORKSPACE.md"
+	if path.exists():
+		return path
 	return project_dir / "AGENT_CAPABILITIES.md"
 
 
-def read_capabilities(project_dir: Path) -> str:
-	path = capability_path(project_dir)
+def read_workspace(project_dir: Path) -> str:
+	path = workspace_path(project_dir)
 	if not path.exists():
 		return ""
 
@@ -93,7 +96,7 @@ def bullet_value(line: str) -> tuple[str, str] | None:
 	return label, value
 
 
-def summary_from_capabilities(body: str) -> dict[str, str]:
+def summary_from_workspace(body: str) -> dict[str, str]:
 	summary = {}
 
 	for heading in ["## Repo summary", "## Important paths"]:
@@ -110,7 +113,7 @@ def summary_from_capabilities(body: str) -> dict[str, str]:
 	return summary
 
 
-def generated_paths_from_capabilities(body: str) -> list[str]:
+def generated_paths_from_workspace(body: str) -> list[str]:
 	paths = []
 
 	for line in section_lines(body, "## Generated or build output"):
@@ -120,7 +123,7 @@ def generated_paths_from_capabilities(body: str) -> list[str]:
 	return paths
 
 
-def generators_from_capabilities(body: str) -> list[dict[str, str]]:
+def generators_from_workspace(body: str) -> list[dict[str, str]]:
 	generators = []
 
 	for line in section_lines(body, "## Generators"):
@@ -259,22 +262,23 @@ def parse_git_state(project_dir: Path) -> dict[str, Any]:
 
 
 def build_context(project_dir: Path) -> dict[str, Any]:
-	body = read_capabilities(project_dir)
-	has_capabilities = bool(body)
+	body = read_workspace(project_dir)
+	has_workspace = bool(body)
+	path = workspace_path(project_dir)
 
 	return {
-		"capabilities": {
-			"exists": has_capabilities,
-			"path": "AGENT_CAPABILITIES.md" if has_capabilities else "",
+		"workspace": {
+			"exists": has_workspace,
+			"path": path.name if has_workspace else "",
 		},
 		"diagnostics": diagnostics_entry(project_dir),
-		"generated_paths": generated_paths_from_capabilities(body) if has_capabilities else inferred_generated_paths(project_dir),
-		"generators": generators_from_capabilities(body) if has_capabilities else inferred_generators(project_dir),
+		"generated_paths": generated_paths_from_workspace(body) if has_workspace else inferred_generated_paths(project_dir),
+		"generators": generators_from_workspace(body) if has_workspace else inferred_generators(project_dir),
 		"git": parse_git_state(project_dir),
 		"project_dir": str(project_dir),
 		"repo_dir": str(project_dir),
-		"source": "AGENT_CAPABILITIES.md" if has_capabilities else "inferred",
-		"summary": summary_from_capabilities(body) if has_capabilities else inferred_summary(project_dir),
+		"source": path.name if has_workspace else "inferred",
+		"summary": summary_from_workspace(body) if has_workspace else inferred_summary(project_dir),
 	}
 
 
@@ -309,7 +313,7 @@ def render_markdown(context: dict[str, Any]) -> str:
 		"",
 		f"- Source: {context['source']}",
 		f"- Project: `{context['project_dir']}`",
-		f"- Capabilities: `{context['capabilities']['path']}`" if context["capabilities"]["exists"] else "- Capabilities: Not detected",
+		f"- Workspace: `{context['workspace']['path']}`" if context["workspace"]["exists"] else "- Workspace: Not detected",
 		f"- Primary stack: {summary.get('primary_stack', 'Not detected')}",
 		f"- Package manager: {summary.get('package_manager', 'Not detected')}",
 		f"- Script runner: {summary.get('script_runner', 'Not detected')}",

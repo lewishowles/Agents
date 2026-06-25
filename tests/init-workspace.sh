@@ -14,7 +14,7 @@ run_init() {
 	local target_dir="$1"
 	shift
 
-	"$REPO_DIR/scripts/init-capabilities.py" --project-dir "$target_dir" "$@"
+	"$REPO_DIR/scripts/init-workspace.py" --project-dir "$target_dir" "$@"
 }
 
 create_node_project() {
@@ -77,7 +77,7 @@ test_preview_does_not_write() {
 
 	run_init "$target_dir" > "$output"
 
-	assert_not_file "$target_dir/AGENT_CAPABILITIES.md"
+	assert_not_file "$target_dir/WORKSPACE.md"
 	assert_contains "$output" "Primary stack: Vue"
 	assert_contains "$output" "Package manager: Bun (detected from \`bun.lock\`)"
 	assert_contains "$output" "Runtime requirements: bun@1.2.0"
@@ -99,29 +99,29 @@ test_write_creates_missing_manifest() {
 
 	run_init "$target_dir" --write >/dev/null
 
-	assert_file "$target_dir/AGENT_CAPABILITIES.md"
-	assert_contains "$target_dir/AGENT_CAPABILITIES.md" "## Common checks"
+	assert_file "$target_dir/WORKSPACE.md"
+	assert_contains "$target_dir/WORKSPACE.md" "## Common checks"
 }
 
 test_existing_manifest_requires_force() {
 	local target_dir="$TEST_ROOT/existing"
 	create_node_project "$target_dir"
-	printf 'custom\n' > "$target_dir/AGENT_CAPABILITIES.md"
+	printf 'custom\n' > "$target_dir/WORKSPACE.md"
 
 	if run_init "$target_dir" --write >/dev/null 2>&1; then
 		fail "Expected existing manifest write to fail without --force"
 	fi
 
-	assert_contains "$target_dir/AGENT_CAPABILITIES.md" "custom"
+	assert_contains "$target_dir/WORKSPACE.md" "custom"
 	run_init "$target_dir" --write --force >/dev/null
-	assert_contains "$target_dir/AGENT_CAPABILITIES.md" "Project capabilities"
+	assert_contains "$target_dir/WORKSPACE.md" "Workspace"
 }
 
 test_force_preserves_known_existing_values() {
 	local target_dir="$TEST_ROOT/preserve"
 	create_node_project "$target_dir"
-	cat > "$target_dir/AGENT_CAPABILITIES.md" <<'EOF'
-# Project capabilities
+	cat > "$target_dir/WORKSPACE.md" <<'EOF'
+# Workspace
 
 ## Repo context
 
@@ -136,17 +136,17 @@ EOF
 
 	run_init "$target_dir" --write --force >/dev/null
 
-	assert_contains "$target_dir/AGENT_CAPABILITIES.md" "pnpm (manual)"
-	assert_contains "$target_dir/AGENT_CAPABILITIES.md" 'pnpm vitest src/example.test.ts'
-	assert_contains "$target_dir/AGENT_CAPABILITIES.md" "Preserved from existing"
+	assert_contains "$target_dir/WORKSPACE.md" "pnpm (manual)"
+	assert_contains "$target_dir/WORKSPACE.md" 'pnpm vitest src/example.test.ts'
+	assert_contains "$target_dir/WORKSPACE.md" "Preserved from existing"
 }
 
 test_placeholders_do_not_override_detected_values() {
 	local target_dir="$TEST_ROOT/placeholders"
 	local output="$TEST_ROOT/placeholders.md"
 	create_node_project "$target_dir"
-	cat > "$target_dir/AGENT_CAPABILITIES.md" <<'EOF'
-# Project capabilities
+	cat > "$target_dir/WORKSPACE.md" <<'EOF'
+# Workspace
 
 ## Diagnostics and checks
 
@@ -160,6 +160,25 @@ EOF
 
 	assert_contains "$output" '| Unit tests | `bun run test:unit` |'
 	assert_contains "$output" '| Lint | `bun run lint:check` |'
+}
+
+test_legacy_manifest_values_are_preserved() {
+	local target_dir="$TEST_ROOT/legacy"
+	create_node_project "$target_dir"
+	cat > "$target_dir/AGENT_CAPABILITIES.md" <<'EOF'
+# Project capabilities
+
+## Repo context
+
+- Package manager: pnpm (manual)
+EOF
+
+	run_init "$target_dir" --write >/dev/null
+
+	assert_file "$target_dir/WORKSPACE.md"
+	assert_contains "$target_dir/WORKSPACE.md" "pnpm (manual)"
+	assert_contains "$target_dir/WORKSPACE.md" "Preserved from existing"
+	assert_file "$target_dir/AGENT_CAPABILITIES.md"
 }
 
 test_library_with_dev_framework_dependency_keeps_library_stack() {
@@ -205,7 +224,7 @@ test_config_overrides_detected_values() {
 	local target_dir="$TEST_ROOT/config-overrides"
 	local output="$TEST_ROOT/config-overrides.md"
 	create_nested_test_project "$target_dir"
-	cat > "$target_dir/.agent-capabilities.json" <<'EOF'
+	cat > "$target_dir/.agent-workspace.json" <<'EOF'
 {
 	"primaryStack": "Sketch plugin",
 	"runtimeRequirements": "Bun; Sketch",
@@ -261,7 +280,7 @@ test_repo_preview_uses_progress_file() {
 	run_init "$REPO_DIR" > "$output"
 
 	assert_contains "$output" '`PROGRESS.md`'
-	assert_not_file "$REPO_DIR/AGENT_CAPABILITIES.md"
+	assert_not_file "$REPO_DIR/WORKSPACE.md"
 }
 
 test_preview_does_not_write
@@ -269,6 +288,7 @@ test_write_creates_missing_manifest
 test_existing_manifest_requires_force
 test_force_preserves_known_existing_values
 test_placeholders_do_not_override_detected_values
+test_legacy_manifest_values_are_preserved
 test_library_with_dev_framework_dependency_keeps_library_stack
 test_xcode_project_detects_swift_paths
 test_nested_test_files_are_summarised
@@ -277,4 +297,4 @@ test_diagnostics_guidance_discourages_direct_commands
 test_missing_package_scripts_leave_unknowns
 test_repo_preview_uses_progress_file
 
-printf '✓ init-capabilities tests passed\n'
+printf '✓ init-workspace tests passed\n'

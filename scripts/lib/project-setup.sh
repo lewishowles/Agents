@@ -137,30 +137,35 @@ copy_shared_agent_tools() {
 	link_file "$REPO_DIR/scripts/validate/change-impact.py" "$PROJECT_DIR/.agent/scripts/change-impact.py" ".agent/scripts/change-impact.py"
 }
 
-# Prints the review warning for generated capability manifests.
-print_capability_review_note() {
+# Prints the review warning for generated workspace files.
+print_workspace_review_note() {
 	printf '  %s!%s Review generated command safety, generated paths, and forbidden operations before relying on it.\n' "$YELLOW" "$RESET_COLOUR"
 }
 
-# Writes an inferred capability manifest when one does not already exist.
-write_capabilities_file() {
-	local target="$PROJECT_DIR/AGENT_CAPABILITIES.md"
+# Writes inferred workspace context when it does not already exist.
+write_workspace_file() {
+	local target="$PROJECT_DIR/WORKSPACE.md"
+	local legacy="$PROJECT_DIR/AGENT_CAPABILITIES.md"
 
 	if [ -e "$target" ] || [ -L "$target" ]; then
-		printf '  %s↪%s %s already exists\n' "$PURPLE" "$RESET_COLOUR" "AGENT_CAPABILITIES.md"
+		printf '  %s↪%s %s already exists\n' "$PURPLE" "$RESET_COLOUR" "WORKSPACE.md"
 		return
 	fi
 
-	"$REPO_DIR/scripts/init-capabilities.py" --project-dir "$PROJECT_DIR" --write >/dev/null
-	printf '  %s✓%s created %s\n' "$GREEN" "$RESET_COLOUR" "AGENT_CAPABILITIES.md"
-	print_capability_review_note
+	"$REPO_DIR/scripts/init-workspace.py" --project-dir "$PROJECT_DIR" --write >/dev/null
+	if [ -e "$legacy" ] || [ -L "$legacy" ]; then
+		printf '  %s✓%s created %s; legacy %s remains for review\n' "$GREEN" "$RESET_COLOUR" "WORKSPACE.md" "AGENT_CAPABILITIES.md"
+	else
+		printf '  %s✓%s created %s\n' "$GREEN" "$RESET_COLOUR" "WORKSPACE.md"
+	fi
+	print_workspace_review_note
 }
 
-# Previews or writes an inferred capability manifest for the current project.
+# Previews or writes inferred workspace context for the current project.
 #
 # @param  {string}  mode
 #     preview, write, or force.
-init_capabilities() {
+init_workspace() {
 	local mode="$1"
 	local args=("--project-dir" "$PROJECT_DIR")
 
@@ -170,8 +175,8 @@ init_capabilities() {
 		force) args+=("--write" "--force") ;;
 	esac
 
-	"$REPO_DIR/scripts/init-capabilities.py" "${args[@]}"
+	"$REPO_DIR/scripts/init-workspace.py" "${args[@]}"
 	if [ "$mode" != "preview" ]; then
-		print_capability_review_note
+		print_workspace_review_note
 	fi
 }

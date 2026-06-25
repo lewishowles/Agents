@@ -69,8 +69,10 @@ class Finding:
 	source: str
 
 
-def capability_body(project_dir: Path) -> str:
-	path = project_dir / "AGENT_CAPABILITIES.md"
+def workspace_body(project_dir: Path) -> str:
+	path = project_dir / "WORKSPACE.md"
+	if not path.exists():
+		path = project_dir / "AGENT_CAPABILITIES.md"
 	if not path.exists():
 		return ""
 
@@ -98,8 +100,8 @@ def section_lines(body: str, heading: str) -> list[str]:
 	return result
 
 
-def generated_paths_from_capabilities(project_dir: Path) -> list[str]:
-	body = capability_body(project_dir)
+def generated_paths_from_workspace(project_dir: Path) -> list[str]:
+	body = workspace_body(project_dir)
 	paths = []
 
 	for line in section_lines(body, "## Generated or build output"):
@@ -210,7 +212,7 @@ def config_repo_rules(project_dir: Path) -> list[dict[str, Any]]:
 
 
 def generic_generated_paths(project_dir: Path) -> list[str]:
-	return sorted(set(generated_paths_from_capabilities(project_dir) + [path for path in COMMON_GENERATED_PATHS if (project_dir / path).exists()]))
+	return sorted(set(generated_paths_from_workspace(project_dir) + [path for path in COMMON_GENERATED_PATHS if (project_dir / path).exists()]))
 
 
 def generic_source_changed(path: str) -> bool:

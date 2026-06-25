@@ -20,12 +20,12 @@ Do not invent requirements or recommend complexity for its own sake. If an idea 
 Read in this order, stopping when you have enough context:
 
 1. `<project-root>/AGENTS.md`
-2. `<project-root>/AGENT_CAPABILITIES.md`, when present
+2. `<project-root>/WORKSPACE.md`, when present
 3. `.agent/scripts/project-diagnostics.py --list`, when present
 4. `PROGRESS.md`
 5. Related specs, docs, source files, or generated-file facts only when `PROGRESS.md` references them or the review needs evidence
 
-If `AGENT_CAPABILITIES.md` is missing, do not create it. Use `AGENTS.md`, package scripts, and nearby docs only as needed.
+If `WORKSPACE.md` is missing, do not create it. Use `AGENTS.md`, package scripts, and nearby docs only as needed.
 
 Prefer codebase-memory tools for structural code questions when available. Use targeted file reads and searches; avoid broad generated, vendored, cached, build, dependency, coverage, or binary output.
 

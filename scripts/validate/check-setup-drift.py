@@ -26,11 +26,17 @@ TEMPLATE_FILES = [
 ]
 
 # Flags that are implementation aliases rather than user-facing setup modes.
-IGNORED_FLAGS = {"-h", "--help"}
+IGNORED_FLAGS = {
+	"-h",
+	"--help",
+	"--force-capabilities",
+	"--init-capabilities",
+	"--write-capabilities",
+}
 
 # Known setup outputs/flags documented in prose rather than fenced examples.
 IGNORED_DRIFT = {
-	("setup_flag_not_in_docs", "--force-capabilities"),  # documented in prose, not fenced block
+	("setup_flag_not_in_docs", "--force-workspace"),  # documented in prose, not fenced block
 	("setup_path_not_documented", ".agent/scripts"),  # documented in prose as linked shared tools
 	("setup_path_not_documented", ".agent/scripts/change-impact.py"),  # covered by .agent/scripts prose
 	("setup_path_not_documented", ".agent/scripts/generated-file-guard.py"),  # covered by .agent/scripts prose
@@ -44,7 +50,7 @@ RE_FLAG = re.compile(r"(?<![\w-])--[a-zA-Z0-9-]+|(?<![\w-])-h(?![\w-])")
 RE_FUNCTION = re.compile(r"^([a-zA-Z_][a-zA-Z0-9_]*)\(\) \{\n(.*?)\n\}", re.MULTILINE | re.DOTALL)
 RE_PROJECT_PATH = re.compile(r'"\$PROJECT_DIR/([^"]+)"')
 RE_INLINE_CODE = re.compile(r"(?<!`)`([^`\n]+)`(?!`)")
-RE_LOCAL_PATH = re.compile(r"(?<![\w/.-])(?:AGENT_CAPABILITIES\.md|AGENTS\.md|\.agent/[^\s`'\"),]+|\.claude/[^\s`'\"),]+)")
+RE_LOCAL_PATH = re.compile(r"(?<![\w/.-])(?:WORKSPACE\.md|AGENT_CAPABILITIES\.md|AGENTS\.md|\.agent/[^\s`'\"),]+|\.claude/[^\s`'\"),]+)")
 
 
 @dataclass
@@ -84,9 +90,10 @@ def function_bodies(text: str) -> dict[str, str]:
 
 def project_paths_from_text(text: str) -> set[str]:
 	paths = {normalise_path(match.group(1)) for match in RE_PROJECT_PATH.finditer(text)}
+	paths.discard("AGENT_CAPABILITIES.md")
 
-	if 'local target="$PROJECT_DIR/AGENT_CAPABILITIES.md"' in text:
-		paths.add("AGENT_CAPABILITIES.md")
+	if 'local target="$PROJECT_DIR/WORKSPACE.md"' in text:
+		paths.add("WORKSPACE.md")
 
 	return paths
 
@@ -130,9 +137,9 @@ def parse_setup() -> SetupFacts:
 		"--claude": expand_function_paths("setup_claude", bodies),
 		"--codex": expand_function_paths("setup_codex", bodies),
 		"--both": expand_function_paths("setup_both", bodies),
-		"--init-capabilities": {"AGENT_CAPABILITIES.md"},
-		"--write-capabilities": {"AGENT_CAPABILITIES.md"},
-		"--force-capabilities": {"AGENT_CAPABILITIES.md"},
+		"--init-workspace": {"WORKSPACE.md"},
+		"--write-workspace": {"WORKSPACE.md"},
+		"--force-workspace": {"WORKSPACE.md"},
 	}
 
 	paths = set()

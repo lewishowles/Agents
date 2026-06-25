@@ -16,7 +16,7 @@ Broad ideas are welcome when they may materially improve the work. Label them as
 
 Read the user-provided feedback first. Then gather only the context needed to judge it:
 
-1. Relevant project instructions and capability facts when operating in a repo
+1. Relevant project instructions and workspace facts when operating in a repo
 2. `PROGRESS.md` when the feedback concerns a project plan or current work
 3. Changed files when the feedback concerns uncommitted implementation
 4. Source, docs, tests, or generated-file facts directly referenced by the feedback
@@ -55,7 +55,7 @@ Challenge suggestions that:
 - introduce new dependencies, tools, abstractions, or process without need
 - optimise for theoretical quality while delaying useful delivery
 - duplicate existing project patterns or planned work
-- conflict with project instructions, capability manifests, or generated-file boundaries
+- conflict with project instructions, workspace files, or generated-file boundaries
 
 ## Output
 
