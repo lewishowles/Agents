@@ -63,8 +63,10 @@ setup_codex() {
 }
 
 # Replaces Stagewise skills with a fresh copy from this repository.
+# Global rules are delivered as a Stagewise-only skill (global-rules) rather
+# than via ~/.stagewise/AGENTS.md, which Stagewise does not inject into agent
+# context. Skills are the only user-provided knowledge Stagewise auto-mounts.
 setup_stagewise() {
-	local agents_file="$HOME/.stagewise/AGENTS.md"
 	local skills_dir="$HOME/.stagewise/skills"
 
 	printf '\n→ Setting up Stagewise\n\n'
@@ -75,8 +77,6 @@ setup_stagewise() {
 
 	mkdir -p "$skills_dir"
 	copy_skills "$skills_dir"
-	cp "$REPO_DIR/dist/codex/AGENTS.md" "$agents_file"
-	printf '  %s✓%s copied AGENTS.md\n' "$GREEN" "$RESET_COLOUR"
 }
 
 # Ensures ~/.codex/config.toml contains the codebase-memory-mcp server entry.

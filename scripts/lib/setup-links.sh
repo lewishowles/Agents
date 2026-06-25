@@ -150,16 +150,36 @@ link_path() {
 }
 
 # Links all generated runtime skills into the given target directory.
+# Skills listed in STAGEWISE_ONLY_SKILLS are skipped — they are distributed
+# to Stagewise only via copy_skills(), not symlinked into Claude or Codex.
 #
 # @param  {string}  target_dir
 #     The directory to install skill symlinks into.
 link_skills() {
 	local target_dir="$1"
-	local skill
+	local skill slug
+
+	local STAGEWISE_ONLY_SKILLS=(global-rules)
 
 	for skill in "$REPO_DIR"/dist/skills/*; do
 		[ -d "$skill" ] || continue
-		link_path "$skill" "$target_dir/$(basename "$skill")" "skills/$(basename "$skill")"
+		slug=$(basename "$skill")
+
+		local skip=false
+		local excluded
+		for excluded in "${STAGEWISE_ONLY_SKILLS[@]}"; do
+			if [ "$slug" = "$excluded" ]; then
+				skip=true
+				break
+			fi
+		done
+
+		if [ "$skip" = true ]; then
+			printf '  %s−%s skipped Stagewise-only skill %s\n' "$YELLOW" "$RESET_COLOUR" "$slug"
+			continue
+		fi
+
+		link_path "$skill" "$target_dir/$slug" "skills/$slug"
 	done
 }
 

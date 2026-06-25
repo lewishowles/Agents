@@ -117,7 +117,10 @@ def generate_global_skills_md() -> None:
 		manifest = json.loads((skill_dir / "skill.json").read_text())
 		name = manifest.get("name", skill_dir.name)
 		when = manifest.get("when", "")
+		targets = manifest.get("targets", [])
 		if not when:
+			continue
+		if "stagewise" in targets:
 			continue
 		if skill_dir.parent.name == PM_GROUP:
 			pm_skills.append((name, when))

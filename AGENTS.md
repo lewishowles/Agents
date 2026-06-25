@@ -54,11 +54,12 @@ Configuration/Agents/
 ```
 ~/.claude/CLAUDE.md         → repo/dist/claude/CLAUDE.md
 ~/.claude/settings.json     → repo/dist/claude/settings.json
-~/.claude/skills/<name>     → repo/skills/<name>         (per-skill)
+~/.claude/skills/<name>     → repo/dist/skills/<name>      (per-skill, excludes stagewise-only)
 ~/.claude/hooks/<file>      → repo/dist/claude/hooks/<file>  (per-hook)
 ~/.agents/AGENTS.md          → repo/dist/codex/AGENTS.md
-~/.agents/skills/<name>      → repo/skills/<name>         (per-skill)
+~/.agents/skills/<name>      → repo/dist/skills/<name>      (per-skill, excludes stagewise-only)
 repo/.agents/skills/agent-config → repo/.claude/skills/agent-config (repo-local)
+~/.stagewise/skills/<name>   = copy of dist/skills/<name>   (all skills, including stagewise-only)
 ```
 
 ## Confirmed Codex behaviour

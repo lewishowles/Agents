@@ -1,0 +1,34 @@
+{
+	"name": "global-rules",
+	"description": "Use this skill at the start of every session and when making any change to code, config, documentation, or project structure. Contains global rules: token budget discipline, effort tiering, communication conventions (UK spelling, trash over rm), git workflow constraints, surgical changes, completion standards, PROGRESS.md workflow, ADR criteria, file discovery, and skill use policy.",
+	"when": "Baseline rules for every session — token budget, effort tiering, communication, git, surgical changes, completion, planning",
+	"triggers": [
+		"token budget",
+		"effort tier",
+		"UK spelling",
+		"trash",
+		"git commit",
+		"git push",
+		"progress.md",
+		"conventional commit",
+		"surgical changes",
+		"completing work",
+		"think before coding",
+		"expectations break",
+		"architecture decision",
+		"adr",
+		"file discovery",
+		"skill policy",
+		"workspace",
+		"project diagnostics"
+	],
+	"do-not-use-when": [],
+	"filePatterns": ["*.swift", "*.vue", "*.ts", "*.tsx", "*.js", "*.mjs", "*.md", "*.json", "*.sh", "*.py", "*.toml", "*.yml", "*.yaml"],
+	"pathPatterns": [],
+	"dependencies": [],
+	"capabilities": {
+		"promptTriggering": true,
+		"fileTriggering": true
+	},
+	"targets": ["stagewise"]
+}
