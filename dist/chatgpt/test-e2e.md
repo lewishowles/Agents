@@ -15,7 +15,7 @@ E2E and component tests verify real-browser user experience. Playwright is stand
 ## General
 
 - Avoid browser tests by default; output is token-heavy. Run focused tests only for specific fix/failure; suggest broader user-run commands
-- When `.agent/scripts/project-diagnostics.py` exists, use `--list` to discover browser/e2e checks and `--check <name>` only for a specific fix or failure
+- The diagnostics script is the default way to run tests — not `npx playwright test` or `npx cypress run` directly. When `.agent/scripts/project-diagnostics.py` exists, use `--list` to discover browser/e2e checks and `--check <name>` only for a specific fix or failure. If no diagnostics script exists, ask the user before running browser tests directly.
 - Do not run full suites or diagnostics `--all` from plan verification unless user explicitly asks
 
 ## Which tool to use

@@ -115,6 +115,8 @@ boilersuit generate "<generator-id>" --json --field NAME=<name>
 
 Use extra `--field TOKEN=value`, `--variant`, or `--path` only when the generator description or user request requires it. Use `--skip-existing` only when existing destinations should remain untouched and the preview lists every intended skip.
 
+Field tokens use SCREAMING_SNAKE_CASE and may contain digits after the first character, such as `API_V2_NAME` and `WCAG_22_LEVEL`. Read the generator description rather than rejecting or rewriting tokens that follow this format.
+
 ## Guardrails
 
 - Prefer Boilersuit when the requested file matches an existing generator.

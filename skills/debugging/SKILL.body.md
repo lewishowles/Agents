@@ -8,15 +8,13 @@ Any technical failure: tests, runtime bugs, unexpected output, build errors, int
 
 Apply especially under pressure or when "quick fix" seems obvious.
 
-## Token-discipline note
-
-When `.agent/scripts/project-diagnostics.py` exists, run `--list` then `--check <name>` for needed signal. Narrow unit-test checks with `--test-file <path>` or `--test-glob '<pattern>'`; both arguments are repeatable, and glob patterns must be quoted. Prefer scoped commands when they save back-and-forth: single test file, lint on touched path, minimal repro. Ask user for full suites, builds, e2e, or diagnostics `--all`.
-
 ## Phase 1 — Build a feedback loop
 
 Before investigating, create fast, deterministic, repeatable signal confirming failure. Reliable observation is 90% of fix.
 
-Good loop is fast (seconds), deterministic (fails consistently), and scoped (minimum setup). It can be diagnostics `--check`, failing unit test, minimal CLI invocation, script, or app repro route. If none possible, ask user for exact reproduction and observation.
+**First step — use project diagnostics.** If `.agent/scripts/project-diagnostics.py` exists, run `--list` then `--check <name>` for the relevant check. This is the default way to get signal — not raw CLI commands (`npx vitest`, `npx playwright test`, etc.). Narrow unit-test checks with `--test-file <path>` or `--test-glob '<pattern>'`; both arguments are repeatable, and glob patterns must be quoted. Prefer scoped commands when they save back-and-forth: single test file, lint on touched path, minimal repro. Ask user for full suites, builds, e2e, or diagnostics `--all`.
+
+A good loop is fast (seconds), deterministic (fails consistently), and scoped (minimum setup). It can be diagnostics `--check`, failing unit test, minimal CLI invocation, script, or app repro route. If none possible, ask user for exact reproduction and observation.
 
 ## Phase 2 — Investigate
 

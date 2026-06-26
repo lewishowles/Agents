@@ -57,6 +57,7 @@ SAFE_SCRIPT_NAMES = {
 	"lint",
 	"lint:check",
 	"publint",
+	"test:component",
 	"test:unit",
 	"test:unit:run",
 	"typecheck",

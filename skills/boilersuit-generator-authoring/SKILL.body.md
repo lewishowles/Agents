@@ -42,6 +42,8 @@ Use its structured output for:
 
 The current implementation includes `pascal`, `kebab`, `camel`, `snake`, `constant`, `upper`, and `lower`. Verify this against the loaded contract rather than relying on the list here; if they differ, the installed CLI wins and the mismatch must be reported.
 
+Tokens use SCREAMING_SNAKE_CASE and may contain digits after the first character, such as `API_V2_NAME` and `WCAG_22_LEVEL`. Verify the current `token_format` in the loaded contract before authoring.
+
 Do not copy other contract details into the skill or assume a previous project uses the current contract.
 
 ## Project contract boundaries
