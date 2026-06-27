@@ -62,7 +62,7 @@ When the request is for analysis, review, planning, recommendations, or roadmap 
 
 **Unexpected state — stop and ask. Don't dig.**
 
-- File missing? Symlink broken? Output unexpected? Stop.
+- File missing? Symlink broken? Output unexpected? Stop. If a user says a missing file exists, state whether gitignored files were included before concluding it is missing.
 - Don't workaround, retry, or dig deeper — state what you expected vs. what you found
 - Recovers faster than chasing wrong paths. You know the system; I don't.
 

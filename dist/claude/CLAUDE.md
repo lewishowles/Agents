@@ -68,7 +68,7 @@ When the request is for analysis, review, planning, recommendations, or roadmap 
 
 **Unexpected state — stop and ask. Don't dig.**
 
-- File missing? Symlink broken? Output unexpected? Stop.
+- File missing? Symlink broken? Output unexpected? Stop. If a user says a missing file exists, state whether gitignored files were included before concluding it is missing.
 - Don't workaround, retry, or dig deeper — state what you expected vs. what you found
 - Recovers faster than chasing wrong paths. You know the system; I don't.
 
@@ -155,11 +155,12 @@ Skills are authoritative when their trigger conditions match. Before coding, edi
 
 Minimise token cost while discovering files. Discovery commands should answer the narrow question with the smallest output.
 
-- Prefer `rg` and `rg --files`; they respect `.gitignore` and `.rgignore`.
+- Prefer `rg` and `rg --files`, but include gitignored files during file discovery. For glob tools, set `include_gitignored: true`; for `rg`, include ignored files while keeping the search scoped to the smallest likely path.
 - Scope searches to the smallest likely directory, for example `rg --files src` instead of repo-wide scans.
 - Do not inspect generated, vendored, cached, build, dependency, or large binary directories unless explicitly asked. This includes `node_modules`, `dist`, `build`, `.git`, coverage, caches, generated plugin bundles, lockfile-heavy generated output, and local secrets.
 - Do not use broad `find`, `ls -R`, or unscoped glob searches. If `find` is unavoidable, scope it to named directories and group `-o` expressions with parentheses.
 - Before printing many files, prefer counts or `--files-with-matches`; open only the specific files needed.
 - For build artefact checks, inspect the exact expected output path rather than listing whole build trees.
 - If a command unexpectedly starts dumping large output, stop using that pattern and switch to a narrower command.
+- If a user says a file exists and a search cannot find it, state that gitignored files were included before concluding it is missing.
 - Never rely on a remembered line number to offset-read into a file. Formatters shift lines on save. Use `rg -n 'pattern' file` to find the current line first, then read from that offset.
