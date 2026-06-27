@@ -32,32 +32,30 @@ For each library in scope:
 
 ## Step 3 — find the latest release
 
-Use GitHub CLI to list releases for relevant repo:
+Use the npm registry as the source of truth for published versions:
 
 ```bash
-# For components:
-gh release list --repo lewishowles/components --limit 20
-
-# For helpers:
-gh release list --repo lewishowles/helpers --limit 20
-
-# For testing:
-gh release list --repo lewishowles/testing --limit 20
+npm view @lewishowles/components version versions time --json
+npm view @lewishowles/helpers version versions time --json
+npm view @lewishowles/testing version versions time --json
 ```
 
-Identify the latest stable release tag. Tags follow the format `v.X.Y.Z`.
+Confirm before running npm registry commands if network access has not already been approved. Identify the latest stable published version from `version` or the `latest` dist-tag. Versions follow the format `X.Y.Z`.
 
 If installed version matches latest release, report up to date and stop.
 
 ## Step 4 — fetch release notes for all versions between installed and latest
 
-For each newer release tag, ascending:
+Use npm package metadata and package contents before GitHub. For each newer version, ascending:
 
 ```bash
-gh release view v.X.Y.Z --repo lewishowles/components
+npm view @lewishowles/components@X.Y.Z description homepage repository readme --json
+npm pack @lewishowles/components@X.Y.Z --dry-run
 ```
 
-Collect release notes. Identify:
+If npm metadata or package contents include release notes, changelog entries, or README release sections, collect those. If npm does not include enough release detail, ask the user for the release notes excerpt instead of using GitHub releases or GitHub Packages as the primary source.
+
+Identify:
 
 - **Breaking changes** — API removals, renamed props, changed defaults, removed exports
 - **New components or composables** — things the project might benefit from adopting

@@ -85,13 +85,14 @@ Use dry-run/pack commands when available, after confirming package tooling.
 
 ## Step 6 — explicit release actions
 
-These packages publish to GitHub Packages via CI: pushing `main` triggers publish workflow. No manual `npm publish`.
+These packages publish to the npm registry for the next version. Treat `npm publish` or any CI workflow that publishes to npm as the publish step. Do not use GitHub Packages as the target registry.
 
 Stop for confirmation before each irreversible/history-changing action:
 
 - Version file edits if not already approved
 - Git tag creation
-- Git push (this triggers CI publish — treat it as the publish step)
+- Git push if the package workflow publishes to npm from CI
+- `npm publish` if the package release process publishes manually
 - GitHub release creation
 
 Show exact command and expected effect before asking.
