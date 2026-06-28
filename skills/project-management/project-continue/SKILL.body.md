@@ -4,13 +4,13 @@ Resume from existing `PROGRESS.md`. Treat it as living record, not perfect truth
 
 ## File location
 
-Look in this order and use the first match:
+The canonical location is `<project-root>/PROGRESS.md`. Read from the root first. For legacy or other-tool setups, fall back to these in order and use the first match:
 
 1. `<project-root>/PROGRESS.md`
 2. `<project-root>/.claude/PROGRESS.md`
 3. `<project-root>/.agents/PROGRESS.md`
 
-If none exist, say so and ask where to create one.
+Only ever create a new file at the project root — never create a `.claude/` or `.agent/` copy. If none exist, say so and ask where to create one, defaulting to the root.
 
 ## Workspace file
 

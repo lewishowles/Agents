@@ -126,6 +126,8 @@ _Three-gate criteria inspired by [mattpocock/skills](https://github.com/mattpoco
 
 **Maintain PROGRESS.md** for multi-file, multi-session, or complex-scope work. Update after every significant change; mark items done as they complete; compact completed sections when starting the next chunk.
 
+**PROGRESS.md lives at the project root.** Before creating or editing it, locate the existing file by reading or globbing from the root — never create `.claude/PROGRESS.md`, `.agent/PROGRESS.md`, or a second copy. If a search cannot find one, say so and ask where to create it rather than concluding it is absent. This reflects a wider split: the root holds human-facing contracts that tools auto-discover and you read each session (`AGENTS.md`, `PROGRESS.md`, `README.md`); `.agent/` holds agent-operated internals (`scripts/`, `specs/`, `diagnostics/`). Keep new files on the correct side of that line.
+
 **Work in committable chunks.** Before: summarise and wait for confirmation if requested. After: explain what changed, provide a `feat(scope): description` commit message, update PROGRESS.md, and wait for confirmation before the next chunk.
 
 Default to small, directly related chunks. Each chunk should fit one reviewable idea and one expected commit.
