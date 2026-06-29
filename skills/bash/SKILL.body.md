@@ -135,6 +135,22 @@ fi
 jq -r '.name // "unknown"' "$config_path"
 ```
 
+## File existence checks
+
+Use `[[ -f path ]]` (or `[[ -d path ]]`) with an explicit branch, not a `&&` chain. A `&&` exits non-zero silently on any failure — not just a missing file — making it unreliable for existence conclusions.
+
+```bash
+# Correct
+if [[ -f "$config_path" ]]; then
+	…
+fi
+
+# Wrong — exits silently if any prior command fails
+[ -f "$config_path" ] && do_something
+```
+
+Use the Read tool in preference to a shell check when the goal is to act on a file's contents.
+
 ## Config files
 
 - Minimal comments, no headers

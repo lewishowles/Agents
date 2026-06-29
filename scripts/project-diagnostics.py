@@ -26,7 +26,7 @@ requested.
 
 EPILOG = """Commands:
   --list              Discover available diagnostics without running them.
-  --check NAME        Run one named check, such as test:unit or lint:check.
+  --check NAME        Run one named check, such as test:unit or lint.
   --test-file PATH    Run a unit-test check against one test file. Repeat for multiple files.
   --test-glob PATTERN Run a unit-test check against matching files. Repeat for multiple globs.
   --all               Run all conservative checks. Use only after approval for broad verification.
@@ -40,7 +40,7 @@ Examples:
   .agent/scripts/project-diagnostics.py --check test:unit
   .agent/scripts/project-diagnostics.py --check test:unit --test-file src/example.test.ts
   .agent/scripts/project-diagnostics.py --check test:unit --test-glob 'src/**/*.test.ts'
-  .agent/scripts/project-diagnostics.py --check lint:check --check test:unit
+  .agent/scripts/project-diagnostics.py --check lint --check test:unit
   .agent/scripts/project-diagnostics.py --all
   .agent/scripts/project-diagnostics.py --json --list
 """
@@ -55,7 +55,7 @@ SAFE_SCRIPT_NAMES = {
 	"check",
 	"check:types",
 	"lint",
-	"lint:check",
+	"check",
 	"publint",
 	"test:component",
 	"test:unit",

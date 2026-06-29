@@ -9,6 +9,7 @@ Design public contract before internals: props, slots, emits, `v-model`, `define
 - Prefer one clear composition path over parallel APIs.
 - Name entries after domain concepts, not implementation details.
 - Treat renaming/removing prop, slot, event, model, or exposed method as breaking.
+- **Prefer generic, composable-exposed APIs over hardcoded special-casing.** Expose an identifier or ref (e.g. a generic `focusId`) rather than baking component-specific knowledge (e.g. a hardcoded field name or element type) into the component. First drafts that hardcode component-specific behaviour should be pushed back on in favour of a generic, caller-controlled alternative.
 
 ## Props
 
@@ -62,3 +63,4 @@ Require explicit `<template #name>` for named slots, as covered by Vue skill.
 - Does UI text that may need translation live in slots with enough slot props?
 - Does the API preserve accessibility needs: labels, descriptions, focus, and error messaging?
 - For UI components, has [the accessibility checklist](../../accessibility/references/checklist.md) been run before handoff?
+- Does the API expose generic identifiers/refs rather than hardcoding component-specific knowledge?

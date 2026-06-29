@@ -88,6 +88,10 @@ const displayDate = computed(() => {
 });
 ```
 
+## Component registration
+
+Favour local, per-file imports over global registration. Global registration prevents tree-shaking — unused components are bundled regardless. Auto-import via Vite plugin (e.g. `unplugin-vue-components`) is the preferred pattern: components are resolved on demand, remain individually tree-shakeable, and do not require manual imports or global `app.component()` calls. Only use `app.component()` for genuinely app-wide primitives where the trade-off is deliberate and documented.
+
 ## Component patterns
 
 - Extract shared logic into composables (`useInputId`, `useFormSupplementary`)

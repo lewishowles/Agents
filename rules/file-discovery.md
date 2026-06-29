@@ -11,3 +11,4 @@ Minimise token cost while discovering files. Discovery commands should answer th
 - If a command unexpectedly starts dumping large output, stop using that pattern and switch to a narrower command.
 - If a user says a file exists and a search cannot find it, state that gitignored files were included before concluding it is missing.
 - Never rely on a remembered line number to offset-read into a file. Formatters shift lines on save. Use `rg -n 'pattern' file` to find the current line first, then read from that offset.
+- Never use a `&&` chain to conclude a file exists or is absent. A `&&` exits non-zero silently on any failure in the chain, not just a missing file. Use the Read tool or an explicit `[[ -f path ]]` check with a verified exit status instead.

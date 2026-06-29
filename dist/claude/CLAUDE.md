@@ -52,6 +52,8 @@ Match effort to risk and ambiguity:
 
 When the request is for analysis, review, planning, recommendations, or roadmap edits, respond with prose — not code or file edits. Only produce code or make file changes when the request explicitly calls for implementation (e.g. "write", "add", "fix", "create", "build").
 
+For analysis-only requests, do not load implementation skills or begin coding. Updating a `PROGRESS.md` section is not a signal to start the next implementation chunk. If the scope is ambiguous, state what you intend to do and wait for confirmation rather than proceeding.
+
 ### Think before coding
 
 **Surface confusion. State tradeoffs. Don't assume.**
@@ -85,7 +87,7 @@ Every changed line traces directly to the request.
 
 ### Completing work
 
-**Evidence before claims.** Don't say tests pass or a fix is resolved unless you have seen output confirming it. When work is done, say what changed and what the user should verify.
+**Evidence before claims.** Never assess test or code health from static inspection alone. Before claiming a fix works or identifying a root cause, run the scoped failing test or repro (diagnostics `--check` / `--test-file`, honouring token discipline) and include the output. If it genuinely cannot be run, say so explicitly — do not assert instead. Don't say tests pass or a fix is resolved unless you have seen output confirming it. When work is done, say what changed and what the user should verify.
 
 **Always state what's next.** After completing any step — or finishing everything — close with what comes next: the next planned step, an open question to resolve, or an explicit "nothing remains" if there is no more planned work. This applies even between task boundaries.
 
@@ -108,6 +110,7 @@ Code must be reviewed before it is committed. Completing work means stopping aft
 - Update docs when changes require documentation
 - After completing a coherent step that changes tracked source files (code, config, rules, skills, scripts, templates, or docs), provide a scoped Conventional Commit message as plain text only. Label it `Suggested commit message:` and do not execute it. Do not suggest a commit message for PROGRESS.md updates, planning discussions, analysis, or responses that contain no file changes.
 - If I do ask you to commit, show the files to be included and the exact commit message first, then wait for confirmation.
+- When I specify a number or grouping of commits (e.g. "four commits", "one per file"), produce exactly that — confirm the grouping plan before staging, and do not collapse multiple requested commits into fewer.
 - Never add a `Co-Authored-By` trailer or any attribution line to commit messages.
 
 ## Architecture Decision Records
@@ -149,7 +152,7 @@ Skills are authoritative when their trigger conditions match. Before coding, edi
 **Skill vs. rule boundary:** if guidance should apply on every turn regardless of task, it belongs in `rules/`. If it is triggered by a specific task type or file context, it belongs in `skills/`. Do not add always-on conventions to a skill, and do not put task-specific workflows in a rule.
 
 - Re-read a skill only if the task type changes, the user explicitly asks, or you need a specific detail. Otherwise, keep applying the loaded guidance without announcing it.
-- Load the smallest matching set; do not speculatively load adjacent skills.
+- Load the smallest matching set; do not speculatively load adjacent skills. For analysis, review, or planning requests, do not load implementation skills — see Scope default in global-rules.
 - Summarise remembered constraints in your own words — do not quote skill sections back.
 - If a skill conflicts with the user's token-budget preference, follow the preference and note the tradeoff.
 
@@ -166,3 +169,4 @@ Minimise token cost while discovering files. Discovery commands should answer th
 - If a command unexpectedly starts dumping large output, stop using that pattern and switch to a narrower command.
 - If a user says a file exists and a search cannot find it, state that gitignored files were included before concluding it is missing.
 - Never rely on a remembered line number to offset-read into a file. Formatters shift lines on save. Use `rg -n 'pattern' file` to find the current line first, then read from that offset.
+- Never use a `&&` chain to conclude a file exists or is absent. A `&&` exits non-zero silently on any failure in the chain, not just a missing file. Use the Read tool or an explicit `[[ -f path ]]` check with a verified exit status instead.
