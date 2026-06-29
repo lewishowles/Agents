@@ -11,6 +11,7 @@ REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 PROJECT_DIR=$(pwd)
 
 source "$REPO_DIR/scripts/lib/colours.sh"
+source "$REPO_DIR/scripts/lib/cli-style-output.sh"
 source "$REPO_DIR/scripts/lib/project-setup.sh"
 
 usage() {
@@ -32,7 +33,9 @@ usage() {
 }
 
 setup_claude() {
-	printf '\n→ Setting up Claude (project)\n\n'
+	printf '\n'
+	cli_status info "Setting up Claude" "(project)"
+	printf '\n'
 	copy_file "$REPO_DIR/templates/claude/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
 	copy_shared_agent_tools
 	write_workspace_file
@@ -40,14 +43,18 @@ setup_claude() {
 }
 
 setup_codex() {
-	printf '\n→ Setting up Codex (project)\n\n'
+	printf '\n'
+	cli_status info "Setting up Codex" "(project)"
+	printf '\n'
 	copy_file "$REPO_DIR/templates/codex/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
 	copy_shared_agent_tools
 	write_workspace_file
 }
 
 setup_both() {
-	printf '\n→ Setting up Claude + Codex (project)\n\n'
+	printf '\n'
+	cli_status info "Setting up Claude + Codex" "(project)"
+	printf '\n'
 	copy_file "$REPO_DIR/templates/shared/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
 	copy_shared_agent_tools
 	write_workspace_file
@@ -92,4 +99,5 @@ case "$target" in
 	force-workspace) init_workspace force ;;
 esac
 
-printf '\nDone.\n'
+printf '\n'
+cli_status success "Done."

@@ -26,7 +26,7 @@ cli_status() {
 
 	case "$type" in
 		error) type="failed" ;;
-		muted) type="skipped" ;;
+		muted) type="unchanged" ;;
 	esac
 
 	python3 - "$type" "$label" "$detail" <<'PY' | cli_style_render status

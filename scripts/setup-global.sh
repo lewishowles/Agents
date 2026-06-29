@@ -17,7 +17,7 @@ usage() {
 
 setup_claude() {
 	printf '\n'
-	cli_status info "Setting up Claude" "global"
+	cli_status info "Setting up Claude" "(global)"
 	printf '\n'
 
 	ensure_container_dir "$HOME/.claude" "~/.claude"
@@ -48,7 +48,7 @@ setup_claude() {
 
 setup_codex() {
 	printf '\n'
-	cli_status info "Setting up Codex" "global"
+	cli_status info "Setting up Codex" "(global)"
 	printf '\n'
 
 	ensure_container_dir "$HOME/.agents" "~/.agents"
