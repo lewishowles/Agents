@@ -5,6 +5,7 @@ PROGRESS.md
 .claude/PROGRESS.md
 .agents/AGENTS.md
 .agents/PROGRESS.md
+.agent/tools/
 servers/local-repo-gateway/repos.json
 servers/local-repo-gateway/.venv
 servers/local-repo-gateway/__pycache__

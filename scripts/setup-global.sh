@@ -176,6 +176,11 @@ if [ -z "$target" ]; then
 	target=$(prompt_target)
 fi
 
+bash "$REPO_DIR/scripts/install-cli-style.sh"
+CLI_STYLE_BIN="$REPO_DIR/.agent/tools/cli-style/bin/cli-style"
+export CLI_STYLE_BIN
+source "$("$CLI_STYLE_BIN" adapter-path bash)"
+
 if [ "$sync_external" = true ]; then
 	if ! bash "$REPO_DIR/scripts/sync-external-skills.sh"; then
 		printf '%s!%s external skill sync failed; continuing with existing local skills\n' "$YELLOW" "$RESET_COLOUR" >&2
@@ -193,4 +198,7 @@ esac
 setup_stagewise
 configure_git_hooks
 
-printf '\nDone.\n'
+printf '\n'
+cli_style_render status <<'JSON'
+{"type":"success","label":"Done."}
+JSON
