@@ -61,12 +61,12 @@ ensure_container_dir() {
 		if [ "${SKIP_BACKUP:-0}" = "1" ]; then
 			rm -rf "$path"
 			mkdir -p "$path"
-			printf '  %s⟳%s replaced %s\n' "$YELLOW" "$RESET_COLOUR" "$label"
+			cli_status warning "replaced" "$label"
 		else
 			local backup
 			backup=$(backup_path "$path")
 			mkdir -p "$path"
-			printf '  %s⟳%s replaced %s (backup at %s)\n' "$YELLOW" "$RESET_COLOUR" "$label" "$(display_path "$backup")"
+			cli_status warning "replaced $label" "backup at $(display_path "$backup")"
 		fi
 	else
 		mkdir -p "$path"
@@ -95,7 +95,7 @@ prune_stale_repo_links() {
 		target=$(readlink "$link")
 		if [[ "$target" == "$repo_prefix"* ]] && [ ! -e "$link" ]; then
 			rm "$link"
-			printf '  %s−%s removed stale %s\n' "$YELLOW" "$RESET_COLOUR" "$label/$(basename "$link")"
+			cli_status warning "removed stale" "$label/$(basename "$link")"
 		fi
 	done
 }
@@ -118,34 +118,34 @@ link_path() {
 		current=$(readlink "$target")
 
 		if [ "$current" = "$source" ]; then
-			printf '  %s↪%s %s already linked\n' "$PURPLE" "$RESET_COLOUR" "$label"
+			cli_status muted "$label" "already linked"
 			return
 		fi
 
 		if [ "${SKIP_BACKUP:-0}" = "1" ]; then
 			rm "$target"
 			ln -s "$source" "$target"
-			printf '  %s⟳%s relinked %s\n' "$YELLOW" "$RESET_COLOUR" "$label"
+			cli_status warning "relinked" "$label"
 		else
 			local backup
 			backup=$(backup_path "$target")
 			ln -s "$source" "$target"
-			printf '  %s⟳%s relinked %s (backup at %s)\n' "$YELLOW" "$RESET_COLOUR" "$label" "$(display_path "$backup")"
+			cli_status warning "relinked $label" "backup at $(display_path "$backup")"
 		fi
 	elif [ -e "$target" ]; then
 		if [ "${SKIP_BACKUP:-0}" = "1" ]; then
 			rm -rf "$target"
 			ln -s "$source" "$target"
-			printf '  %s⟳%s replaced %s\n' "$YELLOW" "$RESET_COLOUR" "$label"
+			cli_status warning "replaced" "$label"
 		else
 			local backup
 			backup=$(backup_path "$target")
 			ln -s "$source" "$target"
-			printf '  %s⟳%s replaced %s (backup at %s)\n' "$YELLOW" "$RESET_COLOUR" "$label" "$(display_path "$backup")"
+			cli_status warning "replaced $label" "backup at $(display_path "$backup")"
 		fi
 	else
 		ln -s "$source" "$target"
-		printf '  %s✓%s linked %s\n' "$GREEN" "$RESET_COLOUR" "$label"
+		cli_status success "linked" "$label"
 	fi
 }
 
@@ -175,7 +175,7 @@ link_skills() {
 		done
 
 		if [ "$skip" = true ]; then
-			printf '  %s−%s skipped Stagewise-only skill %s\n' "$YELLOW" "$RESET_COLOUR" "$slug"
+			cli_status warning "skipped Stagewise-only skill" "$slug"
 			continue
 		fi
 
@@ -194,6 +194,6 @@ copy_skills() {
 	for skill in "$REPO_DIR"/dist/skills/*; do
 		[ -d "$skill" ] || continue
 		cp -R "$skill" "$target_dir/$(basename "$skill")"
-		printf '  %s✓%s copied skills/%s\n' "$GREEN" "$RESET_COLOUR" "$(basename "$skill")"
+		cli_status success "copied" "skills/$(basename "$skill")"
 	done
 }

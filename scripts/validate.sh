@@ -7,6 +7,7 @@ SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 
 source "$REPO_DIR/scripts/lib/colours.sh"
+source "$REPO_DIR/scripts/lib/cli-style-output.sh"
 
 FAILED_CHECKS=0
 
@@ -19,12 +20,20 @@ FAILED_CHECKS=0
 #     Command and arguments to execute.
 run_check() {
 	local label="$1"
+	local output
 	shift
-	printf '\nChecking %s...\n' "$label"
-	if "$@" 2>&1; then
-		printf '%s✓%s %s\n' "$GREEN" "$RESET_COLOUR" "$label"
+	printf '\n'
+	cli_status info "Checking" "$label"
+	if output=$("$@" 2>&1); then
+		if [ "$label" = "staleness" ] && [ -n "$output" ]; then
+			printf '%s\n' "$output"
+		fi
+		cli_status success "$label"
 	else
-		printf '%s✗%s %s failed\n' "$RED" "$RESET_COLOUR" "$label"
+		if [ -n "$output" ]; then
+			printf '%s\n' "$output" >&2
+		fi
+		cli_status error "$label" "failed"
 		FAILED_CHECKS=$((FAILED_CHECKS + 1))
 	fi
 }
@@ -50,8 +59,8 @@ run_check "staleness"             python3 "$REPO_DIR/scripts/validate/check-stal
 
 printf '\n'
 if [ "$FAILED_CHECKS" -gt 0 ]; then
-	printf '%s%d validation check(s) failed%s\n' "$RED" "$FAILED_CHECKS" "$RESET_COLOUR"
+	cli_status error "$FAILED_CHECKS validation check(s) failed"
 	exit 1
 fi
 
-printf '%s✓ All checks passed%s\n' "$GREEN" "$RESET_COLOUR"
+cli_status success "All checks passed"

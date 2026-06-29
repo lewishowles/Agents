@@ -16,6 +16,7 @@ SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 
 source "$REPO_DIR/scripts/lib/colours.sh"
+source "$REPO_DIR/scripts/lib/cli-style-output.sh"
 
 CLAUDE_TARGET="$REPO_DIR/dist/claude/CLAUDE.md"
 CODEX_TARGET="$REPO_DIR/dist/codex/AGENTS.md"
@@ -86,22 +87,23 @@ copy_hooks() {
 
 mkdir -p "$REPO_DIR/dist/claude" "$REPO_DIR/dist/codex"
 
-python3 "$REPO_DIR/scripts/build/build-skill-mds.py"
-python3 "$REPO_DIR/scripts/build/build-docs.py"
+python3 "$REPO_DIR/scripts/build/build-skill-mds.py" >/dev/null
+python3 "$REPO_DIR/scripts/build/build-docs.py" >/dev/null
 copy_hooks
 write_target "$CLAUDE_TARGET" "${CLAUDE_PARTS[@]}"
 write_target "$CODEX_TARGET" "${CODEX_PARTS[@]}"
-python3 "$REPO_DIR/scripts/build/build-chatgpt-target.py"
-python3 "$REPO_DIR/scripts/build/build-settings.py"
+python3 "$REPO_DIR/scripts/build/build-chatgpt-target.py" >/dev/null
+python3 "$REPO_DIR/scripts/build/build-settings.py" >/dev/null
 
 # Copy static config files from adapters to dist.
 cp "$REPO_DIR/adapters/claude/mcp.json" "$REPO_DIR/dist/claude/.mcp.json"
 cp "$REPO_DIR/adapters/codex/hooks.json" "$REPO_DIR/dist/codex/hooks.json"
 
-printf '%s✓%s synced %sdist/claude/CLAUDE.md%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"
-printf '%s✓%s synced %sdist/codex/AGENTS.md%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"
-printf '%s✓%s synced %sdist/chatgpt/%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"
-printf '%s✓%s synced %sdist/claude/settings.json%s\n'
-printf '%s✓%s synced %sdist/codex/hooks.json%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$RESET_COLOUR"
+cli_status success "synced" "dist/claude/CLAUDE.md"
+cli_status success "synced" "dist/codex/AGENTS.md"
+cli_status success "synced" "dist/chatgpt/"
+cli_status success "synced" "manifest-backed docs tables"
+cli_status success "synced" "dist/claude/settings.json"
+cli_status success "synced" "dist/codex/hooks.json"
 
 bash "$REPO_DIR/scripts/validate.sh"

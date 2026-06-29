@@ -11,6 +11,7 @@ REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 MANIFEST="$REPO_DIR/external-skills.json"  # List of skills to sync, with URLs and metadata.
 
 source "$REPO_DIR/scripts/lib/colours.sh"
+source "$REPO_DIR/scripts/lib/cli-style-output.sh"
 
 usage() {
 	printf 'Usage: %s\n' "$(basename "$0")"
@@ -169,11 +170,11 @@ sync_skill() {
 	local current_sha=""
 
 	printf '\n'
-	printf '→ Syncing external skill %s%s%s\n' "$PURPLE" "$slug" "$RESET_COLOUR"
+	cli_status info "Syncing external skill" "$slug"
 	printf '\n'
 
 	if [ -n "$commit_api_url" ]; then
-		printf '  Resolving upstream revision\n'
+		cli_status info "Resolving upstream revision"
 		upstream_sha=$(curl -fsSL "$commit_api_url" | jq -r '.sha // "unresolved"' 2>/dev/null || printf 'unresolved')
 	fi
 
@@ -182,7 +183,7 @@ sync_skill() {
 	fi
 
 	if [ "$upstream_sha" != "unresolved" ] && [ "$current_sha" = "$upstream_sha" ] && [ -f "$skill_file" ]; then
-		printf '  %s↪%s already up to date (%s)\n' "$PURPLE" "$RESET_COLOUR" "$upstream_sha"
+		cli_status muted "already up to date" "$upstream_sha"
 		printf '\n'
 		return
 	fi
@@ -190,7 +191,7 @@ sync_skill() {
 	local temp_file
 	temp_file=$(mktemp)
 
-	printf '  Fetching SKILL.md\n'
+	cli_status info "Fetching" "SKILL.md"
 	curl -fsSL "$skill_url" -o "$temp_file"
 	vet_skill_file "$temp_file" "$slug"
 
@@ -224,7 +225,7 @@ Managed by \`scripts/sync-external-skills.sh\`. Do not edit \`SKILL.body.md\` di
 | Synced at | ${synced_at} |
 EOF
 
-	printf '%s✓%s synced external skill %s%s%s\n' "$GREEN" "$RESET_COLOUR" "$PURPLE" "$slug" "$RESET_COLOUR"
+	cli_status success "synced external skill" "$slug"
 	printf '\n'
 }
 

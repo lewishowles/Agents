@@ -16,7 +16,9 @@ usage() {
 }
 
 setup_claude() {
-	printf '\n→ Setting up Claude (global)\n\n'
+	printf '\n'
+	cli_status info "Setting up Claude" "global"
+	printf '\n'
 
 	ensure_container_dir "$HOME/.claude" "~/.claude"
 	ensure_container_dir "$HOME/.claude/skills" "skills"
@@ -45,7 +47,9 @@ setup_claude() {
 }
 
 setup_codex() {
-	printf '\n→ Setting up Codex (global)\n\n'
+	printf '\n'
+	cli_status info "Setting up Codex" "global"
+	printf '\n'
 
 	ensure_container_dir "$HOME/.agents" "~/.agents"
 	ensure_container_dir "$HOME/.agents/skills" "~/.agents/skills"
@@ -70,7 +74,9 @@ setup_codex() {
 setup_stagewise() {
 	local skills_dir="$HOME/.stagewise/skills"
 
-	printf '\n→ Setting up Stagewise\n\n'
+	printf '\n'
+	cli_status info "Setting up Stagewise"
+	printf '\n'
 
 	if [ -e "$skills_dir" ] || [ -L "$skills_dir" ]; then
 		trash "$skills_dir"
@@ -113,32 +119,34 @@ ensure_codex_config() {
 
 	if cmp -s "$config" "$temp"; then
 		rm "$temp"
-		printf '  %s↪%s Codex config already configured\n' "$PURPLE" "$RESET_COLOUR"
+		cli_status muted "Codex config" "already configured"
 		return
 	fi
 
 	if [ "${SKIP_BACKUP:-0}" = "1" ]; then
 		mv "$temp" "$config"
-		printf '  %s✓%s configured Codex MCP servers and hooks\n' "$GREEN" "$RESET_COLOUR"
+		cli_status success "configured Codex MCP servers and hooks"
 	else
 		local backup="$config.bak.$(timestamp)"
 		cp "$config" "$backup"
 		mv "$temp" "$config"
-		printf '  %s✓%s configured Codex MCP servers and hooks (backup at %s)\n' "$GREEN" "$RESET_COLOUR" "$(display_path "$backup")"
+		cli_status success "configured Codex MCP servers and hooks" "backup at $(display_path "$backup")"
 	fi
 }
 
 # Configures git to use hooks/git/ as the hook directory for this repo.
 # This installs the pre-push hook without touching ~/.git/hooks directly.
 configure_git_hooks() {
-	printf '\n→ Configuring git hooks\n\n'
+	printf '\n'
+	cli_status info "Configuring git hooks"
+	printf '\n'
 
 	if ! git -C "$REPO_DIR" config core.hooksPath hooks/git &>/dev/null; then
-		printf '  %s!%s Could not set core.hooksPath — not a git repo?\n' "$YELLOW" "$RESET_COLOUR"
+		cli_status warning "Could not set core.hooksPath" "not a git repo?"
 		return
 	fi
 
-	printf '  %s✓%s git hooks path set to hooks/git/\n' "$GREEN" "$RESET_COLOUR"
+	cli_status success "git hooks path set" "hooks/git/"
 }
 
 prompt_target() {
@@ -177,13 +185,11 @@ if [ -z "$target" ]; then
 fi
 
 bash "$REPO_DIR/scripts/install-cli-style.sh"
-CLI_STYLE_BIN="$REPO_DIR/.agent/tools/cli-style/bin/cli-style"
-export CLI_STYLE_BIN
-source "$("$CLI_STYLE_BIN" adapter-path bash)"
+source "$REPO_DIR/scripts/lib/cli-style-output.sh"
 
 if [ "$sync_external" = true ]; then
 	if ! bash "$REPO_DIR/scripts/sync-external-skills.sh"; then
-		printf '%s!%s external skill sync failed; continuing with existing local skills\n' "$YELLOW" "$RESET_COLOUR" >&2
+		cli_status warning "external skill sync failed" "continuing with existing local skills"
 	fi
 fi
 
@@ -199,6 +205,4 @@ setup_stagewise
 configure_git_hooks
 
 printf '\n'
-cli_style_render status <<'JSON'
-{"type":"success","label":"Done."}
-JSON
+cli_status success "Done."

@@ -3,7 +3,7 @@
 
 set -euo pipefail
 
-VERSION="0.2.0"
+VERSION="0.2.1"
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 INSTALL_DIR="$REPO_DIR/.agent/tools/cli-style"
@@ -23,6 +23,5 @@ mkdir -p "$INSTALL_DIR"
 curl -fsSL "$url" | tar -xz -C "$INSTALL_DIR"
 printf '%s\n' "$VERSION" > "$INSTALL_DIR/VERSION"
 
-"$INSTALL_DIR/bin/cli-style" render status --plain <<'JSON'
-{"type":"success","label":"cli-style installed"}
-JSON
+source "$REPO_DIR/scripts/lib/cli-style-output.sh"
+cli_status success "cli-style installed"
