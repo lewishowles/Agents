@@ -5,6 +5,7 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 REPO_DIR=$(cd "$SCRIPT_DIR/../.." && pwd)
 
 source "$REPO_DIR/scripts/lib/colours.sh"
+source "$REPO_DIR/scripts/lib/cli-style-output.sh"
 
 VALIDATE_ERRORS=0
 
@@ -13,7 +14,7 @@ VALIDATE_ERRORS=0
 # @param  {string}  message
 #     Error message to display.
 validate_fail() {
-	printf '%s✗%s %s\n' "$RED" "$RESET_COLOUR" "$1" >&2
+	cli_status error "$1" >&2
 	VALIDATE_ERRORS=$((VALIDATE_ERRORS + 1))
 }
 
@@ -22,7 +23,7 @@ validate_fail() {
 # @param  {string}  message
 #     Warning message to display.
 validate_warn() {
-	printf '%s⚠%s %s\n' "$YELLOW" "$RESET_COLOUR" "$1" >&2
+	cli_status warning "$1" >&2
 }
 
 # Prints a validation section heading.
@@ -56,7 +57,7 @@ validate_is_valid() {
 # Exits with the current validation status.
 validate_finish() {
 	if [ "$VALIDATE_ERRORS" -gt 0 ]; then
-		printf '%s%d error(s) found%s\n' "$RED" "$VALIDATE_ERRORS" "$RESET_COLOUR"
+		cli_status error "$VALIDATE_ERRORS error(s) found"
 		exit 1
 	fi
 }
@@ -64,7 +65,7 @@ validate_finish() {
 # Ensures jq is available for validation checks that read JSON manifests.
 validate_require_jq() {
 	if ! command -v jq &>/dev/null; then
-		printf 'This script requires jq. Install it with: brew install jq\n' >&2
+		cli_status error "This script requires jq." "Install it with: brew install jq" >&2
 		exit 1
 	fi
 }

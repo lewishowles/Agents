@@ -25,17 +25,17 @@ fi
 # Ensures commands and files needed for external skill sync are available.
 require_sync_dependencies() {
 	if ! command -v jq &>/dev/null; then
-		printf '%s✗%s sync-external-skills requires jq. Install it with: brew install jq\n' "$RED" "$RESET_COLOUR" >&2
+		cli_status error "sync-external-skills requires jq." "Install it with: brew install jq" >&2
 		exit 1
 	fi
 
 	if ! command -v curl &>/dev/null; then
-		printf '%s✗%s sync-external-skills requires curl.\n' "$RED" "$RESET_COLOUR" >&2
+		cli_status error "sync-external-skills requires curl." >&2
 		exit 1
 	fi
 
 	if [ ! -f "$MANIFEST" ]; then
-		printf '%s✗%s External skills manifest not found: %s\n' "$RED" "$RESET_COLOUR" "$MANIFEST" >&2
+		cli_status error "External skills manifest not found" "$MANIFEST" >&2
 		exit 1
 	fi
 }
@@ -53,22 +53,22 @@ vet_skill_file() {
 	local warnings=0
 
 	if grep -qE '\b(rm\s+-rf|sudo\s|chmod\s+[0-7]*7[0-7]*)\b' "$file" 2>/dev/null; then
-		printf '  %s⚠%s %s: contains potentially destructive shell commands (rm -rf / sudo / chmod 7xx)\n' "$YELLOW" "$RESET_COLOUR" "$slug" >&2
+		cli_status warning "$slug" "contains potentially destructive shell commands (rm -rf / sudo / chmod 7xx)" >&2
 		warnings=$((warnings + 1))
 	fi
 
 	if grep -qE '^\s*(curl|wget|fetch)\s+.*https?://(?!raw\.githubusercontent\.com|api\.github\.com)' "$file" 2>/dev/null; then
-		printf '  %s⚠%s %s: contains network calls to external hosts\n' "$YELLOW" "$RESET_COLOUR" "$slug" >&2
+		cli_status warning "$slug" "contains network calls to external hosts" >&2
 		warnings=$((warnings + 1))
 	fi
 
 	if grep -qiE '(AWS_SECRET|api_key|GITHUB_TOKEN|password|private_key)\s*=' "$file" 2>/dev/null; then
-		printf '  %s⚠%s %s: references credential-like variable names\n' "$YELLOW" "$RESET_COLOUR" "$slug" >&2
+		cli_status warning "$slug" "references credential-like variable names" >&2
 		warnings=$((warnings + 1))
 	fi
 
 	if [ "$warnings" -gt 0 ]; then
-		printf '  Review %s before use.\n' "$file" >&2
+		cli_status warning "Review before use" "$file" >&2
 	fi
 }
 
