@@ -12,55 +12,71 @@ REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 SERVER_DIR="$REPO_DIR/servers/local-repo-gateway"
 LAUNCH_AGENTS="$HOME/Library/LaunchAgents"
 
-source "$REPO_DIR/scripts/lib/colours.sh"
+source "$REPO_DIR/scripts/lib/cli-style-output.sh"
 
-ok()      { printf '%s✓%s %s\n' "$GREEN"  "$RESET_COLOUR" "$1"; }
-info()    { printf '%s→%s %s\n' "$PURPLE" "$RESET_COLOUR" "$1"; }
-warn()    { printf '%s!%s %s\n' "$YELLOW" "$RESET_COLOUR" "$1"; }
-fail()    { printf '%s✗%s %s\n' "$RED"    "$RESET_COLOUR" "$1"; exit 1; }
-ask()     { printf '%s?%s %s: '  "$PURPLE" "$RESET_COLOUR" "$1"; }
-divider() { printf '\n%s\n\n' "────────────────────────────────────────"; }
+# Prints a prompt and leaves the cursor on the same line for user input.
+#
+# @param  {string}  prompt
+#     Prompt text.
+ask() {
+	local prompt="$1"
 
-# ── Prerequisites ──────────────────────────────────────────────────────────────
+	printf '? %s: ' "$prompt"
+}
 
-divider
-info "Checking prerequisites..."
+# Prints a failed status and exits.
+#
+# @param  {string}  label
+#     Failure label.
+# @param  {string}  detail
+#     Supporting failure detail.
+fail() {
+	local label="$1"
+	local detail="${2:-}"
 
-command -v cloudflared >/dev/null 2>&1 || fail "cloudflared not found. Install with: brew install cloudflare/cloudflare/cloudflared"
-ok "cloudflared found"
+	cli_status failed "$label" "$detail"
+	exit 1
+}
 
-command -v uv >/dev/null 2>&1 || fail "uv not found. Install with: brew install uv"
-ok "uv found"
+printf '\n'
+cli_status info "Checking prerequisites"
 
-command -v rg >/dev/null 2>&1 || warn "ripgrep (rg) not found — local_repo_search will not work"
+command -v cloudflared >/dev/null 2>&1 || fail "cloudflared not found" "Install with: brew install cloudflare/cloudflare/cloudflared"
+cli_group success "Cloudflare dependency" "cloudflared found"
 
-# ── repos.json ─────────────────────────────────────────────────────────────────
+command -v uv >/dev/null 2>&1 || fail "uv not found" "Install with: brew install uv"
+cli_group success "Python dependency" "uv found"
 
-if [ ! -f "$SERVER_DIR/repos.json" ]; then
-	warn "repos.json not found."
+if command -v rg >/dev/null 2>&1; then
+	cli_group success "Search dependency" "ripgrep (rg) available"
+else
+	cli_group warning "Search dependency" "ripgrep (rg) not found — local_repo_search will not work"
+fi
+
+if [[ ! -f "$SERVER_DIR/repos.json" ]]; then
+	cli_group warning "Repository config" "repos.json not found"
 	ask "Copy from example and continue? [y/N]"
 	read -r REPLY
-	[[ "$REPLY" =~ ^[Yy]$ ]] || fail "Create repos.json before running setup."
+	[[ "$REPLY" =~ ^[Yy]$ ]] || fail "Create repos.json before running setup"
 	cp "$SERVER_DIR/repos.example.json" "$SERVER_DIR/repos.json"
-	ok "copied repos.example.json → repos.json (edit it to add your repos)"
+	cli_group success "Repository config" "copied repos.example.json → repos.json"
+else
+	cli_group success "Repository config" "repos.json found"
 fi
-ok "repos.json found"
 
-# ── Cloudflare tunnel ──────────────────────────────────────────────────────────
-
-divider
-info "Cloudflare tunnel setup..."
+printf '\n'
+cli_status info "Cloudflare tunnel setup"
 
 # Check if already authenticated.
 if ! cloudflared tunnel list >/dev/null 2>&1; then
-	info "Authenticating with Cloudflare (opens browser)..."
+	cli_status info "Authenticating with Cloudflare" "opens browser"
 	cloudflared login
 fi
 
 ask "Your Cloudflare-managed domain (e.g. example.com)"
 read -r CF_DOMAIN
 CF_DOMAIN="${CF_DOMAIN// /}"
-[ -n "$CF_DOMAIN" ] || fail "Domain cannot be empty."
+[[ -n "$CF_DOMAIN" ]] || fail "Domain cannot be empty"
 
 ask "Hostname prefix [local-repo-gateway]"
 read -r CF_PREFIX
@@ -70,16 +86,16 @@ CF_HOSTNAME="${CF_PREFIX}.${CF_DOMAIN}"
 # Create tunnel if it doesn't already exist.
 if cloudflared tunnel list 2>/dev/null | grep -q "$CF_PREFIX"; then
 	TUNNEL_ID=$(cloudflared tunnel list 2>/dev/null | grep "$CF_PREFIX" | awk '{print $1}')
-	ok "tunnel '$CF_PREFIX' already exists (id: $TUNNEL_ID)"
+	cli_group unchanged "Cloudflare tunnel" "'$CF_PREFIX' already exists (id: $TUNNEL_ID)"
 else
-	info "Creating tunnel '$CF_PREFIX'..."
+	cli_status info "Creating tunnel" "$CF_PREFIX"
 	TUNNEL_OUTPUT=$(cloudflared tunnel create "$CF_PREFIX" 2>&1)
 	TUNNEL_ID=$(echo "$TUNNEL_OUTPUT" | grep -o 'id [a-f0-9-]*' | awk '{print $2}')
-	ok "created tunnel (id: $TUNNEL_ID)"
+	cli_group success "Cloudflare tunnel" "created tunnel (id: $TUNNEL_ID)"
 
-	info "Routing DNS: $CF_HOSTNAME → tunnel..."
+	cli_status info "Routing DNS" "$CF_HOSTNAME → tunnel"
 	cloudflared tunnel route dns --overwrite-dns "$TUNNEL_ID" "$CF_HOSTNAME"
-	ok "DNS route created"
+	cli_group success "Cloudflare DNS" "route created"
 fi
 
 CREDENTIALS_FILE="$HOME/.cloudflared/${TUNNEL_ID}.json"
@@ -95,7 +111,7 @@ ingress:
     service: http://127.0.0.1:8754
   - service: http_status:404
 YAML
-ok "wrote cloudflared/config.yml"
+cli_group success "Cloudflare config" "wrote cloudflared/config.yml"
 
 # Update openapi.json server URL.
 "$SERVER_DIR/.venv/bin/python" - << PYEOF
@@ -108,42 +124,36 @@ if schema_path.exists():
     schema["servers"] = [{"url": "https://$CF_HOSTNAME"}]
     schema_path.write_text(json.dumps(schema, indent=2))
 PYEOF
-ok "updated openapi.json server URL → https://$CF_HOSTNAME"
+cli_group success "OpenAPI schema" "server URL → https://$CF_HOSTNAME"
 
-# ── Auth token ─────────────────────────────────────────────────────────────────
+printf '\n'
+cli_status info "Auth token"
 
-divider
-info "Auth token..."
-
-if [ -n "${GATEWAY_TOKEN:-}" ]; then
-	ok "GATEWAY_TOKEN already set in environment — keeping it"
+if [[ -n "${GATEWAY_TOKEN:-}" ]]; then
+	cli_group unchanged "Gateway token" "GATEWAY_TOKEN already set in environment"
 	TOKEN="$GATEWAY_TOKEN"
 else
 	TOKEN=$(openssl rand -hex 32)
 	printf '\n'
 	printf 'Add this to your shell profile (~/.zshrc or ~/.zprofile):\n\n'
-	printf '  %sexport GATEWAY_TOKEN="%s"%s\n\n' "$GREEN" "$TOKEN" "$RESET_COLOUR"
+	printf '  export GATEWAY_TOKEN="%s"\n\n' "$TOKEN"
 	printf 'Then press Enter to continue (the install will read it from your profile).'
 	read -r _
 	export GATEWAY_TOKEN="$TOKEN"
 fi
 
-# ── venv + dependencies ────────────────────────────────────────────────────────
-
-divider
-info "Setting up Python environment..."
+printf '\n'
+cli_status info "Setting up Python environment"
 
 VENV="$SERVER_DIR/.venv"
-if [ ! -d "$VENV" ]; then
+if [[ ! -d "$VENV" ]]; then
 	uv venv "$VENV" --python 3.12 --quiet
 fi
 uv pip install --quiet -r "$SERVER_DIR/requirements.txt" --python "$VENV/bin/python"
-ok "venv ready"
+cli_group success "Python environment" "venv ready"
 
-# ── LaunchAgents ───────────────────────────────────────────────────────────────
-
-divider
-info "Installing LaunchAgents..."
+printf '\n'
+cli_status info "Installing LaunchAgents"
 
 HTTP_PLIST="$LAUNCH_AGENTS/com.lewis.local-repo-gateway-http.plist"
 TUNNEL_PLIST="$LAUNCH_AGENTS/com.lewis.local-repo-gateway-tunnel.plist"
@@ -209,16 +219,15 @@ PLIST
 for label in com.lewis.local-repo-gateway-http com.lewis.local-repo-gateway-tunnel; do
 	launchctl unload "$LAUNCH_AGENTS/$label.plist" 2>/dev/null || true
 	launchctl load "$LAUNCH_AGENTS/$label.plist"
-	ok "loaded $label"
+	cli_status success "loaded" "$label"
 done
 
-# ── Done ───────────────────────────────────────────────────────────────────────
-
-divider
-printf '%sSetup complete.%s\n\n' "$GREEN" "$RESET_COLOUR"
-printf 'Gateway URL:  https://%s\n' "$CF_HOSTNAME"
-printf 'Health check: curl -s -H "X-Gateway-Token: %s" https://%s/health\n\n' "$TOKEN" "$CF_HOSTNAME"
-printf '%sChatGPT Custom GPT setup:%s\n' "$PURPLE" "$RESET_COLOUR"
+printf '\n'
+cli_status success "Setup complete"
+cli_group success "Gateway" "https://$CF_HOSTNAME"
+cli_group info "Health check" "curl -s -H \"X-Gateway-Token: $TOKEN\" https://$CF_HOSTNAME/health"
+printf '\n'
+cli_status info "ChatGPT Custom GPT setup"
 printf '  1. ChatGPT → Explore GPTs → Create → Configure → Actions → Create new action\n'
 printf '  2. Paste the contents of servers/local-repo-gateway/openapi.json into the schema editor\n'
 printf '  3. Authentication: API Key → header name X-Gateway-Token → token: %s\n' "$TOKEN"

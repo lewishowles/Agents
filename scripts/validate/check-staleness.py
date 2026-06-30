@@ -94,7 +94,7 @@ def main() -> None:
 			warnings += 1
 
 	if warnings:
-		print(f"\n  {warnings} stale file(s) — review for drift against current runtime behaviour")
+		print(f"  {warnings} stale file(s) — review for drift against current runtime behaviour")
 
 
 if __name__ == "__main__":

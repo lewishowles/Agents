@@ -9,7 +9,7 @@ REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 source "$SCRIPT_DIR/lib/test-helpers.sh"
 
 bash -n "$REPO_DIR/scripts/install-cli-style.sh"
-assert_contains "$REPO_DIR/scripts/install-cli-style.sh" 'VERSION="0.2.2"'
+assert_contains "$REPO_DIR/scripts/install-cli-style.sh" 'VERSION="0.3.0"'
 assert_contains "$REPO_DIR/scripts/install-cli-style.sh" "https://github.com/lewishowles/cli-style/releases/download"
 assert_contains "$REPO_DIR/scripts/install-cli-style.sh" 'curl -fsSL "$url" | tar -xz -C "$INSTALL_DIR"'
 

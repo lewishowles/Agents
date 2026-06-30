@@ -11,6 +11,8 @@ source "$REPO_DIR/scripts/lib/cli-style-output.sh"
 
 FAILED_CHECKS=0
 
+cli_section "Validation" "Run repository checks"
+
 # Runs a command as a named validation check.
 # Prints a section header before running and ✓/✗ after.
 #
@@ -22,7 +24,6 @@ run_check() {
 	local label="$1"
 	local output
 	shift
-	printf '\n'
 	cli_status info "Checking" "$label"
 	if output=$("$@" 2>&1); then
 		if [ "$label" = "staleness" ] && [ -n "$output" ]; then

@@ -61,12 +61,12 @@ ensure_container_dir() {
 		if [ "${SKIP_BACKUP:-0}" = "1" ]; then
 			rm -rf "$path"
 			mkdir -p "$path"
-			cli_status warning "replaced" "$label"
+			cli_group_status warning "replaced" "$label"
 		else
 			local backup
 			backup=$(backup_path "$path")
 			mkdir -p "$path"
-			cli_status warning "replaced $label" "backup at $(display_path "$backup")"
+			cli_group_status warning "replaced $label" "backup at $(display_path "$backup")"
 		fi
 	else
 		mkdir -p "$path"
@@ -95,7 +95,7 @@ prune_stale_repo_links() {
 		target=$(readlink "$link")
 		if [[ "$target" == "$repo_prefix"* ]] && [ ! -e "$link" ]; then
 			rm "$link"
-			cli_status warning "removed stale" "$label/$(basename "$link")"
+			cli_group_status warning "removed stale" "$label/$(basename "$link")"
 		fi
 	done
 }
@@ -118,34 +118,34 @@ link_path() {
 		current=$(readlink "$target")
 
 		if [ "$current" = "$source" ]; then
-			cli_status muted "$label" "already linked"
+			cli_group_status muted "$label" "already linked"
 			return
 		fi
 
 		if [ "${SKIP_BACKUP:-0}" = "1" ]; then
 			rm "$target"
 			ln -s "$source" "$target"
-			cli_status warning "relinked" "$label"
+			cli_group_status warning "relinked" "$label"
 		else
 			local backup
 			backup=$(backup_path "$target")
 			ln -s "$source" "$target"
-			cli_status warning "relinked $label" "backup at $(display_path "$backup")"
+			cli_group_status warning "relinked $label" "backup at $(display_path "$backup")"
 		fi
 	elif [ -e "$target" ]; then
 		if [ "${SKIP_BACKUP:-0}" = "1" ]; then
 			rm -rf "$target"
 			ln -s "$source" "$target"
-			cli_status warning "replaced" "$label"
+			cli_group_status warning "replaced" "$label"
 		else
 			local backup
 			backup=$(backup_path "$target")
 			ln -s "$source" "$target"
-			cli_status warning "replaced $label" "backup at $(display_path "$backup")"
+			cli_group_status warning "replaced $label" "backup at $(display_path "$backup")"
 		fi
 	else
 		ln -s "$source" "$target"
-		cli_status success "linked" "$label"
+		cli_group_status success "linked" "$label"
 	fi
 }
 
@@ -175,7 +175,7 @@ link_skills() {
 		done
 
 		if [ "$skip" = true ]; then
-			cli_status warning "skipped Stagewise-only skill" "$slug"
+			cli_group_status skipped "Stagewise-only skill" "$slug"
 			continue
 		fi
 
@@ -194,6 +194,6 @@ copy_skills() {
 	for skill in "$REPO_DIR"/dist/skills/*; do
 		[ -d "$skill" ] || continue
 		cp -R "$skill" "$target_dir/$(basename "$skill")"
-		cli_status success "copied" "skills/$(basename "$skill")"
+		cli_group_status success "copied" "skills/$(basename "$skill")"
 	done
 }

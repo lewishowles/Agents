@@ -8,7 +8,6 @@ set -euo pipefail
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 
-source "$REPO_DIR/scripts/lib/colours.sh"
 source "$REPO_DIR/scripts/lib/setup-links.sh"
 
 usage() {
@@ -16,55 +15,67 @@ usage() {
 }
 
 setup_claude() {
-	printf '\n'
-	cli_status info "Setting up Claude" "(global)"
-	printf '\n'
+	cli_section "Claude global setup"
 
+	cli_group_begin "Claude directories"
 	ensure_container_dir "$HOME/.claude" "~/.claude"
 	ensure_container_dir "$HOME/.claude/skills" "skills"
 	ensure_container_dir "$HOME/.claude/hooks" "hooks"
 	ensure_container_dir "$HOME/.claude/commands" "commands"
+	cli_group_end
 
+	cli_group_begin "Claude files"
 	link_path "$REPO_DIR/dist/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md" "CLAUDE.md"
 	link_path "$REPO_DIR/dist/claude/settings.json" "$HOME/.claude/settings.json" "settings.json"
 	link_path "$REPO_DIR/dist/claude/.mcp.json" "$HOME/.claude/.mcp.json" ".mcp.json"
+	cli_group_end
 
+	cli_group_begin "Claude skills"
 	prune_stale_repo_links "$HOME/.claude/skills" "$REPO_DIR" "skills"
 	link_skills "$HOME/.claude/skills"
+	cli_group_end
 
+	cli_group_begin "Claude hooks"
 	prune_stale_repo_links "$HOME/.claude/hooks" "$REPO_DIR/dist/claude/hooks" "hooks"
 	local hook
 	for hook in "$REPO_DIR"/dist/claude/hooks/*; do
 		[ -f "$hook" ] || continue
 		link_path "$hook" "$HOME/.claude/hooks/$(basename "$hook")" "hooks/$(basename "$hook")"
 	done
+	cli_group_end
 
+	cli_group_begin "Claude commands"
 	local command
 	for command in "$REPO_DIR"/dist/claude/commands/*; do
 		[ -f "$command" ] || continue
 		link_path "$command" "$HOME/.claude/commands/$(basename "$command")" "commands/$(basename "$command")"
 	done
+	cli_group_end
 }
 
 setup_codex() {
-	printf '\n'
-	cli_status info "Setting up Codex" "(global)"
-	printf '\n'
+	cli_section "Codex global setup"
 
+	cli_group_begin "Codex directories"
 	ensure_container_dir "$HOME/.agents" "~/.agents"
 	ensure_container_dir "$HOME/.agents/skills" "~/.agents/skills"
 	ensure_container_dir "$HOME/.codex" "~/.codex"
 	ensure_container_dir "$HOME/.codex/skills" "~/.codex/skills"
+	cli_group_end
 
+	cli_group_begin "Codex files"
 	link_path "$REPO_DIR/dist/codex/AGENTS.md" "$HOME/.agents/AGENTS.md" "AGENTS.md"
 	link_path "$REPO_DIR/dist/codex/AGENTS.md" "$HOME/.codex/AGENTS.md" "Codex AGENTS.md"
 	link_path "$REPO_DIR/dist/codex/hooks.json" "$HOME/.codex/hooks.json" "Codex hooks"
 	ensure_codex_config
+	cli_group_end
 
+	cli_group_begin "Codex skills"
 	prune_stale_repo_links "$HOME/.agents/skills" "$REPO_DIR" "skills"
 	prune_stale_repo_links "$HOME/.codex/skills" "$REPO_DIR" "Codex skills"
 	link_skills "$HOME/.agents/skills"
 	link_skills "$HOME/.codex/skills"
+	cli_group_end
 }
 
 # Replaces Stagewise skills with a fresh copy from this repository.
@@ -74,16 +85,16 @@ setup_codex() {
 setup_stagewise() {
 	local skills_dir="$HOME/.stagewise/skills"
 
-	printf '\n'
-	cli_status info "Setting up Stagewise"
-	printf '\n'
+	cli_section "Stagewise global setup"
 
 	if [ -e "$skills_dir" ] || [ -L "$skills_dir" ]; then
 		trash "$skills_dir"
 	fi
 
 	mkdir -p "$skills_dir"
+	cli_group_begin "Stagewise skills"
 	copy_skills "$skills_dir"
+	cli_group_end
 }
 
 # Ensures ~/.codex/config.toml contains managed MCP server entries and the
@@ -119,27 +130,25 @@ ensure_codex_config() {
 
 	if cmp -s "$config" "$temp"; then
 		rm "$temp"
-		cli_status muted "Codex config" "already configured"
+		cli_group_status muted "Codex config" "already configured"
 		return
 	fi
 
 	if [ "${SKIP_BACKUP:-0}" = "1" ]; then
 		mv "$temp" "$config"
-		cli_status success "configured Codex MCP servers and hooks"
+		cli_group_status success "configured Codex MCP servers and hooks"
 	else
 		local backup="$config.bak.$(timestamp)"
 		cp "$config" "$backup"
 		mv "$temp" "$config"
-		cli_status success "configured Codex MCP servers and hooks" "backup at $(display_path "$backup")"
+		cli_group_status success "configured Codex MCP servers and hooks" "backup at $(display_path "$backup")"
 	fi
 }
 
 # Configures git to use hooks/git/ as the hook directory for this repo.
 # This installs the pre-push hook without touching ~/.git/hooks directly.
 configure_git_hooks() {
-	printf '\n'
-	cli_status info "Configuring git hooks"
-	printf '\n'
+	cli_section "Git hooks"
 
 	if ! git -C "$REPO_DIR" config core.hooksPath hooks/git &>/dev/null; then
 		cli_status warning "Could not set core.hooksPath" "not a git repo?"
@@ -157,7 +166,7 @@ prompt_target() {
 		1) printf 'claude' ;;
 		2) printf 'codex' ;;
 		3) printf 'both' ;;
-		*) printf '%sInvalid choice.%s\n' "$RED" "$RESET_COLOUR" >&2; exit 1 ;;
+		*) printf 'Invalid choice.\n' >&2; exit 1 ;;
 	esac
 }
 

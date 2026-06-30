@@ -10,7 +10,6 @@ SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 PROJECT_DIR=$(pwd)
 
-source "$REPO_DIR/scripts/lib/colours.sh"
 source "$REPO_DIR/scripts/lib/cli-style-output.sh"
 source "$REPO_DIR/scripts/lib/project-setup.sh"
 
@@ -33,31 +32,46 @@ usage() {
 }
 
 setup_claude() {
-	printf '\n'
-	cli_status info "Setting up Claude" "(project)"
-	printf '\n'
+	cli_section "Claude project setup"
+
+	cli_group_begin "Project files"
 	copy_file "$REPO_DIR/templates/claude/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
+	cli_group_end
+
 	copy_shared_agent_tools
+
+	cli_group_begin "Workspace"
 	write_workspace_file
+	cli_group_end
 	copy_claude_support_files
 }
 
 setup_codex() {
-	printf '\n'
-	cli_status info "Setting up Codex" "(project)"
-	printf '\n'
+	cli_section "Codex project setup"
+
+	cli_group_begin "Project files"
 	copy_file "$REPO_DIR/templates/codex/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
+	cli_group_end
+
 	copy_shared_agent_tools
+
+	cli_group_begin "Workspace"
 	write_workspace_file
+	cli_group_end
 }
 
 setup_both() {
-	printf '\n'
-	cli_status info "Setting up Claude + Codex" "(project)"
-	printf '\n'
+	cli_section "Claude + Codex project setup"
+
+	cli_group_begin "Project files"
 	copy_file "$REPO_DIR/templates/shared/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
+	cli_group_end
+
 	copy_shared_agent_tools
+
+	cli_group_begin "Workspace"
 	write_workspace_file
+	cli_group_end
 	copy_claude_support_files
 }
 
@@ -69,7 +83,7 @@ prompt_target() {
 		1) printf 'claude' ;;
 		2) printf 'codex' ;;
 		3) printf 'both' ;;
-		*) printf '%sInvalid choice.%s\n' "$RED" "$RESET_COLOUR" >&2; exit 1 ;;
+		*) cli_status failed "Invalid choice"; exit 1 ;;
 	esac
 }
 

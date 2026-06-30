@@ -169,9 +169,7 @@ sync_skill() {
 	local upstream_sha="unresolved"
 	local current_sha=""
 
-	printf '\n'
 	cli_status info "Syncing external skill" "$slug"
-	printf '\n'
 
 	if [ -n "$commit_api_url" ]; then
 		cli_status info "Resolving upstream revision"
@@ -184,7 +182,6 @@ sync_skill() {
 
 	if [ "$upstream_sha" != "unresolved" ] && [ "$current_sha" = "$upstream_sha" ] && [ -f "$skill_file" ]; then
 		cli_status muted "already up to date" "$upstream_sha"
-		printf '\n'
 		return
 	fi
 
@@ -226,13 +223,14 @@ Managed by \`scripts/sync-external-skills.sh\`. Do not edit \`SKILL.body.md\` di
 EOF
 
 	cli_status success "synced external skill" "$slug"
-	printf '\n'
 }
 
 # Syncs every skill listed in external-skills.json.
 sync_all_skills() {
 	local count
 	count=$(jq 'length' "$MANIFEST")
+
+	cli_section "External skills" "Sync managed upstream skills"
 
 	local index
 	for index in $(seq 0 $((count - 1))); do

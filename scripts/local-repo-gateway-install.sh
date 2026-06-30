@@ -8,16 +8,11 @@ SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 LAUNCH_AGENTS="$HOME/Library/LaunchAgents"
 
-source "$REPO_DIR/scripts/lib/colours.sh"
-
-ok()   { printf '%s✓%s %s\n' "$GREEN"  "$RESET_COLOUR" "$1"; }
-fail() { printf '%s✗%s %s\n' "$RED"    "$RESET_COLOUR" "$1"; FAILED=1; }
-
-FAILED=0
+source "$REPO_DIR/scripts/lib/cli-style-output.sh"
 
 # Require token before writing plists.
-if [ -z "${GATEWAY_TOKEN:-}" ]; then
-	fail "GATEWAY_TOKEN not set — source ~/.zshrc first, or run: export GATEWAY_TOKEN=<token>"
+if [[ -z "${GATEWAY_TOKEN:-}" ]]; then
+	cli_status failed "GATEWAY_TOKEN not set" "source ~/.zshrc first, or run: export GATEWAY_TOKEN=<token>"
 	exit 1
 fi
 
@@ -55,7 +50,7 @@ cat > "$HTTP_PLIST" << PLIST
 </dict>
 </plist>
 PLIST
-ok "wrote $HTTP_PLIST"
+cli_status success "wrote" "$HTTP_PLIST"
 
 # Write tunnel plist.
 cat > "$TUNNEL_PLIST" << PLIST
@@ -84,16 +79,15 @@ cat > "$TUNNEL_PLIST" << PLIST
 </dict>
 </plist>
 PLIST
-ok "wrote $TUNNEL_PLIST"
+cli_status success "wrote" "$TUNNEL_PLIST"
 
 # Unload existing agents if running, then load fresh.
 for label in com.lewis.local-repo-gateway-http com.lewis.local-repo-gateway-tunnel; do
-    launchctl unload "$LAUNCH_AGENTS/$label.plist" 2>/dev/null || true
-    launchctl load "$LAUNCH_AGENTS/$label.plist"
-    ok "loaded $label"
+	launchctl unload "$LAUNCH_AGENTS/$label.plist" 2>/dev/null || true
+	launchctl load "$LAUNCH_AGENTS/$label.plist"
+	cli_status success "loaded" "$label"
 done
 
 printf '\n'
-printf 'Gateway running at https://local-repo-gateway.howles.dev\n'
-printf 'Logs: tail -f /tmp/local-repo-gateway-http.log\n'
-printf '      tail -f /tmp/local-repo-gateway-tunnel.log\n'
+cli_status success "Gateway running" "https://local-repo-gateway.howles.dev"
+cli_group info "Logs" "tail -f /tmp/local-repo-gateway-http.log; tail -f /tmp/local-repo-gateway-tunnel.log"

@@ -102,11 +102,10 @@ test_existing_files_are_skipped() {
 
 	assert_equals "$(cat "$target_dir/AGENTS.md")" "custom rules"
 	assert_file "$target_dir/.claude/.claudeignore"
-	assert_contains "$output" ".agent/scripts/project-diagnostics.py already linked"
-	assert_contains "$output" ".agent/scripts/generated-file-guard.py already linked"
-	assert_contains "$output" ".agent/scripts/repo-context.py already linked"
-	assert_contains "$output" ".agent/scripts/change-impact.py already linked"
-	assert_contains "$output" ".claude/.claudeignore already up to date"
+	assert_contains "$output" "Shared agent tools"
+	assert_contains "$output" "5 unchanged"
+	assert_contains "$output" "Claude support files"
+	assert_contains "$output" "2 unchanged"
 }
 
 test_init_workspace_previews_current_project() {

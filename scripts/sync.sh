@@ -87,6 +87,8 @@ copy_hooks() {
 
 mkdir -p "$REPO_DIR/dist/claude" "$REPO_DIR/dist/codex"
 
+cli_section "Generated outputs" "Build dist files and manifests"
+
 python3 "$REPO_DIR/scripts/build/build-skill-mds.py" >/dev/null
 python3 "$REPO_DIR/scripts/build/build-docs.py" >/dev/null
 copy_hooks
