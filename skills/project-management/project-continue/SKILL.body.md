@@ -36,6 +36,8 @@ When `<project-root>/.agent/scripts/project-diagnostics.py` exists, use `--list`
 
 Before new work, read only enough to orient:
 
+- Stale sessions (more than 5 minutes idle) re-process context from scratch; prefer starting fresh with PROGRESS.md rather than resuming a long idle session.
+
 - Read full `## Session handoff` — every subsection above `### Stop here`, including `### Context` and `### Verify with`
 - Continue into `## Active work`, `## Decisions`, `## Discoveries`, or `## Risks` only when needed
 - If active section links a feature spec, read it only when needed; do not read unrelated specs
