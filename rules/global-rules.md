@@ -53,6 +53,7 @@ For analysis-only requests, do not load implementation skills or begin coding. U
 **Surface confusion. State tradeoffs. Don't assume.**
 
 - State assumptions explicitly. If confidence in understanding the requirement is below 95%, list what is understood and what needs clarifying before touching any files
+- Before making a change, name what existing functionality it could affect and what evidence will confirm it is unaffected.
 
 - Multiple interpretations? Present all, don't pick silently
 - Simpler approach exists? Say so; push back when warranted
@@ -76,6 +77,7 @@ For analysis-only requests, do not load implementation skills or begin coding. U
 - Don't improve adjacent code, comments, or formatting; don't refactor what works; match existing style
 - Spot unrelated dead code? Mention it, don't delete
 - Remove unused imports, variables, functions you created; don't remove pre-existing dead code unless asked
+- Before creating a new function, component, or helper, search for an existing equivalent. If one exists, use it and state what you found.
 
 Every changed line traces directly to the request.
 
@@ -84,6 +86,8 @@ Every changed line traces directly to the request.
 **Evidence before claims.** Never assess test or code health from static inspection alone. Before claiming a fix works or identifying a root cause, run the scoped failing test or repro (diagnostics `--check` / `--test-file`, honouring token discipline) and include the output. If it genuinely cannot be run, say so explicitly — do not assert instead. Don't say tests pass or a fix is resolved unless you have seen output confirming it. When work is done, say what changed and what the user should verify.
 
 **Distil before closing.** Before updating the handoff, ask what was learned: what belongs in `## Discoveries`, what belongs in `## Decisions`, and whether any dead ends should be recorded as `### Failed approaches`. Add only what isn't already captured; skip if nothing new emerged.
+
+**PROGRESS.md update is blocking.** When a `PROGRESS.md` plan is active, update it before offering the commit message — not after, not as an optional follow-up. The commit message is not ready to give until the handoff reflects the work just done.
 
 **Always state what's next.** After completing any step — or finishing everything — close with what comes next: the next planned step, an open question to resolve, or an explicit "nothing remains" if there is no more planned work. This applies even between task boundaries.
 
@@ -105,6 +109,7 @@ Code must be reviewed before it is committed. Completing work means stopping aft
 - If asked to stage or commit without an active `PROGRESS.md` plan, first show the files to include and the exact Conventional Commit message, then wait for confirmation.
 - Update docs when changes require documentation
 - After completing a coherent step that changes tracked source files (code, config, rules, skills, scripts, templates, or docs), provide a scoped Conventional Commit message as plain text only. Label it `Suggested commit message:` and do not execute it. Do not suggest a commit message for PROGRESS.md updates, planning discussions, analysis, or responses that contain no file changes.
+- One chunk produces exactly one commit message. If the work done warrants more than one, the chunk should have been split before starting — do not patch this after the fact by offering multiple messages for a single batch of changes.
 - If I do ask you to commit, show the files to be included and the exact commit message first, then wait for confirmation.
 - When I specify a number or grouping of commits (e.g. "four commits", "one per file"), produce exactly that — confirm the grouping plan before staging, and do not collapse multiple requested commits into fewer.
 - Never add a `Co-Authored-By` trailer or any attribution line to commit messages.

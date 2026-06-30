@@ -41,6 +41,7 @@ Never add without discussion/permission.
 ```markdown
 Dependency proposal: `package-name`
 
+- Verified: `npm view <name>` (or `pip show` / `cargo search` equivalent) confirms the package exists and is actively maintained
 - Problem: [what this solves]
 - Existing option: [helper/component/local implementation]
 - Roll-our-own complexity: low | medium | high — [why]

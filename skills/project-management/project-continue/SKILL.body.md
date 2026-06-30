@@ -53,7 +53,7 @@ When user signals readiness to move on ("next please", "let's continue", "what's
 1. **Name the task** — one sentence: what it is and where it sits in the plan
 2. **Explain why** — one or two sentences on what it unlocks or why it is next
 3. **Flag unknowns** — if approach is not obvious, name key question or decision before starting
-4. **Wait for confirmation** — do not start implementation until the user agrees
+4. **Wait for confirmation** — do not start implementation until the user agrees. This gate applies regardless of active communication style — terseness (e.g. caveman mode) shortens prose, not process. Naming the task and waiting is still required even at the lowest verbosity setting.
 
 Keep outline short: 3–5 sentences total. Give enough context to redirect without spending tokens on a full plan.
 
