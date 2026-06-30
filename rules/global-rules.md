@@ -78,6 +78,7 @@ For analysis-only requests, do not load implementation skills or begin coding. U
 - Spot unrelated dead code? Mention it, don't delete
 - Remove unused imports, variables, functions you created; don't remove pre-existing dead code unless asked
 - Before creating a new function, component, or helper, search for an existing equivalent. If one exists, use it and state what you found.
+- Don't stack guards that duplicate each other (e.g. `Number.isFinite` alongside `Number.isInteger`, which already rejects `NaN`/`Infinity`). One check that fully covers the case is enough; every guard must trace to a real requirement.
 
 Every changed line traces directly to the request.
 

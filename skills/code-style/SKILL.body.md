@@ -23,6 +23,12 @@
 - Name variables after what they represent, not how they look — `alertPrefix` not `capitalisedType`
 - Fixed string sets: define a named constants object — `const alertTypes = { ERROR: "error", MUTED: "muted" }` — and reference it in switch/if/template expressions
 
+## Reuse existing helpers
+
+Before implementing any primitive operation — length, clamping, type/emptiness checks, string/array/object guards, deep copy/merge — search the project's own helper library and use what exists. Do not reimplement with raw `Array.isArray`, `array.length`, `Math.min`/`Math.max`, `typeof x === "string" && x.length`, manual `hasOwnProperty`, etc. when a named helper already covers it.
+
+Existing helpers carry edge-case hardening and are the single source of truth for that behaviour — reimplementing inline drifts from it silently.
+
 ## Query selectors & predicates
 
 - **Simplicity over repetition**: group similar elements with `:is()` and use single negations
@@ -43,4 +49,6 @@
 - Don't justify a fix by explaining the mechanism it avoids (reactivity loops, render timing, re-entrancy). State the rule the code follows, not the failure it prevents. Keep a "why" only as a guardrail against a likely future edit (e.g. "declared after initialise() so the initial seeding doesn't emit") — one clause, no mechanism, no em-dash addendum restating the consequence.
 - Remove stale/transactional bug-fix comments once code expresses behaviour.
 - Block comments for functions explain purpose and externally relevant constraints; avoid internal implementation trivia.
+- Document the contract a caller relies on: return value, mutation behaviour, and observable edge cases. Omit internal mechanics (e.g. "after clamping", "a shallow clone is returned with identical content").
+- Lead with one line, present tense, no boilerplate opening ("Creates a function that…"). Put option/edge-case behaviour in `@note`; keep `@example` short. Match the tone of surrounding functions in the same file.
 - Comments use plain-language voice — see `/writing`. No unexplained jargon, no "etc"; write for newcomer. Purpose over cleverness.
