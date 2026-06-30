@@ -30,9 +30,10 @@ Run only when user asks and `agents:workspace` exists in current shell.
    - If any file scores high on two or more signals, note it in the section's **Risks** with a brief reason
    - Skip for routine work, single-file changes, or areas you've recently worked in
 3. **Locate** — identify whether the work fits before, after, or between upcoming sections
-4. **Reorganise** — if the new work changes what's needed later, update upcoming sections to match
-5. **Insert** — add a section using standard structure: purpose, expected commit, files likely to change, tasks, risks, notes
-6. **Update parking lot** — move related ideas into the new section or leave them parked
+4. **Approach exploration** (opt-in) — for complex or ambiguous tasks, surface 2–3 structurally different approaches, each with a one-sentence tradeoff, then wait for the user to choose before continuing. Skip when: the task is a single-file change, there is clearly only one sensible approach, or the user has already decided. Do not combine approach selection with plan writing — present options first, write the section after confirmation.
+5. **Reorganise** — if the new work changes what's needed later, update upcoming sections to match
+6. **Insert** — add a section using standard structure: purpose, expected commit, files likely to change, tasks, risks, notes
+7. **Update parking lot** — move related ideas into the new section or leave them parked
 
 ## Placement principles
 
