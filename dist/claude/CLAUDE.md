@@ -89,6 +89,8 @@ Every changed line traces directly to the request.
 
 **Evidence before claims.** Never assess test or code health from static inspection alone. Before claiming a fix works or identifying a root cause, run the scoped failing test or repro (diagnostics `--check` / `--test-file`, honouring token discipline) and include the output. If it genuinely cannot be run, say so explicitly — do not assert instead. Don't say tests pass or a fix is resolved unless you have seen output confirming it. When work is done, say what changed and what the user should verify.
 
+**Distil before closing.** Before updating the handoff, ask what was learned: what belongs in `## Discoveries`, what belongs in `## Decisions`, and whether any dead ends should be recorded as `### Failed approaches`. Add only what isn't already captured; skip if nothing new emerged.
+
 **Always state what's next.** After completing any step — or finishing everything — close with what comes next: the next planned step, an open question to resolve, or an explicit "nothing remains" if there is no more planned work. This applies even between task boundaries.
 
 ## Communication

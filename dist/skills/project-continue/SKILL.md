@@ -78,6 +78,7 @@ If the previous session used subagent delegation:
 ## During the session
 
 - Record discoveries under `## Discoveries` as they happen
+- Record decisions under `## Decisions` as they are made — one line: what was decided and why
 - Update "files likely to change" if the scope shifts
 - If a task reveals unexpected complexity, add a risk entry before continuing
 
@@ -92,6 +93,8 @@ Finishing work includes updating `PROGRESS.md` and giving handoff. Do not leave 
 - If nothing remains for the current goal, say that clearly in the handoff instead of leaving stale TODOs
 - Compact now if `PROGRESS.md` has grown significantly; current context makes it cheaper
 
+Before updating `PROGRESS.md`, distil what was learned: what belongs in `## Discoveries` (facts about the codebase or environment), what belongs in `## Decisions` (choices made and why), and whether any dead ends should be recorded in `### Failed approaches` under the current section. Add only what isn't already captured; skip if nothing new emerged.
+
 After updating `PROGRESS.md`, show brief handoff before offering to continue:
 
 1. **What changed** — 1–3 sentences: what was done and what was verified (or skipped and why)
@@ -104,4 +107,5 @@ Never say "ready to move on to X" without this context. User needs enough to red
 
 - Update `## Session handoff` — current goal, previous step, next step, and stop guidance
 - Mark completed tasks; move done sections toward `## Archived milestones`
+- Add `### Failed approaches` under the current section when a dead end occurred — one line per entry: `Approach X failed because Y; don't retry`. Omit when nothing failed.
 - Do not leave `PROGRESS.md` in a half-updated state
