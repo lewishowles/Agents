@@ -27,6 +27,7 @@ Apply across all projects. See individual skills for detailed rules. Use project
 - `/library-release` — When releasing @lewishowles/components, @lewishowles/helpers, or @lewishowles/testing
 - `/library-update` — When checking for updates to @lewishowles/components, @lewishowles/helpers, or @lewishowles/testing after a new release
 - `/refactoring` — When refactoring existing code or triaging technical debt
+- `/skill-craft` — When creating, designing, or evaluating a new skill for this repo
 - `/swift` — When writing Swift, style, SwiftUI patterns, concurrency
 - `/swift-ui` — When writing/reviewing SwiftUI code, views, state management
 - `/test` — When deciding what to test and at which layer — strategy above test-unit and test-e2e

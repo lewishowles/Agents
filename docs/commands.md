@@ -56,6 +56,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/project-setup` | `project-setup` | When starting a new project or feature; explores repo, asks questions, creates PROGRESS.md before coding |
 | `/project-synthesise-feedback` | `project-synthesise-feedback` | When critically synthesising another agent's suggestions with current recommendations |
 | `/refactoring` | `refactoring` | When refactoring existing code or triaging technical debt |
+| `/skill-craft` | `skill-craft` | When creating, designing, or evaluating a new skill for this repo |
 | `/swift` | `swift` | When writing Swift, style, SwiftUI patterns, concurrency |
 | `/swift-ui` | `swift-ui` | When writing/reviewing SwiftUI code, views, state management |
 | `/test` | `test` | When deciding what to test and at which layer — strategy above test-unit and test-e2e |

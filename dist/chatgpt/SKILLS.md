@@ -64,6 +64,10 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 **Avoid:** Fixing a bug — use the debugging skill; Adding new behaviour — that is feature work, not refactoring; The user hasn't asked for a refactor (don't improve adjacent code unprompted)
 **Combine with:** code-style, test-unit, debugging
 
+### skill-craft
+**When to use:** Use this skill when authoring, designing, or evaluating a new skill in this repo. Covers intake → design → build → lightweight eval lifecycle.
+**Avoid:** Updating the content of an existing skill — use the skill directly; Authoring rules — those go in rules/, not skills/; General project maintenance — use the project-management skills
+
 ### swift
 **When to use:** Use this skill when writing or editing any Swift code — macOS apps, command-line tools, scripts, system tools. Covers comment style, naming, spacing, concurrency, error handling, process management, and environment setup. For SwiftUI-specific patterns, use the swift-ui skill.
 **Combine with:** code-style
