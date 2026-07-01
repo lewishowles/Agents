@@ -102,7 +102,7 @@ For analysis-only requests, do not load implementation skills or begin coding. U
 - No features beyond request, no single-use abstractions; no unasked flexibility or error handling for impossible scenarios
 - Don't improve adjacent code, comments, or formatting; don't refactor what works; match existing style
 - Spot unrelated dead code? Mention it, don't delete
-- Remove unused imports, variables, functions you created; don't remove pre-existing dead code unless asked
+- Remove unused imports, variables, functions you created; don't remove unrelated dead code unless the user points it out or asks for cleanup
 - Before creating a new function, component, or helper, search for an existing equivalent. If one exists, use it and state what you found.
 - Don't stack guards that duplicate each other (e.g. `Number.isFinite` alongside `Number.isInteger`, which already rejects `NaN`/`Infinity`). One check that fully covers the case is enough; every guard must trace to a real requirement.
 
@@ -125,6 +125,7 @@ Every changed line traces directly to the request.
 - **No preamble/summary** unless asked
 - Use `trash` instead of `rm` for any destructive file removal.
 - **No blame attribution** — don't label issues as "pre-existing" or distinguish your changes from prior code. Describe the issue and what to fix, without framing who introduced it.
+- **User-raised issues are in scope** — if the user points out a defect, debt, or inconsistency, triage it on its merits. Do not use its age, origin, or authorship as a reason to skip it; fix it when it fits the current chunk, or state the real constraint.
 
 ## Git & version control
 
