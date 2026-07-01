@@ -28,6 +28,10 @@
 					{
 						"type": "command",
 						"command": "serena-hooks cleanup --client=codex"
+					},
+					{
+						"type": "command",
+						"command": "if [ -f package.json ]; then\n\tfail=\"\"\n\terr=\"\"\n\tif grep -q \"\\\"lint\\\"\" package.json 2>/dev/null; then\n\t\tout=$(npm run lint 2>&1) || { fail=\"lint\"; err=\"$out\"; }\n\tfi\n\tif grep -q \"\\\"test:unit:run\\\"\" package.json 2>/dev/null; then\n\t\tout=$(npm run test:unit:run 2>&1) || { fail=\"${fail:+$fail,}test:unit:run\"; err=\"${err:+$err\\n}$out\"; }\n\tfi\n\tif [ -n \"$fail\" ]; then\n\t\tsummary=$(printf \"%s\" \"$err\" | head -1 | tr \"\\t\" \" \")\n\t\tmkdir -p \"$HOME/.claude/logs\"\n\t\tprintf \"%s\\t%s\\t%s\\t%s\\n\" \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\" \"check-fail\" \"$PWD\" \"$fail: $summary\" >> \"$HOME/.claude/logs/friction.log\"\n\tfi\nfi"
 					}
 				]
 			}

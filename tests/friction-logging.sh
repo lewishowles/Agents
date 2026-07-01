@@ -144,10 +144,57 @@ test_manual_writer_logs_entry() {
 	assert_contains "$log_file" "reimplemented clamp instead of using helper"
 }
 
+# Extracts the Codex Stop hook's check-run command from dist/codex/hooks.json.
+codex_stop_command() {
+	jq -r '.hooks.Stop[0].hooks[1].command' "$REPO_DIR/dist/codex/hooks.json"
+}
+
+test_codex_hook_logs_check_failure() {
+	local project_dir="$TEST_ROOT/codex-failing-project"
+	local home_dir="$TEST_ROOT/codex-home"
+	local bin_dir="$TEST_ROOT/codex-bin-fail"
+	local log_file="$home_dir/.claude/logs/friction.log"
+
+	mkdir -p "$project_dir" "$home_dir"
+	write_package "$project_dir"
+	write_npm_stub "$bin_dir" 1 1
+
+	(
+		cd "$project_dir"
+		HOME="$home_dir" PATH="$bin_dir:$PATH" sh -c "$(codex_stop_command)" >/dev/null 2>/dev/null
+	)
+
+	assert_file "$log_file"
+	assert_contains "$log_file" "check-fail"
+	assert_contains "$log_file" "$project_dir"
+	assert_contains "$log_file" "lint,test:unit:run"
+	assert_contains "$log_file" "lint exploded"
+}
+
+test_codex_hook_does_not_log_on_pass() {
+	local project_dir="$TEST_ROOT/codex-passing-project"
+	local home_dir="$TEST_ROOT/codex-pass-home"
+	local bin_dir="$TEST_ROOT/codex-bin-pass"
+	local log_file="$home_dir/.claude/logs/friction.log"
+
+	mkdir -p "$project_dir" "$home_dir"
+	write_package "$project_dir"
+	write_npm_stub "$bin_dir" 0 0
+
+	(
+		cd "$project_dir"
+		HOME="$home_dir" PATH="$bin_dir:$PATH" sh -c "$(codex_stop_command)" >/dev/null 2>/dev/null
+	)
+
+	assert_not_file "$log_file"
+}
+
 test_failed_checks_are_logged
 test_successful_checks_are_not_logged
 test_analyser_groups_log_entries
 test_analyser_tolerates_legacy_lines
 test_manual_writer_logs_entry
+test_codex_hook_logs_check_failure
+test_codex_hook_does_not_log_on_pass
 
 printf '✓ friction logging tests passed\n'
