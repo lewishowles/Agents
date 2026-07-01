@@ -3,7 +3,7 @@
 
 set -euo pipefail
 
-VERSION="0.3.0"
+VERSION="0.4.0"
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 INSTALL_DIR="$REPO_DIR/.agent/tools/cli-style"
@@ -18,9 +18,13 @@ esac
 
 archive="cli-style-$platform-$architecture.tar.gz"
 url="https://github.com/lewishowles/cli-style/releases/download/v$VERSION/$archive"
+temp_archive=$(mktemp)
+
+trap 'rm -f "$temp_archive"' EXIT
 
 mkdir -p "$INSTALL_DIR"
-curl -fsSL "$url" | tar -xz -C "$INSTALL_DIR"
+curl --connect-timeout 10 --max-time 600 --retry 2 -fsSL "$url" -o "$temp_archive"
+tar -xzf "$temp_archive" -C "$INSTALL_DIR"
 printf '%s\n' "$VERSION" > "$INSTALL_DIR/VERSION"
 
 source "$REPO_DIR/scripts/lib/cli-style-output.sh"
