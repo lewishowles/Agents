@@ -36,6 +36,7 @@ Official external skills are listed in `external-skills.json` and synced into `s
 | `project-compact-progress` | When PROGRESS.md has grown noisy or hard to scan; reduces word count while preserving context and meaning | (manual only) |
 | `project-continue` | When resuming work from an existing PROGRESS.md | (manual only) |
 | `project-plan-task` | When introducing new work into an existing plan | (manual only) |
+| `project-review-commits` | When reviewing committed work across a Git range or since the last tag | `review commits`, `review every commit`, `review since last tag`, `check commits since last tag`, `sanity check commits`, `review commit range`, `review history`, `release sanity check` |
 | `project-review-progress` | When reviewing an existing PROGRESS.md plan or project roadmap | `review progress`, `review progress.md`, `check progress`, `check the plan`, `review the plan`, `is this a good plan`, `progress plan`, `what is missing from the plan`, `improve the plan` |
 | `project-review-worktree` | When reviewing uncommitted work before commit | `review worktree`, `review working tree`, `review uncommitted`, `before commit`, `ready to commit`, `check this before commit`, `review these changes`, `review against progress` |
 | `project-setup` | When starting a new project or feature; explores repo, asks questions, creates PROGRESS.md before coding | (manual only) |
