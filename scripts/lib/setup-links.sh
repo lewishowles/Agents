@@ -21,7 +21,6 @@ backup_path() {
 		"$HOME/.claude/hooks/"*)    backup="$HOME/.claude/backups/hooks/$(basename "$path").bak" ;;
 		"$HOME/.claude/commands/"*) backup="$HOME/.claude/backups/commands/$(basename "$path").bak" ;;
 		"$HOME/.agents/skills/"*)   backup="$HOME/.agents/backups/skills/$(basename "$path").bak" ;;
-		"$HOME/.codex/skills/"*)    backup="$HOME/.codex/backups/skills/$(basename "$path").bak" ;;
 	esac
 
 	if [ -e "$backup" ] || [ -L "$backup" ]; then

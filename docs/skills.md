@@ -2,7 +2,7 @@
 
 Skills are focused instruction sets that tell Claude or Codex how to behave in a specific context: what patterns to follow, what to avoid, and what the conventions are.
 
-Claude loads these from `~/.claude/skills/` and can be nudged by the Claude trigger hooks. Codex loads this repo's user skills from `~/.codex/skills/` in current Codex builds, with `~/.agents/skills/` kept linked for compatibility. It relies more heavily on each skill's frontmatter description for discovery.
+Claude loads these from `~/.claude/skills/` and can be nudged by the Claude trigger hooks. Codex loads this repo's user skills from `~/.agents/skills/` in this setup. It relies more heavily on each skill's frontmatter description for discovery.
 
 ## User skills
 
@@ -143,7 +143,7 @@ Content here.
 
 4. Run `scripts/sync.sh` — this regenerates `dist/skills/<name>/SKILL.md`, the skill tables in this file and [docs/commands.md](commands.md), then rebuilds the Claude, Codex, and ChatGPT targets
 
-After global setup, shared skills are available to Claude via `~/.claude/skills/` and to Codex via `~/.codex/skills/`, with compatibility links also kept in `~/.agents/skills/`. The ChatGPT target requires a manual re-upload to the Custom GPT knowledge base after running sync.
+After global setup, shared skills are available to Claude via `~/.claude/skills/` and to Codex via `~/.agents/skills/`. The ChatGPT target requires a manual re-upload to the Custom GPT knowledge base after running sync.
 
 ## Adding an external skill
 

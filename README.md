@@ -40,7 +40,6 @@ The global setup script syncs official external skills, runs `scripts/sync.sh`, 
 - `~/.agents/AGENTS.md` to `dist/codex/AGENTS.md`
 - `~/.codex/AGENTS.md` to `dist/codex/AGENTS.md`
 - `~/.agents/skills/<name>` to `dist/skills/<name>`
-- `~/.codex/skills/<name>` to `dist/skills/<name>`
 - `~/.stagewise/skills/<name>` as a copy of `dist/skills/<name>`
 
 It also ensures `~/.codex/config.toml` has the `codebase-memory-mcp` MCP server entry.

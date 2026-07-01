@@ -27,7 +27,7 @@ Project setup creates a root `AGENTS.md` using one of:
 
 ## Config
 
-User-level Codex app config lives at `~/.codex/config.toml`. Legacy/user skill wiring also uses `~/.agents` on this machine. Project-level config can live at `.agents/config.toml`, and Codex loads it only for trusted projects.
+User-level Codex app config lives at `~/.codex/config.toml`. User-global skills and global `AGENTS.md` live under `~/.agents` on this machine. Project-level config can live at `.agents/config.toml`, and Codex loads it only for trusted projects.
 
 Useful keys for this repo:
 
@@ -53,7 +53,7 @@ codebase-memory-mcp cli index_repository '{"repo_path":"'$PWD'"}'
 
 ## Skills
 
-This repo uses `~/.codex/skills/<name>` for user-global skill symlinks in current Codex builds. `scripts/setup-global.sh --codex` links every repo skill there, and also keeps `~/.agents/skills/<name>` linked for compatibility with older local setups.
+This repo uses `~/.agents/skills/<name>` for user-global skill symlinks. `scripts/setup-global.sh --codex` links every repo skill there.
 
 Project setup does not create `.agents/skills/` by default. Add that directory only when a project has local Codex skills.
 

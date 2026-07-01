@@ -60,7 +60,6 @@ setup_codex() {
 	ensure_container_dir "$HOME/.agents" "~/.agents"
 	ensure_container_dir "$HOME/.agents/skills" "~/.agents/skills"
 	ensure_container_dir "$HOME/.codex" "~/.codex"
-	ensure_container_dir "$HOME/.codex/skills" "~/.codex/skills"
 	cli_group_end
 
 	cli_group_begin "Codex files"
@@ -72,9 +71,7 @@ setup_codex() {
 
 	cli_group_begin "Codex skills"
 	prune_stale_repo_links "$HOME/.agents/skills" "$REPO_DIR" "skills"
-	prune_stale_repo_links "$HOME/.codex/skills" "$REPO_DIR" "Codex skills"
 	link_skills "$HOME/.agents/skills"
-	link_skills "$HOME/.codex/skills"
 	cli_group_end
 }
 
