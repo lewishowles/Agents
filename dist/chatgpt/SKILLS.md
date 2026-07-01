@@ -50,6 +50,10 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 **When to use:** Use this skill when analyzing JS/TS codebase health, finding dead code or unused exports, detecting code duplication, checking circular dependencies, auditing complexity hotspots, identifying architecture boundary violations, or running cleanup before a release or refactor. Covers the fallow CLI for sub-second static analysis with 122 framework plugins, zero configuration. Distinct from codebase-memory (graph traversal, language-agnostic) — use fallow for duplication detection, boundary violations, and JS/TS-specific cleanup.
 **Combine with:** codebase-memory
 
+### friction-review
+**When to use:** Use this skill to turn recurring friction-log patterns into specific, minimal, human-reviewed amendments to rules/ or skills/. Runs scripts/analyse-friction.sh, proposes a diff per pattern, never auto-applies.
+**Avoid:** Logging a single friction entry — use scripts/log-friction.sh directly; The friction log is empty or has no recurring patterns
+
 ### frontend-design
 **When to use:** Use this skill when designing or building any public-facing UI, landing page, marketing page, hero section, or component where visual quality and brand distinctiveness matter — before touching code. Covers design-first decision-making, aesthetic direction, typography, colour, motion, and composition. Distinct from accessibility (WCAG compliance) and web-performance (Core Web Vitals).
 **Combine with:** accessibility, code-style

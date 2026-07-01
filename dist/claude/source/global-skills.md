@@ -22,6 +22,7 @@ Apply across all projects. See individual skills for detailed rules. Use project
 - `/dependencies` — When adding packages, what to choose, when to add
 - `/error-handling` — When validating input, graceful fallbacks, error handling
 - `/fallow` — When running fallow for codebase health, dead code, duplication, or boundary analysis in JS/TS projects
+- `/friction-review` — When reviewing recurring friction-log entries to propose rule/skill amendments
 - `/frontend-design` — When designing UI or making aesthetic decisions for a public-facing interface
 - `/frontend-security` — When writing or reviewing client-side code for security: XSS, CSP, auth tokens, secrets hygiene
 - `/library-release` — When releasing @lewishowles/components, @lewishowles/helpers, or @lewishowles/testing
