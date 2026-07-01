@@ -54,9 +54,9 @@ For each delegated task:
 3. **Approve or request changes** — if output is correct, proceed; if not, send specific feedback
 4. **Commit** — after approval, commit the task's output before delegating the next
 
-This enables autonomous multi-hour execution while maintaining quality control. The main agent stays in context as architect and reviewer; subagents handle implementation.
+Enables autonomous multi-hour execution while maintaining quality control. Main agent stays in context as architect and reviewer; subagents handle implementation.
 
-**Token tradeoff:** subagents re-read files the main agent already has in context. This costs extra tokens but preserves main-context budget for planning and review. Use when the plan is too large for a single context window.
+**Token tradeoff:** subagents re-read files the main agent already has in context — extra tokens spent, but preserves main-context budget for planning and review. Use when the plan is too large for one context window.
 
 ## Planning principles
 

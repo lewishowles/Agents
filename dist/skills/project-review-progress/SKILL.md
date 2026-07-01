@@ -18,9 +18,9 @@ Evaluate two layers:
 - **Plan quality** — whether `PROGRESS.md` is clear, coherent, sequenced, resumable, split into committable chunks, and specific about verification
 - **Project judgement** — whether the planned work itself is likely to produce the strongest version of the repo, or whether it is missing important work, overbuilding, under-specifying, sequencing poorly, or carrying hidden risk
 
-Suggest broader ideas when they could materially improve the project, even if they are not already in the plan. Label them as optional or exploratory unless they are necessary for correctness, maintainability, accessibility, security, performance, developer experience, or long-term quality.
+Suggest broader ideas that could materially improve the project, even if absent from the plan. Label optional/exploratory unless necessary for correctness, maintainability, accessibility, security, performance, developer experience, or long-term quality.
 
-Do not invent requirements or recommend complexity for its own sake. If an idea depends on missing context, mark it as conditional.
+Don't invent requirements or recommend complexity for its own sake. Mark ideas dependent on missing context as conditional.
 
 ## Startup
 

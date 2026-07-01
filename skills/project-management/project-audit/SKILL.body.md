@@ -27,7 +27,7 @@ Read in this order, stopping as soon as you have enough context:
 5. `<project-root>/.agent/scripts/project-diagnostics.py --list`, if present
 6. `PROGRESS.md` handoff only, when active work or session continuity is part of the audit
 
-If `WORKSPACE.md` is missing, do not create it unless asked. Report missing reviewed workspace file, then inspect `AGENTS.md`, package scripts, and nearby docs.
+If `WORKSPACE.md` is missing, don't create it unless asked. Report it missing, then inspect `AGENTS.md`, package scripts, and nearby docs.
 
 ## Tooling checks
 

@@ -24,7 +24,7 @@ boilersuit generators contract --help
 boilersuit generators doctor --help
 ```
 
-If either command is unavailable, stop and report that the installed Boilersuit CLI must be updated. Do not reconstruct the schema from this skill.
+If either command is unavailable, stop and report that the installed Boilersuit CLI must be updated. Don't reconstruct the schema from this skill.
 
 If a command prints `LLVM Profile Error: Failed to write file "default.profraw"`, rerun it with:
 
@@ -66,7 +66,7 @@ Run profiles are a separate project-owned capability:
 - Boilersuit also infers profiles from `package.json` scripts
 - Explicit profiles take precedence when IDs overlap
 
-Do not add or change Run profiles as a side effect of generator authoring. If the requested generator pack also needs Run profiles, plan and review that as a separate project change.
+Don't add or change Run profiles as a side effect of generator authoring. If the requested generator pack also needs Run profiles, plan and review that as a separate project change.
 
 ## Authoring workflow
 

@@ -12,7 +12,7 @@ Assess whether the current working tree is:
 - covered by appropriate tests or verification
 - aligned with project instructions, workspace facts, generated-file boundaries, and existing patterns
 
-Look for bugs, regressions, incomplete work, weak tests, missing docs or plan updates, maintainability issues, accessibility or UX problems, performance risks, security concerns, and small polish items. Include broader ideas when they could materially improve the project, but label them as optional or exploratory unless they are necessary.
+Look for bugs, regressions, incomplete work, weak tests, missing docs or plan updates, maintainability issues, accessibility or UX problems, performance risks, security concerns, and small polish items. Include broader ideas that could materially improve the project, labelled optional/exploratory unless necessary.
 
 ## Startup
 

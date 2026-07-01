@@ -17,7 +17,7 @@ Use when the user provides advice, a plan, review notes, or implementation sugge
 
 Assess practical improvements across the task, plan, implementation, architecture, UX, accessibility, maintainability, testing, performance, developer experience, documentation, security, and long-term quality when relevant.
 
-Broad ideas are welcome when they may materially improve the work. Label them as optional, exploratory, or conditional unless they are necessary. Do not invent requirements, pad the answer with speculative upgrades, or recommend complexity for its own sake.
+Broad ideas welcome when they may materially improve the work. Label optional, exploratory, or conditional unless necessary. Don't invent requirements, pad with speculative upgrades, or recommend complexity for its own sake.
 
 ## Startup
 
@@ -42,7 +42,7 @@ Prefer codebase-memory tools for structural code questions when available. Use t
 6. Add missing ideas that materially improve the outcome.
 7. Convert the synthesis into ordered next steps.
 
-Do not treat the other agent's suggestions as authoritative. Do not reject ideas just because they came from another agent. The goal is the best combined result.
+Don't treat the other agent's suggestions as authoritative, and don't reject ideas just because they came from another agent. Goal is the best combined result.
 
 ## Judgement standards
 

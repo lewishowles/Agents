@@ -4,11 +4,11 @@ Conservative release guardrails for `@lewishowles/components`, `@lewishowles/hel
 
 ## Release stance
 
-- Release the smallest coherent change set.
-- Decide semver from user-facing impact, not code volume.
-- Use existing package scripts/docs; do not invent release tooling unless asked.
-- Keep publish, tag, push, and registry actions as explicit confirmation points.
-- Record release rough edges instead of baking in workarounds.
+- Release the smallest coherent change set
+- Decide semver from user-facing impact, not code volume
+- Use existing package scripts/docs; don't invent release tooling unless asked
+- Keep publish, tag, push, and registry actions as explicit confirmation points
+- Record release rough edges instead of baking in workarounds
 
 ## Step 1 — identify the package
 

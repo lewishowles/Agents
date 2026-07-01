@@ -1,6 +1,6 @@
 # Refactoring
 
-**Refactoring changes structure, not behaviour.** Tests pass before first change and after each step. If step breaks tests, revert it.
+**Refactoring changes structure, not behaviour.** Tests pass before first change and after each step. Step breaks tests? Revert it.
 
 ## Behaviour-preserving technique
 
