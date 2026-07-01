@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Summarises friction log entries by aggregating counts per unique
-# (hook, event, message) combination, sorted most frequent first.
-# Friction entries are written by pre-stop-checks.sh as tab-separated lines.
+# (category, cwd, detail) combination, sorted most frequent first.
+# Entries are written by pre-stop-checks.sh, the Codex Stop hook, and
+# scripts/log-friction.sh as tab-separated lines.
 
 set -euo pipefail
 
@@ -12,11 +13,28 @@ if [ ! -f "$log_file" ]; then
 	exit 0
 fi
 
-# Fields 2–4 (hook, event, message) form the deduplication key.
-# Field 1 is a timestamp, which is intentionally excluded from grouping.
+# Current schema: timestamp, category, cwd, detail (field 2 = category).
+# Pre-category lines used: timestamp, cwd, failed_checks, summary — field 2
+# there is a path, not a known category, so those rows are treated as
+# check-fail and still aggregate without a log reset.
 awk -F '\t' '
+	BEGIN {
+		split("rule-ignored wrong-approach token-waste tool-misuse check-fail missing-guidance", cats, " ")
+		for (i in cats) known[cats[i]] = 1
+	}
+
 	NF >= 4 {
-		key = $2 FS $3 FS $4
+		if ($2 in known) {
+			category = $2
+			cwd = $3
+			detail = $4
+		} else {
+			category = "check-fail"
+			cwd = $2
+			detail = $3 FS $4
+		}
+
+		key = category FS cwd FS detail
 		counts[key]++
 	}
 
