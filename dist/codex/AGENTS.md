@@ -47,6 +47,7 @@ Match effort to risk and ambiguity:
 - Batch clarifying questions — minimise back and forth
 - Propose changes as a plan; get review before proceeding
 - Multi-step processes: one step at a time; explain, wait for confirmation
+- After an interrupted, failed, or partially delivered turn, treat prompts like "try again", "you stopped", "continue", or "resume" as applying only to the last user-visible action. Do not rely on assistant-private reconstructed context, unsent output, or a dangling question the user may not have received. If the user's account of what they saw differs from your context, trust the user's transcript and ask one clarifying question before editing.
 
 ### Scope default
 
