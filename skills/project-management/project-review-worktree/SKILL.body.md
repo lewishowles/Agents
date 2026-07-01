@@ -35,9 +35,10 @@ Prefer codebase-memory tools for structural code questions when available. Use t
 2. List changed files with `git status --short`. Do not stage or commit.
 3. Inspect each changed file enough to understand behaviour and risk. Do not rely on remembered line numbers; search for current locations before citing lines.
 4. Compare implementation with the plan: expected commit, active tasks, risks, notes, docs expectations, and verification guidance.
-5. Check whether generated files were edited directly or source/generated output is stale.
-6. Run only focused verification that is cheap and justified. When diagnostics exist, use `.agent/scripts/project-diagnostics.py --check <name>` rather than raw package commands.
-7. Lead with findings. If there are no must-fix issues, say so clearly and note any remaining verification gaps.
+5. Before calling docs drift, classify docs: current reference must match code; roadmap/target-state may describe future shape.
+6. Check whether generated files were edited directly or source/generated output is stale.
+7. Run only focused verification that is cheap and justified. When diagnostics exist, use `.agent/scripts/project-diagnostics.py --check <name>` rather than raw package commands.
+8. Lead with findings. If there are no must-fix issues, say so clearly and note any remaining verification gaps.
 
 Do not use `git diff` for routine self-review when you made the changes. For independent review of another agent's work, use targeted diffs or file reads when they are the clearest way to understand what changed, keeping output narrow.
 

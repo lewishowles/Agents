@@ -9,6 +9,8 @@ Design public contract before internals: props, slots, emits, `v-model`, `define
 - Prefer one clear composition path over parallel APIs.
 - Name entries after domain concepts, not implementation details.
 - Treat renaming/removing prop, slot, event, model, or exposed method as breaking.
+- Public option needs real outside caller. If only current wrapper can supply it, keep it internal or redesign.
+- Write minimal caller example first. If example needs framework internals, it is not public API.
 - **Prefer generic, composable-exposed APIs over hardcoded special-casing.** Expose an identifier or ref (e.g. a generic `focusId`) rather than baking component-specific knowledge (e.g. a hardcoded field name or element type) into the component. First drafts that hardcode component-specific behaviour should be pushed back on in favour of a generic, caller-controlled alternative.
 
 ## Props
