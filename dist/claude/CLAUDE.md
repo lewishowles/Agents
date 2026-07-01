@@ -97,7 +97,7 @@ Every changed line traces directly to the request.
 
 **PROGRESS.md update is blocking.** When a `PROGRESS.md` plan is active, update it before offering the commit message — not after, not as an optional follow-up. The commit message is not ready to give until the handoff reflects the work just done.
 
-**Always state what's next.** After completing any step — or finishing everything — close with what comes next: the next planned step, an open question to resolve, or an explicit "nothing remains" if there is no more planned work. This applies even between task boundaries.
+**Always state what's next.** After completing any step — or finishing everything — close with the next substantive project step, an open question to resolve, or an explicit "nothing remains" if there is no more planned work. Do not treat review, staging, committing, or waiting for commit confirmation as the next project step; if that is the immediate handoff action, say what work resumes after it or that no further work remains. This applies even between task boundaries.
 
 ## Communication
 
