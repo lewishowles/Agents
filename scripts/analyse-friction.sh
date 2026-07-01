@@ -17,11 +17,25 @@ fi
 # Pre-category lines used: timestamp, cwd, failed_checks, summary — field 2
 # there is a path, not a known category, so those rows are treated as
 # check-fail and still aggregate without a log reset.
+# A RESOLVED marker (field 1 literal "RESOLVED ⇥ category ⇥ pattern ⇥ ref")
+# excludes matching (category, detail) occurrences at or before its line —
+# a later occurrence of the same pattern still counts, signalling the fix
+# didn't hold. The file is read twice (NR == FNR) to know the marker's line
+# position before filtering the second pass.
 awk -F '\t' '
 	BEGIN {
 		split("rule-ignored wrong-approach token-waste tool-misuse check-fail missing-guidance", cats, " ")
 		for (i in cats) known[cats[i]] = 1
 	}
+
+	NR == FNR {
+		if ($1 == "RESOLVED" && NF >= 3) {
+			resolved_at[$2 FS $3] = FNR
+		}
+		next
+	}
+
+	$1 == "RESOLVED" { next }
 
 	NF >= 4 {
 		if ($2 in known) {
@@ -34,6 +48,11 @@ awk -F '\t' '
 			detail = $3 FS $4
 		}
 
+		pattern_key = category FS detail
+		if ((pattern_key in resolved_at) && FNR <= resolved_at[pattern_key]) {
+			next
+		}
+
 		key = category FS cwd FS detail
 		counts[key]++
 	}
@@ -43,4 +62,4 @@ awk -F '\t' '
 			print counts[key] FS key
 		}
 	}
-' "$log_file" | sort -rn
+' "$log_file" "$log_file" | sort -rn

@@ -130,6 +130,36 @@ test_analyser_tolerates_legacy_lines() {
 	assert_contains "$output_file" "2	check-fail	/legacy-project	lint	lint exploded"
 }
 
+test_analyser_excludes_resolved_pattern() {
+	local home_dir="$TEST_ROOT/resolved-home"
+	local log_file="$home_dir/.claude/logs/friction.log"
+	local output_file="$TEST_ROOT/resolved.out"
+
+	mkdir -p "$(dirname "$log_file")"
+	printf '2026-05-15T19:00:00Z\trule-ignored\t/project-a\tskipped review gate\n' > "$log_file"
+	printf '2026-05-15T19:01:00Z\trule-ignored\t/project-a\tskipped review gate\n' >> "$log_file"
+	printf 'RESOLVED\trule-ignored\tskipped review gate\tfeat(rules): add blocking review gate\n' >> "$log_file"
+
+	HOME="$home_dir" "$REPO_DIR/scripts/analyse-friction.sh" > "$output_file"
+
+	assert_not_contains "$output_file" "skipped review gate"
+}
+
+test_analyser_resurfaces_pattern_after_resolution() {
+	local home_dir="$TEST_ROOT/resurface-home"
+	local log_file="$home_dir/.claude/logs/friction.log"
+	local output_file="$TEST_ROOT/resurface.out"
+
+	mkdir -p "$(dirname "$log_file")"
+	printf '2026-05-15T19:00:00Z\trule-ignored\t/project-a\tskipped review gate\n' > "$log_file"
+	printf 'RESOLVED\trule-ignored\tskipped review gate\tfeat(rules): add blocking review gate\n' >> "$log_file"
+	printf '2026-06-01T09:00:00Z\trule-ignored\t/project-a\tskipped review gate\n' >> "$log_file"
+
+	HOME="$home_dir" "$REPO_DIR/scripts/analyse-friction.sh" > "$output_file"
+
+	assert_contains "$output_file" "1	rule-ignored	/project-a	skipped review gate"
+}
+
 test_manual_writer_logs_entry() {
 	local home_dir="$TEST_ROOT/manual-home"
 	local log_file="$home_dir/.claude/logs/friction.log"
@@ -193,6 +223,8 @@ test_failed_checks_are_logged
 test_successful_checks_are_not_logged
 test_analyser_groups_log_entries
 test_analyser_tolerates_legacy_lines
+test_analyser_excludes_resolved_pattern
+test_analyser_resurfaces_pattern_after_resolution
 test_manual_writer_logs_entry
 test_codex_hook_logs_check_failure
 test_codex_hook_does_not_log_on_pass
