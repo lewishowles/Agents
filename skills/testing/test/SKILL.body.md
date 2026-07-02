@@ -26,6 +26,17 @@ When `.agent/scripts/project-diagnostics.py` exists, it is the default way to ru
 
 **Don't duplicate coverage across layers.** If a composable is unit-tested, component test only proves wiring.
 
+## Strategy by system type
+
+Use this when deciding where coverage belongs:
+
+| System type | Useful coverage |
+| ----------- | --------------- |
+| API endpoints | Unit-test business rules; integration-test HTTP contracts, auth failures, validation, and error responses |
+| Data pipelines | Validate inputs, transformations, idempotency, retry behaviour, and corrupt or partial data |
+| Frontend | Cover composables, component interactions, accessibility states, and critical user journeys |
+| Infrastructure | Prefer smoke tests, config validation, rollback rehearsal, and monitoring checks over brittle implementation assertions |
+
 ## What to skip
 
 - Methods that delegate entirely to `@lewishowles/helpers` — the library has its own tests

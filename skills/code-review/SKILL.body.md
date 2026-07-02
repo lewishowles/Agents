@@ -28,6 +28,7 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 - Does it do what it claims?
 - Are edge cases (empty, null, 0, very large input) handled?
 - Are error states handled at boundaries (user input, API responses)?
+- Any race conditions, off-by-one errors, unbounded loops, or resource leaks?
 
 **Accessibility** — apply for any UI change
 
@@ -41,6 +42,8 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 - Is user input validated or sanitised before use?
 - Are secrets kept server-side (`VITE_` is not secret)?
 - No open redirects from unvalidated params?
+- Authentication and authorisation checks match the operation, not just the route?
+- No injection, path traversal, SSRF, or unsafe deserialisation paths?
 
 **Code style**
 
@@ -51,6 +54,7 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 
 - Any unnecessary re-renders or reactive side effects?
 - Images sized and lazy-loaded appropriately?
+- Any N+1 queries, missing indexes, unbounded queries, or avoidable hot-path complexity?
 
 **Tests**
 

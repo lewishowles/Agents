@@ -42,6 +42,17 @@ Use these terms for structural changes. Consistent language avoids ambiguity.
 
 **One adapter vs two** — one adapter means hypothetical seam; two means real seam. Don't introduce seam unless something varies.
 
+## File and helper structure
+
+Use this when the user asks where code should live, whether a helper should exist, or how files should be grouped.
+
+1. Search for an existing equivalent before creating a helper or moving files.
+2. Keep domain-specific logic near the feature until reuse, volatility, or test surface proves it deserves a shared helper.
+3. Prefer named, purpose-specific modules over `utils`, `helpers`, or catch-all folders.
+4. Extract a helper only when it hides real complexity, removes meaningful duplication, or creates a clearer test surface.
+5. Keep file structure aligned with the repo's existing vocabulary; don't introduce a new grouping scheme for one change.
+6. State the trade-off: locality now versus reuse later, import simplicity versus folder depth, and helper depth versus pass-through indirection.
+
 ## Technical debt triage
 
 Use this to assess what to address, not during active refactor.
@@ -54,6 +65,8 @@ For JS/TS projects, run `fallow health` before triaging to get a structured repo
 - **Architecture debt** — wrong layer of abstraction, circular dependencies, missing composables
 - **Test debt** — no tests, low coverage of critical paths, brittle snapshots
 - **Dependency debt** — outdated packages, insecure versions, unneeded transitive deps
+- **Documentation debt** — outdated README, missing runbook, hidden setup knowledge
+- **Infrastructure debt** — manual release steps, weak monitoring, missing rollback path
 
 ### Prioritisation
 
