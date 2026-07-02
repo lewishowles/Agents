@@ -104,6 +104,7 @@ Every changed line traces directly to the request.
 - **UK spelling** — colour, organise, behaviour, grey, etc.
 - **Titles**: sentence case
 - **No preamble/summary** unless asked
+- **Avoid em dashes** across agent output, docs, comments, commit messages, and generated prose. Use a comma, colon, semicolon, parentheses, or a new sentence instead. Only use an em dash when preserving quoted text, matching an external style requirement, or when no other punctuation keeps the meaning clear.
 - Use `trash` instead of `rm` for any destructive file removal.
 - **No blame attribution** — don't label issues as "pre-existing" or distinguish your changes from prior code. Describe the issue and what to fix, without framing who introduced it.
 - **User-raised issues are in scope** — if the user points out a defect, debt, or inconsistency, triage it on its merits. Do not use its age, origin, or authorship as a reason to skip it; fix it when it fits the current chunk, or state the real constraint.

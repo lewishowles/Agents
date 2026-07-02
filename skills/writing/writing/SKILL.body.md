@@ -31,13 +31,14 @@
 - **Plain verbs** — prefer everyday words. "Create" or "write" a file, not "emit"
 - **Contractions** — use them in prose and reference
 - **Italics** for emphasis; `backticks` for inline code, technical terms, UI strings
-- **Em dash** — default connector for explanation/asides. No spaces: "the token is a role—it already holds the right shade"
+- **Em dash**: avoid it by default. Use a comma, colon, semicolon, parentheses, or a new sentence for explanations and asides. Only use an em dash when preserving quoted text, matching an external style requirement, or when no other punctuation keeps the meaning clear.
 - **Lists** — a lead-in sentence ending in a colon, then fragment items with no trailing full stops
 - **Passive for system behaviour** — focus on thing acted on: "The URL is checked against the allowlist", not "We check the URL"
 - **No preamble or summary** unless asked
 
 ## What to avoid
 
+- Em dashes as routine separators in headings, bullets, changelogs, docs, code comments, commit messages, or agent output
 - Preachy or lecturing tone — state point once; don't repeat as moral
 - Padding ("It's worth noting that...", "As mentioned above...")
 - Prescriptive absolutes where context matters — use "generally", "ideally", "where possible"

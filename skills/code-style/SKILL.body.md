@@ -46,7 +46,8 @@ Existing helpers carry edge-case hardening and are the single source of truth fo
 - No banner/divider comments (`// ---`) — use JSDoc or equivalent and blank lines for structure
 - **In-code comments explain purpose, not mechanics** — say what value, prop, branch, or check is for. Explain internals only when needed.
 - Avoid comments that repeat syntax, narrate control flow, or describe workaround mechanics. Prefer purpose comments.
-- Don't justify a fix by explaining the mechanism it avoids (reactivity loops, render timing, re-entrancy). State the rule the code follows, not the failure it prevents. Keep a "why" only as a guardrail against a likely future edit (e.g. "declared after initialise() so the initial seeding doesn't emit") — one clause, no mechanism, no em-dash addendum restating the consequence.
+- Avoid em dashes in code comments, JSDoc, inline docs, and generated code strings unless preserving quoted text or matching an external style requirement.
+- Don't justify a fix by explaining the mechanism it avoids (reactivity loops, render timing, re-entrancy). State the rule the code follows, not the failure it prevents. Keep a "why" only as a guardrail against a likely future edit, for example "declared after initialise() so the initial seeding doesn't emit". Use one clause, no mechanism, and no punctuation addendum restating the consequence.
 - Remove stale/transactional bug-fix comments once code expresses behaviour.
 - Block comments for functions explain purpose and externally relevant constraints; avoid internal implementation trivia.
 - Document the contract a caller relies on: return value, mutation behaviour, and observable edge cases. Omit internal mechanics (e.g. "after clamping", "a shallow clone is returned with identical content").

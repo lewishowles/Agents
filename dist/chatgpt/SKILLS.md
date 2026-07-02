@@ -138,7 +138,7 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 **Combine with:** vue-vite, vue, accessibility
 
 ### writing
-**When to use:** Use this skill when writing or editing prose — blog posts, documentation, longform content, marketing copy. Covers voice, tone, structure, examples, language conventions (UK spelling, sentence case, em-dashes), and what to avoid (preachy tone, padding, opening summaries). For README files specifically, see the writing-readme skill. For UI microcopy (buttons, error messages, empty states), see the writing-copy skill.
+**When to use:** Use this skill when writing or editing prose: blog posts, documentation, longform content, marketing copy. Covers voice, tone, structure, examples, language conventions (UK spelling, sentence case, punctuation), and what to avoid (em dashes, preachy tone, padding, opening summaries). For README files specifically, see the writing-readme skill. For UI microcopy (buttons, error messages, empty states), see the writing-copy skill.
 **Avoid:** Editing executable code, configuration, or generated output without prose changes; Writing UI labels, validation messages, tooltips, or other microcopy where writing-copy is narrower; Editing a README where writing-readme is sufficient
 
 ### writing-copy
