@@ -69,7 +69,8 @@ If npm metadata or package contents include release notes, changelog entries, or
 Identify:
 
 - **Breaking changes** — API removals, renamed props, changed defaults, removed exports
-- **New components or composables** — things the project might benefit from adopting
+- **Adoption opportunities** — helpers, components, composables, or test utilities that replace local boilerplate or make existing project code simpler
+- **New components or composables** — things the project might benefit from using where there is no current equivalent
 - **Bug fixes** — particularly for patterns the project already uses
 - **Deprecations** — things still working but flagged for removal
 
@@ -80,6 +81,7 @@ Scan project source (`src/`) for library usage. Focus on:
 - Imports from `@lewishowles/components` or `@lewishowles/helpers`
 - Component names, prop names, composable names, and slot names that appear in the release notes
 - Any pattern the release notes flag as changed or removed
+- Local helpers, repeated boilerplate, or custom test setup that a newer shared library API now replaces
 
 Use `rg` scoped to `src/`:
 
@@ -98,9 +100,15 @@ Structure the output as follows:
 
 Breaking changes affecting project code. Include path(s) and needed change.
 
-#### Worth adopting
+#### Adopt now
 
-New features/components relevant to project, or extracted functionality/boilerplate that can replace local code.
+New shared-library APIs that replace existing project code, reduce local boilerplate, or make current usage more direct. Include all affected paths and say whether the adoption belongs in the same dependency-update chunk or should be split into the next chunk because it touches many files.
+
+Treat `@lewishowles/helpers` simplifications as adoption work by default, even when they require broad mechanical edits. Defer only when adoption changes product behaviour, needs design or product judgement, or is large enough to deserve a separate reviewable chunk.
+
+#### Consider later
+
+New features/components relevant to the project where there is no existing local equivalent to replace.
 
 #### Good to know
 
