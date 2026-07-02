@@ -5,6 +5,7 @@ Apply across all projects. See individual skills for detailed rules. Use project
 - `/project-audit` — When auditing a project for setup drift, stale generated output, missing diagnostics, command-safety gaps, or agent-readiness issues
 - `/project-compact-progress` — When PROGRESS.md has grown noisy or hard to scan; reduces word count while preserving context and meaning
 - `/project-continue` — When resuming work from an existing PROGRESS.md
+- `/project-learn-from-source` — When extracting repo-specific lessons from an external artefact
 - `/project-plan-task` — When introducing new work into an existing plan
 - `/project-review-commits` — When reviewing committed work across a Git range or since the last tag
 - `/project-review-progress` — When reviewing an existing PROGRESS.md plan or project roadmap

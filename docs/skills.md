@@ -35,6 +35,7 @@ Official external skills are listed in `external-skills.json` and synced into `s
 | `project-audit` | When auditing a project for setup drift, stale generated output, missing diagnostics, command-safety gaps, or agent-readiness issues | (manual only) |
 | `project-compact-progress` | When PROGRESS.md has grown noisy or hard to scan; reduces word count while preserving context and meaning | (manual only) |
 | `project-continue` | When resuming work from an existing PROGRESS.md | (manual only) |
+| `project-learn-from-source` | When extracting repo-specific lessons from an external artefact | `learn from this`, `learn anything from this`, `anything useful from this`, `what should we copy`, `what can we adopt`, `review this AGENTS.md`, `review this skill repo`, `review this blog post`, `ground this in the repo`, `useful to this repo` |
 | `project-plan-task` | When introducing new work into an existing plan | (manual only) |
 | `project-review-commits` | When reviewing committed work across a Git range or since the last tag | `review commits`, `review every commit`, `review since last tag`, `check commits since last tag`, `sanity check commits`, `review commit range`, `review history`, `release sanity check` |
 | `project-review-progress` | When reviewing an existing PROGRESS.md plan or project roadmap | `review progress`, `review progress.md`, `check progress`, `check the plan`, `review the plan`, `is this a good plan`, `progress plan`, `what is missing from the plan`, `improve the plan` |
