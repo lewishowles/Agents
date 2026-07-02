@@ -63,23 +63,34 @@ Identify:
 - **Bug fixes** — particularly for patterns the project already uses
 - **Deprecations** — things still working but flagged for removal
 
-## Step 5 — scan the project
+## Step 5 — scan the project and generators
 
-Scan project source (`src/`) for library usage. Focus on:
+Scan project source (`src/`) and project-owned Boilersuit generators (`.boilersuit/generators/`) when present. Generators are starting points for future files, so treat stale imports, props, helper usage, and boilerplate there as adoption work even when generated output in the current project is already up to date.
+
+Focus on:
 
 - Imports from `@lewishowles/components` or `@lewishowles/helpers`
 - Component names, prop names, composable names, and slot names that appear in the release notes
 - Any pattern the release notes flag as changed or removed
-- Local helpers, repeated boilerplate, or custom test setup that a newer shared library API now replaces
+- Local helpers, repeated boilerplate, custom test setup, or generator templates that a newer shared library API now replaces
 
-Use `rg` scoped to `src/`:
+Use `rg` scoped to `src/` and `.boilersuit/generators/` when those directories exist:
 
 ```bash
 rg "@lewishowles/components" src/ --files-with-matches
+rg "@lewishowles/components" .boilersuit/generators/ --files-with-matches
 rg "ComponentName" src/ -l   # repeat per affected component
 ```
 
-## Step 6 — report findings
+## Step 6 — compare the boilerplate baseline
+
+Check `~/Dev/Repositories/Packages/boilerplate` after the current project scan. It is a baseline for future projects, not an automated freshness oracle.
+
+If the repo exists and is readable, inspect its relevant package files, source templates, and `.boilersuit/generators/` files for the same release-note patterns and adoption opportunities. Report improvements separately from the current project so the user can decide whether to update the boilerplate repo in another chunk.
+
+Do not claim the boilerplate repo is "up to date" from version checks alone. At most, say which relevant files or patterns were checked and whether the current release notes suggested any concrete changes.
+
+## Step 7 — report findings
 
 Structure the output as follows:
 
@@ -102,6 +113,10 @@ New features/components relevant to the project where there is no existing local
 #### Good to know
 
 Fixes/deprecations worth knowing, no immediate action.
+
+#### Boilerplate baseline
+
+Concrete changes to consider in `~/Dev/Repositories/Packages/boilerplate`, including `.boilersuit/generators/` paths where relevant. Say "not checked" only if the repo was missing or unreadable, or if the user asked to skip it.
 
 #### Not relevant
 
