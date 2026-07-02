@@ -68,6 +68,18 @@ repo/.agents/skills/agent-config → repo/.claude/skills/agent-config (repo-loca
 ~/.stagewise/skills/<name>   = copy of dist/skills/<name>   (all skills, including stagewise-only)
 ```
 
+## Where to start
+
+- Shared rule content (applies to both Claude Code and Codex) → `rules/*.md`
+- Claude-only source fragments → `dist/claude/source/`
+- Codex-only source fragments → `dist/codex/source/`
+- Regenerating `CLAUDE.md`/`AGENTS.md` from source → `scripts/sync.sh`
+- A shared or managed skill → `skills/<name>/SKILL.md`
+- This repo's own maintenance skill → `.claude/skills/agent-config/SKILL.md`
+- Project scaffolding templates (`AGENTS.md`, `WORKSPACE.md` starting points) → `templates/`
+- `WORKSPACE.md` generation logic → `scripts/init-workspace.py`
+- Project setup / symlink wiring → `scripts/setup-project.sh`, `scripts/setup-global.sh`
+
 ## Confirmed Codex behaviour
 
 - **Global rules:** `~/.agents/AGENTS.md`

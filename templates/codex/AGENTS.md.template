@@ -42,11 +42,16 @@ Code organisation and patterns specific to this project.
 - API/service integration patterns
 - Testing approach
 
+## Where to start
+
+Only include this section once the project has genuinely distinct areas with different owners or tooling. Map each area or change type to the file or directory to open first, not a restated architecture description.
+
+- [Area/change type 1] → `[entry file or directory]`
+- [Area/change type 2] → `[entry file or directory]`
+
 ## Gotchas
 
-Known issues, constraints, performance considerations, or environment specifics.
+Known traps, phrased as the wrong assumption followed by what's actually true, not a flat fact list.
 
-- Browser/device quirks
-- Performance bottlenecks to avoid
-- Common mistakes or edge cases
-- Accessibility considerations specific to this app
+- Looks like [assumption]. Actually [reality] — [why it matters].
+- Looks like [assumption]. Actually [reality] — [why it matters].
