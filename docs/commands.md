@@ -47,7 +47,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/frontend-design` | `frontend-design` | When designing UI or making aesthetic decisions for a public-facing interface |
 | `/frontend-security` | `frontend-security` | When writing or reviewing client-side code for security: XSS, CSP, auth tokens, secrets hygiene |
 | `/library-release` | `library-release` | When releasing @lewishowles/components, @lewishowles/helpers, or @lewishowles/testing |
-| `/library-update` | `library-update` | When checking for updates to @lewishowles/components, @lewishowles/helpers, or @lewishowles/testing after a new release |
+| `/library-update` | `library-update` | When checking for updates to @lewishowles/components, @lewishowles/helpers, @lewishowles/testing, or @lewishowles/cli-style after a new release |
 | `/project-audit` | `project-audit` | When auditing a project for setup drift, stale generated output, missing diagnostics, command-safety gaps, or agent-readiness issues |
 | `/project-compact-progress` | `project-compact-progress` | When PROGRESS.md has grown noisy or hard to scan; reduces word count while preserving context and meaning |
 | `/project-continue` | `project-continue` | When resuming work from an existing PROGRESS.md |

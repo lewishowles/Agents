@@ -9,6 +9,7 @@ Check Lewis shared libraries for new releases, surface changes, and identify pro
 /library-update components   — check @lewishowles/components only
 /library-update helpers      — check @lewishowles/helpers only
 /library-update testing      — check @lewishowles/testing only
+/library-update cli-style    — check @lewishowles/cli-style only
 ```
 
 ## Step 1 — determine which libraries to check
@@ -18,8 +19,11 @@ If argument given, use it. Otherwise read `package.json` and check listed depend
 - `@lewishowles/components`
 - `@lewishowles/helpers`
 - `@lewishowles/testing`
+- `@lewishowles/cli-style`
 
-If none present, stop and say so.
+If a known library is not present, still check whether the project or its generators contain boilerplate that the library is meant to replace. Report missing-library adoption separately from version updates. For example, a project without `@lewishowles/testing` might still need it if test setup or Boilersuit templates duplicate utilities it now provides.
+
+If no known libraries are present and no missing-library adoption opportunity applies, stop and say so.
 
 ## Step 2 — find the installed version
 
@@ -38,6 +42,7 @@ Use the npm registry as the source of truth for published versions:
 npm view @lewishowles/components version versions time --json
 npm view @lewishowles/helpers version versions time --json
 npm view @lewishowles/testing version versions time --json
+npm view @lewishowles/cli-style version versions time --json
 ```
 
 Confirm before running npm registry commands if network access has not already been approved. Identify the latest stable published version from `version` or the `latest` dist-tag. Versions follow the format `X.Y.Z`.
@@ -70,9 +75,10 @@ Scan project source (`src/`) and project-owned Boilersuit generators (`.boilersu
 Focus on:
 
 - Imports from `@lewishowles/components` or `@lewishowles/helpers`
+- Imports from `@lewishowles/testing` or `@lewishowles/cli-style`
 - Component names, prop names, composable names, and slot names that appear in the release notes
 - Any pattern the release notes flag as changed or removed
-- Local helpers, repeated boilerplate, custom test setup, or generator templates that a newer shared library API now replaces
+- Local helpers, repeated boilerplate, custom test setup, CLI styling code, or generator templates that a newer shared library API now replaces
 
 Use `rg` scoped to `src/` and `.boilersuit/generators/` when those directories exist:
 

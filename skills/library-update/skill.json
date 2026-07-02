@@ -1,8 +1,8 @@
 {
 	"name": "library-update",
 	"title": "Library update check",
-	"description": "Use this skill to check whether @lewishowles/components, @lewishowles/helpers, or @lewishowles/testing have new releases since the installed version, review the release notes, and identify what to update in the current project.",
-	"when": "When checking for updates to @lewishowles/components, @lewishowles/helpers, or @lewishowles/testing after a new release",
+	"description": "Use this skill to check whether @lewishowles/components, @lewishowles/helpers, @lewishowles/testing, or @lewishowles/cli-style have new releases since the installed version, review the release notes, and identify what to update or adopt in the current project.",
+	"when": "When checking for updates to @lewishowles/components, @lewishowles/helpers, @lewishowles/testing, or @lewishowles/cli-style after a new release",
 	"triggers": [],
 	"do-not-use-when": [
 		"Updating unrelated packages or general project dependencies",
