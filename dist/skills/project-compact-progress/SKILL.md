@@ -30,7 +30,7 @@ Reduce noisy or hard-to-scan `PROGRESS.md`. Cut words aggressively without losin
 - Stale investigations that led nowhere
 - Implementation details already visible in the code
 - Wording that explains process without preserving a decision, result, blocker, or next action
-- Spec files in `.agent/specs/` that are no longer active — list every file in `.agent/specs/`, then check whether each one is referenced by a `### Spec` link in `PROGRESS.md`. Flag two categories: (a) linked but the corresponding section is now archived; (b) not referenced anywhere in `PROGRESS.md` at all. Do not delete silently — list candidates with their category and let the user confirm
+- Spec files in `.agent/specs/` that may no longer be active — list every file in `.agent/specs/`, check whether each one is referenced by a `### Spec` link in active `PROGRESS.md` sections, then inspect enough of each candidate spec to explain its real status. Do not flag a spec only because it is unlinked. For each candidate, state whether it appears completed, superseded, partly future-facing, or unclear; give the specific reason; and recommend keep, archive, link from active work, or ask the user. Do not delete silently.
 
 ## Compression target
 
