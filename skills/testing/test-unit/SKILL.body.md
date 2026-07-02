@@ -29,6 +29,42 @@
 - Configure Pinia explicitly in tests. Use `@pinia/testing` when component tests need stores without real action side effects
 - Test lifecycle-dependent composables through a small helper component when they rely on mount/unmount hooks
 
+### Vitest API and composable mocks
+
+Use this when mocking API composables, SDK clients, or query-layer dependencies.
+
+- Inspect existing local mock helpers before adding new mocks; prefer extending the project pattern over introducing a package abstraction
+- Keep literal `vi.mock(...)` calls in the test file or a project-local test helper. Do not hide `vi.mock(...)` inside an imported package helper; Vitest needs to see literal mock calls for hoisting
+- Define mock handlers referenced by `vi.mock(...)` with `vi.hoisted(() => vi.fn())`
+- For composables, use project-local adapters that match the local module shape:
+
+```js
+const mockGet = vi.hoisted(() => vi.fn());
+const mockPost = vi.hoisted(() => vi.fn());
+
+vi.mock("@/composables/api/use-api", () => ({
+	default: () => ({
+		get: mockGet,
+		post: mockPost,
+	}),
+}));
+```
+
+- For SDK clients, keep the SDK-specific class or object shape in the local test/helper:
+
+```js
+const mockGet = vi.hoisted(() => vi.fn());
+
+vi.mock("@vendor/sdk", () => ({
+	Client: class {
+		get = mockGet;
+	},
+}));
+```
+
+- Clear or restore mocks in lifecycle hooks when handler state can leak between tests
+- Only promote a shared package helper when the abstraction does not need to know the mocked module path, export shape, SDK class shape, or composable return shape
+
 For component, composable, helper, and `test.for` examples, see [references/examples.md](references/examples.md).
 
 ### Component logic test structure
