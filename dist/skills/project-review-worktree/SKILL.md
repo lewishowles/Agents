@@ -38,6 +38,10 @@ If `WORKSPACE.md` is missing, do not create it. Use `AGENTS.md`, package scripts
 
 Prefer codebase-memory tools for structural code questions when available. Use targeted file reads and searches; avoid broad generated, vendored, cached, build, dependency, coverage, or binary output.
 
+## Skill routing
+
+Always apply `code-review` standards. Load additional skills only when the touched files or diff contents make them relevant.
+
 ## Review method
 
 1. Identify the intended task from the user request, `PROGRESS.md`, branch name, and changed files.
