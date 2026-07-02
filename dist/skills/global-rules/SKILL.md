@@ -37,6 +37,7 @@ Minimise token cost by default. Treat context as a limited shared budget.
 - For file relocations, use `mv` or `cp` via Bash. Never read a file's content just to write it at a different path — that's three tool calls instead of one.
 - Do not re-run or re-print expensive commands unless something changed that can affect their result and local execution is justified by token cost.
 - Do not output placeholder status text between tool calls ("Still active", "Continuing…"). Only emit a status update when there is something genuinely new to report — a finding, a direction change, or a blocker.
+- Prefer structurally correct, formatter-friendly code over hand-polished indentation. Preserve indentation where it affects syntax or meaning, but do not spend effort aligning, beautifying, or manually wrapping whitespace that the project formatter will rewrite.
 
 ## File discovery
 
@@ -100,7 +101,7 @@ For analysis-only requests, do not load implementation skills or begin coding. U
 **Touch only what's necessary. Minimum code. Nothing speculative.**
 
 - No features beyond request, no single-use abstractions; no unasked flexibility or error handling for impossible scenarios
-- Don't improve adjacent code, comments, or formatting; don't refactor what works; match existing style
+- Don't improve adjacent code, comments, or formatter-owned whitespace; don't refactor what works; match existing style
 - Spot unrelated dead code? Mention it, don't delete
 - Remove unused imports, variables, functions you created; don't remove unrelated dead code unless the user points it out or asks for cleanup
 - Before creating a new function, component, or helper, search for an existing equivalent. If one exists, use it and state what you found.
