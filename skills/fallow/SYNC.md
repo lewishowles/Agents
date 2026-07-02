@@ -8,6 +8,6 @@ Managed by `scripts/sync-external-skills.sh`. Do not edit `SKILL.body.md` direct
 | Skill URL | https://raw.githubusercontent.com/fallow-rs/fallow-skills/main/fallow/skills/fallow/SKILL.md |
 | References URL | https://api.github.com/repos/fallow-rs/fallow-skills/contents/fallow/skills/fallow/references?ref=main |
 | References synced | 4 |
-| Upstream SHA | 1c1c325cd18019ced9a1838d9bebf3e5ca7bdb4a |
+| Upstream SHA | 6c9f9bff20005a371fbdbc5ef761642ae74c4293 |
 | Licence | MIT |
-| Synced at | 2026-07-01T11:04:39Z |
+| Synced at | 2026-07-02T11:11:40Z |
