@@ -3,7 +3,7 @@
 name: library-release
 displayName: Library release
 description: >
-  Use this skill when preparing to release a new version of @lewishowles/components, @lewishowles/helpers, or @lewishowles/testing.
+  Use this skill when preparing to release a new version of @lewishowles/components, @lewishowles/helpers, @lewishowles/testing, or @lewishowles/cli-style.
 do-not-use-when:
   - Updating a project to consume an already-published library release
   - Publishing an unrelated package
@@ -15,7 +15,7 @@ related-skills:
 ---
 # Library release
 
-Conservative release guardrails for `@lewishowles/components`, `@lewishowles/helpers` and `@lewishowles/testing`. Inspect current repo process first; preserve explicit approval for irreversible steps.
+Conservative release guardrails for `@lewishowles/components`, `@lewishowles/helpers`, `@lewishowles/testing`, and `@lewishowles/cli-style`. Inspect current repo process first; preserve explicit approval for irreversible steps.
 
 ## Release stance
 
@@ -32,6 +32,7 @@ Confirm which package is being released:
 - `@lewishowles/components`
 - `@lewishowles/helpers`
 - `@lewishowles/testing`
+- `@lewishowles/cli-style`
 
 Read package root instructions, workspace file if present, `package.json`, changelog, and release notes before recommending commands.
 

@@ -26,7 +26,7 @@ Apply across all projects. See individual skills for detailed rules. Use project
 - `/friction-review` — When reviewing recurring friction-log entries to propose rule/skill amendments
 - `/frontend-design` — When designing UI or making aesthetic decisions for a public-facing interface
 - `/frontend-security` — When writing or reviewing client-side code for security: XSS, CSP, auth tokens, secrets hygiene
-- `/library-release` — When releasing @lewishowles/components, @lewishowles/helpers, or @lewishowles/testing
+- `/library-release` — When releasing @lewishowles/components, @lewishowles/helpers, @lewishowles/testing, or @lewishowles/cli-style
 - `/library-update` — When checking for updates to @lewishowles/components, @lewishowles/helpers, @lewishowles/testing, or @lewishowles/cli-style after a new release
 - `/refactoring` — When refactoring existing code or triaging technical debt
 - `/skill-craft` — When creating, designing, or evaluating a new skill for this repo

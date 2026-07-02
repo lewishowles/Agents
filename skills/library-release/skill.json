@@ -1,8 +1,8 @@
 {
 	"name": "library-release",
 	"title": "Library release",
-	"description": "Use this skill when preparing to release a new version of @lewishowles/components, @lewishowles/helpers, or @lewishowles/testing.",
-	"when": "When releasing @lewishowles/components, @lewishowles/helpers, or @lewishowles/testing",
+	"description": "Use this skill when preparing to release a new version of @lewishowles/components, @lewishowles/helpers, @lewishowles/testing, or @lewishowles/cli-style.",
+	"when": "When releasing @lewishowles/components, @lewishowles/helpers, @lewishowles/testing, or @lewishowles/cli-style",
 	"triggers": [
 		"library release",
 		"release library",
@@ -10,9 +10,11 @@
 		"npm publish",
 		"release components",
 		"release helpers",
+		"release cli-style",
 		"@lewishowles/components release",
 		"@lewishowles/helpers release",
 		"@lewishowles/testing release",
+		"@lewishowles/cli-style release",
 		"version bump",
 		"semver",
 		"changelog"
