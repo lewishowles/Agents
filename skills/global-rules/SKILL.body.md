@@ -104,6 +104,7 @@ When the user corrects a rule violation, wrong approach, token waste, tool misus
 - Remove unused imports, variables, functions you created; don't remove unrelated dead code unless the user points it out or asks for cleanup
 - Before creating a new function, component, or helper, search for an existing equivalent. If one exists, use it and state what you found.
 - Don't stack guards that duplicate each other (e.g. `Number.isFinite` alongside `Number.isInteger`, which already rejects `NaN`/`Infinity`). One check that fully covers the case is enough; every guard must trace to a real requirement.
+- Revert incidental editor or formatter noise (auto-format, import reordering) on lines outside the requested change before presenting the diff.
 
 Every changed line traces directly to the request.
 
