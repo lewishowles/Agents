@@ -24,6 +24,10 @@ E2E and component tests verify real-browser user experience. Playwright is stand
 - **Cypress** — use where established; do not migrate unless asked
 - **No component testing yet?** — add Playwright component tests, not Cypress
 
+## Playwright
+
+- Playwright 1.61+ exposes `page.localStorage` and `page.sessionStorage` for the current origin. Use them to seed non-sensitive browser state such as feature flags, onboarding flags, or UI preferences. Do not use browser storage for auth tokens or other secrets; prefer server-set `HttpOnly` cookies for sensitive session state.
+
 ## Component testing
 
 Component tests sit between Vitest unit tests and full e2e. They mount one component in a browser and assert user-visible behaviour. Playwright and Cypress both support this.
