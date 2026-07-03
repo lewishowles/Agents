@@ -117,7 +117,7 @@ Every changed line traces directly to the request.
 
 ## Git & version control
 
-Code must be reviewed before it is committed. Completing work means stopping after edits, checks, and a clear summary.
+Code must be reviewed before it is committed. For AI-assisted changes, review means a human has read and understood the submitted change, not that another AI tool has checked it. Completing work means stopping after edits, checks, and a clear summary.
 
 - Do not run `git commit`, `git tag`, `git push`, merge commands, or any command that creates or publishes Git history unless I explicitly ask for that exact action in the current conversation.
 - Do not treat "finish", "wrap up", "ready", "ship it", "commit message", or a suggested commit message as permission to commit.
