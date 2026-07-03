@@ -90,6 +90,10 @@ For analysis-only requests, do not load implementation skills or begin coding. U
 - Don't workaround, retry, or dig deeper — state what you expected vs. what you found
 - Recovers faster than chasing wrong paths. You know the system; I don't.
 
+## Staleness and recall
+
+Treat docs, comments, config-as-written, and remembered or prior-session facts as stale by default — they describe what was true when written, not what's true now. Before acting on one: fast-aging facts (versions, effective config, deployed state, file locations) get one live check before a consequential or destructive action; slow-aging facts (decisions, preferences) don't need re-verification each time.
+
 ## Friction logging
 
 When the user corrects a rule violation, wrong approach, token waste, tool misuse, or missing guidance, log it with `scripts/log-friction.sh "<category>" "<detail>"` before continuing. Categories: `rule-ignored`, `wrong-approach`, `token-waste`, `tool-misuse`, `missing-guidance`. This captures the correction the moment it happens, not only when a hook-detected check fails.
