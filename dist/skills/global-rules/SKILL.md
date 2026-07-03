@@ -96,6 +96,10 @@ For analysis-only requests, do not load implementation skills or begin coding. U
 - Don't workaround, retry, or dig deeper — state what you expected vs. what you found
 - Recovers faster than chasing wrong paths. You know the system; I don't.
 
+## Friction logging
+
+When the user corrects a rule violation, wrong approach, token waste, tool misuse, or missing guidance, log it with `scripts/log-friction.sh "<category>" "<detail>"` before continuing. Categories: `rule-ignored`, `wrong-approach`, `token-waste`, `tool-misuse`, `missing-guidance`. This captures the correction the moment it happens, not only when a hook-detected check fails.
+
 ## Surgical changes
 
 **Touch only what's necessary. Minimum code. Nothing speculative.**
