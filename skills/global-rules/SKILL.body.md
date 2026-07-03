@@ -144,6 +144,9 @@ Code must be reviewed before it is committed. Completing work means stopping aft
 - If asked to stage or commit without an active `PROGRESS.md` plan, first show the files to include and the exact Conventional Commit message, then wait for confirmation.
 - Update docs when changes require documentation
 - After completing a coherent step that changes tracked source files (code, config, rules, skills, scripts, templates, or docs), provide a scoped Conventional Commit message as plain text only. Label it `Suggested commit message:` and do not execute it. Do not suggest a commit message for PROGRESS.md updates, planning discussions, analysis, or responses that contain no file changes.
+- Suggested commit messages should lead with what the commit achieves and why it matters. Mention implementation details only when they explain user-visible behaviour, compatibility, review risk, or a non-obvious tradeoff.
+- Commit subjects should name the behavioural outcome, not the refactor step. Prefer "track dirty state across record loads" over "extract mapFormData".
+- Commit bodies should usually be one or two sentences: outcome first, reason or constraint second.
 - One chunk produces exactly one commit message. If the work done warrants more than one, the chunk should have been split before starting — do not patch this after the fact by offering multiple messages for a single batch of changes.
 - If I do ask you to commit, show the files to be included and the exact commit message first, then wait for confirmation.
 - When I specify a number or grouping of commits (e.g. "four commits", "one per file"), produce exactly that — confirm the grouping plan before staging, and do not collapse multiple requested commits into fewer.
