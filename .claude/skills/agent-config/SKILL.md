@@ -43,6 +43,8 @@ Configuration/Agents/
 │   └── chatgpt/                # Optional ChatGPT target from build-chatgpt-target.py
 ├── .claude/skills/agent-config/ # This repo-local maintenance skill
 ├── .agents/skills/agent-config  # Symlink to the above
+├── .claude/skills/agent-config-review/ # Repo-local review skill (token footprint, rule/skill boundaries, drift)
+├── .agents/skills/agent-config-review  # Symlink to the above
 ├── docs/                        # Generated reference tables — regenerate with scripts/build-docs.py
 │   ├── agents.md
 │   ├── commands.md
@@ -154,4 +156,4 @@ scripts/project-diagnostics.py --list
 - `scripts/validate/generated-file-guard.py` checks Git status for direct generated-output edits and stale generated files after source changes.
 - `scripts/project-diagnostics.py --list` discovers focused checks; use `--check <name>` for specific verification, add repeatable `--test-file <path>` or `--test-glob '<pattern>'` arguments to narrow unit tests, and reserve `--all` for user-approved broad checks.
 
-When auditing this repo, pair `agent-config` with `project-audit`. Findings should prioritise generated/source drift, setup-script drift, stale docs tables, missing validation wiring, and unclear workspace/setup guidance.
+When reviewing this repo as an agent behaviour system, pair `agent-config` with `agent-config-review`. Findings should prioritise generated/source drift, token footprint in always-loaded rules, rule/skill boundary placement, skill taxonomy, and validation coverage for generated output. Use `project-audit` only for auditing a different project's agent-readiness, not this repo.

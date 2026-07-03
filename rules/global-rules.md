@@ -152,7 +152,7 @@ _Three-gate criteria inspired by [mattpocock/skills](https://github.com/mattpoco
 
 Default to small, directly related chunks. Each chunk should fit one reviewable idea and one expected commit.
 
-- Split broad roadmap items before implementation.
+- Split broad roadmap items before implementation. If a plan exceeds roughly 7 steps, decompose it into smaller chunks rather than writing a longer plan.
 - Keep source, tests, docs, capability updates, and adoption work separate unless the same change requires them.
 - Prefer one primitive family, one profile behaviour, or one capability concern per chunk.
 - Stop after each chunk with files changed, verification performed, next step, and suggested commit message.
