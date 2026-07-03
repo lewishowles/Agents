@@ -113,6 +113,10 @@ test_analyser_groups_log_entries() {
 	HOME="$home_dir" "$REPO_DIR/scripts/analyse-friction.sh" > "$output_file"
 
 	assert_contains "$output_file" "2	rule-ignored	/project-a	skipped review gate"
+	assert_not_contains "$output_file" "check-fail"
+
+	HOME="$home_dir" FRICTION_INCLUDE_CHECK_FAILS=1 "$REPO_DIR/scripts/analyse-friction.sh" > "$output_file"
+
 	assert_contains "$output_file" "1	check-fail	/project-b	test:unit:run: unit tests exploded"
 }
 
@@ -126,6 +130,10 @@ test_analyser_tolerates_legacy_lines() {
 	printf '2026-05-01T10:01:00Z\t/legacy-project\tlint\tlint exploded\n' >> "$log_file"
 
 	HOME="$home_dir" "$REPO_DIR/scripts/analyse-friction.sh" > "$output_file"
+
+	assert_not_contains "$output_file" "check-fail"
+
+	HOME="$home_dir" FRICTION_INCLUDE_CHECK_FAILS=1 "$REPO_DIR/scripts/analyse-friction.sh" > "$output_file"
 
 	assert_contains "$output_file" "2	check-fail	/legacy-project	lint	lint exploded"
 }
