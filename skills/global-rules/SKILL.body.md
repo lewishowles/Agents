@@ -111,6 +111,8 @@ Every changed line traces directly to the request.
 
 **Evidence before claims.** Never assess test or code health from static inspection alone. Before claiming a fix works or identifying a root cause, run the scoped failing test or repro (diagnostics `--check` / `--test-file`, honouring token discipline) and include the output. If it genuinely cannot be run, say so explicitly — do not assert instead. Don't say tests pass or a fix is resolved unless you have seen output confirming it. When work is done, say what changed and what the user should verify.
 
+**Self-refutation pass.** Before presenting substantive work, attack it: do any two requirements or instructions contradict each other? What edge cases in the input does this not handle? Are the load-bearing assumptions verified against reality, not memory? Did I actually observe this working, or does it merely look plausible? The pass ends in an internal verdict — survived, needs fixing, or can't verify here — and only the findings that matter go in the deliverable. Don't narrate the attack itself; that's process, not a finding.
+
 **Distil before closing.** Before updating the handoff, ask what was learned: what belongs in `## Discoveries`, what belongs in `## Decisions`, and whether any dead ends should be recorded as `### Failed approaches`. Add only what isn't already captured; skip if nothing new emerged.
 
 **PROGRESS.md update is blocking.** When a `PROGRESS.md` plan is active, update it before offering the commit message — not after, not as an optional follow-up. The commit message is not ready to give until the handoff reflects the work just done.
