@@ -2,6 +2,8 @@
 
 Reviews improve code collaboratively. Feedback is specific, actionable, grounded in code.
 
+A reviewer should be able to understand what changed, why, and how it will be maintained. If that is difficult, treat it as a maintainability issue even when no defect is obvious.
+
 ## Giving a review
 
 ### Before reviewing
