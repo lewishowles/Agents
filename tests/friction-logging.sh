@@ -174,6 +174,43 @@ test_manual_writer_logs_entry() {
 	assert_contains "$log_file" "reimplemented clamp instead of using helper"
 }
 
+test_manual_writer_falls_back_to_project_log() {
+	local project_dir="$TEST_ROOT/manual-fallback-project"
+	local blocked_home="$TEST_ROOT/blocked-home"
+	local log_file="$project_dir/.agent/logs/friction.log"
+
+	mkdir -p "$project_dir"
+	printf 'not a directory\n' > "$blocked_home"
+
+	(
+		cd "$project_dir"
+		HOME="$blocked_home" bash "$REPO_DIR/scripts/log-friction.sh" "missing-guidance" "central log was sandboxed" >/dev/null 2>/dev/null
+	)
+
+	assert_file "$log_file"
+	assert_contains "$log_file" "missing-guidance"
+	assert_contains "$log_file" "central log was sandboxed"
+}
+
+test_analyser_discovers_project_fallback_logs() {
+	local home_dir="$TEST_ROOT/discover-home"
+	local dev_root="$TEST_ROOT/dev-root"
+	local fallback_log="$dev_root/Configuration/Agents/.agent/logs/friction.log"
+	local canonical_log="$home_dir/.claude/logs/friction.log"
+	local output_file="$TEST_ROOT/discover.out"
+
+	mkdir -p "$(dirname "$fallback_log")" "$(dirname "$canonical_log")"
+	printf '2026-05-15T19:00:00Z\trule-ignored\t/project-a\tskipped review gate\n' > "$fallback_log"
+	printf '2026-05-15T19:01:00Z\trule-ignored\t/project-a\tskipped review gate\n' >> "$fallback_log"
+	printf '2026-05-15T19:02:00Z\tmissing-guidance\t/project-b\tcentral log was sandboxed\n' >> "$fallback_log"
+	printf 'RESOLVED\trule-ignored\tskipped review gate\tfeat(rules): add blocking review gate\n' > "$canonical_log"
+
+	HOME="$home_dir" FRICTION_DEV_ROOT="$dev_root" "$REPO_DIR/scripts/analyse-friction.sh" > "$output_file"
+
+	assert_not_contains "$output_file" "skipped review gate"
+	assert_contains "$output_file" "1	missing-guidance	/project-b	central log was sandboxed"
+}
+
 # Extracts the Codex Stop hook's check-run command from dist/codex/hooks.json.
 codex_stop_command() {
 	jq -r '.hooks.Stop[0].hooks[1].command' "$REPO_DIR/dist/codex/hooks.json"
@@ -219,6 +256,27 @@ test_codex_hook_does_not_log_on_pass() {
 	assert_not_file "$log_file"
 }
 
+test_codex_hook_falls_back_to_project_log() {
+	local project_dir="$TEST_ROOT/codex-fallback-project"
+	local blocked_home="$TEST_ROOT/codex-blocked-home"
+	local bin_dir="$TEST_ROOT/codex-bin-fallback"
+	local log_file="$project_dir/.agent/logs/friction.log"
+
+	mkdir -p "$project_dir"
+	printf 'not a directory\n' > "$blocked_home"
+	write_package "$project_dir"
+	write_npm_stub "$bin_dir" 1 1
+
+	(
+		cd "$project_dir"
+		HOME="$blocked_home" PATH="$bin_dir:$PATH" sh -c "$(codex_stop_command)" >/dev/null 2>/dev/null
+	)
+
+	assert_file "$log_file"
+	assert_contains "$log_file" "check-fail"
+	assert_contains "$log_file" "lint,test:unit:run"
+}
+
 test_failed_checks_are_logged
 test_successful_checks_are_not_logged
 test_analyser_groups_log_entries
@@ -226,7 +284,10 @@ test_analyser_tolerates_legacy_lines
 test_analyser_excludes_resolved_pattern
 test_analyser_resurfaces_pattern_after_resolution
 test_manual_writer_logs_entry
+test_manual_writer_falls_back_to_project_log
+test_analyser_discovers_project_fallback_logs
 test_codex_hook_logs_check_failure
 test_codex_hook_does_not_log_on_pass
+test_codex_hook_falls_back_to_project_log
 
 printf '✓ friction logging tests passed\n'

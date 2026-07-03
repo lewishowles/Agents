@@ -1,17 +1,49 @@
 #!/usr/bin/env bash
 # Summarises friction log entries by aggregating counts per unique
-# (category, cwd, detail) combination, sorted most frequent first.
+# (category, cwd, detail) combination, sorted most frequent first. By default,
+# it merges the central log with project-local fallback logs under $HOME/Dev.
 # Entries are written by pre-stop-checks.sh, the Codex Stop hook, and
 # scripts/log-friction.sh as tab-separated lines.
 
 set -euo pipefail
 
-log_file="${1:-$HOME/.claude/logs/friction.log}"  # Default path matches pre-stop-checks.sh.
+canonical_log_file="$HOME/.claude/logs/friction.log"
+dev_root="${FRICTION_DEV_ROOT:-$HOME/Dev}"
+log_files=()
 
-if [ ! -f "$log_file" ]; then
-	printf 'No friction log found at %s\n' "$log_file"
+if [ "$#" -gt 0 ]; then
+	log_files=("$@")
+else
+	if [[ -d "$dev_root" ]]; then
+		while IFS= read -r fallback_log_file; do
+			if [[ "$fallback_log_file" != "$canonical_log_file" ]]; then
+				log_files+=("$fallback_log_file")
+			fi
+		done < <(find "$dev_root" -path '*/.agent/logs/friction.log' -type f 2>/dev/null | sort)
+	fi
+
+	log_files+=("$canonical_log_file")
+fi
+
+existing_log_files=()
+for log_file in "${log_files[@]}"; do
+	if [[ -f "$log_file" ]]; then
+		existing_log_files+=("$log_file")
+	fi
+done
+
+if [ "${#existing_log_files[@]}" -eq 0 ]; then
+	printf 'No friction log found'
+	for log_file in "${log_files[@]}"; do
+		printf ' %s' "$log_file"
+	done
+	printf '\n'
 	exit 0
 fi
+
+merged_log_file=$(mktemp)
+trap 'rm -f "$merged_log_file"' EXIT
+cat "${existing_log_files[@]}" > "$merged_log_file"
 
 # Current schema: timestamp, category, cwd, detail (field 2 = category).
 # Pre-category lines used: timestamp, cwd, failed_checks, summary — field 2
@@ -62,4 +94,4 @@ awk -F '\t' '
 			print counts[key] FS key
 		}
 	}
-' "$log_file" "$log_file" | sort -rn
+' "$merged_log_file" "$merged_log_file" | sort -rn

@@ -43,10 +43,15 @@ write_friction_log() {
 	local category="$1"
 	local detail="$2"
 	local log_file="$HOME/.claude/logs/friction.log"
+	local fallback_log_file="$PWD/.agent/logs/friction.log"
 	local timestamp
 
 	timestamp=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
 
-	mkdir -p "$(dirname "$log_file")"
-	printf '%s\t%s\t%s\t%s\n' "$timestamp" "$category" "$PWD" "$detail" >> "$log_file"
+	if mkdir -p "$(dirname "$log_file")" 2>/dev/null && printf '%s\t%s\t%s\t%s\n' "$timestamp" "$category" "$PWD" "$detail" >> "$log_file" 2>/dev/null; then
+		return 0
+	fi
+
+	mkdir -p "$(dirname "$fallback_log_file")" 2>/dev/null || return 0
+	printf '%s\t%s\t%s\t%s\n' "$timestamp" "$category" "$PWD" "$detail" >> "$fallback_log_file" 2>/dev/null || return 0
 }

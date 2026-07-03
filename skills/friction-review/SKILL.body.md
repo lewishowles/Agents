@@ -4,7 +4,7 @@ Turns recurring friction-log patterns into specific, minimal, human-reviewed ame
 
 ## Workflow
 
-1. **Run the analyser** — `bash scripts/analyse-friction.sh`. Output is `count ⇥ category ⇥ cwd ⇥ detail`, sorted most-frequent-first.
+1. **Run the analyser** — `bash scripts/analyse-friction.sh`. Output is `count ⇥ category ⇥ cwd ⇥ detail`, sorted most-frequent-first. By default it combines the central friction log with project-local fallback logs under `$HOME/Dev`; pass explicit log paths only for a scoped review.
 2. **Take the top recurring patterns** — entries with count ≥ 2 are worth reviewing; a single occurrence is usually not yet a pattern. Group entries that describe the same underlying failure even if `cwd`/`detail` differ slightly.
 3. **Skip already-resolved patterns** — if a later `RESOLVED` marker exists for a pattern, it's excluded from analyser output automatically. If a pattern you're reviewing was previously resolved and has reappeared, say so explicitly — the earlier fix didn't hold, and the new amendment should account for why.
 4. **Decide the fix's home** — apply the existing rule/skill boundary: if the guidance should apply on every turn regardless of task, it belongs in `rules/global-rules.md` (mirror in `skills/global-rules/SKILL.body.md`). If it's specific to a task type or file context, it belongs in the relevant `skills/<name>/SKILL.body.md`.
