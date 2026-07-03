@@ -157,6 +157,8 @@ Delegation is opt-in, not default. Consider it when a plan has 3+ independent ta
 
 **Review gate.** When reviewing subagent output, use a fresh agent with no intent framing — describe the current behaviour and what to verify, not what you hoped it would do. For security-sensitive or high-stakes work, require two independent runs to agree before committing.
 
+**Delegation packet.** Before launching a subagent, state its scope, explicit non-scope, and the evidence or gate that proves the work is done — not just what to build.
+
 **Receipt contract.** Delegated agents must return: files touched, tests run, exact blocker encountered, or "no change" if nothing was modified. Reject any result that omits this.
 
 **Mid-session advisor.** In Claude CLI, `/advisor` can escalate to Opus for a second opinion mid-session without spawning a full subagent. Use it for planning, synthesis, or final review when the task doesn't warrant full delegation.
