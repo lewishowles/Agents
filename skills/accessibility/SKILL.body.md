@@ -115,6 +115,7 @@ Test: if a sighted developer using component normally needs to know it, document
 - Do not put click handlers on non-interactive elements when button/link is correct semantic control
 - Do not block paste in form fields
 - Destructive actions need confirmation, undo, or both
+- **Accessible names built from multiple pieces of state** (tree nodes, list rows, grid cells): put the most important disambiguating information first, not last — a screen reader user often stops listening once they've heard enough to act. Don't rely on visual position or component configuration to convey what the label prioritises in speech
 
 ## Semantics & structure (expanded)
 
