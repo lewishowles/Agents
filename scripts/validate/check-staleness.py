@@ -13,8 +13,8 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
-DEFAULT_DAYS = 90
-DEFAULT_COMMITS = 100
+DEFAULT_DAYS = 45
+DEFAULT_COMMITS = 200
 
 SCAN_GLOBS = [
 	("rules", "*.md"),
@@ -86,11 +86,8 @@ def main() -> None:
 		age_commits = commits_since(commit_hash)
 		rel = path.relative_to(REPO_ROOT)
 
-		if age_days >= args.days:
-			print(f"  {rel}: unchanged for {age_days} days (last commit {age_commits} commits ago)")
-			warnings += 1
-		elif age_commits >= args.commits:
-			print(f"  {rel}: unchanged for {age_commits} commits ({age_days} days)")
+		if age_days >= args.days and age_commits >= args.commits:
+			print(f"  {rel}: unchanged for {age_days} days ({age_commits} commits)")
 			warnings += 1
 
 	if warnings:
