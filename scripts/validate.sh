@@ -3,6 +3,17 @@
 
 set -euo pipefail
 
+# macOS ships bash 3.2; several validators need bash 4+ (declare -A, mapfile).
+# Re-exec under homebrew bash if the current interpreter is too old.
+if [ "${BASH_VERSINFO[0]}" -lt 4 ]; then
+	export PATH="/opt/homebrew/bin:$PATH"
+	if [ -x /opt/homebrew/bin/bash ]; then
+		exec /opt/homebrew/bin/bash "$0" "$@"
+	else
+		exec "$(command -v bash)" "$0" "$@"
+	fi
+fi
+
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 
