@@ -18,7 +18,9 @@ Do not use this skill to:
 
 ## Method
 
-Extraction, not summarisation: reproduce claims, code, and constraints close to verbatim rather than compressing them. If a sentence carries a rule, exception, or version qualifier, keep its wording — paraphrasing is where meaning gets lost.
+Extraction, not summarisation: preserve every claim, constraint, and example completely rather than compressing them. Do not ask for or expect verbatim/near-verbatim reproduction of the source's prose — models resist reproducing large stretches of source text even when told not to summarise, so treat that as unavailable rather than a target. Instead: quote a short exact phrase (in quotation marks) only where the precise wording itself matters (a named rule, a specific caveat), and restate everything else fully and precisely in your own words — nothing dropped, nothing compressed, just not word-for-word.
+
+Every link that gets listed needs its actual destination URL, not just anchor text. If the destination can't be resolved (e.g. the extracting tool can't see raw hrefs), say so explicitly for that link rather than omitting the field — a link entry with no destination is dead weight for the "decide whether to fetch this" step later.
 
 Output shape:
 
@@ -26,8 +28,8 @@ Output shape:
 ## Source
 <URL, title, author/org if present, date if present>
 
-## Verbatim claims and statements
-- Direct quotes or near-verbatim statements of any concrete claim, recommendation, rule, or pattern. Include enough surrounding sentence for context.
+## Claims and statements
+- Full, precise restatement of any concrete claim, recommendation, rule, or pattern, with enough surrounding context to stand alone. Quote a short exact phrase only where the wording itself is the point.
 
 ## Config, code, or examples
 - Any code snippets, config, commands, or worked examples, reproduced exactly, with a one-line note of what each is for.
@@ -39,16 +41,16 @@ Output shape:
 - What the page emphasises (headings, repeated points, "most important" framing), stated plainly, not interpreted.
 
 ## Referenced links worth reviewing separately
-- Incidental / further reading: <anchor text, destination, one-line why>
+- Incidental / further reading: <anchor text, destination URL (or "destination not resolvable"), one-line why>
 
 ## Linked artefacts the article depends on
-- Links where the article is describing, demonstrating, or quoting from the linked repo/download/doc itself — the article doesn't fully make sense without it. <anchor text, destination, one-line on what it is>
+- Links where the article is describing, demonstrating, or quoting from the linked repo/download/doc itself — the article doesn't fully make sense without it. <anchor text, destination URL (or "destination not resolvable"), one-line on what it is>
 
 ## Excluded
 - Boilerplate skipped (nav, ads, cookie banners, unrelated sidebar content), so it's clear nothing substantive was silently dropped.
 ```
 
-Do not shorten, generalise, or rank the claims. Completeness over concision — this output feeds a separate analysis step, not a human reader.
+Do not shorten, generalise, or rank the claims. Completeness of meaning over concision or exact wording — this output feeds a separate analysis step, not a human reader.
 
 ## Handing this to another agent
 
