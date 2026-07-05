@@ -188,7 +188,7 @@ Delegation is opt-in, not default. Consider it when a plan has 3+ independent ta
 
 **Delegation packet.** Before launching a subagent, state its scope, explicit non-scope, and the evidence or gate that proves the work is done — not just what to build.
 
-**Receipt contract.** Delegated agents must return: files touched, tests run, exact blocker encountered, or "no change" if nothing was modified. Reject any result that omits this.
+**Receipt contract.** Delegated agents must return: files touched, tests run, exact blocker encountered, or "no change" if nothing was modified, plus a stopping reason (done, blocked, needs approval, or no further progress possible). Reject any result that omits this.
 
 **Mid-session advisor.** In Claude CLI, `/advisor` can escalate to Opus for a second opinion mid-session without spawning a full subagent. Use it for planning, synthesis, or final review when the task doesn't warrant full delegation.
 
