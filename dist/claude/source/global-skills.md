@@ -46,6 +46,7 @@ Apply across all projects. See individual skills for detailed rules. Use project
 - `/vue-use` — When using VueUse composables for Vue/Nuxt features
 - `/vue-vite` — When configuring vite.config.ts, Vite project patterns
 - `/web-performance` — When optimising Core Web Vitals, bundle size, or asset loading for Vue/Vite/GitHub Pages projects
+- `/web-performance-audit` — When conducting a performance audit of a page, PR, or app; preparing a performance report
 - `/writing` — When writing prose/documentation, voice, tone, structure, style
 - `/writing-copy` — When writing microcopy, buttons, errors, empty states, CTAs
 - `/writing-readme` — When writing a README, structure, what to include/cut

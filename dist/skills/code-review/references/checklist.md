@@ -32,6 +32,7 @@ Paste into a PR description or use as a review gate. For severity levels and giv
 
 - [ ] No unnecessary re-renders or reactive side effects
 - [ ] Images sized, formatted, and lazy-loaded appropriately
+- [ ] Measured improvements compared under the same conditions (page state, cache, throttling), not a warmed cache or narrower test
 
 ## Tests
 

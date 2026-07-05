@@ -137,6 +137,11 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 **Avoid:** Configuring the Vite build — use vue-vite; Writing animation or transition code — check accessibility for reduced-motion first
 **Combine with:** vue-vite, vue, accessibility
 
+### web-performance-audit
+**When to use:** Use this skill when conducting a performance audit of a page, PR, or app — distinct from building performantly (use the web-performance skill for that). Two modes: quick PR triage or full app audit. Triggers: "performance audit", "check Core Web Vitals", "is this fast enough?", preparing a performance report.
+**Avoid:** Building or fixing a component for performance (use the web-performance skill for guidance); A general code review with no performance scope; No running app or build to measure against
+**Combine with:** web-performance, code-review
+
 ### writing
 **When to use:** Use this skill when writing or editing prose: blog posts, documentation, longform content, marketing copy. Covers voice, tone, structure, examples, language conventions (UK spelling, sentence case, punctuation), and what to avoid (em dashes, preachy tone, padding, opening summaries). For README files specifically, see the writing-readme skill. For UI microcopy (buttons, error messages, empty states), see the writing-copy skill.
 **Avoid:** Editing executable code, configuration, or generated output without prose changes; Writing UI labels, validation messages, tooltips, or other microcopy where writing-copy is narrower; Editing a README where writing-readme is sufficient

@@ -75,6 +75,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/vue-use` | `vue-use` | When using VueUse composables for Vue/Nuxt features |
 | `/vue-vite` | `vue-vite` | When configuring vite.config.ts, Vite project patterns |
 | `/web-performance` | `web-performance` | When optimising Core Web Vitals, bundle size, or asset loading for Vue/Vite/GitHub Pages projects |
+| `/web-performance-audit` | `web-performance-audit` | When conducting a performance audit of a page, PR, or app; preparing a performance report |
 | `/writing` | `writing` | When writing prose/documentation, voice, tone, structure, style |
 | `/writing-copy` | `writing-copy` | When writing microcopy, buttons, errors, empty states, CTAs |
 | `/writing-readme` | `writing-readme` | When writing a README, structure, what to include/cut |
