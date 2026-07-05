@@ -33,7 +33,7 @@ Do not use this skill for:
 
 ## Startup
 
-Read the external source first. If the source is a URL and browsing or network access is not available, ask for the relevant excerpt rather than guessing.
+Read the external source first. A source may arrive as a link, a pasted excerpt, or a pasted `source-extraction` output (verbatim claims, config, constraints, linked artefacts) — treat pasted content as the source itself, not a lesser substitute for browsing. If the source is a URL, browsing is not available, and nothing has been pasted, ask for the relevant excerpt rather than guessing.
 
 Then gather only the local context needed to judge fit:
 
