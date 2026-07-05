@@ -10,6 +10,7 @@ do-not-use-when:
   - Creating, editing, squashing, rebasing, tagging, or publishing commits
 related-skills:
   - code-review
+disable-model-invocation: true
 ---
 # Project review commits
 

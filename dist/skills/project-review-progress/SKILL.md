@@ -4,6 +4,7 @@ name: project-review-progress
 displayName: Project review progress
 description: >
   Use this skill when reviewing an existing PROGRESS.md plan or project roadmap, especially requests like "review PROGRESS.md", "check the plan", "is this a good plan", or "what is missing from the progress plan". Assesses both PROGRESS.md as an execution plan and the quality of the project direction it describes, without editing files.
+disable-model-invocation: true
 ---
 # Project review progress
 

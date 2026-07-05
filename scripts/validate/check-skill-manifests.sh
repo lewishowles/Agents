@@ -89,6 +89,12 @@ while IFS= read -r -d '' manifest; do
 		validate_fail "Missing dist/skills/$name/SKILL.md (run scripts/sync.sh)"
 	fi
 
+	explicit_only=$(jq -r '.explicitInvocationOnly // false' "$manifest")
+	codex_enabled=$(jq -r '(.targets // ["codex"]) | index("codex") != null' "$manifest")
+	if [ "$explicit_only" = "true" ] && [ "$codex_enabled" = "true" ] && [ ! -f "$REPO_DIR/dist/skills/$name/agents/openai.yaml" ]; then
+		validate_fail "Missing dist/skills/$name/agents/openai.yaml for explicitInvocationOnly skill $name (run scripts/sync.sh)"
+	fi
+
 	if [ -f "$dir/SKILL.md" ]; then
 		validate_fail "Generated SKILL.md must not exist in source directory for $name"
 	fi

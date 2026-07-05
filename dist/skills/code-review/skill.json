@@ -1,5 +1,6 @@
 {
 	"name": "code-review",
+	"explicitInvocationOnly": true,
 	"description": "Use this skill when reviewing code — a PR, a diff, or an individual file — or when receiving review feedback. Applies your conventions (accessibility, code-style, error-handling, frontend-security, web-performance) as a checklist, and covers how to give and receive feedback.",
 	"when": "When reviewing a PR or diff, or receiving review feedback",
 	"triggers": [

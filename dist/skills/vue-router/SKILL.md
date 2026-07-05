@@ -3,6 +3,9 @@
 name: vue-router
 description: >
   Use this skill when working with Vue Router routes, navigation guards, params, query strings, layouts, redirects, or route-driven state. Covers async guards, same-route param updates, side-effect cleanup, and the boundary between router state and component state.
+do-not-use-when:
+  - General component or composable code with no routing, navigation guard, or route-param concern — use vue or vue-project-stack instead
+  - Writing or reviewing route-related unit tests in isolation — use test-unit instead
 related-skills:
   - vue
   - vue-project-stack

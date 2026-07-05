@@ -87,14 +87,15 @@ Run `python3 scripts/build/build-skill-mds.py` after editing `skill.json` or `SK
 
 ### skill.json fields
 
-| Field          | Required | Notes                                                          |
-| -------------- | -------- | -------------------------------------------------------------- |
-| `name`         | Yes      | Skill slug                                                     |
-| `description`  | Yes      | Starts "Use this skill when…"; action-led, includes file globs |
-| `when`         | Optional | Short one-liner for settings.json hook description             |
-| `filePatterns` | Optional | Glob patterns for `skill-file-trigger.sh`                      |
-| `title`        | Optional | Human display name; generates Codex-compatible `displayName`   |
-| `capabilities` | Optional | `{"promptTriggering": bool, "fileTriggering": bool}`           |
+| Field                    | Required | Notes                                                                                                                                                                                                                                                                                     |
+| ------------------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`                   | Yes      | Skill slug                                                                                                                                                                                                                                                                                |
+| `description`            | Yes      | Starts "Use this skill when…"; action-led, includes file globs                                                                                                                                                                                                                            |
+| `when`                   | Optional | Short one-liner for settings.json hook description                                                                                                                                                                                                                                        |
+| `filePatterns`           | Optional | Glob patterns for `skill-file-trigger.sh`                                                                                                                                                                                                                                                 |
+| `title`                  | Optional | Human display name; generates Codex-compatible `displayName`                                                                                                                                                                                                                              |
+| `capabilities`           | Optional | `{"promptTriggering": bool, "fileTriggering": bool}`                                                                                                                                                                                                                                      |
+| `explicitInvocationOnly` | Optional | `true` blocks auto-invocation on both runtimes: emits `disable-model-invocation: true` in the generated Claude `SKILL.md` frontmatter, and a generated `dist/skills/<name>/agents/openai.yaml` with `allow_implicit_invocation: false` for Codex. `/name` invocation still works on both. |
 
 ### Generated SKILL.md content rules
 

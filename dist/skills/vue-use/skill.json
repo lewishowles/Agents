@@ -21,6 +21,9 @@
 		"useOnline",
 		"useFetch"
 	],
+	"do-not-use-when": [
+		"Plain Vue reactivity or component composables with no VueUse composable involved — use vue or vue-project-stack instead"
+	],
 	"filePatterns": [],
 	"pathPatterns": [],
 	"dependencies": ["vue", "vue-project-stack"],

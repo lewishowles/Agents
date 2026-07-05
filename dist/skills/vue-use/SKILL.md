@@ -3,6 +3,8 @@
 name: vue-use
 description: >
   Apply VueUse composables where appropriate to build concise, maintainable Vue.js / Nuxt features.
+do-not-use-when:
+  - Plain Vue reactivity or component composables with no VueUse composable involved — use vue or vue-project-stack instead
 related-skills:
   - vue
   - vue-project-stack

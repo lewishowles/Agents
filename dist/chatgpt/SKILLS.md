@@ -74,10 +74,12 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 
 ### swift
 **When to use:** Use this skill when writing or editing any Swift code — macOS apps, command-line tools, scripts, system tools. Covers comment style, naming, spacing, concurrency, error handling, process management, and environment setup. For SwiftUI-specific patterns, use the swift-ui skill.
+**Avoid:** Writing SwiftUI-specific view, state, or navigation code — use swift-ui instead; Writing or reviewing XCTest unit tests — use test-unit instead
 **Combine with:** code-style
 
 ### swift-ui
 **When to use:** Use this skill when writing or reviewing SwiftUI code — views, state management, view composition, navigation, and performance. Covers modern patterns (@Observable, @Bindable), anti-patterns (ObservableObject, @Published), and optimization techniques for responsive interfaces.
+**Avoid:** Writing non-UI Swift code with no SwiftUI views or state — use swift instead
 **Combine with:** swift, code-style, accessibility
 
 ### test
@@ -87,6 +89,7 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 
 ### test-e2e
 **When to use:** Use this skill when writing, reviewing, or planning end-to-end and browser-based component tests with Playwright or Cypress. It guides agents through user-focused browser automation, interaction coverage, test structure, selector strategy, and CI setup. For isolated logic or rendering checks that do not need a browser, use the test-unit skill instead.
+**Avoid:** Testing isolated logic or component rendering that doesn't need a browser — use test-unit instead
 **Combine with:** code-style, test-unit, vue-project-stack
 
 ### test-unit
@@ -123,10 +126,12 @@ When the task makes a skill's relevance obvious — editing a `.vue` file, writi
 
 ### vue-router
 **When to use:** Use this skill when working with Vue Router routes, navigation guards, params, query strings, layouts, redirects, or route-driven state. Covers async guards, same-route param updates, side-effect cleanup, and the boundary between router state and component state.
+**Avoid:** General component or composable code with no routing, navigation guard, or route-param concern — use vue or vue-project-stack instead; Writing or reviewing route-related unit tests in isolation — use test-unit instead
 **Combine with:** vue, vue-project-stack, accessibility
 
 ### vue-use
 **When to use:** Apply VueUse composables where appropriate to build concise, maintainable Vue.js / Nuxt features.
+**Avoid:** Plain Vue reactivity or component composables with no VueUse composable involved — use vue or vue-project-stack instead
 **Combine with:** vue, vue-project-stack
 
 ### vue-vite

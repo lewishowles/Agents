@@ -3,6 +3,8 @@
 name: test-e2e
 description: >
   Use this skill when writing, reviewing, or planning end-to-end and browser-based component tests with Playwright or Cypress. It guides agents through user-focused browser automation, interaction coverage, test structure, selector strategy, and CI setup. For isolated logic or rendering checks that do not need a browser, use the test-unit skill instead.
+do-not-use-when:
+  - Testing isolated logic or component rendering that doesn't need a browser — use test-unit instead
 related-skills:
   - code-style
   - test-unit

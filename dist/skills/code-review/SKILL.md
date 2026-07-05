@@ -12,6 +12,7 @@ related-skills:
   - error-handling
   - frontend-security
   - web-performance
+disable-model-invocation: true
 ---
 # Code review
 

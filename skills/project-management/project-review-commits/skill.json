@@ -1,6 +1,7 @@
 {
 	"name": "project-review-commits",
 	"title": "Project review commits",
+	"explicitInvocationOnly": true,
 	"description": "Use this skill when reviewing committed work across a Git range, especially every commit since the last tag. Assesses per-commit correctness, series coherence, verification, docs, and release readiness without editing files.",
 	"when": "When reviewing committed work across a Git range or since the last tag",
 	"triggers": [
@@ -20,9 +21,7 @@
 	],
 	"filePatterns": [],
 	"pathPatterns": [],
-	"dependencies": [
-		"code-review"
-	],
+	"dependencies": ["code-review"],
 	"capabilities": {
 		"promptTriggering": true,
 		"fileTriggering": false

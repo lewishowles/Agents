@@ -138,10 +138,23 @@ def generate_skill_md(skill_dir: Path) -> None:
 		parts.append("related-skills:")
 		parts.extend(f"  - {dep}" for dep in deps)
 
+	explicit_invocation_only = manifest.get("explicitInvocationOnly", False)
+	if explicit_invocation_only:
+		parts.append("disable-model-invocation: true")
+
 	parts.append("---")
 	parts.append("")
 
 	output_file.write_text("\n".join(parts) + body)
+
+	# Codex has no equivalent frontmatter field — it reads a sibling policy
+	# file instead of the SKILL.md frontmatter Claude uses.
+	targets = manifest.get("targets")
+	codex_enabled = targets is None or "codex" in targets
+	if explicit_invocation_only and codex_enabled:
+		agents_dir = output_dir / "agents"
+		agents_dir.mkdir(parents=True, exist_ok=True)
+		(agents_dir / "openai.yaml").write_text("policy:\n  allow_implicit_invocation: false\n")
 
 	for source in skill_dir.iterdir():
 		if source.name in SOURCE_FILENAMES:

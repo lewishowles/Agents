@@ -1,6 +1,7 @@
 {
 	"name": "project-review-worktree",
 	"title": "Project review worktree",
+	"explicitInvocationOnly": true,
 	"description": "Use this skill when reviewing uncommitted work before commit, especially requests like \"review the working tree\", \"check this before commit\", \"is this ready to commit\", or \"review these changes against PROGRESS.md\". Assesses correctness, completeness, plan alignment, maintainability, tests, docs, and commit readiness without editing files.",
 	"when": "When reviewing uncommitted work before commit",
 	"triggers": [
@@ -15,9 +16,7 @@
 	],
 	"filePatterns": [],
 	"pathPatterns": [],
-	"dependencies": [
-		"code-review"
-	],
+	"dependencies": ["code-review"],
 	"capabilities": {
 		"promptTriggering": true,
 		"fileTriggering": false
