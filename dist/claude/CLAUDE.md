@@ -167,7 +167,7 @@ Default to small, directly related chunks. Each chunk should fit one reviewable 
 - Stop after each chunk with files changed, verification performed, next step, and suggested commit message.
 - Do not continue into the next chunk until the user confirms.
 
-### Subagent delegation
+## Subagent delegation
 
 Delegation is opt-in, not default. Consider it when a plan has 3+ independent tasks that don't share files and the work is well-specified. Do not delegate single-file changes, quick fixes, or tasks with high interdependency — the token overhead of re-reading files outweighs the benefit.
 

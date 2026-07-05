@@ -19,7 +19,7 @@ mkdir -p "$TMP_DIR/skills" "$TMP_DIR/rules" "$TMP_DIR/scripts/build" "$TMP_DIR/s
 
 cp -r "$REAL_REPO_DIR/skills/." "$TMP_DIR/skills/"
 cp "$REAL_REPO_DIR/rules/"*.md "$TMP_DIR/rules/"
-cp "$REAL_REPO_DIR/dist/claude/source/header.md" "$TMP_DIR/dist/claude/source/"
+cp "$REAL_REPO_DIR/dist/claude/source/header.md" "$REAL_REPO_DIR/dist/claude/source/subagent-delegation.md" "$TMP_DIR/dist/claude/source/"
 cp "$REAL_REPO_DIR/dist/codex/source/header.md" "$REAL_REPO_DIR/dist/codex/source/codebase-memory.md" "$TMP_DIR/dist/codex/source/"
 cp "$REAL_REPO_DIR/scripts/build/build-skill-mds.py" "$TMP_DIR/scripts/build/"
 cp "$REAL_REPO_DIR/scripts/lib/dist-targets.sh" "$TMP_DIR/scripts/lib/"
