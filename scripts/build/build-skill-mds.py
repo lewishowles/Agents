@@ -19,8 +19,19 @@ from pathlib import Path
 
 REPO_DIR = Path(__file__).resolve().parent.parent.parent
 SKILLS_DIR = REPO_DIR / "skills"
+RULES_DIR = REPO_DIR / "rules"
 DIST_SKILLS_DIR = REPO_DIR / "dist" / "skills"
 GLOBAL_SKILLS_OUT = REPO_DIR / "dist" / "claude" / "source" / "global-skills.md"
+
+# The global-rules skill has no authored SKILL.body.md — its body is composed
+# directly from rules/ fragments so it can never drift from the source rules.
+GLOBAL_RULES_SKILL_NAME = "global-rules"
+GLOBAL_RULES_FRAGMENTS = [
+	"global-rules.md",
+	"identity.md",
+	"skills-policy.md",
+	"file-discovery.md",
+]
 
 PM_GROUP = "project-management"  # Listed first in the global index so it appears near slash-command docs.
 
@@ -52,15 +63,51 @@ def discover_skill_dirs() -> list[Path]:
 	return dirs
 
 
+# rules/global-rules.md nests its subsections under a "## General configuration"
+# wrapper heading. Drop that wrapper and promote its direct ### children to ##
+# so the skill body reads as flat top-level sections, matching every other
+# rules/*.md fragment. Headings past the wrapper's own section (e.g. "###
+# Subagent delegation" under "## Working across sessions") are left alone.
+def promote_general_configuration(text: str) -> str:
+	lines = text.splitlines()
+	assert lines[0] == "## General configuration"
+	lines = lines[1:]
+	while lines and lines[0] == "":
+		lines.pop(0)
+
+	first_top_level = next((i for i, line in enumerate(lines) if line.startswith("## ")), len(lines))
+	for i in range(first_top_level):
+		if lines[i].startswith("### "):
+			lines[i] = "## " + lines[i][len("### "):]
+
+	return "\n".join(lines)
+
+
+# Compose the global-rules skill body directly from rules/ fragments, so the
+# skill can never drift from the source rules the way a hand-maintained copy could.
+def build_global_rules_body() -> str:
+	parts = ["# Global rules"]
+	for fragment in GLOBAL_RULES_FRAGMENTS:
+		text = (RULES_DIR / fragment).read_text().strip()
+		if fragment == "global-rules.md":
+			text = promote_general_configuration(text)
+		parts.append(text)
+	return "\n\n".join(parts) + "\n"
+
+
 # Write a runtime skill directory from authored metadata, body, and support files.
 #
 # @param  {Path}  skill_dir
 #     The authored skill directory.
 def generate_skill_md(skill_dir: Path) -> None:
 	manifest_file = skill_dir / "skill.json"
-	body_file = skill_dir / "SKILL.body.md"
 	manifest = json.loads(manifest_file.read_text())
-	body = body_file.read_text()
+
+	if manifest["name"] == GLOBAL_RULES_SKILL_NAME:
+		body = build_global_rules_body()
+	else:
+		body = (skill_dir / "SKILL.body.md").read_text()
+
 	output_dir = DIST_SKILLS_DIR / manifest["name"]
 	output_file = output_dir / "SKILL.md"
 

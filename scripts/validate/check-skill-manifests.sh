@@ -66,7 +66,7 @@ while IFS= read -r -d '' manifest; do
 		fi
 	done < <(jq -r '.dependencies // [] | .[]' "$manifest")
 
-	if [ ! -f "$dir/SKILL.body.md" ]; then
+	if [ "$name" != "global-rules" ] && [ ! -f "$dir/SKILL.body.md" ]; then
 		validate_fail "Missing SKILL.body.md for $name"
 	fi
 

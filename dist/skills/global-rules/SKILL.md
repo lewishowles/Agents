@@ -8,10 +8,6 @@ description: >
 
 Rules are authoritative. Apply every rule every time. In-conversation request conflicts with rules: follow request, flag the conflict. No silent relaxation.
 
-## Identity & expertise
-
-Designer, front-end dev, strong full-stack. Focus: accessible design (WCAG AA, AAA where feasible), maintainable/scalable code, dev experience. UK-based. Exploring freelance, tooling, accessibility audits.
-
 ## Workspace facts
 
 After reading project instructions, check for `WORKSPACE.md` at the project root before planning or running local commands. Treat it as the factual source for available commands, generated files, diagnostics, progress locations, expensive checks, and forbidden operations. During migration, fall back to `AGENT_CAPABILITIES.md` when `WORKSPACE.md` is absent.
@@ -38,21 +34,6 @@ Minimise token cost by default. Treat context as a limited shared budget.
 - Do not re-run or re-print expensive commands unless something changed that can affect their result and local execution is justified by token cost.
 - Do not output placeholder status text between tool calls ("Still active", "Continuing…"). Only emit a status update when there is something genuinely new to report — a finding, a direction change, or a blocker.
 - Prefer structurally correct, formatter-friendly code over hand-polished indentation. Preserve indentation where it affects syntax or meaning, but do not spend effort aligning, beautifying, or manually wrapping whitespace that the project formatter will rewrite.
-
-## File discovery
-
-Minimise token cost while discovering files. Discovery commands should answer the narrow question with the smallest output.
-
-- Prefer `rg` and `rg --files`, but include gitignored files during file discovery. For glob tools, set `include_gitignored: true`; for `rg`, include ignored files while keeping the search scoped to the smallest likely path.
-- Scope searches to the smallest likely directory, for example `rg --files src` instead of repo-wide scans.
-- Do not inspect generated, vendored, cached, build, dependency, or large binary directories unless explicitly asked. This includes `node_modules`, `dist`, `build`, `.git`, coverage, caches, generated plugin bundles, lockfile-heavy generated output, and local secrets.
-- Do not use broad `find`, `ls -R`, or unscoped glob searches. If `find` is unavoidable, scope it to named directories and group `-o` expressions with parentheses.
-- Before printing many files, prefer counts or `--files-with-matches`; open only the specific files needed.
-- For build artefact checks, inspect the exact expected output path rather than listing whole build trees.
-- If a command unexpectedly starts dumping large output, stop using that pattern and switch to a narrower command.
-- If a user says a file exists and a search cannot find it, state that gitignored files were included before concluding it is missing.
-- Never rely on a remembered line number to offset-read into a file. Formatters shift lines on save. Use `rg -n 'pattern' file` to find the current line first, then read from that offset.
-- Never use a `&&` chain to conclude a file exists or is absent. A `&&` exits non-zero silently on any failure in the chain, not just a missing file. Use the Read tool or an explicit `[[ -f path ]]` check with a verified exit status instead.
 
 ## Effort tiering
 
@@ -92,7 +73,7 @@ For analysis-only requests, do not load implementation skills or begin coding. U
 
 **Unexpected state — stop and ask. Don't dig.**
 
-- File missing? Symlink broken? Output unexpected? Stop.
+- File missing? Symlink broken? Output unexpected? Stop. If a user says a missing file exists, state whether gitignored files were included before concluding it is missing.
 - Don't workaround, retry, or dig deeper — state what you expected vs. what you found
 - Recovers faster than chasing wrong paths. You know the system; I don't.
 
@@ -202,6 +183,10 @@ Delegation is opt-in, not default. Consider it when a plan has 3+ independent ta
 
 The main agent acts as architect and reviewer; subagents act as implementers. Subagent support depends on the agent runtime — if unavailable, fall back to sequential chunked work.
 
+## Identity & expertise
+
+Designer, front-end dev, strong full-stack. Focus: accessible design (WCAG AA, AAA where feasible), maintainable/scalable code, dev experience. UK-based. Exploring freelance, tooling, accessibility audits.
+
 ## Skill use policy
 
 Skills are authoritative when their trigger conditions match. Before coding, editing prose, changing config, or reviewing files, inspect the task and file paths, then load and use the matching skills needed for the current task type. If multiple skills match, use all relevant skills — especially `code-style` plus language/framework skills. Do not wait for explicit slash-command invocation.
@@ -209,6 +194,21 @@ Skills are authoritative when their trigger conditions match. Before coding, edi
 **Skill vs. rule boundary:** if guidance should apply on every turn regardless of task, it belongs in `rules/`. If it is triggered by a specific task type or file context, it belongs in `skills/`. Do not add always-on conventions to a skill, and do not put task-specific workflows in a rule.
 
 - Re-read a skill only if the task type changes, the user explicitly asks, or you need a specific detail. Otherwise, keep applying the loaded guidance without announcing it.
-- Load the smallest matching set; do not speculatively load adjacent skills. For analysis, review, or planning requests, do not load implementation skills — see Scope default above.
+- Load the smallest matching set; do not speculatively load adjacent skills. For analysis, review, or planning requests, do not load implementation skills — see Scope default in global-rules.
 - Summarise remembered constraints in your own words — do not quote skill sections back.
 - If a skill conflicts with the user's token-budget preference, follow the preference and note the tradeoff.
+
+## File discovery
+
+Minimise token cost while discovering files. Discovery commands should answer the narrow question with the smallest output.
+
+- Prefer `rg` and `rg --files`, but include gitignored files during file discovery. For glob tools, set `include_gitignored: true`; for `rg`, include ignored files while keeping the search scoped to the smallest likely path.
+- Scope searches to the smallest likely directory, for example `rg --files src` instead of repo-wide scans.
+- Do not inspect generated, vendored, cached, build, dependency, or large binary directories unless explicitly asked. This includes `node_modules`, `dist`, `build`, `.git`, coverage, caches, generated plugin bundles, lockfile-heavy generated output, and local secrets.
+- Do not use broad `find`, `ls -R`, or unscoped glob searches. If `find` is unavoidable, scope it to named directories and group `-o` expressions with parentheses.
+- Before printing many files, prefer counts or `--files-with-matches`; open only the specific files needed.
+- For build artefact checks, inspect the exact expected output path rather than listing whole build trees.
+- If a command unexpectedly starts dumping large output, stop using that pattern and switch to a narrower command.
+- If a user says a file exists and a search cannot find it, state that gitignored files were included before concluding it is missing.
+- Never rely on a remembered line number to offset-read into a file. Formatters shift lines on save. Use `rg -n 'pattern' file` to find the current line first, then read from that offset.
+- Never use a `&&` chain to conclude a file exists or is absent. A `&&` exits non-zero silently on any failure in the chain, not just a missing file. Use the Read tool or an explicit `[[ -f path ]]` check with a verified exit status instead.

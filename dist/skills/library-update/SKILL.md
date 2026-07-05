@@ -21,6 +21,7 @@ Check Lewis shared libraries for new releases, surface changes, and identify pro
 /library-update helpers      — check @lewishowles/helpers only
 /library-update testing      — check @lewishowles/testing only
 /library-update cli-style    — check @lewishowles/cli-style only
+/library-update lint-config  — check @lewishowles/lint-config only
 ```
 
 ## Step 1 — determine which libraries to check
@@ -31,6 +32,7 @@ If argument given, use it. Otherwise read `package.json` and check listed depend
 - `@lewishowles/helpers`
 - `@lewishowles/testing`
 - `@lewishowles/cli-style`
+- `@lewishowles/lint-config`
 
 If a known library is not present, still check whether the project or its generators contain boilerplate that the library is meant to replace. Report missing-library adoption separately from version updates. For example, a project without `@lewishowles/testing` might still need it if test setup or Boilersuit templates duplicate utilities it now provides.
 
@@ -54,6 +56,7 @@ npm view @lewishowles/components version versions time --json
 npm view @lewishowles/helpers version versions time --json
 npm view @lewishowles/testing version versions time --json
 npm view @lewishowles/cli-style version versions time --json
+npm view @lewishowles/lint-config version versions time --json
 ```
 
 Confirm before running npm registry commands if network access has not already been approved. Identify the latest stable published version from `version` or the `latest` dist-tag. Versions follow the format `X.Y.Z`.
