@@ -15,6 +15,12 @@ include_check_fails="${FRICTION_INCLUDE_CHECK_FAILS:-0}"
 log_files=()
 
 if [ "$#" -gt 0 ]; then
+	for log_file in "$@"; do
+		if [[ "$(basename "$log_file")" != "friction.log" ]]; then
+			printf 'Refusing non-friction-log path: %s\n' "$log_file" >&2
+			exit 1
+		fi
+	done
 	log_files=("$@")
 else
 	if [[ -d "$dev_root" ]]; then
