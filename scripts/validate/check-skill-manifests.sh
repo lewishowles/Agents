@@ -39,6 +39,20 @@ while IFS= read -r -d '' manifest; do
 		validate_fail "Missing 'description' in $name"
 	fi
 
+	needs_when=$(jq -r '
+		(.when // "") as $when
+		| (if has("index") then .index else true end) as $idx
+		| (.targets // []) as $t
+		| if ($when != "") then "no"
+			elif ($idx == false) then "no"
+			elif (($t | length) > 0) and (($t | index("claude")) == null) then "no"
+			else "yes"
+			end
+	' "$manifest")
+	if [ "$needs_when" = "yes" ]; then
+		validate_fail "Missing 'when' in $name (add one, set \"index\": false, or exclude claude from targets)"
+	fi
+
 	title=$(jq -r '.title // empty' "$manifest")
 	if [ -n "$title" ] && [ "$title" = "$name" ]; then
 		validate_fail "title should be human-readable, not identical to name, in $name"

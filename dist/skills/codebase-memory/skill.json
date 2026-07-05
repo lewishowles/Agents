@@ -1,5 +1,6 @@
 {
 	"name": "codebase-memory",
+	"index": false,
 	"description": "Use this skill when answering structural code queries with the codebase knowledge graph, including architecture, callers, dependencies, impact analysis, dead code, graph query syntax, Cypher examples, edge types, and search_graph usage.",
 	"triggers": [
 		"explore codebase",

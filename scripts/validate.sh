@@ -51,6 +51,7 @@ run_check() {
 }
 
 run_check "skill manifests"       bash "$REPO_DIR/scripts/validate/check-skill-manifests.sh"
+run_check "trigger overlap"       python3 "$REPO_DIR/scripts/validate/check-trigger-overlap.py"
 run_check "trigger fixture names" bash "$REPO_DIR/scripts/validate/check-trigger-fixture-names.sh"
 run_check "hook manifests"        bash "$REPO_DIR/scripts/validate/check-hook-manifests.sh"
 run_check "generated files"       bash "$REPO_DIR/scripts/validate/check-generated-files.sh"
