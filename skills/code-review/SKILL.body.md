@@ -57,6 +57,7 @@ A reviewer should be able to understand what changed, why, and how it will be ma
 - Any unnecessary re-renders or reactive side effects?
 - Images sized and lazy-loaded appropriately?
 - Any N+1 queries, missing indexes, unbounded queries, or avoidable hot-path complexity?
+- If a change claims a measured improvement, were before/after numbers taken under the same conditions (page state, cache, network/CPU throttling)? A faster number from a warmed cache or a narrower test isn't a real improvement.
 
 **Tests**
 
