@@ -83,7 +83,7 @@ Adjust focus by PR type:
 
 ## Quick-reference checklist
 
-PR-pasteable checklist: [`references/checklist.md`](references/checklist.md).
+PR-pasteable checklist: [`references/checklist.md`](references/checklist.md). PR description template: [`references/pr-description-template.md`](references/pr-description-template.md).
 
 ## Receiving a review
 
