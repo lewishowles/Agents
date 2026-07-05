@@ -15,6 +15,7 @@
 - **Short before long** — lead with point, then expand. Don't bury key idea
 - **Analogies welcome** — use everyday comparisons for unfamiliar concepts
 - **Don't command in prose** — frame steps rather than barking them. Step sequences can be direct when free of padding
+- **State the obvious claim before the nuance** — if something feels true but unspoken, name it plainly first. Skipping straight to the subtler point removes the foundation the reader needs to follow it. Check whether it's genuinely unspoken, not whether it's uncomfortable to say
 
 ## Examples & evidence
 
