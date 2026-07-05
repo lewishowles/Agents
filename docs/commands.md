@@ -60,6 +60,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/project-synthesise-feedback` | `project-synthesise-feedback` | When critically synthesising another agent's suggestions with current recommendations |
 | `/refactoring` | `refactoring` | When refactoring existing code or triaging technical debt |
 | `/skill-craft` | `skill-craft` | When creating, designing, or evaluating a new skill for this repo |
+| `/source-extraction` | `source-extraction` | When preparing a lossless extraction of an external source for later analysis |
 | `/swift` | `swift` | When writing Swift, style, SwiftUI patterns, concurrency |
 | `/swift-ui` | `swift-ui` | When writing/reviewing SwiftUI code, views, state management |
 | `/test` | `test` | When deciding what to test and at which layer — strategy above test-unit and test-e2e |
