@@ -84,5 +84,7 @@ Rules:
 - Run `bun audit` (or `npm audit`) regularly; fix high and critical issues before shipping
 - Pin major versions; review changelogs before upgrading security-sensitive packages (`dompurify`, auth libraries)
 - Prefer packages with active maintenance and security advisories tracked
+- Don't disable postinstall-script blocking (`--ignore-scripts=false` or equivalent) unless a specific package requires it — postinstall scripts are a common supply-chain attack vector
+- Be cautious adopting a package version published in the last 24 hours, especially for a sudden major-version bump or an unfamiliar maintainer change; malicious releases are often pulled within a day
 
 For detailed patterns (input validation, file upload safety, subresource integrity, clickjacking), see [references/patterns.md](references/patterns.md).
