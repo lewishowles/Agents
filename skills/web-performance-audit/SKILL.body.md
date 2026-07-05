@@ -43,6 +43,8 @@ npx lighthouse <url> --view
 
 Or DevTools → Lighthouse → run in Incognito.
 
+If this triage happens before planned fix work rather than after it, record the date, tool, and build/cache conditions alongside the score — this is the "before" baseline the fair-comparison check below will need once the fix lands.
+
 ### 3. Fair-comparison check
 
 If the PR claims a measured improvement, confirm before/after numbers used the same page state, cache state, and throttling profile. A faster number from a warmed cache or a narrower test isn't a real improvement (see `code-review` skill).
@@ -84,6 +86,8 @@ Run the quick-triage static scan across the whole repo, not just touched files.
 ### 3. Live measurement per page
 
 For each target page, run Lighthouse (or `lhci autorun` if CI is set up — see [references/measurement.md](../web-performance/references/measurement.md)) and record LCP, CLS, and INP against the targets in the `web-performance` skill.
+
+If this audit precedes planned fix work, this measurement is the baseline: record the date, tool, and build/cache conditions alongside each score, not just the number. A later "after" comparison is only defensible if it can match this method (see the fair-comparison check in `code-review`).
 
 ### 4. Bundle check
 
