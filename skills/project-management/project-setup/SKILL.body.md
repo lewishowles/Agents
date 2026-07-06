@@ -184,7 +184,7 @@ Ideas and concerns not belonging to the current section.
 Completed major sections, moved here to keep the document small.
 ```
 
-Task file shape (`.agent/tasks/<slug>.md`), same content as an inline `## Active work` section would have used:
+Task file shape (`.agent/tasks/<slug>.md`), same fields as an inline `## Active work` section would have used, one heading level shallower (`# <Task name>` in place of `## <Section name>`, so fields are `##` not `###`) — keep in sync with the `project-plan-task` skill's "Section structure" if either changes:
 
 ```markdown
 # <Task name>
@@ -195,7 +195,17 @@ Task file shape (`.agent/tasks/<slug>.md`), same content as an inline `## Active
 
 <Conventional Commit message>
 
+## Model tier
+
+Optional. Note if this task needs a specific tier (Haiku for mechanical/high-volume work, Sonnet for implementation, Opus for planning or cross-file synthesis) — skip if the session default is fine.
+
 ## Files likely to change
+
+## Related files to inspect
+
+## Spec
+
+Optional. Link to `.agent/specs/<feature>.md` only when this task needs heavier feature context.
 
 ## Tasks
 
@@ -203,7 +213,7 @@ Task file shape (`.agent/tasks/<slug>.md`), same content as an inline `## Active
 
 ## Risks
 
-## Verification
+## Notes
 
 ## When done
 

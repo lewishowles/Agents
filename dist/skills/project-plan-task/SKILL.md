@@ -64,13 +64,15 @@ Once a plan has more than the current one or two active items, prefer a standalo
 
 `PROGRESS.md`'s session handoff then holds only: a link to the active task file, a short ordered list of upcoming task file links, and standing context that doesn't change per task (verification commands, recurring gotchas). Backlog items with no concrete task file yet stay as prose bullets elsewhere in `PROGRESS.md` (with a spec link if one exists) — do not create a task file until the item is genuinely next; write it just-in-time.
 
-Each task file uses the same **Section structure** below as its content — the difference is where it lives, not the shape. Add a `## When done` step at the end naming what to delete and what to promote into the active slot next.
+Each task file uses the same **Section structure** below, promoted one heading level: the task file's own top-level heading (`# <Task name>`) takes the place of `## <Section name>`, so its fields are `##` (Purpose, Expected commit, ...) rather than `###` — semantic nesting, not a fixed heading depth. Add a `## When done` step at the end naming what to delete and what to promote into the active slot next.
 
 Placement follows the same principle as section order: when inserting new work, if it's the immediate next task, write or update the active task file directly; if it's later in the queue, add a new `.agent/tasks/<slug>.md` file and insert its link into the queue list in dependency order, not at the end.
 
 On completion, delete the finished task file and promote the next queue entry into the active slot in `PROGRESS.md`. This mechanical step, not a "stop and read further" instruction, is what keeps the next agent from re-deriving the whole plan.
 
 ## Section structure
+
+Inline `PROGRESS.md` section (fields nest under the section heading, so `###`):
 
 ```markdown
 ## <Section name>
@@ -100,4 +102,40 @@ Optional. Link to `.agent/specs/<feature>.md` only when this section needs heavi
 ### Risks
 
 ### Notes
+```
+
+Standalone `.agent/tasks/<slug>.md` file (same fields, one level shallower — the task name is the file's own top-level heading, not nested under it):
+
+```markdown
+# <Task name>
+
+## Purpose
+
+## Expected commit
+
+<Conventional Commit message>
+
+## Model tier
+
+Optional. Note if this task needs a specific tier (Haiku for mechanical/high-volume work, Sonnet for implementation, Opus for planning or cross-file synthesis) — skip if the session default is fine.
+
+## Files likely to change
+
+## Related files to inspect
+
+## Spec
+
+Optional. Link to `.agent/specs/<feature>.md` only when this task needs heavier feature context.
+
+## Tasks
+
+- [ ] item
+
+## Risks
+
+## Notes
+
+## When done
+
+What to delete and what to promote into the active slot next.
 ```
