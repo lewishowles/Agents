@@ -49,9 +49,7 @@ sync_file() {
 
 	printf '\n'
 	cli_group_status warning "$label" "exists locally but differs from the default"
-	printf '  This usually means either:\n'
-	printf '    • You have customised it for this project\n'
-	printf '    • The default template has been updated\n\n'
+	cli_style_hint "This usually means either you have customised it for this project or the default template has been updated."
 	printf '  Overwrite with the default? (y/n): '
 	read -r response
 	if [[ $response == y ]]; then
@@ -214,7 +212,9 @@ check_status() {
 
 	if [ -z "$detected_mode" ]; then
 		cli_status failed "No setup detected" "AGENTS.md missing or mode unrecognised"
-		printf '\n  Run: setup-project.sh --claude|--codex|--both\n\n'
+		local _json
+		_json='{"next":'"$(cli_style_json_string "Run setup to create project files")"',"reason":'"$(cli_style_json_string "")"',"commands":'"$(cli_style_json_string_array "setup-project.sh --claude" "setup-project.sh --codex" "setup-project.sh --both")"',"alternatives":'"$(cli_style_json_string_array)"'}'
+		cli_style_render_json next-step-block "$_json"
 		return 0
 	fi
 
@@ -308,8 +308,7 @@ check_status() {
 	cli_group_end
 
 	# Repair guidance — no files are modified.
-	printf '\n  Repair:\n'
-	printf '    setup-project.sh --%s  — set up missing files\n' "$detected_mode"
-	printf '    setup-project.sh --write-workspace  — create WORKSPACE.md\n'
-	printf '    setup-project.sh --force-workspace  — refresh WORKSPACE.md\n\n'
+	local _json
+	_json='{"next":'"$(cli_style_json_string "Repair setup drift")"',"reason":'"$(cli_style_json_string "")"',"commands":'"$(cli_style_json_string_array "setup-project.sh --$detected_mode" "setup-project.sh --write-workspace" "setup-project.sh --force-workspace")"',"alternatives":'"$(cli_style_json_string_array)"'}'
+	cli_style_render_json next-step-block "$_json"
 }
