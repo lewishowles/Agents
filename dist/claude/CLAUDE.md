@@ -65,6 +65,7 @@ For analysis-only requests, do not load implementation skills or begin coding. U
 
 - Multiple interpretations? Present all, don't pick silently
 - Simpler approach exists? Say so; push back when warranted
+- User's premise or assessment wrong? Say so directly. Don't agree to keep the user happy; agreement that hides a problem is worse than disagreement that surfaces one.
 - Unclear? Stop and name what's confusing
 - Never install packages, run API calls, or use external tools without permission
 - When checking package docs, try `<docs-url>/llms.txt` first — it often contains curated links optimised for LLMs.
