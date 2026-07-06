@@ -56,7 +56,7 @@ Run only when user asks and `agents:workspace` exists in current shell.
 
 For larger spikes or ambiguous features, create/reference a per-feature spec under `.agent/specs/` instead of expanding `PROGRESS.md` with design history. Keep `PROGRESS.md` focused on execution state and add `### Spec` link in relevant section. Do not create specs for small changes, direct bug fixes, routine docs edits, or work fitting one progress section.
 
-Spec explains why now, problem, goals, non-goals, approach, API/schema/interface changes, acceptance criteria, risks, and verification. Read/update only when working on that feature.
+Spec explains why now, problem, goals, current status (optional), non-goals, approach, entry point and files to inspect (optional), API/schema/interface changes, decisions and open questions (optional), acceptance criteria, risks, and verification. Read/update only when working on that feature. Full outline lives in the `project-setup` skill's "Feature specs" section — keep in sync if either changes.
 
 ## Task files vs progress sections
 

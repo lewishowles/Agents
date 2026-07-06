@@ -71,11 +71,21 @@ Spec files should keep this outline:
 
 ## Goals
 
+## Current status
+
 ## Non-goals
 
 ## Proposed approach
 
+## Entry point
+
+## Files to inspect
+
 ## API, schema, or interface
+
+## Decisions
+
+## Open questions
 
 ## Acceptance criteria
 

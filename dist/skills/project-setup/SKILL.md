@@ -96,6 +96,10 @@ User or system problem.
 
 - Outcome that must be true
 
+## Current status
+
+Optional; omit if obvious or the spec is new. What's already done vs what's still outstanding, so a fresh agent can gauge progress without reading history.
+
 ## Non-goals
 
 - Work deliberately out of scope
@@ -104,9 +108,25 @@ User or system problem.
 
 Intended solution shape, including important alternatives or tradeoffs.
 
+## Entry point
+
+Optional; omit if obvious. Where an agent with zero prior context should start reading — the first file, command, or concept to look at.
+
+## Files to inspect
+
+Optional; omit if obvious. Files most relevant to understanding or continuing this work.
+
 ## API, schema, or interface
 
 Commands, routes, data shape, UI states, or public contracts affected.
+
+## Decisions
+
+Optional; omit if none yet. Choices already made and why, so they aren't re-debated.
+
+## Open questions
+
+Optional; omit if none. What's still unresolved.
 
 ## Acceptance criteria
 
