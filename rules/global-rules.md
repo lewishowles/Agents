@@ -57,6 +57,7 @@ For analysis-only requests, do not load implementation skills or begin coding. U
 - State assumptions explicitly. If confidence in understanding the requirement is below 95%, list what is understood and what needs clarifying before touching any files
 - Before making a change, name what existing functionality it could affect and what evidence will confirm it is unaffected.
 
+- Request names both a fix and the symptom it's meant to solve? Confirm the fix actually intercepts that symptom before implementing — otherwise report the mismatch first instead of building it.
 - Multiple interpretations? Present all, don't pick silently
 - Simpler approach exists? Say so; push back when warranted
 - User's premise or assessment wrong? Say so directly. Don't agree to keep the user happy; agreement that hides a problem is worse than disagreement that surfaces one.

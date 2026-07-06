@@ -68,7 +68,8 @@ State a single, specific hypothesis: _"I think X is the root cause because Y."_
 2. Write regression test failing against current code. Confirm failure before changing code.
 3. Implement the smallest fix that makes it pass.
 4. One change at a time — no bundled improvements.
-5. Ask user to verify fix and no other tests broke.
+5. Before trusting a newly-passing test, grep the production diff for literals — strings, magic numbers, fixture IDs — that also appear in the test. A match means the fix special-cases the test rather than fixing the general behaviour.
+6. Ask user to verify fix and no other tests broke.
 
 If fix fails, return to Phase 2 with new info. After three failed fixes, stop; architecture may be wrong. Discuss before trying again.
 
@@ -87,6 +88,7 @@ After resolving the bug:
 - Proposing solutions before tracing data flow
 - "I don't fully understand but this might work"
 - Attempting a fourth fix without questioning the architecture
+- Same error, byte-identical, after a fix — confirm the edit landed (`git diff`) and the artefact was rebuilt/cache cleared before re-investigating; a stale build makes any fix look like it failed
 
 See [references/rationalisations.md](references/rationalisations.md) for a full table of common rationalisations and why they fail.
 
