@@ -49,6 +49,13 @@ Only include this section once the project has genuinely distinct areas with dif
 - [Area/change type 1] → `[entry file or directory]`
 - [Area/change type 2] → `[entry file or directory]`
 
+## Need to know
+
+Durable, cross-cutting facts that apply regardless of current task: standing conventions, external contracts, environment quirks. Distinct from `PROGRESS.md` discoveries, which are tied to work in flight — promote a discovery here once it proves permanent rather than task-specific.
+
+- [Fact 1]
+- [Fact 2]
+
 ## Gotchas
 
 Known traps, phrased as the wrong assumption followed by what's actually true, not a flat fact list.

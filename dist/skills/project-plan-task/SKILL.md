@@ -58,6 +58,18 @@ For larger spikes or ambiguous features, create/reference a per-feature spec und
 
 Spec explains why now, problem, goals, non-goals, approach, API/schema/interface changes, acceptance criteria, risks, and verification. Read/update only when working on that feature.
 
+## Task files vs progress sections
+
+Once a plan has more than the current one or two active items, prefer a standalone file under `.agent/tasks/<slug>.md` over an inline `PROGRESS.md` section for concrete, ready-to-pick-up work. This keeps the read surface small: the next agent opens only the active task's file, not the whole plan.
+
+`PROGRESS.md`'s session handoff then holds only: a link to the active task file, a short ordered list of upcoming task file links, and standing context that doesn't change per task (verification commands, recurring gotchas). Backlog items with no concrete task file yet stay as prose bullets elsewhere in `PROGRESS.md` (with a spec link if one exists) — do not create a task file until the item is genuinely next; write it just-in-time.
+
+Each task file uses the same **Section structure** below as its content — the difference is where it lives, not the shape. Add a `## When done` step at the end naming what to delete and what to promote into the active slot next.
+
+Placement follows the same principle as section order: when inserting new work, if it's the immediate next task, write or update the active task file directly; if it's later in the queue, add a new `.agent/tasks/<slug>.md` file and insert its link into the queue list in dependency order, not at the end.
+
+On completion, delete the finished task file and promote the next queue entry into the active slot in `PROGRESS.md`. This mechanical step, not a "stop and read further" instruction, is what keeps the next agent from re-deriving the whole plan.
+
 ## Section structure
 
 ```markdown

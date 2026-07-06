@@ -121,7 +121,7 @@ Commands, routes, data shape, UI states, or public contracts affected.
 Focused checks, manual review, or evidence needed before handoff.
 ```
 
-When permanent decisions emerge, move them to `AGENTS.md`, architecture docs, user docs, or ADR only when ADR criteria are met.
+When permanent decisions emerge, move them to `AGENTS.md`'s `## Need to know` section, architecture docs, user docs, or ADR only when ADR criteria are met. `AGENTS.md` is read every session and never gets compacted, so it's the right home for a fact once it proves durable, rather than waiting for it to survive several rounds of `PROGRESS.md` compaction.
 
 ## CONTEXT.md — domain glossary
 
@@ -141,60 +141,34 @@ _CONTEXT.md glossary pattern inspired by [mattpocock/skills](https://github.com/
 
 ## PROGRESS.md schema
 
+For a brand-new project the initial plan is usually small enough to stay inline. Once there's a first concrete unit of ready-to-pick-up work, create it as `.agent/tasks/<slug>.md` (see the `project-plan-task` skill's "Task files vs progress sections") rather than growing the `## Active work` section indefinitely.
+
 ```markdown
 # <Project name>
 
 ## Session handoff
 
-Read this section first. Stop after this section unless the task needs deeper context.
+Read this section first. Only open the active task file. Stop after this section unless it's unclear or deeper context is genuinely needed.
 
-### Current goal
+### Active task
 
-One sentence. What are we delivering right now?
+`.agent/tasks/<slug>.md`, or, for a brand-new plan with no task file yet, a one-sentence current goal plus next step.
 
-### Previous step
+### Upcoming queue
 
-Plan created; no implementation yet.
+Ordered links to `.agent/tasks/<slug>.md` files, or brief bullets if not yet broken into files.
 
-### Next step
+### Standing context
 
-Review and approve the plan before implementation starts.
+Verification commands and recurring gotchas that apply regardless of which task is active.
 
 ### Stop here
 
-Only continue reading if the next step is unclear, the user asks for planning/review/history, or implementation needs decisions, discoveries, risks, or file lists below.
+Only continue reading if the active task is unclear, or you're picking up backlog work not yet in `.agent/tasks/`.
 
 ## Project overview
 
 Brief description: purpose, tech, constraints.
-
-## Active work
-
-### Purpose
-
-### Expected commit
-
-<Conventional Commit message>
-
-### Model tier
-
-Optional. Note if this chunk needs a specific tier (Haiku for mechanical/high-volume work, Sonnet for implementation, Opus for planning or cross-file synthesis) — skip if the session default is fine.
-
-### Files likely to change
-
-### Related files to inspect
-
-### Spec
-
-Optional. Link to `.agent/specs/<feature>.md` only when the work is large or ambiguous enough to need one.
-
-### Tasks
-
-- [ ] item
-
-### Risks
-
-### Notes
 
 ## Decisions
 
@@ -202,11 +176,11 @@ Key architectural or process decisions. Date-stamped entries.
 
 ## Discoveries
 
-Unexpected findings that affect the work. Date-stamped entries.
+Unexpected findings that affect the work. Date-stamped entries. Promote a discovery to `AGENTS.md`'s `## Need to know` section once it proves durable rather than task-specific.
 
 ## Upcoming work
 
-Brief bullets only. Detailed planning happens when work starts.
+Brief bullets for backlog items with no task or spec file yet. Detailed planning, and a task file, happen when work starts.
 
 ## Parking lot
 
@@ -215,4 +189,30 @@ Ideas and concerns not belonging to the current section.
 ## Archived milestones
 
 Completed major sections, moved here to keep the document small.
+```
+
+Task file shape (`.agent/tasks/<slug>.md`), same content as an inline `## Active work` section would have used:
+
+```markdown
+# <Task name>
+
+## Purpose
+
+## Expected commit
+
+<Conventional Commit message>
+
+## Files likely to change
+
+## Tasks
+
+- [ ] item
+
+## Risks
+
+## Verification
+
+## When done
+
+What to delete, and what to promote into the active slot in `PROGRESS.md` next.
 ```
