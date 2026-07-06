@@ -176,6 +176,10 @@ Brief description: purpose, tech, constraints.
 
 <Conventional Commit message>
 
+### Model tier
+
+Optional. Note if this chunk needs a specific tier (Haiku for mechanical/high-volume work, Sonnet for implementation, Opus for planning or cross-file synthesis) — skip if the session default is fine.
+
 ### Files likely to change
 
 ### Related files to inspect

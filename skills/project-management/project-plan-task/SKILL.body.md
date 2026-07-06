@@ -32,7 +32,7 @@ Run only when user asks and `agents:workspace` exists in current shell.
 3. **Locate** — identify whether the work fits before, after, or between upcoming sections
 4. **Approach exploration** (opt-in) — for complex or ambiguous tasks, surface 2–3 structurally different approaches, each with a one-sentence tradeoff, then wait for the user to choose before continuing. Skip when: the task is a single-file change, there is clearly only one sensible approach, or the user has already decided. Do not combine approach selection with plan writing — present options first, write the section after confirmation.
 5. **Reorganise** — if the new work changes what's needed later, update upcoming sections to match
-6. **Insert** — add a section using standard structure: purpose, expected commit, files likely to change, tasks, risks, notes
+6. **Insert** — add a section using standard structure: purpose, expected commit, model tier, files likely to change, tasks, risks, notes
 7. **Update parking lot** — move related ideas into the new section or leave them parked
 
 ## Placement principles
@@ -61,6 +61,10 @@ Spec explains why now, problem, goals, non-goals, approach, API/schema/interface
 ### Expected commit
 
 <Conventional Commit message>
+
+### Model tier
+
+Optional. Note if this section needs a specific tier (Haiku for mechanical/high-volume work, Sonnet for implementation, Opus for planning or cross-file synthesis) — skip if the session default is fine.
 
 ### Files likely to change
 
