@@ -189,3 +189,127 @@ init_workspace() {
 		print_workspace_review_note
 	fi
 }
+
+# Reports project setup state without modifying any files. Detects the
+# configured mode from AGENTS.md content, then checks AGENTS.md template
+# match, WORKSPACE.md presence, .agent/scripts symlink targets, Claude
+# support files (claude/both only), and unexpected runtime directories.
+check_status() {
+	local agents_md="$PROJECT_DIR/AGENTS.md"
+	local workspace_md="$PROJECT_DIR/WORKSPACE.md"
+	local detected_mode=""
+
+	# Detect mode from AGENTS.md body text.
+	if [ -f "$agents_md" ]; then
+		if grep -Fq "Claude Code and Codex" "$agents_md"; then
+			detected_mode="both"
+		elif grep -Fq "Claude Code" "$agents_md"; then
+			detected_mode="claude"
+		elif grep -Fq "Codex" "$agents_md"; then
+			detected_mode="codex"
+		fi
+	fi
+
+	cli_section "Project setup status" "$PROJECT_DIR"
+
+	if [ -z "$detected_mode" ]; then
+		cli_status failed "No setup detected" "AGENTS.md missing or mode unrecognised"
+		printf '\n  Run: setup-project.sh --claude|--codex|--both\n\n'
+		return 0
+	fi
+
+	cli_status success "Detected mode" "$detected_mode"
+
+	# AGENTS.md template match.
+	cli_group_begin "Project rules"
+	local template=""
+	case "$detected_mode" in
+		claude) template="$REPO_DIR/templates/claude/AGENTS.md.template" ;;
+		codex)  template="$REPO_DIR/templates/codex/AGENTS.md.template" ;;
+		both)   template="$REPO_DIR/templates/shared/AGENTS.md.template" ;;
+	esac
+	if cmp -s "$template" "$agents_md"; then
+		cli_group_status muted "AGENTS.md" "matches template"
+	else
+		cli_group_status warning "AGENTS.md" "differs from template (may be customised)"
+	fi
+	cli_group_end
+
+	# WORKSPACE.md presence.
+	cli_group_begin "Workspace"
+	if [ -e "$workspace_md" ] || [ -L "$workspace_md" ]; then
+		cli_group_status muted "WORKSPACE.md" "exists"
+	else
+		cli_group_status warning "WORKSPACE.md" "missing"
+	fi
+	cli_group_end
+
+	# Shared agent tools — each should be a symlink to the central source.
+	cli_group_begin "Shared agent tools"
+	local scripts_dir="$PROJECT_DIR/.agent/scripts"
+	local expected_tools=(
+		"project-diagnostics.py|$REPO_DIR/scripts/project-diagnostics.py"
+		"generated-file-guard.py|$REPO_DIR/scripts/validate/generated-file-guard.py"
+		"repo-context.py|$REPO_DIR/scripts/repo-context.py"
+		"change-impact.py|$REPO_DIR/scripts/validate/change-impact.py"
+	)
+	if [ ! -d "$scripts_dir" ]; then
+		cli_group_status warning ".agent/scripts/" "missing"
+	else
+		for entry in "${expected_tools[@]}"; do
+			local name="${entry%%|*}"
+			local source="${entry##*|}"
+			local target="$scripts_dir/$name"
+
+			if [ ! -e "$target" ] && [ ! -L "$target" ]; then
+				cli_group_status failed "$name" "missing"
+			elif [ -L "$target" ]; then
+				if [ "$(readlink "$target")" = "$source" ]; then
+					cli_group_status muted "$name" "linked correctly"
+				else
+					cli_group_status warning "$name" "symlink points elsewhere"
+				fi
+			else
+				cli_group_status warning "$name" "local copy, not symlinked"
+			fi
+		done
+	fi
+	cli_group_end
+
+	# Claude support files (claude/both only).
+	if [ "$detected_mode" = "claude" ] || [ "$detected_mode" = "both" ]; then
+		cli_group_begin "Claude support files"
+		local claudeignore="$PROJECT_DIR/.claude/.claudeignore"
+
+		if [ ! -d "$PROJECT_DIR/.claude" ]; then
+			cli_group_status warning ".claude/" "missing"
+		elif [ ! -e "$claudeignore" ] && [ ! -L "$claudeignore" ]; then
+			cli_group_status warning ".claude/.claudeignore" "missing"
+		elif cmp -s "$REPO_DIR/templates/claude/.claudeignore" "$claudeignore"; then
+			cli_group_status muted ".claude/.claudeignore" "matches template"
+		else
+			cli_group_status warning ".claude/.claudeignore" "differs from template (may be customised)"
+		fi
+		cli_group_end
+	fi
+
+	# Unexpected runtime directories.
+	cli_group_begin "Runtime directories"
+	if [ "$detected_mode" = "codex" ]; then
+		if [ -e "$PROJECT_DIR/.claude" ]; then
+			cli_group_status warning ".claude/" "unexpected for Codex-only mode"
+		else
+			cli_group_status muted ".claude/" "absent (correct for Codex-only)"
+		fi
+	fi
+	if [ -e "$PROJECT_DIR/.agents" ]; then
+		cli_group_status warning ".agents/" "present (local skills — intentional?)"
+	fi
+	cli_group_end
+
+	# Repair guidance — no files are modified.
+	printf '\n  Repair:\n'
+	printf '    setup-project.sh --%s  — set up missing files\n' "$detected_mode"
+	printf '    setup-project.sh --write-workspace  — create WORKSPACE.md\n'
+	printf '    setup-project.sh --force-workspace  — refresh WORKSPACE.md\n\n'
+}

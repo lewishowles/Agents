@@ -166,7 +166,49 @@ test_help_lists_commands() {
 	assert_contains "$output" "--both"
 	assert_contains "$output" "Workspace:"
 	assert_contains "$output" "--init-workspace"
+	assert_contains "$output" "Diagnostics:"
+	assert_contains "$output" "--status"
 	assert_contains "$output" "Examples:"
+}
+
+test_status_reports_clean_project() {
+	local target_dir="$TEST_ROOT/status-clean"
+	local output="$TEST_ROOT/status-clean.out"
+	mkdir -p "$target_dir/src"
+
+	run_setup_output "$target_dir" --status > "$output" 2>&1
+
+	assert_contains "$output" "No setup detected"
+	assert_not_contains "$output" "Done."
+}
+
+test_status_reports_configured_project() {
+	local target_dir="$TEST_ROOT/status-configured"
+	local output="$TEST_ROOT/status-configured.out"
+	mkdir -p "$target_dir/src"
+
+	run_setup "$target_dir" --both
+	run_setup_output "$target_dir" --status > "$output" 2>&1
+
+	assert_contains "$output" "Detected mode"
+	assert_contains "$output" "both"
+	assert_contains "$output" "Project rules"
+	assert_contains "$output" "Shared agent tools"
+}
+
+test_status_reports_drifted_project() {
+	local target_dir="$TEST_ROOT/status-drifted"
+	local output="$TEST_ROOT/status-drifted.out"
+	mkdir -p "$target_dir/src"
+
+	run_setup "$target_dir" --both
+	rm "$target_dir/WORKSPACE.md"
+	rm "$target_dir/.agent/scripts/repo-context.py"
+
+	run_setup_output "$target_dir" --status > "$output" 2>&1
+
+	assert_contains "$output" "WORKSPACE.md"
+	assert_contains "$output" "repo-context.py"
 }
 
 test_claude_setup
@@ -178,5 +220,8 @@ test_write_workspace_writes_current_project
 test_write_workspace_protects_existing_manifest
 test_legacy_capability_flag_writes_workspace
 test_help_lists_commands
+test_status_reports_clean_project
+test_status_reports_configured_project
+test_status_reports_drifted_project
 
 printf '✓ setup-project tests passed\n'

@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Scaffolds agent configuration files into a project directory.
-# Copies templates for the chosen agent runtime and prompts before
-# overwriting any file that already exists but differs from the template.
+# Copies templates for the chosen agent runtime; skips AGENTS.md and
+# WORKSPACE.md if they already exist, prompts before replacing a divergent
+# shared tool copy or an outdated .claudeignore. Use --status to report
+# drift without modifying files.
 
 set -euo pipefail
 
@@ -26,6 +28,9 @@ usage() {
 	printf '  %-22s %s\n' '--init-workspace' 'Preview WORKSPACE.md for the current project'
 	printf '  %-22s %s\n' '--write-workspace' 'Write WORKSPACE.md when it is missing'
 	printf '  %-22s %s\n\n' '--force-workspace' 'Refresh WORKSPACE.md after review'
+	printf 'Diagnostics:\n'
+	printf '  %-22s %s\n' '--status' 'Report setup drift without writing files'
+	printf '\n'
 	printf 'Examples:\n'
 	printf '  cd /path/to/project\n'
 	printf '  %s --init-workspace\n\n' "$script_name"
@@ -99,6 +104,8 @@ case "$target" in
 	--init-capabilities)  target="init-workspace" ;;
 	--write-capabilities) target="write-workspace" ;;
 	--force-capabilities) target="force-workspace" ;;
+	--status)             target="status" ;;
+	--check-project)      target="status" ;;
 	--help|-h)            usage; exit 0 ;;
 	"")                  target=$(prompt_target) ;;
 	*)                   usage >&2; exit 1 ;;
@@ -111,6 +118,7 @@ case "$target" in
 	init-workspace)  init_workspace preview; exit ;;
 	write-workspace) init_workspace write ;;
 	force-workspace) init_workspace force ;;
+	status)         check_status; exit ;;
 esac
 
 printf '\n'
