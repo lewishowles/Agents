@@ -10,6 +10,7 @@ import mcp.types as types
 from tools import (
     MAX_FILE_BYTES,
     MAX_GIT_LINES,
+    MAX_PATCH_LINES,
     MAX_SEARCH_MATCHES,
     MAX_TREE_ENTRIES,
     _get_repo,
@@ -19,6 +20,7 @@ from tools import (
     tool_git_status,
     tool_health,
     tool_list,
+    tool_propose_patch,
     tool_read_file,
     tool_search,
     tool_tree,
@@ -116,6 +118,27 @@ async def list_tools() -> list[types.Tool]:
                 "additionalProperties": False,
             },
         ),
+        types.Tool(
+            name="local_repo_propose_patch",
+            description=(
+                f"Propose a single-file text change as a unified diff (max {MAX_PATCH_LINES} diff lines). "
+                "Computes the diff only — never writes to disk. Requires the repo to opt in via a "
+                '"propose_patch" operation in repos.json.'
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "repo_id": {"type": "string"},
+                    "path": {
+                        "type": "string",
+                        "description": "Relative path within repo. Existing file to modify, or a new path to create.",
+                    },
+                    "new_content": {"type": "string", "description": "Full proposed file content."},
+                },
+                "required": ["repo_id", "path", "new_content"],
+                "additionalProperties": False,
+            },
+        ),
     ]
 
 
@@ -149,6 +172,9 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
 
     if name == "local_repo_git_diff":
         return text(tool_git_diff(repo, arguments))
+
+    if name == "local_repo_propose_patch":
+        return text(tool_propose_patch(repo, arguments))
 
     return [types.TextContent(type="text", text=f"Unknown tool: {name!r}")]
 

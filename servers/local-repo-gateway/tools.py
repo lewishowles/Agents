@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Shared Local Repo Gateway tool logic."""
 
+import difflib
 import json
 import subprocess
 from pathlib import Path
@@ -12,6 +13,7 @@ MAX_FILE_BYTES = 50_000
 MAX_TREE_ENTRIES = 200
 MAX_SEARCH_MATCHES = 100
 MAX_GIT_LINES = 200
+MAX_PATCH_LINES = 400
 
 IGNORED_NAMES = {
 	".git", "node_modules", "dist", "build", "__pycache__", ".venv", "venv",
@@ -87,9 +89,10 @@ def _tree_entries(root: Path, prefix: str = "", entries: list | None = None) -> 
 def tool_health(repos: list[dict], arguments: dict) -> str:
 	return json.dumps({
 		"version": VERSION,
-		"mode": "read-only",
+		"mode": "read-only (direct mutation never permitted)",
 		"repo_count": len(repos),
-		"operations": ["read", "git_status", "git_diff"],
+		"operations": ["read", "git_status", "git_diff", "propose_patch"],
+		"notes": "propose_patch computes a diff only and never writes to the working tree; each repo must opt in via its own operations allowlist.",
 	}, indent=2)
 
 
@@ -247,3 +250,58 @@ def tool_git_diff(repo: dict, arguments: dict) -> str:
 		output += f"\n... (truncated at {MAX_GIT_LINES} lines)"
 
 	return output or "No uncommitted changes."
+
+
+def tool_propose_patch(repo: dict, arguments: dict) -> str:
+	"""Compute a unified diff for a single-file text change. Never writes to disk."""
+	if "propose_patch" not in repo.get("operations", []):
+		return (
+			f"Patch proposals are not enabled for repo {repo['id']!r}. "
+			'Add "propose_patch" to its operations list in repos.json to opt in.'
+		)
+
+	root = Path(repo["path"]).resolve()
+	relative = arguments["path"]
+	new_content = arguments["new_content"]
+	target = _safe_path(root, relative)
+
+	if _is_ignored(target):
+		return f"Path {relative!r} is excluded."
+
+	if len(new_content.encode("utf-8")) > MAX_FILE_BYTES:
+		return f"Proposed content for {relative!r} exceeds {MAX_FILE_BYTES} bytes. Split into a smaller change."
+
+	if target.exists():
+		raw = target.read_bytes()
+		try:
+			old_content = raw.decode("utf-8")
+		except UnicodeDecodeError:
+			return f"File {relative!r} is not valid UTF-8 (binary file). Patch proposals only support text files."
+		file_status = "modified"
+	else:
+		old_content = ""
+		file_status = "new file"
+
+	if old_content == new_content:
+		return f"No changes — proposed content for {relative!r} matches the current file."
+
+	diff_lines = list(difflib.unified_diff(
+		old_content.splitlines(keepends=True),
+		new_content.splitlines(keepends=True),
+		fromfile=f"a/{relative}",
+		tofile=f"b/{relative}",
+	))
+
+	if len(diff_lines) > MAX_PATCH_LINES:
+		return (
+			f"Proposed patch for {relative!r} would be {len(diff_lines)} diff lines, "
+			f"over the {MAX_PATCH_LINES}-line limit for a single review chunk. "
+			"Split the change into smaller, single-purpose proposals."
+		)
+
+	banner = (
+		f"Proposed patch for {relative!r} ({file_status}). "
+		"This is a proposal only — no file has been modified. "
+		"Review the diff, apply it yourself (e.g. `git apply`, or edit directly), then commit manually.\n\n"
+	)
+	return banner + "".join(diff_lines)

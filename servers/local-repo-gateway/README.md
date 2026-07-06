@@ -10,7 +10,8 @@ Local Repo Gateway is a local MCP server for read-only inspection of selected re
 - Rejects path traversal outside the configured repo root.
 - Excludes `.git`, dependencies, generated output, caches, and secret-looking paths from tree and file reads.
 - Bounds responses for file reads, tree listings, search results, and diffs.
-- Runs in read-only mode.
+- Runs in read-only mode for direct filesystem mutation.
+- Can propose a single-file text change as a unified diff, for repos that opt in — computed only, never written to disk.
 
 ## What it does not do
 
@@ -18,7 +19,7 @@ Local Repo Gateway is a local MCP server for read-only inspection of selected re
 - It does not let the model choose filesystem roots.
 - It does not write files.
 - It does not stage, commit, tag, push, merge, or rebase.
-- It does not apply patches.
+- It does not apply patches — patch proposals are returned as text for you to apply and commit yourself.
 - It does not deploy, publish, or mutate remote services.
 
 ## Setup
@@ -96,10 +97,23 @@ tail -f /tmp/local-repo-gateway-tunnel.log
 | `local_repo_read_file`        | Bounded UTF-8 file contents for one repo-relative path, or a message when the file is missing, excluded, binary, or too large.            |
 | `local_repo_git_status`       | Compact `git status --short --branch` output, or `Working tree clean.`                                                                    |
 | `local_repo_git_diff`         | Bounded `git diff HEAD` output, optionally scoped to one repo-relative path.                                                              |
+| `local_repo_propose_patch`    | Unified diff for a single-file text change (max 400 diff lines). Computed only — never written to disk. Requires `propose_patch` in the repo's `operations` allowlist. |
 
 ## Schema design
 
 Tool `inputSchema`s stay flat: top-level string params only, no nested arrays of objects. Nested-object-array parameters are the highest-risk shape for malformed model tool calls (per Armin Ronacher's "Better Models: Worse Tools", 2026-07-04); flat schemas keep calls simple to validate and hard to get wrong. Every schema also sets `"additionalProperties": false` to reject invented keys. Revisit this if a future tool genuinely needs structured/array input.
+
+## Patch-proposal workflow
+
+Opt a repo in by adding `"propose_patch"` to its `operations` list in `repos.json`. It is omitted by default, so existing repos stay strictly read-only.
+
+1. Ask ChatGPT to change a file in an opted-in repo.
+2. ChatGPT calls `local_repo_propose_patch` with the target path and the full proposed file content.
+3. The gateway computes a unified diff and returns it — the working tree is untouched.
+4. You review the diff.
+5. You apply it yourself (`git apply`, editor, etc.) and commit manually.
+
+Proposals are capped at 400 diff lines and one file per call, to keep review chunks small. Larger changes come back as multiple smaller proposals instead of one large diff.
 
 ## Planning workflow
 

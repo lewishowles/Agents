@@ -353,6 +353,58 @@
         }
       }
     },
+    "/repos/{repo_id}/patch": {
+      "post": {
+        "summary": "Propose Patch",
+        "operationId": "propose_patch",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Repo Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProposePatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/skills": {
       "get": {
         "summary": "List Skills",
@@ -431,6 +483,24 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "ProposePatchRequest": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
+          "new_content": {
+            "type": "string",
+            "title": "New Content"
+          }
+        },
+        "type": "object",
+        "required": [
+          "path",
+          "new_content"
+        ],
+        "title": "ProposePatchRequest"
       },
       "ValidationError": {
         "properties": {

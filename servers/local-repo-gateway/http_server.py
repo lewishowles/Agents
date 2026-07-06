@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Local Repo Gateway — HTTP server for ChatGPT Custom GPT Actions.
 
-Exposes the same 8 tools as the MCP server over a simple REST API.
+Exposes the MCP server's 9 tools, plus skill browsing, over a simple REST API.
 Requires an auth token set via the GATEWAY_TOKEN env var.
 """
 
@@ -11,6 +11,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Security
 from fastapi.security.api_key import APIKeyHeader
+from pydantic import BaseModel
 
 # Allow running from the repo root or directly.
 sys.path.insert(0, str(Path(__file__).parent))
@@ -25,6 +26,7 @@ from tools import (
     tool_health,
     tool_list,
     tool_list_skills,
+    tool_propose_patch,
     tool_read_file,
     tool_read_skill,
     tool_search,
@@ -59,6 +61,11 @@ def _repo(repo_id: str) -> dict:
         return _get_repo(repo_id, _repos)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+
+class ProposePatchRequest(BaseModel):
+    path: str
+    new_content: str
 
 
 @app.get("/health", dependencies=[Security(_auth)], operation_id="health")
@@ -99,6 +106,11 @@ def git_status(repo_id: str):
 @app.get("/repos/{repo_id}/git/diff", dependencies=[Security(_auth)], operation_id="git_diff")
 def git_diff(repo_id: str, path: str = ""):
     return tool_git_diff(_repo(repo_id), {"path": path})
+
+
+@app.post("/repos/{repo_id}/patch", dependencies=[Security(_auth)], operation_id="propose_patch")
+def propose_patch(repo_id: str, body: ProposePatchRequest):
+    return tool_propose_patch(_repo(repo_id), {"path": body.path, "new_content": body.new_content})
 
 
 @app.get("/skills", dependencies=[Security(_auth)], operation_id="list_skills")
