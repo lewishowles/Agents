@@ -52,7 +52,7 @@ Prefer codebase-memory tools for structural code questions when available. Use t
 4. If no tag exists, stop and ask whether to review all history, a specific range, or the current branch against its merge base.
 5. If the range is empty, say so and stop.
 
-Before reviewing, check `git status --short`. If uncommitted files exist, state that they are outside this review and recommend `project-review-worktree` for them. Continue with the commit-range review unless the dirty worktree makes the evidence ambiguous.
+Before reviewing, check `git status --short`. If uncommitted files exist, state they are outside this review and recommend `project-review-worktree`. Continue unless the dirty worktree makes evidence ambiguous.
 
 ## Skill routing
 

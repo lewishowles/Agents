@@ -8,19 +8,19 @@ Start a new project or feature. Create initial `PROGRESS.md` after exploration a
 
 ## Workspace file
 
-Check `<project-root>/WORKSPACE.md` before planning. It is factual source for commands, generated files, diagnostics, progress locations, expensive checks, and forbidden operations.
+Check `<project-root>/WORKSPACE.md` before planning. Factual source for commands, generated files, diagnostics, progress locations, expensive checks, and forbidden operations.
 
-When `<project-root>/.agent/scripts/project-diagnostics.py` exists, list it as preferred verification route. Plans use `--list` for discovery and `--check <name>` for named verification; reserve `--all` for user-approved broad checks.
+When `.agent/scripts/project-diagnostics.py` exists, list it as preferred verification route. Plans use `--list` for discovery and `--check <name>` for named verification; `--all` for user-approved broad checks only.
 
-If it is missing, generate it only when a workspace generator command is discoverable by name. Example global command:
+If missing, generate it only when a workspace generator command is discoverable by name. Example:
 
 ```sh
 agents:workspace --write
 ```
 
-Before running, confirm `agents:workspace` exists in current shell, then run from project root. After generation, tell user it was generated from detected repo facts and needs review before relying on command safety, generated paths, or forbidden-operation classifications.
+Before running, confirm `agents:workspace` exists in current shell, then run from project root. After generation, tell user it needs review before relying on command safety, generated paths, or forbidden-operation classifications.
 
-If no generator command exists, do not guess path or create file manually. Inspect `AGENTS.md`, package scripts, and nearby docs; mention `WORKSPACE.md` would improve future sessions.
+If no generator exists, do not create the file manually. Inspect `AGENTS.md`, package scripts, and nearby docs; mention `WORKSPACE.md` would improve future sessions.
 
 ## Workflow
 
@@ -54,23 +54,23 @@ For each delegated task:
 3. **Approve or request changes** — if output is correct, proceed; if not, send specific feedback
 4. **Commit** — after approval, commit the task's output before delegating the next
 
-Enables autonomous multi-hour execution while maintaining quality control. Main agent stays in context as architect and reviewer; subagents handle implementation.
+Enables autonomous multi-hour execution while keeping the main agent as architect and reviewer.
 
-**Token tradeoff:** subagents re-read files the main agent already has in context — extra tokens spent, but preserves main-context budget for planning and review. Use when the plan is too large for one context window.
+**Token tradeoff:** subagents re-read files the main agent already has in context. Use when the plan is too large for one context window.
 
 ## Planning principles
 
-- Treat commits as unit of work; each PROGRESS.md section should roughly match one Conventional Commit
-- Prefer multiple small sections over one large one; each section should be independently reviewable
+- Treat commits as unit of work; each section should roughly match one Conventional Commit
+- Prefer multiple small sections over one large one; each independently reviewable
 - "Files likely to change" reduces re-exploration in future sessions
 - Don't plan more than 2–3 sections ahead; detailed planning happens when work starts
-- Keep session handoff current at top. Future agents should read from top and stop after handoff when it gives enough context.
+- Keep session handoff current at top. Future agents read from top and stop after handoff when it gives enough context.
 
 ## Feature specs
 
-Use linked spec only for larger spikes or ambiguous features where `PROGRESS.md` would carry too much rationale. Do not create specs for small changes, direct bug fixes, routine docs edits, or work that fits one progress section.
+Use linked spec only for larger spikes or ambiguous features where `PROGRESS.md` would carry too much rationale. Skip for small changes, bug fixes, routine docs edits, or work that fits one progress section.
 
-Specs are per feature/spike, not global docs. Put them under `.agent/specs/<feature>.md`, then link from `PROGRESS.md`. `PROGRESS.md` stays operational: current goal, next step, verification, blockers. Spec carries heavier context and is read only when active.
+Specs are per feature/spike, not global docs. Put under `.agent/specs/<feature>.md`, link from `PROGRESS.md`. `PROGRESS.md` stays operational: current goal, next step, verification, blockers. Spec carries heavier context, read only when active.
 
 Use this outline when a spec is warranted:
 
@@ -118,7 +118,7 @@ When permanent decisions emerge, move them to `AGENTS.md`, architecture docs, us
 
 ## CONTEXT.md — domain glossary
 
-Root `CONTEXT.md` is pure domain glossary. It is not spec, scratch pad, or implementation guide; only canonical names, names to avoid, and resolved ambiguities.
+Root `CONTEXT.md` is pure domain glossary: canonical names, names to avoid, resolved ambiguities. Not spec, scratch pad, or implementation guide.
 
 Create lazily when first term is worth capturing. Add entries when terms are agreed, not in a batch at the end.
 

@@ -16,9 +16,9 @@ Only ever create a new file at the project root — never create a `.claude/` or
 
 Read `<project-root>/WORKSPACE.md` during startup when present. Treat it as factual source for commands, generated files, diagnostics, progress locations, expensive checks, and forbidden operations.
 
-Do not generate missing workspace file during resume unless user asks for repo setup or new manifest. If missing, inspect `AGENTS.md`, package scripts, and nearby docs.
+Do not generate a missing workspace file during resume unless the user asks for repo setup. If missing, inspect `AGENTS.md`, package scripts, and nearby docs.
 
-If `PROGRESS.md` conflicts with `WORKSPACE.md`, surface the conflict and trust the workspace file for command safety and generated-file facts. Update `PROGRESS.md` when the plan needs to reflect those facts.
+If `PROGRESS.md` conflicts with `WORKSPACE.md`, surface the conflict and trust the workspace file for command safety and generated-file facts. Update `PROGRESS.md` to reflect those facts.
 
 When `<project-root>/.agent/scripts/project-diagnostics.py` exists, use `--list` for check discovery and `--check <name>` for verification. Use `--all` only when asked for broad verification.
 
@@ -53,7 +53,7 @@ When user signals readiness to move on ("next please", "let's continue", "what's
 1. **Name the task** — one sentence: what it is and where it sits in the plan
 2. **Explain why** — one or two sentences on what it unlocks or why it is next
 3. **Flag unknowns** — if approach is not obvious, name key question or decision before starting
-4. **Wait for confirmation** — do not start implementation until the user agrees. This gate applies regardless of active communication style — terseness (e.g. caveman mode) shortens prose, not process. Naming the task and waiting is still required even at the lowest verbosity setting.
+4. **Wait for confirmation** — do not start implementation until the user agrees. This gate applies regardless of communication style — terseness (e.g. caveman mode) shortens prose, not process. Naming the task and waiting is still required at the lowest verbosity setting.
 
 Keep outline short: 3–5 sentences total. Give enough context to redirect without spending tokens on a full plan.
 
@@ -84,7 +84,7 @@ Finishing work includes updating `PROGRESS.md` and giving handoff. Do not leave 
 - If nothing remains for the current goal, say that clearly in the handoff instead of leaving stale TODOs
 - Compact now if `PROGRESS.md` has grown significantly; current context makes it cheaper
 
-Before updating `PROGRESS.md`, distil what was learned: what belongs in `## Discoveries` (facts about the codebase or environment), what belongs in `## Decisions` (choices made and why), and whether any dead ends should be recorded in `### Failed approaches` under the current section. Add only what isn't already captured; skip if nothing new emerged.
+Before updating `PROGRESS.md`, distil what was learned: what belongs in `## Discoveries` (facts about the codebase or environment), what belongs in `## Decisions` (choices made and why), and whether any dead ends should be recorded in `### Failed approaches` under the current section. Add only what isn't already captured.
 
 After updating `PROGRESS.md`, show brief handoff before offering to continue:
 

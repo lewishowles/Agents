@@ -30,11 +30,11 @@ Reduce noisy or hard-to-scan `PROGRESS.md`. Cut words aggressively without losin
 - Stale investigations that led nowhere
 - Implementation details already visible in the code
 - Wording that explains process without preserving a decision, result, blocker, or next action
-- Spec files in `.agent/specs/` that may no longer be active — list every file in `.agent/specs/`, check whether each one is referenced by a `### Spec` link in active `PROGRESS.md` sections, then inspect enough of each candidate spec to explain its real status. Do not flag a spec only because it is unlinked. For each candidate, state whether it appears completed, superseded, partly future-facing, or unclear; give the specific reason; and recommend keep, archive, link from active work, or ask the user. Do not delete silently.
+- Spec files in `.agent/specs/` that may no longer be active — list every file, check whether each is referenced by a `### Spec` link in active `PROGRESS.md` sections, then inspect enough to explain its real status. Do not flag a spec only because it is unlinked. For each, state whether it appears completed, superseded, partly future-facing, or unclear; give the reason; recommend keep, archive, link from active work, or ask. Do not delete silently.
 
 ## Compression target
 
-Optimise for context density, like caveman-style compression, but keep normal professional prose. Reduce words, not meaning.
+Optimise for context density — reduce words, not meaning. Keep normal professional prose.
 
 - Prefer one precise sentence over a paragraph
 - Replace narrative history with outcome, evidence, and current implication
@@ -56,9 +56,9 @@ Optimise for context density, like caveman-style compression, but keep normal pr
 
 ## Splitting into specs
 
-When future section has grown large with rationale, alternatives, acceptance criteria, API sketches, or risk analysis, move heavy context into `.agent/specs/<feature>.md`. Keep `PROGRESS.md` as execution tracker with short `### Spec` link.
+When a future section has grown large with rationale, alternatives, acceptance criteria, API sketches, or risk analysis, move heavy context into `.agent/specs/<feature>.md`. Keep `PROGRESS.md` as execution tracker with short `### Spec` link.
 
-Do not split small changes into specs. Use specs for larger spikes or ambiguous features where future agents need deeper context only when feature is active.
+Do not split small changes into specs. Use specs for larger spikes or ambiguous features where future agents need deeper context only when the feature is active.
 
 Spec files should keep this outline:
 
@@ -86,7 +86,7 @@ Spec files should keep this outline:
 
 ## Handoff-first format
 
-If file does not start with `## Session handoff`, create it above deeper sections. Agents should read from top and stop after handoff when it gives enough context.
+If file does not start with `## Session handoff`, create it above deeper sections. Agents read from top and stop after handoff when it gives enough context.
 
 ```markdown
 ## Session handoff
@@ -130,7 +130,7 @@ If scope changed, update "files likely to change" in the current section.
 
 ## Finishing work
 
-After work finishes, treat work as incomplete unless handoff is refreshed. Mark completed tasks, update `### Previous step`, set next concrete action in `### Next step`, and archive/remove stale active notes.
+After work finishes, treat work as incomplete unless handoff is refreshed. Mark completed tasks, update `### Previous step`, set next concrete action in `### Next step`, archive/remove stale active notes.
 
 ## Archive mode
 

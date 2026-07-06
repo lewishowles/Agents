@@ -32,7 +32,7 @@
 - **Plain verbs** — prefer everyday words. "Create" or "write" a file, not "emit"
 - **Contractions** — use them in prose and reference
 - **Italics** for emphasis; `backticks` for inline code, technical terms, UI strings
-- **Em dash**: avoid it by default. Use a comma, colon, semicolon, parentheses, or a new sentence for explanations and asides. Only use an em dash when preserving quoted text, matching an external style requirement, or when no other punctuation keeps the meaning clear.
+- **Em dash**: avoid by default. Use a comma, colon, semicolon, parentheses, or new sentence. Only when preserving quoted text, matching an external style, or no other punctuation keeps meaning clear.
 - **Lists** — a lead-in sentence ending in a colon, then fragment items with no trailing full stops
 - **Passive for system behaviour** — focus on thing acted on: "The URL is checked against the allowlist", not "We check the URL"
 - **No preamble or summary** unless asked
@@ -40,15 +40,15 @@
 ## What to avoid
 
 - Em dashes as routine separators in headings, bullets, changelogs, docs, code comments, commit messages, or agent output
-- Preachy or lecturing tone — state point once; don't repeat as moral
+- Preachy or lecturing tone — state point once
 - Padding ("It's worth noting that...", "As mentioned above...")
 - Prescriptive absolutes where context matters — use "generally", "ideally", "where possible"
 - Capitalising every word in titles or headings
 - Opening with summary of what you're about to say
-- No "etc", "and so on", or trailing "…" lists. Name the items, or say what they share. If a list earns its place, write it in full; if it doesn't, cut it
-- No shortcuts. Finish the thought; don't leave reader to close the gap
-- Marketing or hype — don't tell reader how to feel. Describe what it does
-- "Just" and "simply" as minimisers — they wave away difficulty. Drop them or say plainly how few steps there are
+- No "etc", "and so on", or trailing "…" lists. Name the items, or say what they share. If a list earns its place, write it in full; if not, cut it
+- No shortcuts. Finish the thought
+- Marketing or hype — describe what it does, don't tell reader how to feel
+- "Just" and "simply" as minimisers — they wave away difficulty. Drop them or say plainly how few steps
 
 ## Phrasing
 
@@ -68,16 +68,16 @@ Go-to wording for recurring moments. Starting points, not only options.
 
 Skill files, reference docs, and inline code docs use different style to longform prose:
 
-- Plain-language voice applies everywhere, including code comments and commits. If newcomer can't follow, rewrite plainly.
+- Plain-language voice applies everywhere, including code comments and commits. If newcomer can't follow, rewrite.
 - Lead with rule/pattern, then example. Establish _what_ before _how_.
 - Prefer short code snippet over paragraph when both convey same thing.
-- Use tables for comparisons and trade-offs; bullet lists for independent items that don't have a comparative relationship.
+- Tables for comparisons and trade-offs; bullets for independent items without a comparative relationship.
 - Reference descriptions are terse, noun-led, present tense: "Any title to display with this table.", "The label to use for the search box."
-- Only document parameters callers pass. Omit internal/implementation-only parameters even if technically accessible.
+- Only document parameters callers pass. Omit internal/implementation-only parameters.
 - No placeholder docs: avoid `{*}`, `any`, or "see types" when local contract can be stated.
 - Describe what a thing is and where it sits, not framework mechanics. Drop "rendered"/"displayed" when placement already says it.
 - Match sibling scope. Don't add how-to, override, or translation guidance to one entry when neighbours lack it.
-- In reference docs and JSDoc, write instructions in the imperative: "Pass a getter function", not "You should pass a getter function". In prose, frame the step instead (see Structure).
+- In reference docs and JSDoc, write instructions in the imperative: "Pass a getter function", not "You should pass". In prose, frame the step (see Structure).
 
 ## Product documentation
 

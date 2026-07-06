@@ -90,7 +90,7 @@ const displayDate = computed(() => {
 
 ## Component registration
 
-Favour local, per-file imports over global registration. Global registration prevents tree-shaking — unused components are bundled regardless. Auto-import via Vite plugin (e.g. `unplugin-vue-components`) is the preferred pattern: components are resolved on demand, remain individually tree-shakeable, and do not require manual imports or global `app.component()` calls. Only use `app.component()` for genuinely app-wide primitives where the trade-off is deliberate and documented.
+Favour local, per-file imports over global registration. Global registration prevents tree-shaking — unused components bundle regardless. Auto-import via Vite plugin (e.g. `unplugin-vue-components`) is preferred: components resolve on demand, stay tree-shakeable, need no manual imports or `app.component()` calls. Use `app.component()` only for genuinely app-wide primitives where the trade-off is deliberate and documented.
 
 ## Component patterns
 
@@ -125,7 +125,7 @@ Favour local, per-file imports over global registration. Global registration pre
 - Do not combine `v-if` and `v-for` on the same element — filter with a computed value or wrap in `<template>`
 - Treat `v-html` as a security risk. Use only with trusted, sanitised content
 - Avoid dynamic Tailwind class strings that prevent class detection. Map states to complete class names
-- In Markdown docs, do not place a literal `</script>` inside Vue SFC code fences if the renderer may parse it as HTML. Escape it or split the closing tag.
+- In Markdown docs, do not place a literal `</script>` inside Vue SFC code fences if the renderer may parse it as HTML. Escape or split the closing tag.
 
 ## File-based routing
 
@@ -164,7 +164,7 @@ definePage({
 
 ## Advanced patterns
 
-Fragment composition, composables as global state, computed chains, reusable templates, dynamic slots, skeleton loaders, Pinia setup store, keep-alive, Suspense, Teleport, v-memo, watch/watchEffect — see [references/advanced-patterns.md](references/advanced-patterns.md).
+Fragment composition, composables as global state, computed chains, reusable templates, dynamic slots, skeleton loaders, Pinia setup store, keep-alive, Suspense, Teleport, v-memo, watch/watchEffect: see [references/advanced-patterns.md](references/advanced-patterns.md).
 
 ## Completion
 
