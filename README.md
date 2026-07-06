@@ -19,6 +19,17 @@ The included scripts generate the target files each tool expects for global and 
 - `templates/` - project templates for Claude, Codex, or both
 - `docs/` - deeper reference: [setup](docs/setup.md), [Codex](docs/codex.md), [hooks](docs/hooks.md), [skills](docs/skills.md), [commands](docs/commands.md), [agents](docs/agents.md), [plugins](docs/plugins.md)
 
+## Runtime target capabilities
+
+| Target | Global rules | Project rules | Skills | Hooks / tooling | Setup | Main limitation |
+| --- | --- | --- | --- | --- | --- | --- |
+| Claude Code | `dist/claude/CLAUDE.md` → `~/.claude/CLAUDE.md` | `AGENTS.md` at project root | `~/.claude/skills/<name>` symlinks | [Claude hooks](docs/hooks.md); Serena MCP | `setup-global.sh --claude` | — |
+| Codex CLI | `dist/codex/AGENTS.md` → `~/.agents/AGENTS.md` | `AGENTS.md` at project root | `~/.agents/skills/<name>` symlinks | [Codex hooks](docs/codex.md); Serena MCP | `setup-global.sh --codex` | No subagent parity |
+| Stagewise | Global-rules skill in `~/.stagewise/skills/` | Mounted project files | `~/.stagewise/skills/<name>` copies | None | `setup-global.sh --both` | No project setup; no hooks |
+| ChatGPT | `dist/chatgpt/INSTRUCTIONS.md` as system prompt | [Gateway](servers/local-repo-gateway/README.md) `get_instructions` | Gateway `list_skills` / `read_skill` | None | [ChatGPT setup](#chatgpt-setup) | Read-only; no hooks |
+
+See [docs/setup.md](docs/setup.md) for manual wiring, [docs/codex.md](docs/codex.md) for Codex details, and [docs/hooks.md](docs/hooks.md) for the Claude hook reference.
+
 ## Initial setup
 
 Replace `/path/to/repository` with the path to this repository.
