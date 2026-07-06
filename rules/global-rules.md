@@ -152,16 +152,8 @@ _Three-gate criteria inspired by [mattpocock/skills](https://github.com/mattpoco
 
 ## Working across sessions
 
-**Maintain PROGRESS.md** for multi-file, multi-session, or complex-scope work. Update after every significant change; mark items done as they complete; compact completed sections when starting the next chunk.
-
 **PROGRESS.md lives at the project root.** Locate the existing file by reading or globbing from the root — never create `.claude/PROGRESS.md`, `.agent/PROGRESS.md`, or a second copy. If a search cannot find one, say so and ask where to create it. Root holds human-facing contracts (`AGENTS.md`, `PROGRESS.md`, `README.md`); `.agent/` holds agent-operated internals (`scripts/`, `specs/`, `diagnostics/`). Keep new files on the correct side.
 
-**Work in committable chunks.** Before: summarise and wait for confirmation if requested. After: explain what changed, provide a `feat(scope): description` commit message, update PROGRESS.md, and wait for confirmation before the next chunk.
+**Split broad roadmap items before implementation.** If a plan exceeds roughly 7 steps, decompose it into smaller chunks rather than writing a longer plan.
 
-Default to small, directly related chunks. Each chunk should fit one reviewable idea and one expected commit.
-
-- Split broad roadmap items before implementation. If a plan exceeds roughly 7 steps, decompose it into smaller chunks rather than writing a longer plan.
-- Keep source, tests, docs, capability updates, and adoption work separate unless the same change requires them.
-- Prefer one primitive family, one profile behaviour, or one capability concern per chunk.
-- Stop after each chunk with files changed, verification performed, next step, and suggested commit message.
-- Do not continue into the next chunk until the user confirms.
+For file location, chunking, handoff, and compaction mechanics, see the `project-continue` and `project-compact-progress` skills.

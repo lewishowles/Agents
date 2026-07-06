@@ -103,6 +103,8 @@ repo/.agents/skills/agent-config → repo/.claude/skills/agent-config (repo-loca
 
 Edit source files here in the repo. Symlinks propagate immediately. After editing `rules/` or `dist/<agent>/source/` content, run `scripts/sync.sh` to regenerate `dist/claude/CLAUDE.md` and `dist/codex/AGENTS.md`. Run `scripts/sync-external-skills.sh` to refresh managed official skills. Commit changes here.
 
+Skills listed in `external-skills.json` are upstream-managed: never hand-edit or paraphrase their content under `skills/`. Take changes upstream, then re-run `scripts/sync-external-skills.sh`.
+
 Don't edit `~/.claude/` or `~/.agents/` directly — changes won't persist.
 
 ## Skill structure
