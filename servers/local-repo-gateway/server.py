@@ -36,12 +36,12 @@ async def list_tools() -> list[types.Tool]:
         types.Tool(
             name="local_repo_health",
             description="Server version, repo count, mode, and available operations.",
-            inputSchema={"type": "object", "properties": {}},
+            inputSchema={"type": "object", "properties": {}, "additionalProperties": False},
         ),
         types.Tool(
             name="local_repo_list",
             description="List allowlisted repositories available to read.",
-            inputSchema={"type": "object", "properties": {}},
+            inputSchema={"type": "object", "properties": {}, "additionalProperties": False},
         ),
         types.Tool(
             name="local_repo_get_instructions",
@@ -50,6 +50,7 @@ async def list_tools() -> list[types.Tool]:
                 "type": "object",
                 "properties": {"repo_id": {"type": "string"}},
                 "required": ["repo_id"],
+                "additionalProperties": False,
             },
         ),
         types.Tool(
@@ -62,6 +63,7 @@ async def list_tools() -> list[types.Tool]:
                     "path": {"type": "string", "description": "Relative path within repo. Defaults to root."},
                 },
                 "required": ["repo_id"],
+                "additionalProperties": False,
             },
         ),
         types.Tool(
@@ -75,6 +77,7 @@ async def list_tools() -> list[types.Tool]:
                     "path": {"type": "string", "description": "Relative path to scope search. Defaults to root."},
                 },
                 "required": ["repo_id", "pattern"],
+                "additionalProperties": False,
             },
         ),
         types.Tool(
@@ -87,6 +90,7 @@ async def list_tools() -> list[types.Tool]:
                     "path": {"type": "string", "description": "Relative path within repo."},
                 },
                 "required": ["repo_id", "path"],
+                "additionalProperties": False,
             },
         ),
         types.Tool(
@@ -96,6 +100,7 @@ async def list_tools() -> list[types.Tool]:
                 "type": "object",
                 "properties": {"repo_id": {"type": "string"}},
                 "required": ["repo_id"],
+                "additionalProperties": False,
             },
         ),
         types.Tool(
@@ -108,6 +113,7 @@ async def list_tools() -> list[types.Tool]:
                     "path": {"type": "string", "description": "Relative path to scope diff. Optional."},
                 },
                 "required": ["repo_id"],
+                "additionalProperties": False,
             },
         ),
     ]
