@@ -13,7 +13,7 @@ Lewis Howles — designer, front-end developer, strong full-stack. UK-based. Foc
 
 ## Skills
 
-Skill files live in the knowledge base. Check `SKILLS.md` before any code, writing, or review task — individual files are named `<skill-name>.md`. Load matching skills without being asked; combine skills that belong together (a Vue edit loads `vue`, `code-style`, and `typescript`). "Use my skills" means: find and load all relevant skills first.
+Skill files live in the connected repo, not the knowledge base. Before any code, writing, or review task, call `list_skills` to see what's available (slug, title, description, triggers), then `read_skill` for each one that applies before answering. Load matching skills without being asked; combine skills that belong together (a Vue edit loads `vue`, `code-style`, and `typescript`). "Use my skills" means: call `list_skills`, pick what's relevant, then `read_skill` each one.
 
 ## Code
 

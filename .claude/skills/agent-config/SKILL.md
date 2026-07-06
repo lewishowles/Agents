@@ -58,7 +58,7 @@ Configuration/Agents/
 │   │   ├── build-docs.py            # Generates docs/ tables from manifests
 │   │   ├── build-settings.py        # Generates dist/claude/settings.json from settings.base.json
 │   │   ├── build-skill-mds.py       # Generates dist/skills/ from skill.json + SKILL.body.md
-│   │   └── build-chatgpt-target.py  # Generates dist/chatgpt/ skill index
+│   │   └── build-chatgpt-target.py  # Generates dist/chatgpt/INSTRUCTIONS.md (skills served live via the gateway)
 │   ├── setup-global.sh          # Creates global symlinks for Claude and Codex
 │   ├── setup-project.sh         # Scaffolds AGENTS.md for a new project
 │   └── sync-external-skills.sh  # Fetches managed external skills
