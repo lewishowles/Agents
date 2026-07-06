@@ -97,6 +97,10 @@ tail -f /tmp/local-repo-gateway-tunnel.log
 | `local_repo_git_status`       | Compact `git status --short --branch` output, or `Working tree clean.`                                                                    |
 | `local_repo_git_diff`         | Bounded `git diff HEAD` output, optionally scoped to one repo-relative path.                                                              |
 
+## Schema design
+
+Tool `inputSchema`s stay flat: top-level string params only, no nested arrays of objects. Nested-object-array parameters are the highest-risk shape for malformed model tool calls (per Armin Ronacher's "Better Models: Worse Tools", 2026-07-04); flat schemas keep calls simple to validate and hard to get wrong. Every schema also sets `"additionalProperties": false` to reject invented keys. Revisit this if a future tool genuinely needs structured/array input.
+
 ## Planning workflow
 
 1. Ask ChatGPT to inspect local repos with Local Repo Gateway.
