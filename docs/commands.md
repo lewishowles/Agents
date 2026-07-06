@@ -35,6 +35,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/bash` | `bash` | When writing shell scripts, bash config, patterns |
 | `/boilersuit` | `boilersuit` | When using Boilersuit generators for repeatable file generation |
 | `/boilersuit-generator-authoring` | `boilersuit-generator-authoring` | When creating or editing a Boilersuit generator definition |
+| `/caveman` | `caveman` | When the user requests compressed or terse communication, says "caveman mode", "less tokens", "be brief", or invokes /caveman |
 | `/code-review` | `code-review` | When reviewing a PR or diff, or receiving review feedback |
 | `/code-style` | `code-style` | When formatting code, covering naming, comments, arrays, objects |
 | `/codebase-memory` | `codebase-memory` | Use this skill when answering structural code queries with the codebase knowledge graph, including architecture, callers, dependencies, impact analysis, dead code, graph query syntax, Cypher examples, edge types, and search_graph usage. |
