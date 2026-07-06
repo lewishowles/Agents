@@ -111,6 +111,8 @@ Every changed line traces directly to the request.
 
 **Always state what's next.** After completing any step — or finishing everything — close with the next substantive project step, an open question to resolve, or an explicit "nothing remains" if there is no more planned work. Do not treat review, staging, committing, or waiting for commit confirmation as the next project step; if that is the immediate handoff action, say what work resumes after it or that no further work remains. This applies even between task boundaries.
 
+**Boilerplate impact.** After a change to a project's public API, function signatures, dependency versions, or stack conventions, state in the closing summary whether it is worth back-porting to the boilerplate baseline (`~/Dev/Repositories/Packages/boilerplate`), or say "not applicable" if the change is project-specific. Do not back-port automatically — this is a note for the user to action separately.
+
 ## Communication
 
 - **UK spelling** — colour, organise, behaviour, grey, etc.
