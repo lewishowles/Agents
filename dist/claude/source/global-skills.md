@@ -12,6 +12,7 @@ Apply across all projects. See individual skills for detailed rules. Use project
 - `/project-review-worktree` — When reviewing uncommitted work before commit
 - `/project-setup` — When starting a new project or feature; explores repo, asks questions, creates PROGRESS.md before coding
 - `/project-synthesise-feedback` — When critically synthesising another agent's suggestions with current recommendations
+- `/session-retrospective` — When extracting lessons from a difficult agent session
 - `/source-extraction` — When preparing a lossless extraction of an external source for later analysis
 - `/accessibility` — When building interfaces, WCAG AA baseline, accessible design
 - `/accessibility-audit` — When conducting an accessibility audit of a page, component, or PR; preparing a client report

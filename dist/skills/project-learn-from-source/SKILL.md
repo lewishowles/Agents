@@ -4,6 +4,8 @@ name: project-learn-from-source
 displayName: Project learn from source
 description: >
   Use this skill when asked to inspect an external artefact, such as a website, AGENTS.md, skill repo, blog post, or docs page, and identify practical lessons for the current repo.
+do-not-use-when:
+  - Reviewing a specific difficult agent session — use session-retrospective instead
 ---
 # Project learn from source
 
