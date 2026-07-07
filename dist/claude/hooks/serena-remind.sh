@@ -8,9 +8,9 @@ output="$(serena-hooks remind --client=claude-code)"
 status="$?"
 set -e
 
-if [[ "$status" -ne 0 && "$output" == *"Too many consecutive"* ]]; then
-	printf 'Too many consecutive source-inspection calls without symbolic tools. Stop reading/searching. Next action must be a Serena symbolic lookup, diagnostics, or a single targeted read with a stated reason.\n'
-	exit "$status"
+if [[ "$output" == *"Too many consecutive"* ]]; then
+	printf 'Serena reminder: too many consecutive source-inspection calls without symbolic tools. Next action should be a Serena symbolic lookup, diagnostics, or a single targeted read with a stated reason.\n' >&2
+	exit 0
 fi
 
 if [[ -n "$output" ]]; then

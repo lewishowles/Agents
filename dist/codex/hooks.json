@@ -6,7 +6,7 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "serena-hooks remind --client=codex"
+						"command": "set +e\noutput=$(serena-hooks remind --client=codex)\nstatus=$?\nset -e\ncase \"$output\" in\n\t*\"Too many consecutive\"*)\n\t\tprintf 'Serena reminder: too many consecutive source-inspection calls without symbolic tools. Next action should be a Serena symbolic lookup, diagnostics, or a single targeted read with a stated reason.\\n' >&2\n\t\texit 0\n\t\t;;\nesac\nif [ -n \"$output\" ]; then\n\tprintf '%s\\n' \"$output\"\nfi\nexit \"$status\""
 					}
 				]
 			}
