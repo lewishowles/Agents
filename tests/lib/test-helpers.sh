@@ -36,6 +36,17 @@ assert_link() {
 	[ -f "$path" ] || fail "Symlink does not resolve to a file: $path"
 }
 
+# Asserts that a path is a symlink resolving to an existing directory.
+#
+# @param  {string}  path
+#     Path to check.
+assert_dir_link() {
+	local path="$1"
+
+	[ -L "$path" ] || fail "Expected symlink: $path"
+	[ -d "$path" ] || fail "Symlink does not resolve to a directory: $path"
+}
+
 # Asserts that a directory exists.
 #
 # @param  {string}  path

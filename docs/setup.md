@@ -128,6 +128,18 @@ cd /path/to/project
 
 Each flag copies the matching `AGENTS.md` template, links `.agent/scripts/`, writes `WORKSPACE.md`, and (for Claude targets) copies `.claudeignore`. After setup, replace the placeholders in `AGENTS.md` with project-specific rules and review the generated `WORKSPACE.md`.
 
+For project types with useful local skills, setup can install centrally managed project skill packs as symlinks into both `.agents/skills/` and `.claude/skills/`:
+
+```bash
+/path/to/repository/scripts/setup-project.sh --both --with-skill-pack macos
+```
+
+macOS/Swift projects are detected from Xcode projects, Swift packages with Swift sources, or project instructions mentioning Swift or macOS. Interactive setup offers the macOS pack when detected. Use `--no-skill-packs` to skip detection, or list available packs with:
+
+```bash
+/path/to/repository/scripts/setup-project.sh --list-skill-packs
+```
+
 ### Repair paths for existing projects
 
 To preview a workspace draft without writing it:

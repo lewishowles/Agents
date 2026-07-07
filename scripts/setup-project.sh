@@ -13,7 +13,11 @@ REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 PROJECT_DIR=$(pwd)
 
 source "$REPO_DIR/scripts/lib/cli-style-output.sh"
+source "$REPO_DIR/scripts/lib/setup-links.sh"
 source "$REPO_DIR/scripts/lib/project-setup.sh"
+
+declare -a REQUESTED_SKILL_PACKS=()
+SKILL_PACK_MODE="auto"
 
 usage() {
 	local script_name
@@ -28,6 +32,10 @@ usage() {
 	printf '  %-22s %s\n' '--init-workspace' 'Preview WORKSPACE.md for the current project'
 	printf '  %-22s %s\n' '--write-workspace' 'Write WORKSPACE.md when it is missing'
 	printf '  %-22s %s\n\n' '--force-workspace' 'Refresh WORKSPACE.md after review'
+	printf 'Project skill packs:\n'
+	printf '  %-22s %s\n' '--with-skill-pack <name>' 'Install a centrally managed local skill pack'
+	printf '  %-22s %s\n' '--no-skill-packs' 'Skip project skill pack detection and installation'
+	printf '  %-22s %s\n\n' '--list-skill-packs' 'List available project skill packs'
 	printf 'Diagnostics:\n'
 	printf '  %-22s %s\n' '--status' 'Report setup drift without writing files'
 	printf '\n'
@@ -49,6 +57,7 @@ setup_claude() {
 	write_workspace_file
 	cli_group_end
 	copy_claude_support_files
+	install_project_skill_packs
 }
 
 setup_codex() {
@@ -63,6 +72,7 @@ setup_codex() {
 	cli_group_begin "Workspace"
 	write_workspace_file
 	cli_group_end
+	install_project_skill_packs
 }
 
 setup_both() {
@@ -78,6 +88,7 @@ setup_both() {
 	write_workspace_file
 	cli_group_end
 	copy_claude_support_files
+	install_project_skill_packs
 }
 
 prompt_target() {
@@ -92,24 +103,53 @@ prompt_target() {
 	esac
 }
 
-target="${1:-}"
+target=""
 
-case "$target" in
-	--claude)             target="claude" ;;
-	--codex)              target="codex" ;;
-	--both)               target="both" ;;
-	--init-workspace)     target="init-workspace" ;;
-	--write-workspace)    target="write-workspace" ;;
-	--force-workspace)    target="force-workspace" ;;
-	--init-capabilities)  target="init-workspace" ;;
-	--write-capabilities) target="write-workspace" ;;
-	--force-capabilities) target="force-workspace" ;;
-	--status)             target="status" ;;
-	--check-project)      target="status" ;;
-	--help|-h)            usage; exit 0 ;;
-	"")                  target=$(prompt_target) ;;
-	*)                   usage >&2; exit 1 ;;
-esac
+while [ "$#" -gt 0 ]; do
+	case "$1" in
+		--claude)             target="claude" ;;
+		--codex)              target="codex" ;;
+		--both)               target="both" ;;
+		--init-workspace)     target="init-workspace" ;;
+		--write-workspace)    target="write-workspace" ;;
+		--force-workspace)    target="force-workspace" ;;
+		--init-capabilities)  target="init-workspace" ;;
+		--write-capabilities) target="write-workspace" ;;
+		--force-capabilities) target="force-workspace" ;;
+		--status)             target="status" ;;
+		--check-project)      target="status" ;;
+		--with-skill-pack)
+			if [ "$#" -lt 2 ]; then
+				usage >&2
+				exit 1
+			fi
+			SKILL_PACK_MODE="explicit"
+			REQUESTED_SKILL_PACKS+=("$2")
+			shift
+			;;
+		--no-skill-packs)
+			SKILL_PACK_MODE="none"
+			REQUESTED_SKILL_PACKS=()
+			;;
+		--list-skill-packs)
+			list_project_skill_packs
+			exit 0
+			;;
+		--help|-h)
+			usage
+			exit 0
+			;;
+		*)
+			usage >&2
+			exit 1
+			;;
+	esac
+	shift
+done
+
+if [ -z "$target" ]; then
+	target=$(prompt_target)
+fi
 
 case "$target" in
 	claude)             setup_claude ;;

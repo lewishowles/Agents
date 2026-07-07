@@ -12,21 +12,32 @@ trap cleanup EXIT
 
 run_setup() {
 	local target_dir="$1"
-	local flag="$2"
+	shift
 
 	(
 		cd "$target_dir"
-		"$REPO_DIR/scripts/setup-project.sh" "$flag" >/dev/null </dev/null
+		"$REPO_DIR/scripts/setup-project.sh" "$@" >/dev/null </dev/null
 	)
 }
 
 run_setup_output() {
 	local target_dir="$1"
-	local flag="$2"
+	shift
 
 	(
 		cd "$target_dir"
-		"$REPO_DIR/scripts/setup-project.sh" "$flag" </dev/null
+		"$REPO_DIR/scripts/setup-project.sh" "$@" </dev/null
+	)
+}
+
+run_setup_input() {
+	local target_dir="$1"
+	local input="$2"
+	shift 2
+
+	(
+		cd "$target_dir"
+		printf '%b' "$input" | "$REPO_DIR/scripts/setup-project.sh" "$@" >/dev/null
 	)
 }
 
@@ -166,9 +177,58 @@ test_help_lists_commands() {
 	assert_contains "$output" "--both"
 	assert_contains "$output" "Workspace:"
 	assert_contains "$output" "--init-workspace"
+	assert_contains "$output" "Project skill packs:"
+	assert_contains "$output" "--with-skill-pack"
+	assert_contains "$output" "--no-skill-packs"
+	assert_contains "$output" "--list-skill-packs"
 	assert_contains "$output" "Diagnostics:"
 	assert_contains "$output" "--status"
 	assert_contains "$output" "Examples:"
+}
+
+test_list_skill_packs_reports_macos() {
+	local output="$TEST_ROOT/skill-packs.txt"
+
+	"$REPO_DIR/scripts/setup-project.sh" --list-skill-packs > "$output"
+
+	assert_contains "$output" "macos"
+}
+
+test_explicit_skill_pack_installs_local_links() {
+	local target_dir="$TEST_ROOT/skill-pack-explicit"
+	mkdir -p "$target_dir/src"
+
+	run_setup "$target_dir" --both --with-skill-pack macos
+
+	assert_dir_link "$target_dir/.agents/skills/swift"
+	assert_dir_link "$target_dir/.agents/skills/macos"
+	assert_dir_link "$target_dir/.claude/skills/swift"
+	assert_dir_link "$target_dir/.claude/skills/macos"
+	assert_equals "$(readlink "$target_dir/.agents/skills/swift")" "$REPO_DIR/project-skill-packs/macos/swift"
+}
+
+test_detected_skill_pack_installs_when_confirmed() {
+	local target_dir="$TEST_ROOT/skill-pack-detected"
+	mkdir -p "$target_dir/Sources/App"
+	printf '// swift package\n' > "$target_dir/Package.swift"
+	printf 'struct App {}\n' > "$target_dir/Sources/App/App.swift"
+
+	run_setup_input "$target_dir" "y\n" --both
+
+	assert_dir_link "$target_dir/.agents/skills/swift"
+	assert_dir_link "$target_dir/.claude/skills/swift"
+}
+
+test_no_skill_packs_suppresses_detection() {
+	local target_dir="$TEST_ROOT/skill-pack-suppressed"
+	mkdir -p "$target_dir/Sources/App"
+	printf '// swift package\n' > "$target_dir/Package.swift"
+	printf 'struct App {}\n' > "$target_dir/Sources/App/App.swift"
+
+	run_setup "$target_dir" --both --no-skill-packs
+
+	assert_not_exists "$target_dir/.agents"
+	assert_not_exists "$target_dir/.claude/skills"
 }
 
 test_status_reports_clean_project() {
@@ -220,6 +280,10 @@ test_write_workspace_writes_current_project
 test_write_workspace_protects_existing_manifest
 test_legacy_capability_flag_writes_workspace
 test_help_lists_commands
+test_list_skill_packs_reports_macos
+test_explicit_skill_pack_installs_local_links
+test_detected_skill_pack_installs_when_confirmed
+test_no_skill_packs_suppresses_detection
 test_status_reports_clean_project
 test_status_reports_configured_project
 test_status_reports_drifted_project

@@ -188,6 +188,121 @@ init_workspace() {
 	fi
 }
 
+# Lists centrally managed project skill packs available for local project installs.
+list_project_skill_packs() {
+	local packs_dir="$REPO_DIR/project-skill-packs"
+	local pack
+
+	if [ ! -d "$packs_dir" ]; then
+		return
+	fi
+
+	for pack in "$packs_dir"/*; do
+		[ -d "$pack" ] || continue
+		printf '%s\n' "$(basename "$pack")"
+	done
+}
+
+# Returns 0 when the current project looks like a macOS or Swift project.
+detect_macos_project() {
+	local candidate
+
+	for candidate in "$PROJECT_DIR"/*.xcodeproj "$PROJECT_DIR"/*.xcworkspace; do
+		if [ -e "$candidate" ] || [ -L "$candidate" ]; then
+			return 0
+		fi
+	done
+
+	if [ -f "$PROJECT_DIR/Package.swift" ]; then
+		shopt -s globstar nullglob
+		for candidate in "$PROJECT_DIR"/Sources/**/*.swift "$PROJECT_DIR"/Tests/**/*.swift "$PROJECT_DIR"/*.swift; do
+			if [ -f "$candidate" ]; then
+				return 0
+			fi
+		done
+	fi
+
+	for candidate in "$PROJECT_DIR/AGENTS.md" "$PROJECT_DIR/WORKSPACE.md"; do
+		if [ -f "$candidate" ] && grep -Eiq 'swift|macos|macOS' "$candidate"; then
+			return 0
+		fi
+	done
+
+	return 1
+}
+
+# Prompts for automatic macOS pack installation when the project shape matches.
+should_install_detected_macos_pack() {
+	if ! detect_macos_project; then
+		return 1
+	fi
+
+	printf 'Detected a macOS/Swift project. Install local macOS skills? [Y/n] '
+	local response
+	if ! read -r response; then
+		cli_group_status muted "macos" "detected; use --with-skill-pack macos to install non-interactively"
+		return 1
+	fi
+
+	case "$response" in
+		n|N|no|No|NO) return 1 ;;
+		*) return 0 ;;
+	esac
+}
+
+# Installs one project skill pack into both local agent skill directories.
+#
+# @param  {string}  pack_name
+#     Name of the pack under project-skill-packs/.
+install_project_skill_pack() {
+	local pack_name="$1"
+	local pack_dir="$REPO_DIR/project-skill-packs/$pack_name"
+	local skill slug
+
+	if [ ! -d "$pack_dir" ]; then
+		cli_group_status failed "$pack_name" "project skill pack not found"
+		return 1
+	fi
+
+	ensure_container_dir "$PROJECT_DIR/.agents/skills" ".agents/skills/"
+	ensure_container_dir "$PROJECT_DIR/.claude/skills" ".claude/skills/"
+
+	for skill in "$pack_dir"/*; do
+		[ -d "$skill" ] || continue
+		slug=$(basename "$skill")
+		link_path "$skill" "$PROJECT_DIR/.agents/skills/$slug" ".agents/skills/$slug"
+		link_path "$skill" "$PROJECT_DIR/.claude/skills/$slug" ".claude/skills/$slug"
+	done
+}
+
+# Installs explicit project skill packs, or offers detected packs interactively.
+install_project_skill_packs() {
+	local packs=()
+	local pack
+
+	case "$SKILL_PACK_MODE" in
+		none) return 0 ;;
+		explicit) packs=("${REQUESTED_SKILL_PACKS[@]}") ;;
+		auto)
+			cli_group_begin "Project skill packs"
+			if should_install_detected_macos_pack; then
+				packs=(macos)
+			fi
+			cli_group_end
+			;;
+	esac
+
+	if [ "${#packs[@]}" -eq 0 ]; then
+		return 0
+	fi
+
+	cli_group_begin "Project skill packs"
+	for pack in "${packs[@]}"; do
+		install_project_skill_pack "$pack"
+	done
+	cli_group_end
+}
+
 # Reports project setup state without modifying any files. Detects the
 # configured mode from AGENTS.md content, then checks AGENTS.md template
 # match, WORKSPACE.md presence, .agent/scripts symlink targets, Claude
