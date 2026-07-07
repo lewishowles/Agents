@@ -11,6 +11,20 @@ source "$SCRIPT_DIR/lib/test-helpers.sh"
 
 trap cleanup EXIT
 
+# Writes a minimal Xcode project file for diagnostics discovery tests.
+#
+# @param  {string}  project_dir
+#     Project root that should contain App.xcodeproj.
+# @param  {string}  body
+#     PBX objects body to write.
+write_xcode_project() {
+	local project_dir="$1"
+	local body="$2"
+
+	mkdir -p "$project_dir/App.xcodeproj"
+	printf '// !$*UTF8*$!\n{\n\tobjects = {\n%b\n\t};\n}\n' "$body" > "$project_dir/App.xcodeproj/project.pbxproj"
+}
+
 test_local_validate_script() {
 	local target_dir="$TEST_ROOT/with-validate"
 	local list_output="$TEST_ROOT/with-validate-list.md"
@@ -65,6 +79,61 @@ test_scoped_unit_test_files_and_globs() {
 	assert_contains "$output" "| test:unit | passed |"
 	assert_contains "$output" "src/example.test.js"
 	assert_contains "$output" "src/components/button.test.js"
+}
+
+test_xcode_cli_targets_are_discovered() {
+	local single_target_dir="$TEST_ROOT/xcode-cli-single"
+	local multiple_target_dir="$TEST_ROOT/xcode-cli-multiple"
+	local app_only_dir="$TEST_ROOT/xcode-cli-none"
+	local single_output="$TEST_ROOT/xcode-cli-single.md"
+	local multiple_output="$TEST_ROOT/xcode-cli-multiple.md"
+	local app_only_output="$TEST_ROOT/xcode-cli-none.md"
+
+	write_xcode_project "$single_target_dir" '
+		ABC123 /* App */ = {
+			isa = PBXNativeTarget;
+			name = App;
+			productType = "com.apple.product-type.application";
+		};
+		DEF456 /* boilersuit */ = {
+			isa = PBXNativeTarget;
+			name = boilersuit;
+			productType = "com.apple.product-type.tool";
+		};'
+
+	"$REPO_DIR/scripts/project-diagnostics.py" --project "$single_target_dir" --list > "$single_output"
+
+	assert_contains "$single_output" "| build:cli | \`xcodebuild build -project App.xcodeproj -target boilersuit -destination platform=macOS,arch=arm64\` |"
+	assert_not_contains "$single_output" "build:cli:"
+
+	write_xcode_project "$multiple_target_dir" '
+		ABC123 /* boilersuit */ = {
+			isa = PBXNativeTarget;
+			name = boilersuit;
+			productType = "com.apple.product-type.tool";
+		};
+		DEF456 /* Boiler Helper */ = {
+			isa = PBXNativeTarget;
+			name = "Boiler Helper";
+			productType = "com.apple.product-type.tool";
+		};'
+
+	"$REPO_DIR/scripts/project-diagnostics.py" --project "$multiple_target_dir" --list > "$multiple_output"
+
+	assert_not_contains "$multiple_output" "| build:cli |"
+	assert_contains "$multiple_output" "| build:cli:boiler-helper |"
+	assert_contains "$multiple_output" "| build:cli:boilersuit |"
+
+	write_xcode_project "$app_only_dir" '
+		ABC123 /* App */ = {
+			isa = PBXNativeTarget;
+			name = App;
+			productType = "com.apple.product-type.application";
+		};'
+
+	"$REPO_DIR/scripts/project-diagnostics.py" --project "$app_only_dir" --list > "$app_only_output"
+
+	assert_not_contains "$app_only_output" "build:cli"
 }
 
 test_scoped_xcode_unit_test_files_and_globs() {
@@ -144,6 +213,7 @@ test_scoped_unit_tests_reject_unsafe_targets() {
 test_local_validate_script
 test_json_skipped_when_no_safe_checks
 test_scoped_unit_test_files_and_globs
+test_xcode_cli_targets_are_discovered
 test_scoped_xcode_unit_test_files_and_globs
 test_scoped_unit_tests_reject_unsafe_targets
 

@@ -40,6 +40,7 @@ Examples:
   .agent/scripts/project-diagnostics.py --check test:unit
   .agent/scripts/project-diagnostics.py --check test:unit --test-file src/example.test.ts
   .agent/scripts/project-diagnostics.py --check test:unit --test-glob 'src/**/*.test.ts'
+  .agent/scripts/project-diagnostics.py --check build:cli
   .agent/scripts/project-diagnostics.py --check lint --check test:unit
   .agent/scripts/project-diagnostics.py --all
   .agent/scripts/project-diagnostics.py --json --list
@@ -91,6 +92,9 @@ XCODE_SCAN_DEPTH = 3
 
 # Xcode builds and test runs are far slower than Node checks, so they get their own ceiling.
 XCODE_TIMEOUT = 600
+
+# Xcode product type for command-line executable targets.
+XCODE_TOOL_PRODUCT_TYPE = "com.apple.product-type.tool"
 
 # Test destination. Pins arch=arm64 so xcodebuild doesn't warn about the ambiguous arm64/x86_64
 # match (x86_64 is dropped in the next macOS). Override here (or via env) for iOS/other platforms.
@@ -198,6 +202,131 @@ def scan_xcode_layout(project_dir: Path) -> tuple[list[Path], list[Path], list[s
 	return projects, workspaces, sorted(ui_targets)
 
 
+# Returns a PBX assignment value from one project.pbxproj line.
+#
+# @param  {str}  line
+#     Source line from project.pbxproj.
+# @param  {str}  key
+#     PBX key to read.
+def pbx_assignment_value(line: str, key: str) -> str | None:
+	match = re.search(rf"\b{re.escape(key)}\s*=\s*(.*?);", line)
+	if not match:
+		return None
+
+	value = match.group(1).strip()
+	if value.startswith('"') and value.endswith('"'):
+		return value[1:-1]
+	return value
+
+
+# Returns the display name embedded in a PBX object reference comment.
+#
+# @param  {str}  line
+#     Object header line from project.pbxproj.
+def pbx_reference_name(line: str) -> str | None:
+	match = re.search(r"/\*\s*(.*?)\s*\*/", line)
+	if match:
+		return match.group(1)
+	return None
+
+
+# Slugifies a target name for use in diagnostics check names.
+#
+# @param  {str}  name
+#     Xcode target name.
+def check_name_slug(name: str) -> str:
+	slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+	return slug or "target"
+
+
+# Returns command-line tool target names declared by Xcode project files.
+#
+# @param  {list[Path]}  projects
+#     Xcode project bundles to inspect.
+def detect_xcode_tool_targets(projects: list[Path]) -> list[str]:
+	targets: set[str] = set()
+
+	for project in projects:
+		pbxproj = project / "project.pbxproj"
+		if not pbxproj.exists():
+			continue
+
+		current_name: str | None = None
+		explicit_name: str | None = None
+		is_native_target = False
+		product_type: str | None = None
+
+		for line in pbxproj.read_text(errors="ignore").splitlines():
+			if current_name is None and " = {" in line:
+				current_name = pbx_reference_name(line)
+				explicit_name = None
+				is_native_target = False
+				product_type = None
+				continue
+
+			if current_name is None:
+				continue
+
+			isa = pbx_assignment_value(line, "isa")
+			if isa == "PBXNativeTarget":
+				is_native_target = True
+
+			name = pbx_assignment_value(line, "name")
+			if name:
+				explicit_name = name
+
+			target_product_type = pbx_assignment_value(line, "productType")
+			if target_product_type:
+				product_type = target_product_type
+
+			if line.strip() == "};":
+				if is_native_target and product_type == XCODE_TOOL_PRODUCT_TYPE:
+					target_name = explicit_name or current_name
+					if target_name:
+						targets.add(target_name)
+
+				current_name = None
+
+	return sorted(targets)
+
+
+# Adds command-line tool target build checks when Xcode declares tool targets.
+#
+# @param  {list[Check]}  checks
+#     Check list to append to.
+# @param  {list[str]}  base_command
+#     xcodebuild command prefix for the selected container.
+# @param  {list[str]}  tool_targets
+#     Xcode command-line tool target names.
+def append_xcode_tool_checks(checks: list[Check], base_command: list[str], tool_targets: list[str]) -> None:
+	if len(tool_targets) == 1:
+		checks.append(
+			Check(
+				"build:cli",
+				[*base_command, "-target", tool_targets[0], "-destination", XCODE_DESTINATION],
+				"Xcode CLI target build",
+				timeout=XCODE_TIMEOUT,
+			)
+		)
+		return
+
+	used_slugs: set[str] = set()
+	for target in tool_targets:
+		slug = check_name_slug(target)
+		if slug in used_slugs:
+			slug = f"{slug}-{len(used_slugs) + 1}"
+		used_slugs.add(slug)
+
+		checks.append(
+			Check(
+				f"build:cli:{slug}",
+				[*base_command, "-target", target, "-destination", XCODE_DESTINATION],
+				f"Xcode CLI target build ({target})",
+				timeout=XCODE_TIMEOUT,
+			)
+		)
+
+
 def find_xcode_scheme(container: Path) -> str:
 	scheme_dir = container / "xcshareddata" / "xcschemes"
 	schemes = sorted(path.stem for path in scheme_dir.glob("*.xcscheme")) if scheme_dir.is_dir() else []
@@ -220,10 +349,10 @@ def detect_xcode_checks(project_dir: Path) -> list[Check]:
 
 	# No -quiet: it hides the per-assertion "error:" lines that explain *why* a test failed.
 	base = ["xcodebuild", container_flag, container_path, "-scheme", scheme, "-destination", XCODE_DESTINATION]
+	target_base = ["xcodebuild", "build", container_flag, container_path]
 	skip_args = [f"-skip-testing:{target}" for target in ui_targets]
 	skip_reason = " (UI tests skipped)" if skip_args else ""
-
-	return [
+	checks = [
 		Check("build", ["xcodebuild", "build", *base[1:]], "Xcode build", timeout=XCODE_TIMEOUT),
 		Check(
 			"test:unit",
@@ -234,6 +363,9 @@ def detect_xcode_checks(project_dir: Path) -> list[Check]:
 			test_target_style=TEST_TARGET_STYLE_XCODE,
 		),
 	]
+
+	append_xcode_tool_checks(checks, target_base, detect_xcode_tool_targets(projects))
+	return checks
 
 
 def script_is_safe(name: str, command: str) -> bool:
