@@ -70,7 +70,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "serena-hooks remind --client=claude-code"
+            "command": "bash -c 'bash \"$HOME/.claude/hooks/serena-remind.sh\"'"
           }
         ]
       },

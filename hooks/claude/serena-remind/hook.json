@@ -1,7 +1,6 @@
 {
 	"name": "serena-remind",
 	"description": "Nudges the agent to use Serena's symbolic tools instead of overrelying on read_file and grep.",
-	"command": "serena-hooks remind --client=claude-code",
 	"runtime": "claude",
 	"events": [
 		{
