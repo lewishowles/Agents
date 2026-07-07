@@ -4,7 +4,7 @@
 	"when": "When reviewing recurring friction-log entries to propose rule/skill amendments",
 	"triggers": ["friction-review", "review friction", "friction patterns", "friction log"],
 	"do-not-use-when": [
-		"Logging a single friction entry — use scripts/log-friction.sh directly",
+		"Logging a single friction entry — use .agent/scripts/log-friction.sh directly",
 		"The friction log is empty or has no recurring patterns"
 	],
 	"filePatterns": [],

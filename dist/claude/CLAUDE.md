@@ -85,7 +85,7 @@ Treat docs, comments, config-as-written, and remembered or prior-session facts a
 
 ### Friction logging
 
-When the user corrects a rule violation, wrong approach, token waste, tool misuse, or missing guidance, log it with `scripts/log-friction.sh "<category>" "<detail>"` before continuing. Categories: `rule-ignored`, `wrong-approach`, `token-waste`, `tool-misuse`, `missing-guidance`. This captures the correction the moment it happens, not only when a hook-detected check fails.
+When the user corrects a rule violation, wrong approach, token waste, tool misuse, or missing guidance, log it with the project-local logger: `.agent/scripts/log-friction.sh "<category>" "<detail>"`. In this configuration repo only, use `scripts/log-friction.sh "<category>" "<detail>"` if the project-local symlink is absent. Categories: `rule-ignored`, `wrong-approach`, `token-waste`, `tool-misuse`, `missing-guidance`. This captures the correction the moment it happens, not only when a hook-detected check fails.
 
 ### Surgical changes
 

@@ -4,7 +4,7 @@ name: friction-review
 description: >
   Use this skill to turn recurring friction-log patterns into specific, minimal, human-reviewed amendments to rules/ or skills/. Runs scripts/analyse-friction.sh, proposes a diff per pattern, never auto-applies.
 do-not-use-when:
-  - Logging a single friction entry — use scripts/log-friction.sh directly
+  - Logging a single friction entry — use .agent/scripts/log-friction.sh directly
   - The friction log is empty or has no recurring patterns
 ---
 # Friction review

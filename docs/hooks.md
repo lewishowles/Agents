@@ -156,7 +156,7 @@ Runs when Claude finishes a response. Checks for a `package.json` (skips silentl
 
 Failures are appended to `~/.claude/logs/friction.log` as tab-separated lines: timestamp, category (`check-fail` for this hook), project path, and a detail string folding the failed check names and first error line. Use `scripts/analyse-friction.sh` to group the most common category/project/detail combinations; it still aggregates log lines written before the category field existed.
 
-Behavioural friction (rule ignored, wrong approach, token waste, tool misuse, missing guidance) can be logged manually with `scripts/log-friction.sh "<category>" "<detail>"`, sharing the same log and schema.
+Behavioural friction (rule ignored, wrong approach, token waste, tool misuse, missing guidance) can be logged manually with `.agent/scripts/log-friction.sh "<category>" "<detail>"`, sharing the same log and schema.
 
 ## How skill triggering works
 

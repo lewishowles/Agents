@@ -84,7 +84,7 @@ Use this shape unless the user asks for a different format:
 ## Suggested friction entries
 
 ```sh
-scripts/log-friction.sh "<category>" "<detail>"
+.agent/scripts/log-friction.sh "<category>" "<detail>"
 ```
 
 ## Proposed guidance changes
