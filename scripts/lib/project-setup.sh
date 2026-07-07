@@ -141,6 +141,7 @@ copy_shared_agent_tools() {
 	link_file "$REPO_DIR/scripts/validate/generated-file-guard.py" "$PROJECT_DIR/.agent/scripts/generated-file-guard.py" ".agent/scripts/generated-file-guard.py"
 	link_file "$REPO_DIR/scripts/repo-context.py" "$PROJECT_DIR/.agent/scripts/repo-context.py" ".agent/scripts/repo-context.py"
 	link_file "$REPO_DIR/scripts/validate/change-impact.py" "$PROJECT_DIR/.agent/scripts/change-impact.py" ".agent/scripts/change-impact.py"
+	link_file "$REPO_DIR/scripts/log-friction.sh" "$PROJECT_DIR/.agent/scripts/log-friction.sh" ".agent/scripts/log-friction.sh"
 	cli_group_end
 }
 
