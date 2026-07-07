@@ -189,6 +189,7 @@ Minimise token cost while discovering files; answer the narrow question with the
 - Do not use broad `find`, `ls -R`, or unscoped glob searches. If `find` is unavoidable, scope it to named directories and group `-o` expressions with parentheses.
 - Before printing many files, prefer counts or `--files-with-matches`; open only the specific files needed.
 - Once a search or graph query identifies the exact file, symbol, or line to change, stop exploratory reads and searches. Use the narrowest source snippet, symbolic tool, or patch anchor needed for the edit; reserve another search for verifying the changed reference.
+- After a source-inspection guard hook blocks consecutive searches or reads, change cadence: use one symbolic lookup, known-symbol read, or single targeted file range, then reassess before issuing another search/read. Project guard hooks override generic advice to parallelise file reads.
 - For build artefact checks, inspect the exact expected output path rather than listing whole build trees.
 - If a command unexpectedly starts dumping large output, stop using that pattern and switch to a narrower command.
 - If a user says a file exists and a search cannot find it, state that gitignored files were included before concluding it is missing.
