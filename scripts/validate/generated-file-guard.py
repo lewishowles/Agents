@@ -294,7 +294,7 @@ def render_markdown(result: dict[str, Any]) -> str:
 	for finding in result["findings"]:
 		lines.extend(
 			[
-				f"- `{finding['path']}` — {finding['message']}",
+				f"- `{finding['path']}`: {finding['message']}",
 				f"  Source: {finding['source']}",
 			]
 		)
