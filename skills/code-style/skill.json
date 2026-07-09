@@ -1,6 +1,6 @@
 {
 	"name": "code-style",
-	"description": "Use this skill on every code change — even small snippets. Covers tabs vs spaces, quote style, semicolons, naming conventions, JSDoc comments, and documentation patterns. This is the baseline style guide for all code.",
+	"description": "Use this skill on every code change — even small snippets. Covers formatting, naming, JSDoc, and reusing project helper libraries before implementing primitive operations. This is the baseline style guide for all code.",
 	"when": "When formatting code, covering naming, comments, arrays, objects",
 	"triggers": [],
 	"do-not-use-when": [
@@ -8,7 +8,7 @@
 		"Editing prose-only Markdown where the writing skill is sufficient",
 		"Working in generated output that should not be edited directly"
 	],
-	"filePatterns": ["*.swift", "*.vue", "*.ts", "*.tsx", "*.js", "*.md"],
+	"filePatterns": ["*.swift", "*.vue", "*.ts", "*.tsx", "*.js"],
 	"pathPatterns": [],
 	"dependencies": [],
 	"capabilities": {

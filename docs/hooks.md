@@ -43,7 +43,6 @@ Extension-to-skill mapping:
 | `*.ts` | `code-style`, `typescript` |
 | `*.tsx` | `code-style`, `typescript` |
 | `*.js` | `code-style` |
-| `*.md` | `code-style`, `writing` |
 | `*.e2e.ts` | `test-e2e`, `code-style`, `test-unit`, `vue-project-stack` |
 | `*.e2e.js` | `test-e2e`, `code-style`, `test-unit`, `vue-project-stack` |
 | `*.cy.ts` | `test-e2e`, `code-style`, `test-unit`, `vue-project-stack` |
@@ -66,6 +65,7 @@ Extension-to-skill mapping:
 | `/pages/` | `vue-router`, `vue`, `vue-project-stack`, `accessibility` |
 | `vite.config.ts` | `vue-vite` |
 | `vite.config.js` | `vue-vite` |
+| `*.md` | `writing` |
 | `README.md` | `writing-readme`, `writing` |
 <!-- END GENERATED: file-trigger-mapping -->
 

@@ -84,6 +84,13 @@ run_fixture() {
 	context=$(printf '%s' "$output" | jq -r '.hookSpecificOutput.additionalContext // ""' 2>/dev/null)
 
 	local case_pass=true
+	if [[ "$context" != *"Before editing, assess these matched skills:"* ]] ||
+		[[ "$context" != *"Load and apply every skill relevant to the intended change."* ]]; then
+		printf '  ✗ %s: reminder does not require skill assessment and application\n' \
+			"$case_name" >&2
+		case_pass=false
+	fi
+
 	for skill in "${expected_skills[@]}"; do
 		if ! has_skill "$context" "$skill"; then
 			printf '  ✗ %s: skill "%s" not found in output\n' "$case_name" "$skill" >&2

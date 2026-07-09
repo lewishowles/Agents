@@ -2,7 +2,7 @@
 # Generated — edit skill.json and SKILL.body.md instead.
 name: code-style
 description: >
-  Use this skill on every code change — even small snippets. Covers tabs vs spaces, quote style, semicolons, naming conventions, JSDoc comments, and documentation patterns. This is the baseline style guide for all code.
+  Use this skill on every code change — even small snippets. Covers formatting, naming, JSDoc, and reusing project helper libraries before implementing primitive operations. This is the baseline style guide for all code.
 do-not-use-when:
   - Reading or reviewing a file without proposing code changes
   - Editing prose-only Markdown where the writing skill is sufficient

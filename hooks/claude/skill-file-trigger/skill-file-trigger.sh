@@ -63,5 +63,5 @@ done < <(jq -rn '
 readarray -t unique < <(printf '%s\n' "${skills[@]}" | sort -u)
 
 jq -n \
-	--arg ctx "SKILL REMINDER (${filename}): Consider these skills for the current file: ${unique[*]}." \
+	--arg ctx "SKILL REQUIREMENT (${filename}): Before editing, assess these matched skills: ${unique[*]}. Load and apply every skill relevant to the intended change." \
 	'{hookSpecificOutput: {hookEventName: "PreToolUse", additionalContext: $ctx}}'
