@@ -23,6 +23,7 @@ Apply across all projects. See individual skills for detailed rules. Use project
 - `/code-review` — When reviewing a PR or diff, or receiving review feedback
 - `/code-style` — When formatting code, covering naming, comments, arrays, objects
 - `/component-api-design` — When designing component props, slots, emits, v-model, expose, and public API
+- `/component-library` — When using @lewishowles/components and the component API or pattern is unclear
 - `/debugging` — When encountering any bug, test failure, or unexpected behaviour — before proposing a fix
 - `/dependencies` — When adding packages, what to choose, when to add
 - `/error-handling` — When validating input, graceful fallbacks, error handling
@@ -30,6 +31,7 @@ Apply across all projects. See individual skills for detailed rules. Use project
 - `/friction-review` — When reviewing recurring friction-log entries to propose rule/skill amendments
 - `/frontend-design` — When designing UI or making aesthetic decisions for a public-facing interface
 - `/frontend-security` — When writing or reviewing client-side code for security: XSS, CSP, auth tokens, secrets hygiene
+- `/human-friendly-cli` — When designing, reviewing, or extending CLI commands
 - `/library-release` — When releasing @lewishowles/components, @lewishowles/helpers, @lewishowles/testing, or @lewishowles/cli-style
 - `/library-update` — When checking for updates to @lewishowles/components, @lewishowles/helpers, @lewishowles/testing, or @lewishowles/cli-style after a new release
 - `/refactoring` — When refactoring existing code or triaging technical debt

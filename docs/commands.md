@@ -40,6 +40,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/code-style` | `code-style` | When formatting code, covering naming, comments, arrays, objects |
 | `/codebase-memory` | `codebase-memory` | Use this skill when answering structural code queries with the codebase knowledge graph, including architecture, callers, dependencies, impact analysis, dead code, graph query syntax, Cypher examples, edge types, and search_graph usage. |
 | `/component-api-design` | `component-api-design` | When designing component props, slots, emits, v-model, expose, and public API |
+| `/component-library` | `component-library` | When using @lewishowles/components and the component API or pattern is unclear |
 | `/debugging` | `debugging` | When encountering any bug, test failure, or unexpected behaviour — before proposing a fix |
 | `/dependencies` | `dependencies` | When adding packages, what to choose, when to add |
 | `/error-handling` | `error-handling` | When validating input, graceful fallbacks, error handling |
@@ -47,6 +48,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/friction-review` | `friction-review` | When reviewing recurring friction-log entries to propose rule/skill amendments |
 | `/frontend-design` | `frontend-design` | When designing UI or making aesthetic decisions for a public-facing interface |
 | `/frontend-security` | `frontend-security` | When writing or reviewing client-side code for security: XSS, CSP, auth tokens, secrets hygiene |
+| `/human-friendly-cli` | `human-friendly-cli` | When designing, reviewing, or extending CLI commands |
 | `/library-release` | `library-release` | When releasing @lewishowles/components, @lewishowles/helpers, @lewishowles/testing, or @lewishowles/cli-style |
 | `/library-update` | `library-update` | When checking for updates to @lewishowles/components, @lewishowles/helpers, @lewishowles/testing, or @lewishowles/cli-style after a new release |
 | `/project-audit` | `project-audit` | When auditing a project for setup drift, stale generated output, missing diagnostics, command-safety gaps, or agent-readiness issues |

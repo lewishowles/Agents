@@ -8,6 +8,8 @@ do-not-use-when:
   - Updating a project to consume an already-published library release
   - Publishing an unrelated package
   - Using installed helper or component APIs without preparing a release
+  - Choosing or inspecting component-library options without release work
+  - Designing human-friendly-cli command behaviour without release work
 related-skills:
   - dependencies
   - typescript

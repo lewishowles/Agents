@@ -22,6 +22,9 @@
 	"filePatterns": ["*.vue"],
 	"pathPatterns": [],
 	"dependencies": ["vue", "code-style", "dependencies"],
+	"do-not-use-when": [
+		"Choosing or inspecting component-library options, examples, props, slots, or composition patterns"
+	],
 	"capabilities": {
 		"promptTriggering": true,
 		"fileTriggering": true

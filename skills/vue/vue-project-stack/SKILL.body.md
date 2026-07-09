@@ -44,7 +44,16 @@ Missing helper — discuss adding to `@lewishowles/helpers`, not inlining or add
 
 ## Component library — `@lewishowles/components`
 
-Opinionated accessible UI component library. Use live docs at [components.howles.dev](https://components.howles.dev/), not memory. Missing component — discuss adding it there, not one-off duplicates.
+Opinionated accessible UI component library. Use live docs at [components.howles.dev](https://components.howles.dev/), not memory. When the component choice, API, or composition pattern is unclear, use the `components` CLI before searching library source:
+
+```sh
+npx @lewishowles/components list
+npx @lewishowles/components info <component>
+npx @lewishowles/components snippet <component>
+npx @lewishowles/components pattern
+```
+
+Missing component — discuss adding it there, not one-off duplicates.
 
 ## Data layer structure
 
