@@ -56,10 +56,12 @@ After plan approval, consider delegating implementation tasks to subagents when:
 
 For each delegated task:
 
-1. **Delegate** — give the subagent the task description, acceptance criteria, and relevant file paths from `PROGRESS.md`
+1. **Delegate** — give the subagent the goal, rationale, constraints, acceptance criteria, and relevant file paths from `PROGRESS.md`
 2. **Review** — inspect the subagent's output against acceptance criteria; do not trust blindly
 3. **Approve or request changes** — if output is correct, proceed; if not, send specific feedback
 4. **Commit** — after approval, commit the task's output before delegating the next
+
+After two comparable failures, escalate to a more capable agent or resume in the main session.
 
 Enables autonomous multi-hour execution while keeping the main agent as architect and reviewer.
 
