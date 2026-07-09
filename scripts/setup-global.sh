@@ -95,7 +95,7 @@ setup_stagewise() {
 }
 
 # Ensures ~/.codex/config.toml contains managed MCP server entries and the
-# codex_hooks feature flag. Existing entries for managed servers are replaced
+# hooks feature flag. Existing entries for managed servers are replaced
 # rather than duplicated, so this function is safe to run on every setup.
 ensure_codex_config() {
 	local config="$HOME/.codex/config.toml"
@@ -117,11 +117,17 @@ ensure_codex_config() {
 	printf '\n[mcp_servers.codebase-memory-mcp]\ncommand = "codebase-memory-mcp"\n' >> "$temp"
 	printf '\n[mcp_servers.serena]\nstartup_timeout_sec = 15\ncommand = "serena"\nargs = ["start-mcp-server", "--project-from-cwd", "--context=codex"]\n' >> "$temp"
 
-	# Ensure codex_hooks feature flag is present in [features].
-	if ! grep -q 'codex_hooks' "$temp"; then
+	# Migrate the deprecated codex_hooks key to hooks, and ensure the hooks
+	# feature flag is present in [features].
+	if grep -q '^codex_hooks' "$temp"; then
 		local temp2
 		temp2=$(mktemp)
-		awk '/^\[features\]/{print; print "codex_hooks = true"; next} 1' "$temp" > "$temp2"
+		sed 's/^codex_hooks = /hooks = /' "$temp" > "$temp2"
+		mv "$temp2" "$temp"
+	elif ! grep -q '^hooks' "$temp"; then
+		local temp2
+		temp2=$(mktemp)
+		awk '/^\[features\]/{print; print "hooks = true"; next} 1' "$temp" > "$temp2"
 		mv "$temp2" "$temp"
 	fi
 
