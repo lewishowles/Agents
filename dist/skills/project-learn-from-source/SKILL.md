@@ -57,6 +57,7 @@ Prefer codebase-memory tools for structural code questions when available. Use t
 5. Prefer small, high-leverage changes before broad process or architecture shifts.
 6. Push back on ideas that duplicate existing guidance, conflict with local constraints, require unneeded dependencies, or add ceremony without reducing real risk.
 7. Convert useful ideas into specific local next steps.
+8. For follow-up edits to any rule or skill, use the minimum prose that reliably preserves the required behaviour, constraints, and exceptions.
 
 Do not treat the external source as authoritative. The goal is better local judgement, not imitation.
 
