@@ -35,13 +35,14 @@ If any of the three fails, extend an existing skill or discard the idea.
 
 ## Eval
 
-After writing, run these five checks without re-reading the skill body:
+After writing or materially changing a skill, run these six checks without re-reading the skill body:
 
 1. **Recall test** — without re-reading, answer: what does an agent do differently after loading this skill? If the answer is vague, the body is too abstract.
 2. **Misfire test** — imagine the trigger phrase arriving with no skill loaded. Does the model handle it correctly anyway from training? If yes, the skill is likely redundant.
 3. **Scope test** — does the skill cover more than one coherent domain? Each section should belong to one job description. Split if not.
 4. **Checklist test** — find any prose instruction paragraph. Can it be rewritten as a numbered list without losing meaning? If yes, do it — checklists are more reliably followed than prose.
 5. **Minimality test** — could the same behavioural change be achieved with fewer tokens? If a shorter version would work, the skill is over-specified. The model often needs permission or instruction, not a tutorial.
+6. **Behaviour-trap test**: for high-impact guidance, write one tiny prompt or fixture that used to trigger the failure. Confirm the updated skill changes the next action, not just the wording. Keep the trap near the changed source or note why it is not worth keeping.
 
 ## Skill vs. rule boundary
 
