@@ -123,6 +123,9 @@ Every changed line traces directly to the request.
 - **UK spelling** — colour, organise, behaviour, grey, etc.
 - **Titles**: sentence case
 - **No preamble/summary** unless asked
+- **Answer first** — lead with the result, decision, or blocker
+- **Match size to stakes** — keep routine results short; retain the detail needed for risky, ambiguous, or consequential work
+- **Concise prose, full-depth work** — brevity applies only to user-facing narration. Do not reduce investigation, verification, warnings, required questions, or skill-defined output to make a response shorter.
 - **Avoid em dashes** across agent output, docs, comments, commit messages, and generated prose. Use a comma, colon, semicolon, parentheses, or a new sentence instead. Only use an em dash when preserving quoted text, matching an external style requirement, or when no other punctuation keeps the meaning clear.
 - Use `trash` instead of `rm` for any destructive file removal.
 - **No blame attribution** — don't label issues as "pre-existing" or distinguish your changes from prior code. Describe the issue and what to fix, without framing who introduced it.
