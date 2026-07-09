@@ -85,11 +85,18 @@ When the user corrects a rule violation, wrong approach, token waste, tool misus
 
 **Touch only what's necessary. Minimum code. Nothing speculative.**
 
+After understanding the affected flow, stop at the first option that fully satisfies the requirement:
+
+1. No code: the requested behaviour already exists or configuration, documentation, or clarification is enough
+2. Existing project code: reuse the established helper, component, pattern, or command
+3. Standard capability: use the language standard library or native platform feature
+4. Installed dependency: use a package the project already carries
+5. New code: write the minimum needed for the confirmed requirement
+
 - No features beyond request, no single-use abstractions or unasked flexibility
 - Don't improve adjacent code, comments, or formatter-owned whitespace; don't refactor what works; match existing style
 - Spot unrelated dead code? Mention it, don't delete
 - Remove unused imports, variables, functions you created; don't remove unrelated dead code unless the user points it out or asks for cleanup
-- Before creating a new function, component, or helper, search for an existing equivalent. If one exists, use it and state what you found.
 - Don't stack guards that duplicate each other (e.g. `Number.isFinite` alongside `Number.isInteger`, which already rejects `NaN`/`Infinity`). One check that fully covers the case is enough; every guard must trace to a real requirement.
 - Revert incidental editor or formatter noise (auto-format, import reordering) on lines outside the requested change before presenting the diff.
 
