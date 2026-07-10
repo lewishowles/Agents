@@ -188,7 +188,7 @@ Delegation is opt-in, not default. Consider it when a plan has 3+ independent ta
 
 **Mid-session advisor.** In Claude CLI, `/advisor` can escalate to Opus for a second opinion mid-session without spawning a full subagent. Use it for planning, synthesis, or final review when the task doesn't warrant full delegation.
 
-**Model by role.** Match model capability to the task: Haiku for mechanical extraction or high-volume formatting; Sonnet for implementation and focused code changes; Opus for planning, cross-file synthesis, and final review.
+**Model by role.** Match model capability to the task: Haiku for mechanical extraction, high-volume formatting, file inventories, structured fact extraction, mechanical comparison of identified file sets, and log categorisation. Delegate those tasks only when there are 3+ independent, well-bounded batches. Keep task selection, interpretation, change decisions, root-cause analysis, and final verification with the main agent. Do not dispatch Haiku for a single known-file read, existence check, or one-off lookup, because dispatch overhead exceeds the saving. Sonnet is for implementation and focused code changes; Opus is for planning, cross-file synthesis, and final review.
 
 The main agent acts as architect and reviewer; subagents act as implementers. Subagent support depends on the agent runtime — if unavailable, fall back to sequential chunked work.
 
