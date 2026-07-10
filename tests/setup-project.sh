@@ -222,6 +222,19 @@ test_detected_skill_pack_installs_when_confirmed() {
 	assert_dir_link "$target_dir/.claude/skills/swift"
 }
 
+test_agent_docs_mentions_do_not_trigger_skill_pack_detection() {
+	local target_dir="$TEST_ROOT/skill-pack-docs-mention"
+	local output="$TEST_ROOT/skill-pack-docs-mention.out"
+	mkdir -p "$target_dir/src"
+	printf 'Use Swift skills when editing Swift files.\n' > "$target_dir/AGENTS.md"
+	printf 'Swift diagnostics may exist in other projects.\n' > "$target_dir/WORKSPACE.md"
+
+	run_setup_output "$target_dir" --both > "$output" 2>&1
+
+	assert_not_contains "$output" "Detected a macOS/Swift project"
+	assert_not_exists "$target_dir/.agents"
+}
+
 test_no_skill_packs_suppresses_detection() {
 	local target_dir="$TEST_ROOT/skill-pack-suppressed"
 	mkdir -p "$target_dir/Sources/App"
@@ -286,6 +299,7 @@ test_help_lists_commands
 test_list_skill_packs_reports_macos
 test_explicit_skill_pack_installs_local_links
 test_detected_skill_pack_installs_when_confirmed
+test_agent_docs_mentions_do_not_trigger_skill_pack_detection
 test_no_skill_packs_suppresses_detection
 test_status_reports_clean_project
 test_status_reports_configured_project

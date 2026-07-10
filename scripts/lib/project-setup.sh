@@ -223,12 +223,6 @@ detect_macos_project() {
 		done
 	fi
 
-	for candidate in "$PROJECT_DIR/AGENTS.md" "$PROJECT_DIR/WORKSPACE.md"; do
-		if [ -f "$candidate" ] && grep -Eiq 'swift|macos|macOS' "$candidate"; then
-			return 0
-		fi
-	done
-
 	return 1
 }
 
