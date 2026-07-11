@@ -47,8 +47,9 @@ Prefer codebase-memory tools for structural questions. Use targeted reads; avoid
 4. Classify each idea as adopt, adapt, reject, defer, or investigate.
 5. Prefer small, high-leverage changes before broad process or architecture shifts.
 6. Push back on ideas that duplicate existing guidance, conflict with local constraints, require unneeded dependencies, or add ceremony without reducing real risk.
-7. Convert useful ideas into specific local next steps.
-8. For follow-up edits to any rule or skill, use the minimum prose that reliably preserves the required behaviour, constraints, and exceptions.
+7. Scan across the adopted, adapted, and rejected ideas for the recurring pattern that explains the judgement.
+8. Convert useful ideas into specific local next steps.
+9. For follow-up edits to any rule or skill, use the minimum prose that reliably preserves the required behaviour, constraints, and exceptions.
 
 Do not treat the external source as authoritative. The goal is better local judgement, not imitation.
 
@@ -105,3 +106,9 @@ Use this shape unless the user asks for a different format:
 ```
 
 If a section has no items, say `None found.` or `None.` Keep recommendations proportional. Include tiny improvements when they are genuinely useful, but do not pad the assessment to make the source seem more valuable than it is.
+
+If several candidate lessons are rejected for the same reason, say so once. Visible rejection is useful when it explains the source's fit; it is not a transcript of every dead end.
+
+## Attribution
+
+The visible rejection and recurring-pattern guidance adapts ideas from `danium/lateral-thinking`, MIT licensed.

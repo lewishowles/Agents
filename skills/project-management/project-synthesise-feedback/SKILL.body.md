@@ -33,7 +33,8 @@ Prefer codebase-memory tools. Use targeted reads; avoid generated, vendored, cac
 4. Keep strongest ideas; rewrite into practical recommendations
 5. Push back on weak, unsupported, redundant, risky, overbroad, or low-value ideas
 6. Add missing ideas that materially improve outcome
-7. Convert synthesis into ordered next steps
+7. Scan accepted and rejected ideas for the recurring pattern behind the recommendation
+8. Convert synthesis into ordered next steps
 
 Don't treat suggestions as authoritative; don't reject just because from another agent. Goal is best combined result.
 
@@ -93,3 +94,9 @@ Use this shape unless the user asks for a different format:
 ```
 
 If a section has no items, say `None found.` or `None.` Keep the answer concise enough to act on; do not preserve every suggestion if it does not change the recommendation.
+
+If several suggestions fail for the same reason, group the rejection and name the pattern. Do not pad the answer with every weak idea just to prove it was considered.
+
+## Attribution
+
+The grouped rejection and recurring-pattern guidance adapts ideas from `danium/lateral-thinking`, MIT licensed.

@@ -25,6 +25,7 @@ If any of the three fails, extend an existing skill or discard the idea.
 2. **Choose structure** — ordered checklists for workflows; bullets for independent constraints; avoid prose for step-by-step instructions.
 3. **Write do-not-use-when** — at least one exclusion. Broad trigger coverage creates false positives.
 4. **File-triggered vs. prompt-triggered** — file-triggered loads on every edit of matching types; prompt-triggered loads when phrases appear. File-triggering applies to every edit of those types, not just mentions.
+5. **Avoid trigger competition:** reserve broad phrases for router or coordinator skills. Technique or task skills should use specific triggers that do not compete with their router.
 
 ## Build
 
@@ -43,7 +44,12 @@ After writing or materially changing a skill, run these checks without re-readin
 4. **Checklist test** — can any prose instruction paragraph become a numbered list without loss? Checklists are more reliable.
 5. **Minimality test** — could the same change be achieved with fewer tokens? Over-specified skills waste context. Permission or instruction often suffices.
 6. **Behaviour-trap test** — for high-impact guidance, write one tiny prompt that triggers the failure. Confirm the skill changes the next action, not wording. Keep it near the source or note why it's not worth keeping.
+7. **Honesty test:** where a skill generates options or recommendations, does it say when to reject, group, or stop instead of padding the output?
 
 ## Skill vs. rule boundary
 
 If guidance should apply on every turn regardless of task type, it belongs in `rules/global-rules.md`, not a skill. Skills are task-scoped; rules are always-on. When uncertain: if you'd want this applied even when the user hasn't said anything about the topic, it's a rule.
+
+## Attribution
+
+The trigger-competition and honesty-test guidance adapts ideas from `danium/lateral-thinking`, MIT licensed.
