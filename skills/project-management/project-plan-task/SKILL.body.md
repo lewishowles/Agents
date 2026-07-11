@@ -35,6 +35,21 @@ Run only when user asks and `agents:workspace` exists in current shell.
 6. **Insert** — add a section using standard structure: purpose, expected commit, model tier, files likely to change, tasks, risks, notes
 7. **Update parking lot** — move related ideas into the new section or leave them parked
 
+## Cross-repo work
+
+When a task may span more than one repository, make the repo boundary explicit before adding it to the plan. This gives us most of the coordination benefit of a synthetic monorepo without requiring a hosted tool or account.
+
+Capture these facts in the section, task file, or linked spec:
+
+- **Main repo**: where the parent task should run and where most local commands apply
+- **Auxiliary repos**: repos needed for read-only context, implementation, generated output, examples, or downstream validation
+- **Relationship**: package consumer, API client, generated-output consumer, documentation/example repo, CI dependency, or release baseline
+- **Permission boundary**: do not clone, add, edit, push, open PRs, or run remote/networked commands in another repo without explicit user approval
+- **Validation owner**: which repo's diagnostics prove the change, including any downstream checks required before release
+- **Handoff references**: branch names, PR links, task or session IDs, diagnostic log paths, and repo-specific risks
+
+For broad dependency questions, start with local evidence: package metadata, import searches, codebase-memory graph queries when available, and documented consumer lists. If the affected repo set is still unclear, mark the task `needs decision` and ask before expanding the working set.
+
 ## Placement principles
 
 - Insert before other upcoming sections if this work is a prerequisite

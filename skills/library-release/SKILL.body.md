@@ -58,7 +58,22 @@ Minimum verification to look for:
 
 If useful check is missing, mention gap rather than inventing release blocker.
 
-## Step 5 — inspect publish contents
+## Step 5 — validate likely consumers
+
+For releases that can affect consumers, test at least one realistic downstream path before publishing. This applies when the release changes public APIs, exports, CLI behaviour, generated output, styling contracts, package metadata, or documented setup.
+
+Use local process first:
+
+- Identify known consumers from package metadata, import searches, repo docs, existing boilerplate baselines, and user-provided repo lists
+- Include `~/Dev/Repositories/Packages/boilerplate` when the change affects future project scaffolding or shared defaults
+- Use package dry-run or pack commands when the package tooling supports them
+- Install an unpublished package into a consumer repo only after explicit user approval
+- Run the consumer repo's documented diagnostics, preferring its diagnostics wrapper when present
+- Record which consumers were checked and which were skipped, with the reason
+
+Skip this step for docs-only, metadata-only, or internal patch releases unless there is a plausible consumer impact. If no consumer can be checked locally, report that gap before publishing rather than treating local package tests as complete release proof.
+
+## Step 6 — inspect publish contents
 
 Before publishing, confirm package contents and metadata:
 
@@ -70,7 +85,7 @@ Before publishing, confirm package contents and metadata:
 
 Use dry-run/pack commands when available, after confirming package tooling.
 
-## Step 6 — explicit release actions
+## Step 7 — explicit release actions
 
 These packages publish to the npm registry for the next version. Treat `npm publish` or any CI workflow that publishes to npm as the publish step. Do not use GitHub Packages as the target registry.
 
@@ -84,12 +99,13 @@ Stop for confirmation before each irreversible/history-changing action:
 
 Show exact command and expected effect before asking.
 
-## Step 7 — after release
+## Step 8 — after release
 
 Report:
 
 - Package and version released
 - Verification run
+- Downstream consumers checked or explicitly skipped
 - Publish/tag/release status
 - Any release-process rough edges worth fixing later
 
