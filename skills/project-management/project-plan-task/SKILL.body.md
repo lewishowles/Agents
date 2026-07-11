@@ -48,7 +48,7 @@ Capture these facts in the section, task file, or linked spec:
 - **Validation owner**: which repo's diagnostics prove the change, including any downstream checks required before release
 - **Handoff references**: branch names, PR links, task or session IDs, diagnostic log paths, and repo-specific risks
 
-For broad dependency questions, start with local evidence: package metadata, import searches, codebase-memory graph queries when available, and documented consumer lists. If the affected repo set is still unclear, mark the task `needs decision` and ask before expanding the working set.
+For broad dependency questions, start with local evidence: package metadata, import searches, codebase-memory graph queries when available, and documented consumer lists. If the affected repo set is still unclear, mark the task `needs-decision` and ask before expanding the working set.
 
 ## Placement principles
 
@@ -68,21 +68,23 @@ Spec explains why now, problem, goals, current status (optional), non-goals, app
 
 ## Task files vs progress sections
 
-Once a plan has more than the current one or two active items, prefer a standalone file under `.agent/tasks/<slug>.md` over an inline `PROGRESS.md` section for concrete, ready-to-pick-up work. This keeps the read surface small: the next agent opens only the active task's file, not the whole plan.
+Once a plan has more than the current one or two active items, prefer a standalone file under `.agent/tasks/NNN.md` over an inline `PROGRESS.md` section for concrete, ready-to-pick-up work. This keeps the read surface small: the next agent opens only the active task's file, not the whole plan. The canonical contract is `docs/progress-format.md` in the Configuration/Agents repo — keep this skill's template in sync with it.
 
-`PROGRESS.md`'s session handoff then holds only: a link to the active task file, a short ordered list of upcoming task file links, and standing context that doesn't change per task (verification commands, recurring gotchas). Backlog items with no concrete task file yet stay as prose bullets elsewhere in `PROGRESS.md` (with a spec link if one exists) — do not create a task file until the item is genuinely next; write it just-in-time.
+Filenames are three-digit IDs (`001.md`), allocated as max existing + 1 (including done files), never reused. The human-facing name lives in front matter `title`, not the filename. Branch names use the ID: `task/001`.
 
-Each task file uses the same **Section structure** below, promoted one heading level: the task file's own top-level heading (`# <Task name>`) takes the place of `## <Section name>`, so its fields are `##` (Purpose, Expected commit, ...) rather than `###` — semantic nesting, not a fixed heading depth. Add a `## When done` step at the end naming what to delete and what to promote into the active slot next.
+`PROGRESS.md`'s session handoff then holds only: a link to the active task file, the upcoming queue (numbered `[NNN — Title](.agent/tasks/NNN.md) — status` links, non-done tasks only, priority order), and standing context that doesn't change per task (verification commands, recurring gotchas). Backlog items with no concrete task file yet stay as prose bullets elsewhere in `PROGRESS.md` (with a spec link if one exists) — do not create a task file until the item is genuinely next; write it just-in-time.
 
-Placement follows the same principle as section order: when inserting new work, if it's the immediate next task, write or update the active task file directly; if it's later in the queue, add a new `.agent/tasks/<slug>.md` file and insert its link into the queue list in dependency order, not at the end.
+Release boundaries live in one `## Roadmap` table (`ID | Title | Overview | Status`, row order is the timeline; Status is `planned`/blank, `active`, or `done`). A task's `release:` front matter references a roadmap ID; omit it for backlog tasks.
 
-On completion, delete the finished task file and promote the next queue entry into the active slot in `PROGRESS.md`. This mechanical step, not a "stop and read further" instruction, is what keeps the next agent from re-deriving the whole plan.
+Placement follows the same principle as section order: when inserting new work, if it's the immediate next task, write or update the active task file directly; if it's later in the queue, add a new task file and insert its link into the queue list in dependency order, not at the end.
+
+On completion, keep the file: set `status: done` and `completed: <date>` in front matter, append a short `## Outcome` section (what landed, how it was verified), remove the task from the queue, and promote the next entry into the active slot in `PROGRESS.md`. Done files are the historical record, replacing most per-task archived-milestone prose. When every task file is done, the folder may be bulk-cleaned — a deliberate user or agent action, never automatic.
 
 ### Status and dependencies
 
-Every task file states `## Status` (`ready`, `in progress`, `blocked`, or `needs decision`) and `## Depends on` (links to other tasks that must land first, or "None"). This is what lets a second agent, or the user, pick up any task that isn't already claimed instead of assuming the queue order is a strict dependency chain: most queued tasks are independent unless `Depends on` says otherwise. Mark a task `needs decision` rather than `ready` when an open risk or ambiguity needs the user's input before implementation; don't resolve it by guessing.
+Every task file's front matter states `status` (`ready`, `in-progress`, `blocked`, `needs-decision`, or `done`) and `depends` (task IDs that must land first, or `[]`). This is what lets a second agent, or the user, pick up any task that isn't already claimed instead of assuming the queue order is a strict dependency chain: most queued tasks are independent unless `depends` says otherwise. Mark a task `needs-decision` rather than `ready` when an open risk or ambiguity needs the user's input before implementation; don't resolve it by guessing. Use `blocked` only for external blocks; blocking by another task is expressed through `depends`.
 
-Default to a plain status convention over building a dispatcher: branch name matches the task slug (`task/<slug>`), and whoever picks up work reads the queue's inline status and opens the file directly. Only propose actual dispatch tooling (a script or bot that assigns tasks) if the backlog is large enough, and independent enough, that manual pickup has become the bottleneck: for a handful of tasks it isn't.
+Front matter is the source of truth for status: the queue's inline annotation is convenience and may lag (the user can mark work done from outside a session, e.g. Boilersuit's Progress tab). Check the active task's front matter before starting it. Only propose actual dispatch tooling (a script or bot that assigns tasks) if the backlog is large enough, and independent enough, that manual pickup has become the bottleneck: for a handful of tasks it isn't.
 
 ## Section structure
 
@@ -93,7 +95,7 @@ Inline `PROGRESS.md` section (fields nest under the section heading, so `###`):
 
 ### Status
 
-Optional. Only needed once tasks can be picked up out of order: `ready`, `in progress`, `blocked`, or `needs decision`.
+Optional. Only needed once tasks can be picked up out of order: `ready`, `in-progress`, `blocked`, or `needs-decision`.
 
 ### Depends on
 
@@ -126,18 +128,17 @@ Optional. Link to `.agent/specs/<feature>.md` only when this section needs heavi
 ### Notes
 ```
 
-Standalone `.agent/tasks/<slug>.md` file (same fields, one level shallower — the task name is the file's own top-level heading, not nested under it):
+Standalone `.agent/tasks/NNN.md` file. No `# Title` heading — front matter `title` is the single source. Front matter is a deliberately flat subset of YAML (plain `key: value`, values are strings, inline `[a, b]` lists, no nesting, no quoting) so consumers never need a YAML library:
 
 ```markdown
-# <Task name>
-
-## Status
-
-`ready`, `in progress`, `blocked`, or `needs decision`. Use `needs decision` when an open risk needs the user's input before an agent should implement.
-
-## Depends on
-
-Other task files that must land first, or "None". Independent tasks (most of the queue, unless stated otherwise) can be picked up out of order, each on its own `task/<slug>` branch.
+---
+title: Human-readable task name
+overview: One or two sentences reminding a human what this task is and why it exists.
+status: ready            # ready | in-progress | blocked | needs-decision | done
+depends: []              # task IDs that must land first, e.g. [001, 003]
+release: phase-5         # roadmap ID; omit for backlog
+completed:               # YYYY-MM-DD, set when status becomes done
+---
 
 ## Purpose
 
@@ -153,6 +154,8 @@ Optional. Note if this task needs a specific tier (Haiku for mechanical/high-vol
 
 ## Related files to inspect
 
+Optional.
+
 ## Spec
 
 Optional. Link to `.agent/specs/<feature>.md` only when this task needs heavier feature context.
@@ -165,7 +168,9 @@ Optional. Link to `.agent/specs/<feature>.md` only when this task needs heavier 
 
 ## Notes
 
-## When done
+Optional.
 
-What to delete and what to promote into the active slot next.
+## Outcome
+
+Appended at completion, not pre-written: what landed and how it was verified.
 ```

@@ -16,6 +16,8 @@ Reduce noisy or hard-to-scan `PROGRESS.md`. Cut words aggressively without losin
 ## What to preserve
 
 - `## Session handoff` — keep at top, make accurate
+- `## Roadmap` table — keep intact; task front matter references its IDs. Update row Status rather than deleting rows.
+- Upcoming queue — reconcile inline status annotations against task front matter (front matter wins); drop done tasks from the queue
 - Decisions with rationale (prevent re-debate)
 - Discoveries — unexpected findings affecting current or future work
 - Completed milestones: brief summary; move detail to `## Archived milestones`
@@ -30,6 +32,8 @@ Reduce noisy or hard-to-scan `PROGRESS.md`. Cut words aggressively without losin
 - Stale investigations that led nowhere
 - Implementation details already visible in the code
 - Wording that explains process without preserving a decision, result, blocker, or next action
+- Archived-milestone prose duplicating a done task file's `## Outcome` — the task file is the per-task record; keep only milestone-level summaries in `PROGRESS.md`
+- Done task files, but only when every file in `.agent/tasks/` is done and the user confirms the bulk cleanup — never delete individual done files during routine compaction
 - Spec files in `.agent/specs/` that may no longer be active — list every file, check whether each is referenced by a `### Spec` link in active `PROGRESS.md` sections, then inspect enough to explain its real status. Do not flag a spec only because it is unlinked. For each, state whether it appears completed, superseded, partly future-facing, or unclear; give the reason; recommend keep, archive, link from active work, or ask. Do not delete silently.
 
 ## Compression target
@@ -144,7 +148,7 @@ After work finishes, treat work as incomplete unless handoff is refreshed. Mark 
 
 ## Archive mode
 
-Archive when completed work makes active work hard to find.
+Archive when completed work makes active work hard to find. Done task files (kept in `.agent/tasks/` with `status: done` and an `## Outcome` section) are already the per-task record, so archiving mostly applies to inline sections and pre-task-file history; a milestone-level summary line in `## Archived milestones` is still worth adding when a whole release lands.
 
 Archive completed sections when:
 

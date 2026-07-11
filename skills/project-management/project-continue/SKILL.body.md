@@ -37,6 +37,7 @@ When `<project-root>/.agent/scripts/project-diagnostics.py` exists, use `--list`
 Read only enough to orient. Stale sessions (5+ min idle) restart from scratch.
 
 - Read full `## Session handoff` (all subsections above `### Stop here`, including `### Context` and `### Verify with`)
+- Verify the active task file's front matter before starting it: `status` and `completed` are the source of truth and can change outside a session (work reviewed, committed, or marked done from Boilersuit's Progress tab). If the active task is already `done`, promote the next queue entry instead of redoing it; if the queue annotation disagrees with front matter, trust front matter and fix the queue line.
 - Continue to `## Active work`, `## Decisions`, `## Discoveries`, `## Risks` only when needed
 - Read linked feature specs only when active; skip unrelated specs
 - Skip completed or archived sections unless current task depends on their history
@@ -75,10 +76,11 @@ If the previous session used subagent delegation:
 
 Finishing work includes updating `PROGRESS.md` and giving handoff. Do not leave either to next session.
 
-- Mark completed tasks in `## Active work`
+- Tick completed `## Tasks` checkboxes in the active task file (or completed tasks in an inline `## Active work` section)
+- When the active task is finished, keep the file: set `status: done` and `completed: <date>` in front matter, append a short `## Outcome` section (what landed, how it was verified), remove it from the upcoming queue, and promote the next entry into the active slot
 - Update `### Previous step` with what just changed and any verification performed
 - Update `### Next step` with the first concrete follow-up action
-- Move finished active work toward `## Archived milestones` when it no longer needs attention
+- Update the `## Roadmap` row Status when a release becomes active or its last task lands as done
 - If nothing remains for the current goal, say that clearly in the handoff instead of leaving stale TODOs
 - Compact now if `PROGRESS.md` has grown significantly; current context makes it cheaper
 
@@ -95,6 +97,6 @@ Never say "ready to move on to X" without this context. User needs enough to red
 ## Wrapping up
 
 - Update `## Session handoff` — current goal, previous step, next step, and stop guidance
-- Mark completed tasks; move done sections toward `## Archived milestones`
+- Complete finished tasks per the flow above (front matter, `## Outcome`, queue); move done inline sections toward `## Archived milestones`
 - Add `### Failed approaches` under the current section when a dead end occurred — one line per entry: `Approach X failed because Y; don't retry`. Omit when nothing failed.
 - Do not leave `PROGRESS.md` in a half-updated state

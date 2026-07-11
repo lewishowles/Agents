@@ -163,7 +163,7 @@ _Pattern inspired by [mattpocock/skills](https://github.com/mattpocock/skills) (
 
 ## PROGRESS.md schema
 
-For a brand-new project the initial plan is usually small enough to stay inline. Once there's a first concrete unit of ready-to-pick-up work, create it as `.agent/tasks/<slug>.md` (see the `project-plan-task` skill's "Task files vs progress sections") rather than growing the `## Active work` section indefinitely.
+For a brand-new project the initial plan is usually small enough to stay inline. Once there's a first concrete unit of ready-to-pick-up work, create it as `.agent/tasks/NNN.md` (see the `project-plan-task` skill's "Task files vs progress sections") rather than growing the `## Active work` section indefinitely. The canonical contract for `PROGRESS.md` and task files is `docs/progress-format.md` in the Configuration/Agents repo — keep the templates below in sync with it.
 
 ```markdown
 # <Project name>
@@ -174,11 +174,11 @@ Read this section first. Only open the active task file. Stop after this section
 
 ### Active task
 
-`.agent/tasks/<slug>.md`, or, for a brand-new plan with no task file yet, a one-sentence current goal plus next step.
+`.agent/tasks/NNN.md`, or, for a brand-new plan with no task file yet, a one-sentence current goal plus next step. Verify the active task's front matter status before starting: it can change outside a session (work reviewed, committed, or marked done from Boilersuit).
 
 ### Upcoming queue
 
-Ordered links to `.agent/tasks/<slug>.md` files, or brief bullets if not yet broken into files.
+Numbered `[NNN — Title](.agent/tasks/NNN.md) — status` links, non-done tasks only, in priority order — or brief bullets if not yet broken into files. Front matter wins over the inline annotation on conflict.
 
 ### Standing context
 
@@ -187,6 +187,14 @@ Verification commands and recurring gotchas that apply regardless of which task 
 ### Stop here
 
 Only continue reading if the active task is unclear, or you're picking up backlog work not yet in `.agent/tasks/`.
+
+## Roadmap
+
+One table; row order is the timeline. Task front matter references the `ID` column via `release:`. `Status` is `planned` (or blank), `active`, or `done`. Anything needing more than a sentence of overview gets a spec, not a longer cell.
+
+| ID      | Title           | Overview                        | Status |
+| ------- | --------------- | ------------------------------- | ------ |
+| phase-1 | <Release title> | One sentence on what it means.  | active |
 
 ## Project overview
 
@@ -210,21 +218,20 @@ Ideas and concerns not belonging to the current section.
 
 ## Archived milestones
 
-Completed major sections, moved here to keep the document small.
+Completed work that predates task files, or milestone-level summaries worth keeping. Done task files (kept in `.agent/tasks/` with `status: done` and an `## Outcome` section) are the per-task record, so this section stays small.
 ```
 
-Task file shape (`.agent/tasks/<slug>.md`), same fields as an inline `## Active work` section would have used, one heading level shallower (`# <Task name>` in place of `## <Section name>`, so fields are `##` not `###`) — keep in sync with the `project-plan-task` skill's "Section structure" if either changes:
+Task file shape (`.agent/tasks/NNN.md`): three-digit ID filename (allocate max + 1, never reuse; the human-facing name lives in front matter `title`, and branches use `task/NNN`). Keep in sync with the `project-plan-task` skill's "Section structure" if either changes:
 
 ```markdown
-# <Task name>
-
-## Status
-
-`ready`, `in progress`, `blocked`, or `needs decision`. Use `needs decision` when an open risk needs the user's input before an agent should implement.
-
-## Depends on
-
-Other task files that must land first, or "None". Independent tasks can be picked up out of order, each on its own `task/<slug>` branch.
+---
+title: Human-readable task name
+overview: One or two sentences reminding a human what this task is and why it exists.
+status: ready            # ready | in-progress | blocked | needs-decision | done
+depends: []              # task IDs that must land first, e.g. [001, 003]
+release: phase-1         # roadmap ID; omit for backlog
+completed:               # YYYY-MM-DD, set when status becomes done
+---
 
 ## Purpose
 
@@ -240,6 +247,8 @@ Optional. Note if this task needs a specific tier (Haiku for mechanical/high-vol
 
 ## Related files to inspect
 
+Optional.
+
 ## Spec
 
 Optional. Link to `.agent/specs/<feature>.md` only when this task needs heavier feature context.
@@ -252,7 +261,11 @@ Optional. Link to `.agent/specs/<feature>.md` only when this task needs heavier 
 
 ## Notes
 
-## When done
+Optional.
 
-What to delete, and what to promote into the active slot in `PROGRESS.md` next.
+## Outcome
+
+Appended at completion, not pre-written: what landed and how it was verified. On completion, keep the file — set `status: done` and `completed:`, append this section, remove the task from the queue, and promote the next entry.
 ```
+
+Front matter is a deliberately flat subset of YAML: plain `key: value` pairs treated as strings, inline `[a, b]` lists, no nesting, no quoting, unknown keys ignored. Consumers never need a YAML library.
