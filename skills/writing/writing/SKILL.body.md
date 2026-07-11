@@ -50,6 +50,16 @@
 - Marketing or hype — describe what it does
 - "Just" and "simply" — drop or state plainly how few steps
 
+## AI prose tells
+
+Use this as a final pass when prose sounds generated or over-shaped:
+
+- **Announcement phrases** — cut lines that only introduce the point: "Here's what matters", "The key thing is", "This is not just..."
+- **Formulaic contrast** — avoid mechanical "not X, but Y" pivots. State the useful claim directly
+- **Vague significance** — replace "important", "significant", "crucial", or "meaningful" with the specific effect or risk
+- **False agency** — avoid abstract nouns doing human work unless the product voice needs it. Name the actor when responsibility matters
+- **Punch-line endings** — vary paragraph endings. Don't make every section finish with a quotable final sentence
+
 ## Phrasing
 
 Go-to wording for recurring moments. Starting points, not only options.
@@ -93,3 +103,7 @@ User-facing docs are narrative like longform, but speak for the product, never f
 - **Code-block lead-ins add information, not announce** — keep context; cut lines that only say a snippet follows
 - **Concrete contrast lands abstract ideas** — "Rather than asking for 'purple 800', ask for 'the primary fill'"
 - **Use the docs' components and conventions** — external links via the project's link component, technical names in `<code>`
+
+## Attribution
+
+The "AI prose tells" checklist adapts ideas from Hardik Pandya's `stop-slop` skill, MIT licensed.

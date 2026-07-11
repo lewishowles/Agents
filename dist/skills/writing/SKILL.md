@@ -2,7 +2,7 @@
 # Generated — edit skill.json and SKILL.body.md instead.
 name: writing
 description: >
-  Use this skill when writing or editing prose: blog posts, documentation, longform content, marketing copy. Covers voice, tone, structure, examples, language conventions (UK spelling, sentence case, punctuation), and what to avoid (em dashes, preachy tone, padding, opening summaries). For README files specifically, see the writing-readme skill. For UI microcopy (buttons, error messages, empty states), see the writing-copy skill.
+  Use this skill when writing or editing prose: blog posts, documentation, longform content, marketing copy. Covers voice, tone, structure, examples, language conventions (UK spelling, sentence case, punctuation), and what to avoid (em dashes, preachy tone, padding, opening summaries, formulaic AI-prose patterns). For README files specifically, see the writing-readme skill. For UI microcopy (buttons, error messages, empty states), see the writing-copy skill.
 do-not-use-when:
   - Editing executable code, configuration, or generated output without prose changes
   - Writing UI labels, validation messages, tooltips, or other microcopy where writing-copy is narrower
@@ -60,6 +60,16 @@ do-not-use-when:
 - Marketing or hype — describe what it does
 - "Just" and "simply" — drop or state plainly how few steps
 
+## AI prose tells
+
+Use this as a final pass when prose sounds generated or over-shaped:
+
+- **Announcement phrases** — cut lines that only introduce the point: "Here's what matters", "The key thing is", "This is not just..."
+- **Formulaic contrast** — avoid mechanical "not X, but Y" pivots. State the useful claim directly
+- **Vague significance** — replace "important", "significant", "crucial", or "meaningful" with the specific effect or risk
+- **False agency** — avoid abstract nouns doing human work unless the product voice needs it. Name the actor when responsibility matters
+- **Punch-line endings** — vary paragraph endings. Don't make every section finish with a quotable final sentence
+
 ## Phrasing
 
 Go-to wording for recurring moments. Starting points, not only options.
@@ -103,3 +113,7 @@ User-facing docs are narrative like longform, but speak for the product, never f
 - **Code-block lead-ins add information, not announce** — keep context; cut lines that only say a snippet follows
 - **Concrete contrast lands abstract ideas** — "Rather than asking for 'purple 800', ask for 'the primary fill'"
 - **Use the docs' components and conventions** — external links via the project's link component, technical names in `<code>`
+
+## Attribution
+
+The "AI prose tells" checklist adapts ideas from Hardik Pandya's `stop-slop` skill, MIT licensed.
