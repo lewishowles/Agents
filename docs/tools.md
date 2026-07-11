@@ -2,7 +2,7 @@
 
 These are per-project runtime dependencies that users install — not skills, not plugins, and not managed by this repo. Agents don't load them automatically; users install them in projects where the additional capability is worth the setup cost.
 
-Last reviewed: 2026-06-25.
+Last reviewed: 2026-07-11.
 
 ## Serena MCP
 
@@ -27,6 +27,29 @@ LSP-backed MCP server providing atomic semantic refactoring operations: cross-fi
 
 Run `scripts/setup-global.sh --both` after cloning or pulling changes to Serena hook configuration.
 
+## ast-grep
+
+Syntax-aware search, lint, and rewrite tooling for code patterns. It matches AST shapes rather than plain text, so it can find call sites, declarations, imports, or nested structures without needing a full language server.
+
+**What it adds beyond this repo's skills:**
+- Structural search for repeated code shapes that are awkward or brittle with `rg`
+- Mechanical rewrites and codemod previews where semantic refactoring is not needed
+- Project-specific lint rules for recurring AST patterns
+
+**Overlap with Serena:** both understand code structure, but at different levels. Serena uses the language server for semantic operations such as reference-aware renames and symbol edits. ast-grep uses syntax patterns for search, lint, and rewrite tasks; it does not replace semantic refactoring.
+
+**When it's worth adding:**
+- You repeatedly search for or rewrite the same syntactic pattern
+- A project needs custom lint rules that depend on AST shape rather than text
+- The target files are supported by ast-grep but do not have a reliable language-server workflow
+
+**When it's not worth adding:**
+- `rg` is enough for text, docs, config, or simple literal search
+- Serena can perform the semantic edit safely, such as renaming a widely-used symbol
+- The pattern is one-off and cheaper to inspect manually
+
+**Installation:** Standalone CLI or MCP server. Treat it as a per-project runtime dependency; do not add it to global rules unless the target project has installed and documented it.
+
 ## repowise
 
 Code intelligence tool that combines graph traversal with git history analysis for code health scoring and defect prediction.
@@ -49,24 +72,27 @@ Code intelligence tool that combines graph traversal with git history analysis f
 
 **Installation:** Standalone tool. See the repowise documentation for setup details.
 
-## Comparison: codebase-memory vs repowise vs fallow
+## Comparison: codebase-memory vs ast-grep vs repowise vs fallow
 
-| | codebase-memory | repowise | fallow |
-|-|-----------------|----------|--------|
-| **Type** | MCP server (skill in this repo) | Runtime tool (user-installed) | CLI tool (skill in this repo) |
-| **Languages** | Language-agnostic (via LSP) | Language-agnostic | JS/TS only (122 framework plugins) |
-| **Graph traversal** | Yes — callers, callees, impact, dead code | Yes — callers, callees, dependencies | No |
-| **Duplication detection** | No | No | Yes — 4 modes |
-| **Boundary violations** | No | No | Yes — architecture boundary enforcement |
-| **Complexity hotspots** | Partial — fan-out/fan-in via graph queries | Yes — composite health scoring | Yes — with ownership and refactoring targets |
-| **Git hotspot analysis** | No (use `git log` commands directly) | Yes — churn + defect density over time | No |
-| **ADR mining** | No | Yes | No |
-| **Atomic refactors** | No (analysis only) | No | No (use Serena MCP for execution) |
-| **Dead code detection** | Yes — `search_graph(max_degree=0)` | Yes | Yes — unused files, exports, types, deps |
-| **Cost to adopt** | Already a skill — zero marginal cost | New runtime dependency per project | Already a skill — zero marginal cost; CLI must be installed in target project |
+| | codebase-memory | ast-grep | repowise | fallow |
+|-|-----------------|----------|----------|--------|
+| **Type** | MCP server (skill in this repo) | CLI or MCP server (user-installed) | Runtime tool (user-installed) | CLI tool (skill in this repo) |
+| **Languages** | Language-agnostic (via LSP) | Multi-language AST patterns | Language-agnostic | JS/TS only (122 framework plugins) |
+| **Graph traversal** | Yes — callers, callees, impact, dead code | No | Yes — callers, callees, dependencies | No |
+| **Structural search** | Partial — graph symbols and relationships | Yes — AST-shaped patterns | Partial — graph symbols and relationships | Partial — JS/TS analysis rules |
+| **Codemods and rewrites** | No | Yes — syntax-pattern rewrites | No | No (use Serena MCP for semantic edits) |
+| **Duplication detection** | No | No | No | Yes — 4 modes |
+| **Boundary violations** | No | Custom rules only | No | Yes — architecture boundary enforcement |
+| **Complexity hotspots** | Partial — fan-out/fan-in via graph queries | No | Yes — composite health scoring | Yes — with ownership and refactoring targets |
+| **Git hotspot analysis** | No (use `git log` commands directly) | No | Yes — churn + defect density over time | No |
+| **ADR mining** | No | No | Yes | No |
+| **Atomic refactors** | No (analysis only) | No (syntax rewrites only) | No | No (use Serena MCP for execution) |
+| **Dead code detection** | Yes — `search_graph(max_degree=0)` | Custom rules only | Yes | Yes — unused files, exports, types, deps |
+| **Cost to adopt** | Already a skill — zero marginal cost | New runtime dependency per project | New runtime dependency per project | Already a skill — zero marginal cost; CLI must be installed in target project |
 
 **Decision guide:**
 - Use **codebase-memory** for graph traversal, impact analysis, and dead code detection across any language
+- Add **ast-grep** only when syntax-shaped search, custom AST lint rules, or mechanical rewrites would avoid brittle `rg` patterns
 - Use **fallow** for JS/TS-specific cleanup: duplication, boundary violations, complexity hotspots, unused exports
 - Add **repowise** only for large repos where git-driven defect prediction and health scoring would change prioritisation
 - Add **Serena MCP** when you need atomic cross-file refactors that codebase-memory's analysis can't execute
