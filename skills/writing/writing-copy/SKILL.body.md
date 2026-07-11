@@ -27,7 +27,7 @@ Microcopy = short interface text guiding action. Bar: clear in one read.
 - Destructive actions: restate consequence — `Delete account? This removes 12 projects and can't be undone.`
 - Prefer undo for reversible destructive actions. Use confirmation for hard-to-undo or high-impact actions
 
-## Helper and supporting text
+## Supporting text
 
-- Place near related input. Essential info → not hidden in tooltip
-- Keep short; more than two sentences belongs in docs
+- Place near related input; don't hide essential info in tooltips
+- Keep short — more than two sentences belongs in docs

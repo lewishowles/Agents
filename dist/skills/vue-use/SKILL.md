@@ -11,11 +11,11 @@ related-skills:
 ---
 # VueUse Functions
 
-Decision guide for VueUse composables in Vue.js / Nuxt projects. Map requirement to function, apply invocation rule, prefer composables over bespoke code.
+Decision guide for VueUse in Vue/Nuxt. Map requirement to function per invocation rules; prefer composables.
 
 ## When to Apply
 
-- Apply for Vue.js / Nuxt development work.
+- Use for Vue / Nuxt development.
 - Check whether VueUse covers requirement before custom code.
 - Follow the table's `Invocation` value:
   - `AUTO`: use when applicable
@@ -26,7 +26,7 @@ User instructions in the prompt or `AGENTS.md` override these defaults.
 
 ## Finding a composable
 
-To find a composable, read `./SKILL.ref.md` — all functions by category. Before using one, consult its `./references` document for usage and types.
+Read SKILL.ref.md for functions by category. Consult references docs before using.
 
 ## Completion
 

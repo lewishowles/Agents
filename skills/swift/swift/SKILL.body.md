@@ -39,8 +39,8 @@ let projects = projects
 ## Naming
 
 - Full descriptive names — no abbreviations (`project` not `proj`, `index` not `i`).
-- Bool properties/parameters: prefix `is`, `has`, `should`, `can` where natural (`isLoading`, `showSheet`).
-- Async fetch functions: name by return value (`currentBranch`, `readPackageJSON`), not mechanism (`fetchBranch`, `loadJSON`).
+- Bool properties/parameters prefix `is`, `has`, `should`, `can` where natural (`isLoading`, `showSheet`).
+- Async fetch functions use return value as name (`currentBranch`, `readPackageJSON`), not mechanism (`fetchBranch`, `loadJSON`).
 
 ## Concurrency
 
@@ -53,8 +53,8 @@ let projects = projects
       Persistence.save(projects, filename: "projects.json")
   }
   ```
-- Actors protect internal state — one instance per operation, not global serialisation queue.
-- Use `AsyncStream` + `continuation` to bridge callback APIs (`Process`, `DispatchSource`) into structured concurrency.
+- Actors protect internal state — one instance per operation, not a global serialisation queue.
+- Use `AsyncStream` + `continuation` to bridge callback APIs into structured concurrency.
 
 ## Error handling
 

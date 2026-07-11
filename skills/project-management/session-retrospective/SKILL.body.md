@@ -25,44 +25,44 @@ Do not use this skill for:
 
 ## Startup
 
-Start from user-visible evidence. Do not rely on private chain of thought, hidden tool outputs the user did not ask to evaluate, or reconstructed context the user may not have seen.
+Start from user-visible evidence. Don't rely on private reasoning, hidden tool outputs user didn't ask about, or reconstructed context user may not have seen.
 
-If the evidence is too thin to assess, ask for the smallest useful excerpt:
+If evidence is thin, ask for smallest useful excerpt:
 
 1. What the user asked for
 2. Where the session became difficult
 3. Any correction the user gave
-4. The final outcome, if there was one
+4. The final outcome, if any
 
-Then gather only local context needed to judge whether the issue is already covered:
+Then gather only local context needed to judge if issue is already covered:
 
-1. Relevant `rules/` sections for always-on behaviour
-2. Existing skills that match the task type or proposed fix
-3. `friction-review` output only if the user asks to compare against logged patterns
-4. Repo scripts or diagnostics only when the lesson concerns tooling coverage
+1. Relevant `rules/` for always-on behaviour
+2. Existing skills matching task type or proposed fix
+3. `friction-review` output only if user asks for logged-pattern comparison
+4. Repo scripts or diagnostics only for tooling-coverage lessons
 
-Avoid broad repo reads. This skill is for learning triage, not a full audit.
+Avoid broad reads. This skill is learning triage, not audit.
 
 ## Review method
 
-1. **Describe neutrally** — state what made the session difficult without attributing blame or intent.
-2. **Name the behavioural gap** — identify the specific agent behaviour that should change, if any.
-3. **Separate causes** — distinguish missing guidance, guidance not followed, ambiguous user intent, tool limitation, repo tooling gap, and unavoidable task complexity.
-4. **Check existing coverage** — decide whether current rules, skills, hooks, diagnostics, or docs already address the gap.
-5. **Choose the destination** — route each lesson to one of: no change, friction log, existing rule, existing skill, new skill idea, script/check improvement, docs/update, or user preference.
-6. **Apply the evidence bar** — one session can justify a note or proposed wording, but a new skill usually needs a repeated concrete failure mode.
-7. **Prefer minimal changes** — recommend the smallest amendment that would have prevented or shortened the difficult part of the session.
+1. **Describe neutrally** — state what made session difficult without attributing blame or intent
+2. **Name the behavioural gap** — identify specific agent behaviour needing change
+3. **Separate causes** — distinguish missing guidance, guidance not followed, ambiguous intent, tool limit, tooling gap, unavoidable complexity
+4. **Check existing coverage** — decide whether current rules, skills, hooks, diagnostics, docs already address gap
+5. **Choose destination** — route each lesson to: no change, friction log, existing rule, existing skill, new skill, script/check, docs, or user preference
+6. **Apply evidence bar** — one session justifies a note; new skills need repeated concrete failure
+7. **Prefer minimal changes** — recommend smallest amendment preventing or shortening difficulty
 
 ## Routing guidance
 
-- **No change** — use when the issue was a one-off, already resolved by existing guidance, too ambiguous, or not preventable by repo instructions.
-- **Friction log** — use when the issue is concrete but needs recurrence evidence before changing rules or skills.
-- **Existing rule** — use when the behaviour should apply on every turn, regardless of task type.
-- **Existing skill** — use when the behaviour is task-specific and an appropriate skill already exists.
-- **New skill idea** — use only when there is a specific, repeated failure mode not already covered.
-- **Script or check** — use when automation would catch the issue more reliably than prose guidance.
-- **Docs or template** — use when the user-facing project contract, setup path, or generated reference is missing context.
-- **User preference** — use when the session exposed a personal workflow preference rather than a general agent rule.
+- **No change** — one-off, already resolved, too ambiguous, or not preventable
+- **Friction log** — concrete but needs recurrence evidence before changing rules or skills
+- **Existing rule** — behaviour should apply every turn, regardless of task type
+- **Existing skill** — task-specific behaviour; skill already exists
+- **New skill idea** — specific, repeated failure mode not already covered
+- **Script or check** — automation catches issue more reliably than prose
+- **Docs or template** — user-facing contract, setup path, or reference missing context
+- **User preference** — personal workflow preference, not general agent rule
 
 ## Output
 

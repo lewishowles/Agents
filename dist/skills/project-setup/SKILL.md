@@ -15,27 +15,27 @@ Start a new project or feature. Create initial `PROGRESS.md` after exploration a
 
 ## Workspace file
 
-Check `<project-root>/WORKSPACE.md` before planning. Factual source for commands, generated files, diagnostics, progress locations, expensive checks, and forbidden operations.
+Check `<project-root>/WORKSPACE.md` before planning. Factual source for commands, generated files, diagnostics, progress locations, expensive checks, forbidden operations.
 
-When `.agent/scripts/project-diagnostics.py` exists, list it as preferred verification route. Plans use `--list` for discovery and `--check <name>` for named verification; `--all` for user-approved broad checks only.
+When `.agent/scripts/project-diagnostics.py` exists, prefer it. Plans use `--list` for discovery and `--check <name>` for verification; `--all` for user-approved broad checks only.
 
-If missing, generate it only when a workspace generator command is discoverable by name. Example:
+If missing and a workspace generator exists, run it:
 
 ```sh
 agents:workspace --write
 ```
 
-Before running, confirm `agents:workspace` exists in current shell, then run from project root. After generation, tell user it needs review before relying on command safety, generated paths, or forbidden-operation classifications.
+Confirm `agents:workspace` exists in current shell before running from project root. After generation, tell user to review it before relying on command safety, generated paths, or forbidden operations.
 
-If no generator exists, do not create the file manually. Inspect `AGENTS.md`, package scripts, and nearby docs; mention `WORKSPACE.md` would improve future sessions.
+If no generator exists, don't create manually. Inspect `AGENTS.md`, package scripts, nearby docs. Mention `WORKSPACE.md` would improve future sessions.
 
 ## Workflow
 
-1. **Explore** — read repo; identify patterns, tech choices, relevant files; check root `PROGRESS.md`, `AGENTS.md`, `WORKSPACE.md`, `CONTEXT.md`, and `README.md`
-2. **Ask** — clarify ambiguous requirements and constraints before planning; surface tradeoffs and alternatives
+1. **Explore** — read repo, identify patterns, tech, relevant files; check `PROGRESS.md`, `AGENTS.md`, `WORKSPACE.md`, `CONTEXT.md`, `README.md`
+2. **Ask** — clarify ambiguous requirements, constraints; surface tradeoffs and alternatives
 3. **Discuss** — if multiple approaches exist, present them; don't pick silently
 4. **Plan** — create initial `PROGRESS.md` using standard schema below
-5. **Wait** — do not begin implementation until the plan is reviewed and approved
+5. **Wait** — do not start until plan is reviewed and approved
 
 ## Subagent delegation (optional)
 
@@ -69,17 +69,17 @@ Enables autonomous multi-hour execution while keeping the main agent as architec
 
 ## Planning principles
 
-- Treat commits as unit of work; each section should roughly match one Conventional Commit
-- Prefer multiple small sections over one large one; each independently reviewable
+- Commits as unit of work; each section roughly matches one Conventional Commit
+- Multiple small sections over one large one; each independently reviewable
 - "Files likely to change" reduces re-exploration in future sessions
-- Don't plan more than 2–3 sections ahead; detailed planning happens when work starts
-- Keep session handoff current at top. Future agents read from top and stop after handoff when it gives enough context.
+- Plan 2–3 sections ahead; detailed planning happens when work starts
+- Keep session handoff at top. Agents read from top and stop after handoff when adequate.
 
 ## Feature specs
 
-Use linked spec only for larger spikes or ambiguous features where `PROGRESS.md` would carry too much rationale. Skip for small changes, bug fixes, routine docs edits, or work that fits one progress section.
+Use linked specs only for larger spikes or ambiguous features. Skip small changes, bug fixes, routine docs, or single-section work.
 
-Specs are per feature/spike, not global docs. Put under `.agent/specs/<feature>.md`, link from `PROGRESS.md`. `PROGRESS.md` stays operational: current goal, next step, verification, blockers. Spec carries heavier context, read only when active.
+Specs are per-feature/spike under `.agent/specs/<feature>.md`, linked from `PROGRESS.md`. `PROGRESS.md` stays operational. Spec carries heavier context, read only when active.
 
 Use this outline when a spec is warranted:
 
@@ -147,19 +147,19 @@ When permanent decisions emerge, move them to `AGENTS.md`'s `## Need to know` se
 
 ## CONTEXT.md — domain glossary
 
-Root `CONTEXT.md` is pure domain glossary: canonical names, names to avoid, resolved ambiguities. Not spec, scratch pad, or implementation guide.
+Root `CONTEXT.md` is pure domain glossary: canonical names, names to avoid, resolved ambiguities. Not spec, scratch pad, or guide.
 
-Create lazily when first term is worth capturing. Add entries when terms are agreed, not in a batch at the end.
+Create lazily as terms emerge. Add entries when agreed, not in batches.
 
-Each entry follows this shape:
+Each entry:
 
 ```markdown
-**Term** — one-sentence definition. _Avoid_: synonyms or overloaded words that should not be used.
+**Term** — one-sentence definition. _Avoid_: synonyms or overloaded words.
 ```
 
-When `CONTEXT.md` exists, use its vocabulary in code, comments, issue titles, and ADRs. If user term conflicts, surface conflict instead of picking silently.
+Use vocabulary from `CONTEXT.md` in code, comments, issue titles, ADRs. Surface conflicts instead of picking silently.
 
-_CONTEXT.md glossary pattern inspired by [mattpocock/skills](https://github.com/mattpocock/skills) (MIT)._
+_Pattern inspired by [mattpocock/skills](https://github.com/mattpocock/skills) (MIT)._
 
 ## PROGRESS.md schema
 

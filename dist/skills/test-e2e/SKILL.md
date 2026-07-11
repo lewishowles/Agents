@@ -16,9 +16,9 @@ E2E and component tests verify real-browser user experience. Playwright is stand
 
 ## General
 
-- Avoid browser tests by default; output is token-heavy. Run focused tests only for specific fix/failure; suggest broader user-run commands
-- The diagnostics script is the default way to run tests — not `npx playwright test` or `npx cypress run` directly. When `.agent/scripts/project-diagnostics.py` exists, use `--list` to discover browser/e2e checks and `--check <name>` only for a specific fix or failure. If no diagnostics script exists, ask the user before running browser tests directly.
-- Do not run full suites or diagnostics `--all` from plan verification unless user explicitly asks
+- Avoid browser tests by default; output is token-heavy. Run focused tests only for specific fixes and suggest broader user-run commands.
+- Use diagnostics script: `.agent/scripts/project-diagnostics.py --list` to discover checks, `--check <name>` for specific fixes. Ask before running tests directly if diagnostics script is absent.
+- Do not run full suites or `--all` unless the user explicitly asks.
 
 ## Which tool to use
 
@@ -28,7 +28,7 @@ E2E and component tests verify real-browser user experience. Playwright is stand
 
 ## Playwright
 
-- Playwright 1.61+ exposes `page.localStorage` and `page.sessionStorage` for the current origin. Use them to seed non-sensitive browser state such as feature flags, onboarding flags, or UI preferences. Do not use browser storage for auth tokens or other secrets; prefer server-set `HttpOnly` cookies for sensitive session state.
+- Use `page.localStorage` and `page.sessionStorage` to seed non-sensitive state (feature flags, onboarding, UI prefs). Never store auth tokens or secrets; use `HttpOnly` cookies instead.
 
 ## Component testing
 
@@ -52,21 +52,19 @@ For Cypress/Playwright examples, setup config, e2e structure, and interaction pa
 
 ## Selectors
 
-- Prefer `data-test="component.element"` over CSS selectors: stable, intent-clear, namespace-safe
-- Group similar element types with `:is()` and apply single negations rather than repeating `:not()` per type:
+- Prefer `data-test="component.element"` over CSS selectors: stable, intent-clear, namespace-safe.
+- Group similar types with `:is()` and single negations rather than repeating `:not()`:
   - ✓ `:is(button, input, select, textarea):not([disabled]), a[href], [tabindex]:not([tabindex='-1'])`
   - ✗ `:is(button:not([disabled]), input:not([disabled]), select:not([disabled])...)`
-- **Extract repeated locators to named variables within a test.** If the same `page.getByTestId(...)` appears more than once, assign it to `const` before assertions. Derive child locators from it instead of re-querying `page`.
+- Extract repeated locators to named variables. Derive child locators from them instead of re-querying:
 
   ```js
   // ✓
   const formInput = page.getByTestId("form-input");
   const inputElement = formInput.locator("input");
-  const labelElement = formInput.getByTestId("form-label");
 
   // ✗
   const inputElement = page.getByTestId("form-input").locator("input");
-  const labelElement = page.getByTestId("form-input").getByTestId("form-label");
   ```
 
 ## Best practices

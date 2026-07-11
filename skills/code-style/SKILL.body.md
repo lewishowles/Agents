@@ -25,9 +25,7 @@
 
 ## Reuse existing helpers
 
-Before implementing any primitive operation — length, clamping, type/emptiness checks, string/array/object guards, deep copy/merge — search the project's own helper library and use what exists. Do not reimplement with raw `Array.isArray`, `array.length`, `Math.min`/`Math.max`, `typeof x === "string" && x.length`, manual `hasOwnProperty`, etc. when a named helper already covers it.
-
-Existing helpers carry edge-case hardening and are the single source of truth for that behaviour — reimplementing inline drifts from it silently.
+Before primitive operations (length, clamping, type checks, string/array/object guards, deep copy/merge): search project helper library. Don't reimplement with raw `Array.isArray`, `Math.min`, `typeof x === "string"`, etc. when helpers exist. Existing helpers carry edge-case hardening and are single source of truth.
 
 ## Query selectors & predicates
 
@@ -39,17 +37,17 @@ Existing helpers carry edge-case hardening and are the single source of truth fo
 
 ## Comments & documentation
 
-- Every top-level variable: single-line comment describing purpose — all languages
-- Functions: JSDoc or equivalent blocks. Parameters: `@param  {type}  name` format, description indented four spaces on next line
-- Use TypeScript-style JSDoc types where they stay simple, e.g. `object[]` or `string[]` instead of `Array<object>` or `Array<string>`
-- Add short purpose comment when intentional behaviour may look like bug/workaround/accident.
-- No banner/divider comments (`// ---`) — use JSDoc or equivalent and blank lines for structure
-- **In-code comments explain purpose, not mechanics** — say what value, prop, branch, or check is for. Explain internals only when needed.
-- Avoid comments that repeat syntax, narrate control flow, or describe workaround mechanics. Prefer purpose comments.
-- Avoid em dashes in code comments, JSDoc, inline docs, and generated code strings unless preserving quoted text or matching an external style requirement.
-- Don't justify a fix by explaining the mechanism it avoids (reactivity loops, render timing, re-entrancy). State the rule the code follows, not the failure it prevents. Keep a "why" only as a guardrail against a likely future edit, for example "declared after initialise() so the initial seeding doesn't emit". Use one clause, no mechanism, and no punctuation addendum restating the consequence.
-- Remove stale/transactional bug-fix comments once code expresses behaviour.
-- Block comments for functions explain purpose and externally relevant constraints; avoid internal implementation trivia.
-- Document the contract a caller relies on: return value, mutation behaviour, and observable edge cases. Omit internal mechanics (e.g. "after clamping", "a shallow clone is returned with identical content").
-- Lead with one line, present tense, no boilerplate opening ("Creates a function that…"). Put option/edge-case behaviour in `@note`; keep `@example` short. Match the tone of surrounding functions in the same file.
-- Comments use plain-language voice — see `/writing`. No unexplained jargon, no "etc"; write for newcomer. Purpose over cleverness.
+- Top-level variable: single-line purpose comment (all languages)
+- Functions: JSDoc/equivalent blocks. Parameters: `@param  {type}  name` format, description indented next line
+- Use simple TypeScript JSDoc types (e.g. `object[]` not `Array<object>`)
+- Add short purpose comment when intentional behaviour may look like bug/workaround
+- No banner/divider comments; use JSDoc and blank lines
+- **In-code comments explain purpose, not mechanics** — what is this for, not how it works
+- Avoid comments that repeat syntax, narrate flow, or describe workaround mechanics
+- No em dashes in code comments, JSDoc, inline docs unless preserving quoted text
+- Don't justify fixes by explaining mechanism avoided. State the rule code follows. "Why" only as guardrail (e.g. "declared after initialise() so seeding doesn't emit")
+- Remove stale bug-fix comments once code expresses behaviour
+- Block comments: purpose and external constraints; skip internal trivia
+- Document caller contract: return value, mutation, observable edge cases. Omit internal mechanics
+- Lead with one line, present tense, no boilerplate. Put options in `@note`; keep `@example` short. Match surrounding tone
+- Plain-language voice; no unexplained jargon or "etc". Purpose over cleverness

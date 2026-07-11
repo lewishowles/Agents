@@ -14,28 +14,28 @@ Broad ideas welcome when they may materially improve the work. Label optional, e
 
 ## Startup
 
-Read the user-provided feedback first. Then gather only the context needed to judge it:
+Read user feedback first. Gather only context needed to judge it:
 
-1. Relevant project instructions and workspace facts when operating in a repo
-2. `PROGRESS.md` when the feedback concerns a project plan or current work
-3. Changed files when the feedback concerns uncommitted implementation
-4. Source, docs, tests, or generated-file facts directly referenced by the feedback
+1. Relevant project instructions and workspace facts
+2. `PROGRESS.md` when feedback concerns plan or current work
+3. Changed files when feedback concerns uncommitted implementation
+4. Source, docs, tests, or generated-file facts referenced
 
-If the feedback can be judged from the provided text, do not inspect the repo unnecessarily. If evidence is missing, say what would need checking rather than guessing.
+If feedback can be judged from provided text, skip repo inspection. Say what needs checking if evidence is missing; don't guess.
 
-Prefer codebase-memory tools for structural code questions when available. Use targeted file reads and searches; avoid broad generated, vendored, cached, build, dependency, coverage, or binary output.
+Prefer codebase-memory tools. Use targeted reads; avoid generated, vendored, cached, build, dependency, coverage, or binary output.
 
 ## Review method
 
-1. Identify the original task or decision the feedback is responding to.
-2. Extract the other agent's concrete claims, recommendations, assumptions, and implied priorities.
-3. Test each recommendation against available evidence, project constraints, user goals, proportionality, and implementation cost.
-4. Keep the strongest ideas, but rewrite them into your own practical recommendation.
-5. Push back on weak, unsupported, redundant, risky, overbroad, or low-value ideas.
-6. Add missing ideas that materially improve the outcome.
-7. Convert the synthesis into ordered next steps.
+1. Identify the original task or decision feedback responds to
+2. Extract concrete claims, recommendations, assumptions, implied priorities
+3. Test each against available evidence, project constraints, user goals, proportionality, cost
+4. Keep strongest ideas; rewrite into practical recommendations
+5. Push back on weak, unsupported, redundant, risky, overbroad, or low-value ideas
+6. Add missing ideas that materially improve outcome
+7. Convert synthesis into ordered next steps
 
-Don't treat the other agent's suggestions as authoritative, and don't reject ideas just because they came from another agent. Goal is the best combined result.
+Don't treat suggestions as authoritative; don't reject just because from another agent. Goal is best combined result.
 
 ## Judgement standards
 
@@ -44,18 +44,18 @@ Prioritise:
 - correctness and user intent before polish
 - small, high-impact fixes before broad rewrites
 - project conventions before novel architecture
-- accessibility, security, and data safety when relevant
-- test and verification gaps that could hide regressions
-- maintainability and developer experience when they reduce future cost
+- accessibility, security, data safety when relevant
+- test and verification gaps hiding regressions
+- maintainability and developer experience reducing future cost
 
 Challenge suggestions that:
 
 - depend on unverified assumptions
 - expand scope without clear value
-- introduce new dependencies, tools, abstractions, or process without need
-- optimise for theoretical quality while delaying useful delivery
-- duplicate existing project patterns or planned work
-- conflict with project instructions, workspace files, or generated-file boundaries
+- introduce new dependencies, tools, abstractions, process without need
+- optimise for theory while delaying delivery
+- duplicate existing patterns or planned work
+- conflict with instructions, workspace files, or generated-file boundaries
 
 ## Output
 

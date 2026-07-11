@@ -18,16 +18,16 @@ Do not turn this into broad code-quality review. Use `code-review` for code diff
 
 ## Startup
 
-Read in this order, stopping as soon as you have enough context:
+Read in order, stopping when you have enough context:
 
 1. `<project-root>/AGENTS.md`
 2. `<project-root>/WORKSPACE.md`
 3. `<project-root>/.agent/scripts/repo-context.py` output, if present
 4. `<project-root>/.agent/scripts/generated-file-guard.py` output, if present
 5. `<project-root>/.agent/scripts/project-diagnostics.py --list`, if present
-6. `PROGRESS.md` handoff only, when active work or session continuity is part of the audit
+6. `PROGRESS.md` handoff, when active work or session continuity is part of the audit
 
-If `WORKSPACE.md` is missing, don't create it unless asked. Report it missing, then inspect `AGENTS.md`, package scripts, and nearby docs.
+If `WORKSPACE.md` is missing, report it and inspect `AGENTS.md`, package scripts, and nearby docs instead.
 
 ## Tooling checks
 

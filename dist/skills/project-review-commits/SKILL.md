@@ -30,19 +30,19 @@ Look for bugs, regressions, incomplete follow-ups, misleading commit messages, m
 
 ## Startup
 
-Read in this order:
+Read in order:
 
 1. `<project-root>/AGENTS.md`
 2. `<project-root>/WORKSPACE.md`, when present
 3. `.agent/scripts/project-diagnostics.py --list`, when present
-4. `PROGRESS.md`, focusing on recent completed work, risks, release notes, and handoff state
+4. `PROGRESS.md` — recent completed work, risks, release notes, handoff
 5. `git status --short`
-6. The requested Git range, or the default range from the last reachable tag to `HEAD`
-7. Commit messages, changed-file lists, and targeted diffs for commits in the range
+6. Requested Git range, or last tag to `HEAD`
+7. Commit messages, changed files, targeted diffs
 
-If `WORKSPACE.md` is missing, do not create it. Use `AGENTS.md`, package scripts, and nearby docs only as needed.
+Skip `WORKSPACE.md` if missing. Use `AGENTS.md`, package scripts, nearby docs as needed.
 
-Prefer codebase-memory tools for structural code questions when available. Use targeted file reads and searches; avoid broad generated, vendored, cached, build, dependency, coverage, or binary output.
+Prefer codebase-memory tools for structural questions. Use targeted reads; avoid generated, vendored, cached, build, dependency, coverage, or binary output.
 
 ## Range selection
 
@@ -86,21 +86,15 @@ Use `git show --stat --oneline --no-renames <commit>` or targeted `git show -- <
 
 ## Finding standards
 
-Prioritise concrete issues over preferences:
+Prioritise concrete issues:
 
-- **Must-fix** — correctness bugs, regressions, broken generated/source boundaries, missing required verification, release-blocking mismatch, security issue, accessibility failure, data-loss risk, or misleading history that would harm future maintenance
-- **Recommended** — maintainability, test, documentation, accessibility, UX, performance, commit-boundary, or developer-experience improvements that materially improve the range
-- **Nice-to-have** — optional polish, simplification, or broader ideas with clear value but no release-blocking need
+- **Must-fix** — correctness bugs, regressions, broken generated/source boundaries, missing required verification, release-blocking mismatch, security, accessibility failure, data-loss risk, misleading history
+- **Recommended** — maintainability, test, docs, accessibility, UX, performance, commit boundaries, developer experience improvements
+- **Nice-to-have** — polish, simplification, or broader ideas with clear value but no release-blocking need
 
-Each finding should include:
+Each finding includes: commit reference, file/line reference, what's wrong, why it matters, concrete fix or decision needed.
 
-- commit reference when relevant
-- file and line reference when possible
-- what is wrong
-- why it matters
-- concrete fix or decision needed
-
-Mark speculative ideas as conditional. Do not invent release requirements or recommend history rewriting when a follow-up commit is safer.
+Mark speculative ideas conditional. Don't invent requirements or recommend rewriting when a follow-up commit is safer.
 
 ## Output
 

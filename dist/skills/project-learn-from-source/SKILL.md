@@ -35,18 +35,18 @@ Do not use this skill for:
 
 ## Startup
 
-Read the external source first. A source may arrive as a link, a pasted excerpt, or a pasted `source-extraction` output (verbatim claims, config, constraints, linked artefacts) — treat pasted content as the source itself, not a lesser substitute for browsing. If the source is a URL, browsing is not available, and nothing has been pasted, ask for the relevant excerpt rather than guessing.
+Read the external source first. Sources may be links, pasted excerpts, or `source-extraction` output — treat pasted content as the source itself. If the source is a URL with no browsing available and nothing pasted, ask for the relevant excerpt.
 
-Then gather only the local context needed to judge fit:
+Then gather only local context needed to judge fit:
 
-1. Relevant project instructions and workspace facts when operating in a repo
-2. `PROGRESS.md` when the source may affect current plans, rules, skills, or handoff
-3. Existing rules, skills, docs, source, tests, or config directly related to the external idea
-4. Local commands or diagnostics only when needed to verify a concrete claim
+1. Relevant project instructions and workspace facts
+2. `PROGRESS.md` when source may affect plans, rules, skills, or handoff
+3. Existing rules, skills, docs, source, tests, or config directly related
+4. Local commands or diagnostics only when verifying concrete claims
 
-If the source can be judged from high-level context, do not inspect implementation files unnecessarily. If local evidence is missing, say what would need checking rather than filling the gap with assumptions.
+If high-level context suffices, skip implementation files. If evidence is missing, say what needs checking rather than guessing.
 
-Prefer codebase-memory tools for structural code questions when available. Use targeted file reads and searches; avoid broad generated, vendored, cached, build, dependency, coverage, or binary output.
+Prefer codebase-memory tools for structural questions. Use targeted reads; avoid generated, vendored, cached, build, dependency, coverage, or binary output.
 
 ## Review method
 

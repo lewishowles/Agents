@@ -6,9 +6,9 @@ Cross-site scripting is highest-impact frontend vulnerability. Never put untrust
 
 **Vue templates are safe by default** — `{{ value }}` HTML-encodes output. Risk comes from bypasses:
 
-- `v-html` renders raw HTML — only use with content you control or have sanitised
+- `v-html` renders raw HTML: only use with content you control or have sanitised
 - `innerHTML` bypasses Vue escaping
-- Dynamic `href`/`src` can carry `javascript:` URIs — validate URLs before binding
+- Dynamic `href`/`src` can carry `javascript:` URIs: validate URLs before binding
 
 When `v-html` is unavoidable, sanitise with DOMPurify first:
 
@@ -47,7 +47,7 @@ Content-Security-Policy:
 
 ## URL and redirect safety
 
-- Validate `href`/`src` against allowlist before binding; reject `javascript:`, `data:`, and protocol-relative URLs
+- Validate `href`/`src` against allowlist before binding; reject `javascript:`, `data:`, protocol-relative URLs
 - Never build redirect targets from unvalidated query parameters
 
 ```javascript
@@ -64,18 +64,16 @@ function isSafeUrl(url) {
 ## Authentication token handling
 
 - Store auth tokens in server-set `httpOnly` cookies, not script-readable `localStorage` or `sessionStorage`
-- If cookies are not viable (SPA with separate API), use memory-only storage: module-scoped ref, not `window.*`. Tokens will not survive refresh
-- Never log tokens, include them in URLs, or put them in error messages
-- Include CSRF tokens for any state-mutating requests when using cookie auth
+- If cookies not viable (SPA with separate API), use memory-only storage: module-scoped ref, not `window.*`. Tokens won't survive refresh
+- Never log tokens, include in URLs, or put in error messages
+- Include CSRF tokens for state-mutating requests when using cookie auth
 
 ## Secrets hygiene
 
 Any `VITE_` env var is statically inlined into client bundle. It is **not** secret; anyone can extract it from shipped JavaScript.
 
-Rules:
-
-- Only public values go in `VITE_` vars: API base URLs, feature flags, public keys
-- Private API keys, database credentials, and signing secrets live server-side only
+- Only public values in `VITE_` vars: API base URLs, feature flags, public keys
+- Private API keys, database credentials, signing secrets live server-side only
 - Check `.gitignore` includes `.env.local` and `.env.*.local`
 - Use `rg "VITE_.*KEY\|VITE_.*SECRET\|VITE_.*TOKEN"` to audit before shipping
 
@@ -83,8 +81,8 @@ Rules:
 
 - Run `bun audit` (or `npm audit`) regularly; fix high and critical issues before shipping
 - Pin major versions; review changelogs before upgrading security-sensitive packages (`dompurify`, auth libraries)
-- Prefer packages with active maintenance and security advisories tracked
-- Don't disable postinstall-script blocking (`--ignore-scripts=false` or equivalent) unless a specific package requires it — postinstall scripts are a common supply-chain attack vector
-- Be cautious adopting a package version published in the last 24 hours, especially for a sudden major-version bump or an unfamiliar maintainer change; malicious releases are often pulled within a day
+- Prefer packages with active maintenance and tracked security advisories
+- Don't disable postinstall-script blocking (`--ignore-scripts=false`) unless a package requires it: postinstall scripts are common supply-chain vectors
+- Be cautious adopting versions published in the last 24 hours, especially major-version bumps or unfamiliar maintainer changes; malicious releases often pull within a day
 
 For detailed patterns (input validation, file upload safety, subresource integrity, clickjacking), see [references/patterns.md](references/patterns.md).

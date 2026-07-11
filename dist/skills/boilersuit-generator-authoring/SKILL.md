@@ -10,9 +10,9 @@ do-not-use-when:
 ---
 # Boilersuit generator authoring
 
-Create or edit project-owned generators using the installed Boilersuit CLI as the authoritative contract. Do not rely on remembered field types, filters, schema properties, or path behaviour.
+Create or edit generators using the installed Boilersuit CLI as contract. Do not rely on remembered field types, filters, schema properties, or path behaviour.
 
-Boilersuit generators are project-agnostic. Follow the target project's conventions; do not assume Vue, JavaScript, `src/components`, or a `NAME` field unless the proposed generator requires them.
+Generators are project-agnostic. Follow target project conventions; don't assume Vue, JavaScript, `src/components`, or `NAME` field unless required.
 
 ## Prerequisites
 
@@ -24,7 +24,7 @@ boilersuit generators contract --help
 boilersuit generators doctor --help
 ```
 
-If either command is unavailable, stop and report that the installed Boilersuit CLI must be updated. Don't reconstruct the schema from this skill.
+If unavailable, stop and report CLI needs update. Don't reconstruct schema from this skill.
 
 If a command prints `LLVM Profile Error: Failed to write file "default.profraw"`, rerun it with:
 
@@ -50,34 +50,28 @@ Use its structured output for:
 - Output-path behaviour and limitations
 - Valid basic and advanced examples
 
-The current implementation includes `pascal`, `kebab`, `camel`, `snake`, `constant`, `upper`, and `lower`. Verify this against the loaded contract rather than relying on the list here; if they differ, the installed CLI wins and the mismatch must be reported.
+Current implementation: `pascal`, `kebab`, `camel`, `snake`, `constant`, `upper`, `lower`. Verify against loaded contract; CLI wins if they differ (report mismatch).
 
-Tokens use SCREAMING_SNAKE_CASE and may contain digits after the first character, such as `API_V2_NAME` and `WCAG_22_LEVEL`. Verify the current `token_format` in the loaded contract before authoring.
+Tokens: SCREAMING_SNAKE_CASE, digits allowed after first char (e.g. `API_V2_NAME`, `WCAG_22_LEVEL`). Verify `token_format` in loaded contract.
 
-Do not copy other contract details into the skill or assume a previous project uses the current contract.
+Don't copy contract details into this skill or assume prior projects match current contract.
 
 ## Project contract boundaries
 
-Treat the installed `boilersuit` CLI as the agent automation contract for generator discovery, validation, preview, path resolution, collision handling, and generation. Use command help when an option or response shape is unclear.
+Treat installed `boilersuit` CLI as agent automation contract: discovery, validation, preview, path resolution, collision handling, generation. Use command help for unclear options.
 
-Run profiles are a separate project-owned capability:
-
-- Explicit profiles live in `.boilersuit/run.json`
-- Boilersuit also infers profiles from `package.json` scripts
-- Explicit profiles take precedence when IDs overlap
-
-Don't add or change Run profiles as a side effect of generator authoring. If the requested generator pack also needs Run profiles, plan and review that as a separate project change.
+Run profiles: separate project capability. Live in `.boilersuit/run.json` (explicit) or inferred from `package.json` scripts. Explicit takes precedence. Don't change profiles as side effect of authoring. Plan profile changes separately if needed.
 
 ## Authoring workflow
 
-### 1. Inspect the target project
+### 1. Inspect target project
 
 ```bash
 boilersuit project inspect --json
 boilersuit generators list --json
 ```
 
-Inspect nearby project conventions and existing generators only as needed. Generator files live under:
+Generator files live under:
 
 ```text
 .boilersuit/generators/<generator-id>/
@@ -85,72 +79,53 @@ Inspect nearby project conventions and existing generators only as needed. Gener
 └── native template files
 ```
 
-Template files keep their normal extensions; do not add a `.tpl` suffix.
+Template files keep normal extensions; no `.tpl` suffix.
 
 ### 2. Design before writing
 
-Present a concise proposal for review:
+Present proposal for review:
 
-- Generator ID, display name, purpose, and default path
-- Fields and why each value is needed
+- Generator ID, display name, purpose, default path
+- Fields and why needed
 - Files and final path patterns
-- Variants, only where they represent meaningful alternative output shapes
+- Variants (meaningful output shapes only)
 - Conditions and mapped option tokens
-- Required representative values for doctor and preview
+- Representative values for doctor and preview
 
-Keep the generator to the smallest complete shape. Do not add speculative fields, variants, templates, or flexibility.
+Keep smallest complete shape. No speculative fields, variants, templates, or flexibility.
 
-### 3. Write the generator
+### 3. Write generator
 
-After approval, create or edit `generator.json` and its native template files using the current contract. Every referenced template must exist. Every token used in template content, output paths, and conditions must be declared by a field or mapped select option.
+After approval, create or edit `generator.json` and native templates using current contract. Every referenced template must exist. Every token in templates, paths, and conditions must be declared by field or mapped option. CLI uses complete visible file set; variants define alternatives (no per-template selection).
 
-CLI generation always uses the complete visible file set. Use variants for alternative output shapes; do not invent per-template selection.
-
-### 4. Run doctor before debugging preview
-
-Run doctor with representative values for every value-dependent path and condition:
+### 4. Run doctor before preview
 
 ```bash
 boilersuit generators doctor "<generator-id>" --json \
 	--field NAME=example-name
 ```
 
-Add repeated `--field TOKEN=value` and `--variant id` as required.
+Add repeated `--field TOKEN=value` and `--variant id` as needed. Resolve every error, review warnings, supply deferred-check values. Re-run only after changes affecting result. Use `--fail-on-warning` for CI.
 
-- Resolve every error
-- Review every warning
-- Supply values needed by deferred checks
-- Re-run only after a change that can affect the result
-
-Use `--fail-on-warning` for CI or strict agent verification.
-
-### 5. Preview the complete result
+### 5. Preview complete result
 
 ```bash
 boilersuit generate preview "<generator-id>" --json \
 	--field NAME=example-name
 ```
 
-Check:
-
-- Every output path
-- Every `create` or `skip_existing` action
-- Missing tokens and warnings
-- Variant and field values
-- The complete visible file set
-
-Do not read all rendered content by default. Inspect content when the generator is unfamiliar, placeholder placement is risky, or the user asks.
+Check: every path, `create`/`skip_existing` action, missing tokens/warnings, variant/field values, complete visible file set. Don't read rendered content by default; inspect only when generator is unfamiliar, placeholder placement risky, or user asks.
 
 ### 6. Generate only when requested
 
-Authoring and validating a generator does not imply generating an example into the project. Run generation only when the user asks:
+Authoring and validating doesn't imply generating examples. Run generation only when user asks:
 
 ```bash
 boilersuit generate "<generator-id>" --json \
 	--field NAME=example-name
 ```
 
-Use `--skip-existing` only when a partial result is intended and preview shows every existing destination that will remain unchanged.
+Use `--skip-existing` only for partial results; preview must show every existing destination that stays unchanged.
 
 ## Guardrails
 

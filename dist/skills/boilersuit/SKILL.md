@@ -11,26 +11,24 @@ do-not-use-when:
 ---
 # Boilersuit
 
-Use existing Boilersuit generators for repeatable project structures, not bespoke one-off files. Use `boilersuit-generator-authoring` when creating or changing a generator definition.
-
-Boilersuit is project-agnostic. Follow the selected project's generator definitions and nearby conventions; do not assume Vue, JavaScript, `src/components`, or a `NAME` field unless the generator description establishes them.
+Use existing Boilersuit generators for repeatable structures, not one-off files. Use `boilersuit-generator-authoring` for creating/changing generators. Generators are project-agnostic; follow selected project conventions; don't assume Vue, JavaScript, `src/components`, or `NAME` unless generator establishes them.
 
 ## First checks
 
-Confirm the CLI exists:
+Confirm CLI exists:
 
 ```bash
 command -v boilersuit
 ```
 
-From the project folder, inspect support:
+From project folder:
 
 ```bash
 boilersuit project inspect --json
 boilersuit generators list --json
 ```
 
-If command prints `LLVM Profile Error: Failed to write file "default.profraw"`, rerun with profile output in `/tmp`:
+If LLVM Profile Error appears, rerun with profile output in `/tmp`:
 
 ```bash
 env LLVM_PROFILE_FILE=/tmp/boilersuit-%p.profraw boilersuit project inspect --json
@@ -38,9 +36,7 @@ env LLVM_PROFILE_FILE=/tmp/boilersuit-%p.profraw boilersuit project inspect --js
 
 ## Automation contract
 
-Treat the installed `boilersuit` CLI as the agent automation contract. Prefer its JSON commands over independently recreating generator discovery, field requirements, path resolution, collision handling, or project-opening behaviour.
-
-Use `boilersuit --help` and the relevant command help as the source of truth when an option or response shape is unclear.
+Treat installed `boilersuit` CLI as agent automation contract. Prefer its JSON commands over recreating discovery, field requirements, path resolution, collision handling, or project-opening. Use `boilersuit --help` and command help as source of truth.
 
 ## Command forms
 
@@ -60,70 +56,41 @@ Opening editor, terminal, or file manager may need sandbox approval.
 
 ## Run profiles
 
-Run profiles are separate from file generation:
-
-- Explicit profiles live in `.boilersuit/run.json`
-- Boilersuit also infers profiles from `package.json` scripts
-- Explicit profiles take precedence when IDs overlap
-
-Do not edit or run a profile as a side effect of consuming a generator. If the task also requires Run profile work, treat it as a separate requested change and inspect the project-owned configuration before acting.
+Separate from file generation. Live in `.boilersuit/run.json` (explicit) or inferred from `package.json` scripts; explicit takes precedence. Don't edit/run profiles as side effect of generator consumption. Treat profile changes as separate requested work.
 
 ## Generator path model
 
-- `default_path` is base output directory, not token-rendered file path.
-- `files[].output_path` renders field tokens and may include directories.
-- If `output_path` has no directory, Boilersuit writes into `<default_path>/<NAME | kebab>/`.
-- If `output_path` includes directories, it owns generated subdirectories; Boilersuit does not add name folder.
-- For flat files under a tokenised directory, set `default_path` to `""` and put the full path in each `output_path`, e.g. `lib/{{ CATEGORY }}/{{ NAME | kebab }}.js`.
-- Use `--path` only to override/prefix base path; always preview because explicit `output_path` directories can make final path differ from naive base-plus-file join.
-- CLI generation uses the complete visible file set. Variants define alternative output shapes; individual template selection is not supported.
+- `default_path`: base output directory, not token-rendered.
+- `files[].output_path`: renders field tokens, may include directories.
+- No directory in `output_path` → writes to `<default_path>/<NAME | kebab>/`.
+- Directory in `output_path` → owns subdirectories; Boilersuit doesn't add name folder.
+- Flat files under tokenised directory: set `default_path=""`, full path in `output_path` (e.g. `lib/{{ CATEGORY }}/{{ NAME | kebab }}.js`).
+- Use `--path` to override/prefix base; always preview (explicit `output_path` directories can change final path).
+- CLI uses complete visible file set. Variants define alternatives; per-template selection unsupported.
 
 ## Generation workflow
 
 1. Run `boilersuit project inspect --json`.
 2. Run `boilersuit generators list --json`.
-3. Stop if `has_generator_directory` is false or the generator list is empty.
-4. Pick matching generator ID from list; do not invent IDs.
-5. Describe it:
+3. Stop if `has_generator_directory` is false or list is empty.
+4. Pick matching ID from list; don't invent.
+5. Describe it: `boilersuit generators describe "<generator-id>" --json`
+6. Map required fields. Ask for missing values if unsafe to infer.
+7. Run doctor: `boilersuit generators doctor "<generator-id>" --json --field NAME=<name>`. Resolve errors; review warnings; supply deferred-check values.
+8. Preview: `boilersuit generate preview "<generator-id>" --json --field NAME=<name>`.
+9. Review every file action and path. `create` writes; `skip_existing` only returned when requested. Don't read full content by default.
+10. Read content only when path/action risky, generator unfamiliar, or user asks.
+11. Generate only after confirming files match task: `boilersuit generate "<generator-id>" --json --field NAME=<name>`.
 
-```bash
-boilersuit generators describe "<generator-id>" --json
-```
-
-6. Map required fields from description. Ask for missing values if unsafe to infer.
-7. Run doctor with the same representative fields and variant:
-
-```bash
-boilersuit generators doctor "<generator-id>" --json --field NAME=<name>
-```
-
-Resolve errors before continuing. Review warnings. Supply missing representative fields when checks are deferred.
-
-8. Preview planned files:
-
-```bash
-boilersuit generate preview "<generator-id>" --json --field NAME=<name>
-```
-
-9. Review every file action and path. `create` writes a file; `skip_existing` is only returned when `--skip-existing` was requested. Do not read full generated content by default.
-10. Read previewed content only when path/action is risky, generator unfamiliar, or user asks.
-11. Only generate after confirming the planned files match the task:
-
-```bash
-boilersuit generate "<generator-id>" --json --field NAME=<name>
-```
-
-Use extra `--field TOKEN=value`, `--variant`, or `--path` only when the generator description or user request requires it. Use `--skip-existing` only when existing destinations should remain untouched and the preview lists every intended skip.
-
-Field tokens use SCREAMING_SNAKE_CASE and may contain digits after the first character, such as `API_V2_NAME` and `WCAG_22_LEVEL`. Read the generator description rather than rejecting or rewriting tokens that follow this format.
+Use extra flags only when description/user requires. Use `--skip-existing` only when destinations should stay unchanged and preview lists every skip. Field tokens: SCREAMING_SNAKE_CASE, digits allowed after first char (e.g. `API_V2_NAME`, `WCAG_22_LEVEL`). Read generator description rather than rejecting such tokens.
 
 ## Guardrails
 
-- Prefer Boilersuit when the requested file matches an existing generator.
-- Do not use Boilersuit for one-off file faster and clearer to write directly.
-- Do not run `generate` before `generate preview`.
-- Do not use removed `--file` or invent per-template selection flags.
-- Treat preview as a plan check, not a default content review.
-- Existing destinations fail safely by default. Do not use `--skip-existing` unless the user expects a partial result.
-- Keep broad source reading until after `project inspect` and `generators list`.
-- Report when no generator fits instead of forcing a partial match.
+- Prefer Boilersuit when requested file matches existing generator.
+- Don't use Boilersuit for one-off files faster to write directly.
+- Don't run `generate` before `generate preview`.
+- Don't use removed `--file` or invent per-template selection.
+- Treat preview as plan check, not content review.
+- Existing destinations fail safely. Don't use `--skip-existing` unless partial result expected.
+- Keep broad reading until after `project inspect` and `generators list`.
+- Report when no generator fits; don't force partial match.

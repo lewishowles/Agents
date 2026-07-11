@@ -27,9 +27,9 @@ Do not use this skill to:
 
 ## Method
 
-Extraction, not summarisation: preserve every claim, constraint, and example completely rather than compressing them. Do not ask for or expect verbatim/near-verbatim reproduction of the source's prose — models resist reproducing large stretches of source text even when told not to summarise, so treat that as unavailable rather than a target. Instead: quote a short exact phrase (in quotation marks) only where the precise wording itself matters (a named rule, a specific caveat), and restate everything else fully and precisely in your own words — nothing dropped, nothing compressed, just not word-for-word.
+Extraction, not summarisation: preserve every claim, constraint, and example fully rather than compressing. Don't expect verbatim reproduction — models resist this — so restate everything fully and precisely in your own words. Quote exact phrases only where wording itself matters (named rules, specific caveats), nothing dropped or compressed.
 
-Every link that gets listed needs its actual destination URL, not just anchor text. If the destination can't be resolved (e.g. the extracting tool can't see raw hrefs), say so explicitly for that link rather than omitting the field — a link entry with no destination is dead weight for the "decide whether to fetch this" step later.
+Every link needs its actual destination URL, not just anchor text. If destination unresolvable, state that explicitly; a link with no destination is dead weight for the "fetch this?" step later.
 
 Output shape:
 
@@ -71,11 +71,11 @@ If the extraction will run in a tool without repo or conversation context (e.g. 
 
 ## Multiple sources
 
-Do not paste many URLs' worth of extraction into one analysis pass — a synthesis step over a large combined corpus tends to surface only the two or three most salient ideas and quietly drop the rest, even when they're applicable. Instead:
+Don't paste many URLs into one analysis pass — synthesis over large corpus surfaces only top ideas and drops the rest. Instead:
 
-- extract each source separately (one pass per URL)
-- feed them into `project-learn-from-source` in small batches, or ask explicitly for a per-source breakdown before synthesis
+- Extract each source separately
+- Feed into `project-learn-from-source` in small batches, or ask for per-source breakdown before synthesis
 
 ## After extraction
 
-If "linked artefacts the article depends on" has entries, decide whether to extract those too before treating the analysis as complete — the article alone may be an incomplete account of what it's describing. Once extraction is done, hand the result to `project-learn-from-source` for the actual adopt/adapt/reject/defer/investigate assessment.
+If "linked artefacts the article depends on" has entries, decide whether to extract those too — the article alone may be incomplete. Once extraction is done, hand result to `project-learn-from-source` for adopt/adapt/reject/defer/investigate assessment.

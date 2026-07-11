@@ -9,7 +9,7 @@ related-skills:
 
 # Agent config
 
-Skill applies only in `~/Dev/Configuration/Agents` — the repo defining shared Claude and Codex global behaviour. Not a global skill for other projects.
+Repo-local to `~/Dev/Configuration/Agents` (defines Claude/Codex global behaviour). Not for other projects.
 
 ## Repo structure
 
@@ -69,33 +69,33 @@ Configuration/Agents/
 
 ## Skill conventions
 
-- `agent-config` is repo-local; keep it under `.claude/skills/agent-config/` and symlink into `.agents/skills/agent-config`
-- Global skills live under `skills/<group>/<name>/` (flat groups: `vue/`, `swift/`, `testing/`, `writing/`, `project-management/`)
-- External skills are listed in `external-skills.json`, synced into `skills/`, and marked with `SYNC.md`
-- Folder name = skill slug (used in `/slug` commands, hook pattern lists, Codex discovery)
-- Codex skill links live in `~/.codex/skills/`; Claude skill links live in `~/.claude/skills/`
+- `agent-config` is repo-local: keep under `.claude/skills/agent-config/`, symlink to `.agents/skills/agent-config`
+- Global skills live under `skills/<group>/<name>/` (groups: `vue/`, `swift/`, `testing/`, `writing/`, `project-management/`)
+- External skills listed in `external-skills.json`, synced into `skills/`, marked with `SYNC.md`
+- Folder name = skill slug (used in `/slug` commands, hook patterns, Codex discovery)
+- Codex links in `~/.codex/skills/`; Claude links in `~/.claude/skills/`
 
 ### Skill file layout
 
 ```
 skills/<group>/<name>/
-├── skill.json      # Canonical metadata: name, description, triggers, filePatterns, capabilities
-└── SKILL.body.md   # Editable skill body
+├── skill.json      # Metadata: name, description, triggers, filePatterns, capabilities
+└── SKILL.body.md   # Skill content
 ```
 
-Run `python3 scripts/build/build-skill-mds.py` after editing `skill.json` or `SKILL.body.md`. Generated runtime directories are written to `dist/skills/<name>/`.
+After editing `skill.json` or `SKILL.body.md`, run `python3 scripts/build/build-skill-mds.py`. Output goes to `dist/skills/<name>/`.
 
 ### skill.json fields
 
-| Field                    | Required | Notes                                                                                                                                                                                                                                                                                     |
-| ------------------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`                   | Yes      | Skill slug                                                                                                                                                                                                                                                                                |
-| `description`            | Yes      | Starts "Use this skill when…"; action-led, includes file globs                                                                                                                                                                                                                            |
-| `when`                   | Optional | Short one-liner for settings.json hook description                                                                                                                                                                                                                                        |
-| `filePatterns`           | Optional | Glob patterns for `skill-file-trigger.sh`                                                                                                                                                                                                                                                 |
-| `title`                  | Optional | Human display name; generates Codex-compatible `displayName`                                                                                                                                                                                                                              |
-| `capabilities`           | Optional | `{"promptTriggering": bool, "fileTriggering": bool}`                                                                                                                                                                                                                                      |
-| `explicitInvocationOnly` | Optional | `true` blocks auto-invocation on both runtimes: emits `disable-model-invocation: true` in the generated Claude `SKILL.md` frontmatter, and a generated `dist/skills/<name>/agents/openai.yaml` with `allow_implicit_invocation: false` for Codex. `/name` invocation still works on both. |
+| Field                    | Required | Notes                                                                                                                                                        |
+| ------------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `name`                   | Yes      | Skill slug                                                                                                                                                   |
+| `description`            | Yes      | Starts "Use this skill when…"; action-led, includes file globs                                                                                               |
+| `when`                   | Optional | Short one-liner for settings.json hook description                                                                                                           |
+| `filePatterns`           | Optional | Glob patterns for `skill-file-trigger.sh`                                                                                                                    |
+| `title`                  | Optional | Human display name; generates Codex-compatible `displayName`                                                                                                 |
+| `capabilities`           | Optional | `{"promptTriggering": bool, "fileTriggering": bool}`                                                                                                         |
+| `explicitInvocationOnly` | Optional | `true` blocks auto-invocation: `disable-model-invocation: true` in Claude `SKILL.md`, `allow_implicit_invocation: false` in Codex YAML. `/name` still works. |
 
 ### Generated SKILL.md content rules
 
@@ -106,11 +106,11 @@ Run `python3 scripts/build/build-skill-mds.py` after editing `skill.json` or `SK
 
 ## Hook conventions
 
-- Hook source: `hooks/claude/<name>/hook.json` + `hooks/claude/<name>/<name>.sh`
-- `hook.json`: `event`, `description`, `timeout` — used by `scripts/build/build-settings.py` to register hooks
-- `dist/claude/hooks/` contains synced copies — generated by `sync.sh`
-- Each hook outputs JSON to stdout; `UserPromptSubmit` receives `{"prompt": "…"}` on stdin; `PreToolUse` receives full tool input JSON
-- Hard-fail (exit 2) only when blocking is intentional — else exit 0
+- Source: `hooks/claude/<name>/hook.json` + `hooks/claude/<name>/<name>.sh`
+- `hook.json`: `event`, `description`, `timeout` — registered by `scripts/build/build-settings.py`
+- Synced copies in `dist/claude/hooks/` (generated by `sync.sh`)
+- Hooks output JSON to stdout; `UserPromptSubmit` receives `{"prompt": "…"}` on stdin; `PreToolUse` receives full tool input
+- Hard-fail (exit 2) only when intentionally blocking — else exit 0
 
 ### skill-file-trigger.sh extension mapping
 
@@ -118,25 +118,24 @@ Add new extensions to the `case` block; filename rules (`README`, `vite.config`)
 
 ## adapters/claude/settings.base.json
 
-Source for `dist/claude/settings.json`. Contains `env`, hook registrations, `enabledPlugins`, and `extraKnownMarketplaces`. Run `python3 scripts/build/build-settings.py` after changes; `sync.sh` calls this automatically.
+Source for `dist/claude/settings.json` (env, hook registrations, plugins, marketplaces). Run `python3 scripts/build/build-settings.py` after changes; `sync.sh` does this.
 
 ## Enforcement placement
 
-When changing rules, skills, hooks, validation, or setup scripts, classify the intended enforcement layer before editing:
+Classify the intended layer before editing rules, skills, hooks, validation, or scripts:
 
-- **Rule** — always-on guidance that every agent session should see
-- **Skill** — task-scoped procedure that should load only when its trigger matches
-- **Hook** — deterministic runtime nudge or block for behaviour a script can detect
-- **Validation** — repository check for source/generated drift, manifests, schemas, or generated output
-- **Friction loop** — evidence capture and review for recurring behaviour that is not yet ready for a rule, skill, hook, or validation check
+- **Rule** — always-on guidance visible every session
+- **Skill** — task-scoped, loads only when triggered
+- **Hook** — deterministic runtime nudge/block for detectable behaviour
+- **Validation** — checks source/generated drift, manifests, schemas, output
+- **Friction loop** — evidence capture for recurring behaviour not yet ready for rule/skill/hook/validation
 
-Prefer the strongest layer that fits the failure mode. Do not place agent-critical behaviour only in `docs/`; docs are human reference unless a loaded rule or skill points there during the task.
+Use the strongest layer that fits the failure mode. Don't place agent-critical behaviour only in `docs/` — docs are human reference unless a loaded rule or skill points there.
 
-## When editing docs/
+## Editing docs/
 
-- `docs/skills.md`, `docs/hooks.md`, `docs/commands.md` — generated by `scripts/build/build-docs.py`
-- Run `python3 scripts/build/build-docs.py` or `bash scripts/sync.sh` (which includes docs)
-- Do not hand-edit docs tables; edit source manifests (`skill.json`, `hook.json`) instead
+- `docs/skills.md`, `docs/hooks.md`, `docs/commands.md` are generated by `scripts/build/build-docs.py`
+- Edit source manifests (`skill.json`, `hook.json`) instead; run `bash scripts/sync.sh` to regenerate
 
 ## When adding or changing a skill
 
@@ -153,7 +152,7 @@ Prefer the strongest layer that fits the failure mode. Do not place agent-critic
 
 ## Progress tracking
 
-This repo uses root `PROGRESS.md` for local session state. `AGENTS.md` is also root-local maintenance guidance for this repo, not generated output. See the `project-continue` and `project-setup` skills for session-resume conventions and the current progress schema. Workspace files are generated by `scripts/init-workspace.py`, not a template.
+Root `PROGRESS.md` tracks session state; root `AGENTS.md` is maintenance guidance (not generated). See `project-continue` and `project-setup` skills for session-resume conventions and schema. Workspace files generated by `scripts/init-workspace.py`.
 
 ## Local maintenance tools
 
@@ -165,8 +164,8 @@ scripts/validate/generated-file-guard.py
 scripts/project-diagnostics.py --list
 ```
 
-- `scripts/repo-context.py` gives compact startup context: rules, progress files, workspace facts, diagnostics, generated output, generators, and Git state.
-- `scripts/validate/generated-file-guard.py` checks Git status for direct generated-output edits and stale generated files after source changes.
-- `scripts/project-diagnostics.py --list` discovers focused checks; use `--check <name>` for specific verification, add repeatable `--test-file <path>` or `--test-glob '<pattern>'` arguments to narrow unit tests, and reserve `--all` for user-approved broad checks.
+- `scripts/repo-context.py` — compact startup context (rules, progress, workspace, diagnostics, generated output, Git)
+- `scripts/validate/generated-file-guard.py` — checks for direct edits to generated files and stale output
+- `scripts/project-diagnostics.py --list` — discovers checks; use `--check <name>` for specific verification or `--test-file <path>` to narrow unit tests
 
-When reviewing this repo as an agent behaviour system, pair `agent-config` with `agent-config-review`. Findings should prioritise generated/source drift, token footprint in always-loaded rules, rule/skill boundary placement, skill taxonomy, and validation coverage for generated output. Use `project-audit` only for auditing a different project's agent-readiness, not this repo.
+Pair `agent-config` with `agent-config-review` when reviewing this system. Prioritise: generated/source drift, token cost in always-loaded rules, rule/skill boundaries, skill taxonomy, validation coverage. Use `project-audit` for other projects only.

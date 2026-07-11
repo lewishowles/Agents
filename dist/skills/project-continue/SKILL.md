@@ -33,38 +33,36 @@ When `<project-root>/.agent/scripts/project-diagnostics.py` exists, use `--list`
 
 ## Workflow
 
-1. **Read** — read `## Session handoff` first, then stop unless next step is unclear or task needs deeper context
-2. **Compact** — repair a stale or missing handoff before continuing; remove duplicate notes and obsolete TODOs; compress completed sub-tasks to a single line
-3. **Verify** — spot-check that recently-completed work landed
-4. **Reorient** — confirm the active work still fits; move it to upcoming if priorities changed
-5. **Present** — state the next task (name, why, any unknowns) and wait for the user to confirm before starting; do not skip this even when the next step is explicit in `PROGRESS.md`
-6. **Continue** — work through the confirmed task; update `PROGRESS.md` as discoveries are made
-7. **Wrap up** — refresh the handoff before stopping
+1. **Read** — `## Session handoff` first; stop unless next step is unclear or task needs deeper context
+2. **Compact** — repair stale/missing handoff; remove duplicate notes and obsolete TODOs; compress completed sub-tasks to one line
+3. **Verify** — spot-check recently-completed work landed
+4. **Reorient** — confirm active work still fits; move to upcoming if priorities changed
+5. **Present** — name next task, explain why, flag unknowns, wait for confirmation before starting
+6. **Continue** — work through confirmed task; update `PROGRESS.md` as discoveries emerge
+7. **Wrap up** — refresh handoff before stopping
 
 ## Session startup
 
-Before new work, read only enough to orient:
+Read only enough to orient. Stale sessions (5+ min idle) restart from scratch.
 
-- Stale sessions (more than 5 minutes idle) re-process context from scratch; prefer starting fresh with PROGRESS.md rather than resuming a long idle session.
-
-- Read full `## Session handoff` — every subsection above `### Stop here`, including `### Context` and `### Verify with`
-- Continue into `## Active work`, `## Decisions`, `## Discoveries`, or `## Risks` only when needed
-- If active section links a feature spec, read it only when needed; do not read unrelated specs
-- Do not read completed or archived sections unless the current task depends on their history
-- Confirm branch state and any uncommitted work
-- Read `WORKSPACE.md` if it exists before running local commands
-- Verify unfinished tasks belong to the current section
+- Read full `## Session handoff` (all subsections above `### Stop here`, including `### Context` and `### Verify with`)
+- Continue to `## Active work`, `## Decisions`, `## Discoveries`, `## Risks` only when needed
+- Read linked feature specs only when active; skip unrelated specs
+- Skip completed or archived sections unless current task depends on their history
+- Confirm branch state and uncommitted work
+- Read `WORKSPACE.md` if present before running local commands
+- Verify unfinished tasks belong to current section
 
 ## Starting the next task
 
-When user signals readiness to move on ("next please", "let's continue", "what's next") without naming work:
+When user signals readiness ("next please", "let's continue", "what's next") without naming work:
 
-1. **Name the task** — one sentence: what it is and where it sits in the plan
-2. **Explain why** — one or two sentences on what it unlocks or why it is next
-3. **Flag unknowns** — if approach is not obvious, name key question or decision before starting
-4. **Wait for confirmation** — do not start implementation until the user agrees. This gate applies regardless of communication style — terseness (e.g. caveman mode) shortens prose, not process. Naming the task and waiting is still required at the lowest verbosity setting.
+1. **Name the task** — one sentence: what and where in the plan
+2. **Explain why** — one or two sentences: what it unlocks or why it's next
+3. **Flag unknowns** — name key questions or decisions before starting
+4. **Wait for confirmation** — do not start until user agrees (applies at all verbosity levels)
 
-Keep outline short: 3–5 sentences total. Give enough context to redirect without spending tokens on a full plan.
+Keep outline short: 3–5 sentences. Give enough context to redirect without a full plan.
 
 ## Resuming delegated work
 

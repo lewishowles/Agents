@@ -2,9 +2,9 @@
 
 ## When to add packages
 
-Add only for complex work needing real skill/effort:
+Add only for complex work needing real skill and effort:
 
-- Framework/testing framework (Vue, Vitest, Tailwind)
+- Frameworks and testing frameworks (Vue, Vitest, Tailwind)
 - Authentication (JWT, OAuth handling)
 - Specialised libraries (not trivial utilities)
 
@@ -16,9 +16,9 @@ Default Vue choices when they fit:
 - `@vueuse/core` and focused `@vueuse/*` packages
 - `vite`, `vitest`, `@vitejs/plugin-vue`
 
-Agents may recommend these without full proposal template. Do not install without permission. If installed, use before bespoke equivalents.
+Agents may recommend without full proposal template. Do not install without permission. Once installed, use before bespoke equivalents.
 
-Use VueUse before custom reactive/browser utilities: storage, media queries, breakpoints, focus, clipboard, observers, timers, network state, throttling/debouncing, event listeners.
+Use VueUse before custom reactive/browser utilities (storage, media queries, breakpoints, focus, clipboard, observers, timers, network state, throttling, debouncing, event listeners).
 
 ## When not to add packages
 
@@ -29,14 +29,14 @@ Use VueUse before custom reactive/browser utilities: storage, media queries, bre
 
 ## Before adding
 
-Always discuss with team/user. Explain:
+Always discuss with team/user:
 
 - What it solves
-- Why worth dependency
-- What existing approach would be
+- Why it's worth a dependency
+- What the existing approach would be
 - Estimated complexity of rolling our own
 
-Never add without discussion/permission.
+Never add without discussion and permission.
 
 ```markdown
 Dependency proposal: `package-name`

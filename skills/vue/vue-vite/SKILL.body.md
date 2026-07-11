@@ -2,7 +2,7 @@
 
 # Vite patterns
 
-Build tool patterns for Vite projects. Dev serves native ESM with on-demand transforms; build bundles with Rollup tree-shaking and code-splitting.
+Build patterns for Vite. Dev serves native ESM with on-demand transforms; build bundles with Rollup tree-shaking.
 
 ## Config structure
 
@@ -52,7 +52,7 @@ export default defineConfig(({ command, mode }) => {
 
 ## Environment variables
 
-Vite loads `.env`, `.env.local`, `.env.[mode]`, `.env.[mode].local` in order; later files override earlier. `.local` files are gitignored for secrets.
+Vite loads .env, .env.local, .env.[mode], .env.[mode].local in order (later overrides earlier). .local files are gitignored.
 
 ### Client-side access
 
@@ -84,7 +84,7 @@ export default defineConfig(({ mode }) => {
 
 ### `VITE_` prefix is not a security boundary
 
-Any `VITE_` var is **statically inlined into the client bundle at build time**. Minification and disabled source maps do not hide it; attackers can extract shipped values.
+VITE\_ vars are statically inlined at build time. Minification and disabled source maps don't hide them.
 
 **Rule:** only public values (API URLs, feature flags, public keys) go in `VITE_`. Secrets must live server-side behind an API.
 
@@ -100,7 +100,7 @@ const env = loadEnv(mode, process.cwd(), ["VITE_", "APP_"]);
 
 ### Source maps in production
 
-Production source maps leak original source. Disable unless uploading to error tracker and deleting local copies afterward:
+Production source maps leak source. Disable unless uploading to error tracker:
 
 ```typescript
 build: {
@@ -116,9 +116,9 @@ build: {
 
 ## Dev vs build
 
-Dev uses esbuild; build uses Rollup. CJS libraries can differ. Verify with `vite build && vite preview` before deploy.
+Dev uses esbuild, build uses Rollup (CJS may differ). Verify with vite build && vite preview before deploy.
 
-`vite build` transpiles but does not type-check. Type errors ship unless CI runs `tsc --noEmit` or `vite-plugin-checker`.
+vite build doesn't type-check; ship type errors unless CI runs tsc --noEmit.
 
 ## Imports and assets
 
@@ -133,9 +133,9 @@ import shaderSource from "./shader.glsl?raw";
 
 ## Plugins
 
-- Keep plugin order intentional; framework plugins usually come before inspection, analysis, or transform helpers
+- Order plugins intentionally (framework plugins before analysis/transform)
 - Use virtual modules only when config-time data must become runtime-importable code
-- Check current Vite docs before version-specific migration guidance, especially around Rolldown, Oxc, and major-version beta features
+- Check Vite docs for migration (Rolldown, Oxc, beta features)
 
 For library mode, SSR, and common pitfalls (stale chunks, Docker, monorepo, barrel files, import extensions, stale cache), see [references/advanced.md](references/advanced.md).
 

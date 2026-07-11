@@ -12,38 +12,39 @@ related-skills:
 ---
 # Vue project stack
 
-Stack used across Vue projects. Each choice includes *why* so stale tools or better options can be assessed.
+Stack across Vue projects. Each tool includes rationale for assessment.
 
 ## Core stack
 
 - **Vue 3 with `<script setup>`, Composition API**
-  *Why:* smaller runtime, easier composable extraction, less boilerplate, composable reactive primitives
+  _Why:_ smaller runtime, easier composable extraction, less boilerplate, composable reactive primitives
 - **Tailwind (utility-first)**
-  *Why:* colocates styles with markup, removes class-naming overhead, fast iteration, easy audits
+  _Why:_ colocates styles with markup, removes class-naming overhead, fast iteration, easy audits
 - **Vitest**
-  *Why:* Vite-native (no dual config), fast watcher, modern API; natural pairing for Vue 3 + Vite
+  _Why:_ Vite-native (no dual config), fast watcher, modern API; natural pairing for Vue 3 + Vite
 - **Vue Router**
-  *Why:* standard production router for Vue SPAs; keeps navigation, params, query strings, and route metadata explicit
+  _Why:_ standard production router for Vue SPAs; keeps navigation, params, query strings, and route metadata explicit
 - **Pinia**
-  *Why:* official client-side store for Vue; simple Composition API model and strong TypeScript support
+  _Why:_ official client-side store for Vue; simple Composition API model and strong TypeScript support
 - **VueUse**
-  *Why:* proven Vue composables for browser/reactive patterns; less bespoke code
+  _Why:_ proven Vue composables for browser/reactive patterns; less bespoke code
 - **Bun (package manager)**
-  *Why:* fast installs, npm-compatible registry, drop-in replacement; npm/pnpm valid fallbacks
+  _Why:_ fast installs, npm-compatible registry, drop-in replacement; npm/pnpm valid fallbacks
 - **Gitflow branching**
-  *Why:* release/develop separation suits static-hosted deployment style
+  _Why:_ release/develop separation suits static-hosted deployment style
 - **GitHub Pages**
-  *Why:* free static hosting, branch-based deploy, no extra infrastructure
+  _Why:_ free static hosting, branch-based deploy, no extra infrastructure
 - **Node.js (server-side) / vanilla JS (browser, VS Code extensions)**
-  *Why:* Node for tooling/scripts; vanilla JS where bundle size or runtime constraints matter
+  _Why:_ Node for tooling/scripts; vanilla JS where bundle size or runtime constraints matter
 
 ## Helpers library — `@lewishowles/helpers`
 
-Replaces ad-hoc utility packages. Check before writing helpers or adding utility dependencies. Full docs in package README.
+Replaces ad-hoc utilities. Check before adding dependencies. See package README for docs.
 
 Import path: `import { getNextIndex } from "@lewishowles/helpers/array"`
 
 Key helpers:
+
 - Type guards: `isNonEmptyArray`, `isNonEmptyString`, `isNonEmptyObject`, `isNonEmptySlot`
 - Validation: `validateOrFallback`, `validateField`
 - Object access: `get`, `set`, `forget`, `deepMerge`, `pick`, `omit`, `pluck`
@@ -52,11 +53,11 @@ Key helpers:
 - URLs: `getUrlParameter`, `updateUrlParameter`
 - Vue: `runComponentMethod`
 
-Missing helper — discuss adding to `@lewishowles/helpers`, not inlining or adding dependency.
+Missing helper? Propose adding to @lewishowles/helpers, don't inline or add new dependency.
 
 ## Component library — `@lewishowles/components`
 
-Opinionated accessible UI component library. Use live docs at [components.howles.dev](https://components.howles.dev/), not memory. When the component choice, API, or composition pattern is unclear, use the `components` CLI before searching library source:
+Accessible component library. Use live docs at [components.howles.dev](https://components.howles.dev/) or the CLI before source files:
 
 ```sh
 npx @lewishowles/components list
@@ -65,7 +66,7 @@ npx @lewishowles/components snippet <component>
 npx @lewishowles/components pattern
 ```
 
-Missing component — discuss adding it there, not one-off duplicates.
+Missing? Propose adding to library, don't duplicate locally.
 
 ## Data layer structure
 
@@ -80,12 +81,12 @@ src/
 
 State management responsibilities:
 
-| Layer | Use for |
-|-------|---------|
-| Pinia stores | Client-owned app state, UI state, user preferences, app-wide flags |
-| Pinia Colada | Server data — fetching, caching, revalidation |
-| VueUse | Reusable reactive/browser utilities — storage, observers, media queries, timers |
-| Plain composables | Project-specific local shared state that doesn't need caching |
+| Layer             | Use for                                                                         |
+| ----------------- | ------------------------------------------------------------------------------- |
+| Pinia stores      | Client-owned app state, UI state, user preferences, app-wide flags              |
+| Pinia Colada      | Server data — fetching, caching, revalidation                                   |
+| VueUse            | Reusable reactive/browser utilities — storage, observers, media queries, timers |
+| Plain composables | Project-specific local shared state that doesn't need caching                   |
 
 ## Completion
 

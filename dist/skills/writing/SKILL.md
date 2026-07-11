@@ -14,9 +14,9 @@ do-not-use-when:
 
 - **First person, personal** — use "I" and "we" naturally. Share observations when they add credibility
 - **Empathetic, not prescriptive** — lead with understanding, not rules
-- **Conversational** — write as you'd explain to a colleague, not a policy document
-- **Honest** — acknowledge complexity ("There's quite a lot in here"), don't oversimplify
-- **Inclusive** — use "we" for shared actions. Use real scenarios and people, not abstract users
+- **Conversational** — write as you'd explain to a colleague
+- **Honest** — acknowledge complexity, don't oversimplify
+- **Inclusive** — use "we" for shared actions; use real people, not abstract users
 
 ## Structure
 
@@ -24,8 +24,8 @@ do-not-use-when:
 - **Concrete before abstract** — ground concepts in real scenario before generalising
 - **Short before long** — lead with point, then expand. Don't bury key idea
 - **Analogies welcome** — use everyday comparisons for unfamiliar concepts
-- **Don't command in prose** — frame steps rather than barking them. Step sequences can be direct when free of padding
-- **State the obvious claim before the nuance** — if something feels true but unspoken, name it plainly first. Skipping straight to the subtler point removes the foundation the reader needs to follow it. Check whether it's genuinely unspoken, not whether it's uncomfortable to say
+- **Frame steps, not commands** — step sequences can be direct when free of padding
+- **Obvious before nuance** — name plain truths first. Skipping to subtle points removes the foundation readers need. Verify it's unspoken, not uncomfortable
 
 ## Examples & evidence
 
@@ -38,68 +38,68 @@ do-not-use-when:
 
 - **UK spelling** — colour, behaviour, organise, grey, recognise
 - **Sentence case titles** — not Title Case
-- **Plain language** — if someone unfamiliar can't follow, simplify. No unexplained jargon
-- **Plain verbs** — prefer everyday words. "Create" or "write" a file, not "emit"
-- **Contractions** — use them in prose and reference
-- **Italics** for emphasis; `backticks` for inline code, technical terms, UI strings
-- **Em dash**: avoid by default. Use a comma, colon, semicolon, parentheses, or new sentence. Only when preserving quoted text, matching an external style, or no other punctuation keeps meaning clear.
+- **Plain language** — simplify if newcomers can't follow; no unexplained jargon
+- **Plain verbs** — prefer "create" or "write", not "emit"
+- **Contractions** — use in prose and reference
+- **Italics** for emphasis; `backticks` for code, technical terms, UI strings
+- **Em dashes** — avoid by default. Use comma, colon, semicolon, parentheses, or new sentence. Only when preserving quoted text or no other mark keeps meaning clear
 - **Lists** — a lead-in sentence ending in a colon, then fragment items with no trailing full stops
 - **Passive for system behaviour** — focus on thing acted on: "The URL is checked against the allowlist", not "We check the URL"
 - **No preamble or summary** unless asked
 
 ## What to avoid
 
-- Em dashes as routine separators in headings, bullets, changelogs, docs, code comments, commit messages, or agent output
-- Preachy or lecturing tone — state point once
-- Padding ("It's worth noting that...", "As mentioned above...")
-- Prescriptive absolutes where context matters — use "generally", "ideally", "where possible"
-- Capitalising every word in titles or headings
-- Opening with summary of what you're about to say
-- No "etc", "and so on", or trailing "…" lists. Name the items, or say what they share. If a list earns its place, write it in full; if not, cut it
-- No shortcuts. Finish the thought
-- Marketing or hype — describe what it does, don't tell reader how to feel
-- "Just" and "simply" as minimisers — they wave away difficulty. Drop them or say plainly how few steps
+- Em dashes as routine separators
+- Preachy or lecturing tone — state once
+- Padding like "It's worth noting that..." or "As mentioned above..."
+- Prescriptive absolutes — use "generally", "ideally", "where possible"
+- Title Case in headings
+- Opening summaries
+- "Etc", "and so on", trailing "…" lists — name items or say what they share, then cut if not essential
+- Incomplete thoughts or shortcuts
+- Marketing or hype — describe what it does
+- "Just" and "simply" — drop or state plainly how few steps
 
 ## Phrasing
 
 Go-to wording for recurring moments. Starting points, not only options.
 
-- **Caveats** — "Note that …", "Ensure that …", or state rule and effect: "The URL is checked against the allowlist, so it must be valid".
-- **Optional** — form label: "(optional)" at end. Prose: "If you want to …", "If you'd like …", "Optionally, you may …".
-- **Pointing elsewhere** — "For more on X, see Y", "For more information about …", "Learn more about …".
-- **Recommending between options** — "X is recommended over Y, because …", "The benefit of X is …", or to a person: "I'd choose X because …".
-- **Tradeoffs** — "One thing to keep in mind …", "Note that …", "If you do choose X, …".
-- **Limitations** — measured and brief. No "Unfortunately", "due to certain technical limitations", or "working hard to address".
-- **No presumptuous audience claims** — avoid "most people" and "you probably want". Don't characterise reader.
-- **Concrete ranges over hype** — "from small changes to big re-designs", not "completely transform everything".
-- **Friendly anthropomorphism** — tools can "know", "see", and "pick up".
+- **Caveats** — "Note that…" or "Ensure that…", or rule + effect: "The URL is checked against the allowlist, so it must be valid"
+- **Optional** — form label: "(optional)". Prose: "If you want to…", "Optionally…"
+- **Pointing elsewhere** — "For more on X, see Y" or "Learn more about…"
+- **Recommending options** — "X over Y, because…" or "I'd choose X because…"
+- **Tradeoffs** — "Note that…" or "If you choose X…"
+- **Limitations** — brief and measured; no "Unfortunately" or "working hard to address"
+- **Avoid "most people" and "you probably want"** — don't characterise reader
+- **Concrete over hype** — "small changes to big re-designs", not "completely transform everything"
+- **Friendly anthropomorphism** — tools can "know", "see", "pick up"
 
 ## Technical documentation
 
-Skill files, reference docs, and inline code docs use different style to longform prose:
+Skill files, reference docs, and inline code docs differ from longform:
 
-- Plain-language voice applies everywhere, including code comments and commits. If newcomer can't follow, rewrite.
-- Lead with rule/pattern, then example. Establish _what_ before _how_.
-- Prefer short code snippet over paragraph when both convey same thing.
-- Tables for comparisons and trade-offs; bullets for independent items without a comparative relationship.
-- Reference descriptions are terse, noun-led, present tense: "Any title to display with this table.", "The label to use for the search box."
-- Only document parameters callers pass. Omit internal/implementation-only parameters.
-- No placeholder docs: avoid `{*}`, `any`, or "see types" when local contract can be stated.
-- Describe what a thing is and where it sits, not framework mechanics. Drop "rendered"/"displayed" when placement already says it.
-- Match sibling scope. Don't add how-to, override, or translation guidance to one entry when neighbours lack it.
-- In reference docs and JSDoc, write instructions in the imperative: "Pass a getter function", not "You should pass". In prose, frame the step (see Structure).
+- Plain language everywhere, including comments and commits — rewrite if newcomer can't follow
+- Lead with rule/pattern, then example. Establish _what_ before _how_
+- Prefer short code snippet over paragraph when equivalent
+- Tables for comparisons; bullets for independent items
+- Reference descriptions: terse, noun-led, present tense: "Any title to display with this table"
+- Document only caller-facing parameters
+- No placeholder docs — avoid `{*}`, `any`, "see types" when contract can be stated
+- Describe what a thing is and where it sits, not framework mechanics
+- Match sibling scope and guidance
+- Imperative instructions in reference/JSDoc: "Pass a getter function", not "You should pass"
 
 ## Product documentation
 
-User-facing docs are narrative like longform, but speak for the product, not for you:
+User-facing docs are narrative like longform, but speak for the product, never first person:
 
-- **Neutral product voice, no first person.** Subject is "the library", "the component", "Tailwind" — never "I"/"we".
-- **No scene-setting intro.** Don't open a page or section with a paragraph that summarises what follows. Start at the first heading or the first real instruction. Cut "A component can come into your project three ways" if three subsections already say so.
-- **Say it once.** Drop benefit-restatements and editorialising. "Components are automatically imported only when used" stands alone.
-- **Give instruction, not mechanism.** Reader needs what to do, not internals. Let code examples carry detail.
-- **Describe system behaviour in passive, focused on thing acted on.** "Components are automatically imported only when used."
-- **Anthropomorphise tools, address reader as "you".** Light usage guidance is fine; don't characterise reader.
-- **Imperative steps are welcome here**, unlike longform. Keep them free of padding.
-- **Code-block lead-ins must add information, not announce the code.** Keep where-to-use context; cut lines that only say a snippet follows.
-- **Concrete contrast lands abstract ideas.** "Rather than asking for 'purple 800', components ask for 'the primary fill'."
-- **Use the docs' own components and conventions, not raw HTML.** External links through the project's link component (e.g. `<link-tag external>`), package and technical names in `<code>`.
+- **Neutral product voice** — subject is "the library", "the component", never "I"/"we"
+- **No scene-setting intros** — start at the first heading or instruction. Cut summaries if subsections already detail them
+- **Say it once** — drop benefit-restatements and editorialising
+- **Instruction, not mechanism** — reader needs what to do, not internals
+- **System behaviour in passive** — "Components are automatically imported only when used"
+- **Anthropomorphise tools; address reader as "you"** — light guidance only, don't characterise
+- **Imperative steps are fine** — keep free of padding
+- **Code-block lead-ins add information, not announce** — keep context; cut lines that only say a snippet follows
+- **Concrete contrast lands abstract ideas** — "Rather than asking for 'purple 800', ask for 'the primary fill'"
+- **Use the docs' components and conventions** — external links via the project's link component, technical names in `<code>`

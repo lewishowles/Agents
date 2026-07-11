@@ -11,7 +11,7 @@ Design public contract before internals: props, slots, emits, `v-model`, `define
 - Treat renaming/removing prop, slot, event, model, or exposed method as breaking.
 - Public option needs real outside caller. If only current wrapper can supply it, keep it internal or redesign.
 - Write minimal caller example first. If example needs framework internals, it is not public API.
-- **Prefer generic, composable-exposed APIs over hardcoded special-casing.** Expose an identifier or ref (e.g. a generic `focusId`) rather than baking component-specific knowledge (e.g. a hardcoded field name or element type) into the component. First drafts that hardcode component-specific behaviour should be pushed back on in favour of a generic, caller-controlled alternative.
+- **Prefer generic, composable-exposed APIs over hardcoded special-casing.** Expose identifiers/refs (e.g. `focusId`) not component-specific knowledge (field names, element types). Push back on drafts that hardcode behaviour in favour of caller control.
 
 ## Props
 
@@ -21,7 +21,7 @@ Design public contract before internals: props, slots, emits, `v-model`, `define
 - Avoid prop pairs that can drift apart; use one structured prop when values belong together.
 - Do not add props for content that belongs in slots.
 
-Follow Vue prop JSDoc rule. Describe what consumers pass, not internal use.
+Follow Vue prop JSDoc: describe consumer inputs, not internals.
 
 ## Slots
 
@@ -54,7 +54,7 @@ Require explicit `<template #name>` for named slots, as covered by Vue skill.
 - Expose methods only for imperative actions props/slots/events cannot express cleanly.
 - Keep exposed methods narrow: `focus()`, `open()`, `close()`, `reset()`.
 - Do not expose internal refs, stores, query state, or implementation helpers.
-- Document why imperative API exists when declarative API would look plausible.
+- Document why imperative exists when declarative seems plausible.
 
 ## Review checklist
 

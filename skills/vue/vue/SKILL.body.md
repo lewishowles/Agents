@@ -4,11 +4,11 @@
 
 - Tab HTML indentation
 - Always self-close where possible (`<img />`, `<component />`)
-- Prefer `v-bind="{ prop: value }"` for variable/expression bindings, especially multiple bindings
-- Use regular attributes for literal strings, including classes and ARIA values: `class="..."`, `aria-live="polite"`
+- Use v-bind object syntax for variables/expressions, especially multiple
+- Use regular attributes for literals: class="...", aria-live="polite"
 - Lowercase component names in templates
 - Always two-word component names
-- Max 5 attributes per line (single); 1 per line (multiline)
+- Max 5 attributes (single line); 1 per line (multiline)
 - Import groups: destructurable → non-destructurable → Components; blank line between
 - Always wrap named slot content in explicit `<template #name>`; never pass bare named-slot content
 
@@ -18,11 +18,11 @@
 
 ## Reactivity
 
-- Prefer `ref()` over `reactive()`. Refs destructure safely and make `.value` mutations explicit
-- Use `reactive()` only when object identity and deep object ergonomics matter
+- Prefer ref() (destructures safely, explicit .value)
+- Use reactive() only for deep object identity/ergonomics
 - Do not destructure reactive objects unless using `toRefs()` or `storeToRefs()`
-- Use `shallowRef()` for large objects, fetched payloads, component/library instances, maps, charts, editors, and values not needing deep reactivity
-- Use `markRaw()` for external class instances or third-party objects Vue should not proxy
+- Use shallowRef() for large/fetched objects, components, maps, charts, editors
+- Use markRaw() for external classes/third-party objects
 - Prefer VueUse composables before writing custom browser/reactive utilities
 
 ## Props
@@ -50,7 +50,7 @@ const props = defineProps({
 
 ### Prop bindings
 
-Prefer object `v-bind` over `:` shorthand for variable/expression bindings. Use `v-model` for two-way bindings — do not replace it with explicit `v-bind` + `@update:model-value`:
+Use v-bind object syntax for variables. Use v-model for two-way bindings (not v-bind + @update:model-value):
 
 ```vue
 <!-- ✓ -->
@@ -67,10 +67,10 @@ Prefer object `v-bind` over `:` shorthand for variable/expression bindings. Use 
 
 ## Computed properties
 
-- Non-simple computed: multiline with blank lines around
-- Order: variables and single-line computed, then multi-line computed, then functions
-- Every computed property gets single-line comment explaining what it represents
-- Computed properties must be pure: no API calls, mutations, timers, or async side effects
+- Multiline computed: blank lines around
+- Order: single-line, multiline, then functions
+- Single-line comment for each computed property
+- Pure only: no API calls, mutations, timers, async
 - Use computed values for filtered/sorted lists and complex class maps
 - Copy arrays before sorting or reversing inside computed values
 
@@ -90,7 +90,7 @@ const displayDate = computed(() => {
 
 ## Component registration
 
-Favour local, per-file imports over global registration. Global registration prevents tree-shaking — unused components bundle regardless. Auto-import via Vite plugin (e.g. `unplugin-vue-components`) is preferred: components resolve on demand, stay tree-shakeable, need no manual imports or `app.component()` calls. Use `app.component()` only for genuinely app-wide primitives where the trade-off is deliberate and documented.
+Use local imports (tree-shakeable). Auto-import via Vite plugin (e.g., unplugin-vue-components) preferred. Global registration only for genuinely app-wide primitives.
 
 ## Component patterns
 
@@ -100,9 +100,9 @@ Favour local, per-file imports over global registration. Global registration pre
 
 ## provide / inject
 
-- Key by provider component name: `provide("dropdown-menu", { selectMenuItem })`
-- Provide object, not bare value — keeps related functionality under one key and additions non-breaking
-- At inject site, destructure with empty object default: `const { selectMenuItem } = inject("dropdown-menu", {})`
+- Key by component name: provide("dropdown-menu", { selectMenuItem })
+- Provide object (not bare value) for extensibility
+- Destructure with empty object default: const { selectMenuItem } = inject("dropdown-menu", {})
 
 ## Component organisation
 
@@ -120,16 +120,16 @@ Favour local, per-file imports over global registration. Global registration pre
 
 ## Conventions
 
-- Named exports for composables and utilities — `export function useX` not `export default function useX`
-- Named functions for component methods; arrow functions only for inline handlers/callbacks
-- Do not combine `v-if` and `v-for` on the same element — filter with a computed value or wrap in `<template>`
-- Treat `v-html` as a security risk. Use only with trusted, sanitised content
-- Avoid dynamic Tailwind class strings that prevent class detection. Map states to complete class names
+- Named exports for composables (not default)
+- Named functions for methods; arrow only for inline handlers
+- Avoid v-if + v-for together; use computed or <template>
+- v-html is security risk; use only with trusted, sanitised content
+- Avoid dynamic Tailwind strings; map to complete class names
 - In Markdown docs, do not place a literal `</script>` inside Vue SFC code fences if the renderer may parse it as HTML. Escape or split the closing tag.
 
 ## File-based routing
 
-Vue Router file-based routing generates routes from `src/pages/`; file path is URL. Requires build plugin.
+File-based routing: file path = URL from src/pages/. Requires build plugin.
 
 ```
 src/pages/
@@ -143,11 +143,11 @@ src/pages/
     └── [userId].vue        → /users/:userId
 ```
 
-- Avoid `index.vue` — use route groups like `(home).vue` for meaningful names
+- Avoid index.vue; use groups like (home).vue for clarity
 - Name params explicitly: `[userId]` not `[id]`
 - Optional params: `[[slug]].vue` matches with/without segment
-- Catch-all: `[...path].vue` matches any remaining path including slashes
-- `definePage()` inside a page component sets per-route `meta`, `name`, or `alias`
+- Catch-all [...path].vue matches remaining path (including slashes)
+- definePage() sets per-route meta, name, or alias
 
 ```vue
 <!-- src/pages/users/[userId].vue -->
@@ -164,7 +164,7 @@ definePage({
 
 ## Advanced patterns
 
-Fragment composition, composables as global state, computed chains, reusable templates, dynamic slots, skeleton loaders, Pinia setup store, keep-alive, Suspense, Teleport, v-memo, watch/watchEffect: see [references/advanced-patterns.md](references/advanced-patterns.md).
+See [references/advanced-patterns.md](references/advanced-patterns.md) for fragment composition, advanced patterns, Suspense, Teleport, etc.
 
 ## Completion
 

@@ -24,7 +24,7 @@ For cross-file renames or moves spanning many files, consider Serena MCP (see [d
 
 ## Module structure vocabulary
 
-Use these terms for structural changes. Consistent language avoids ambiguity.
+Use these terms for structural changes to avoid ambiguity.
 
 - **Module** — anything with interface and implementation: function, class, composable, package, slice. Scale-agnostic.
 - **Interface** — everything caller must know to use module correctly: type signatures, invariants, ordering constraints, error modes, config. Not just TypeScript type.
@@ -55,9 +55,7 @@ Use this when the user asks where code should live, whether a helper should exis
 
 ## Technical debt triage
 
-Use this to assess what to address, not during active refactor.
-
-For JS/TS projects, run `fallow health` before triaging to get a structured report of dead code, duplication, complexity hotspots, and boundary violations. The fallow skill provides CLI commands with JSON output for machine-readable results.
+For JS/TS projects, run `fallow health` before triaging for a structured report of dead code, duplication, complexity hotspots, and boundary violations.
 
 ### Categories
 

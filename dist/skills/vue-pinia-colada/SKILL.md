@@ -46,7 +46,7 @@ import { PiniaColadaDevtools } from "@pinia/colada-devtools";
 
 ## Default conventions
 
-Use Pinia Colada for server state, not transport. Keep API clients focused on HTTP/Xano/fetch; put cache keys, query options, mutations, and wrappers under `src/queries/`.
+Use Colada for server state (not transport layer). Isolate API clients; keep cache keys and query logic in `src/queries/`.
 
 Prefer feature folders once a resource has queries and mutations:
 
@@ -57,7 +57,7 @@ src/queries/auth/
 └── login.js          # Login mutation + useAuth()
 ```
 
-Components import from the feature folder, not implementation files:
+Import from feature folders, not implementation files:
 
 ```js
 import { useAuth, useCurrentUser } from "@/queries/auth";
@@ -78,11 +78,12 @@ const currentUser = useQuery(() => ({
 ```
 
 Mental model:
+
 - `currentUserQueryOptions` — reusable recipe: key + fetcher
 - `currentUser` — live query state from `useQuery()`
 - `userDetails` — derived data object exposed to components
 
-Use wrappers when they remove repeated setup or expose derived values. Use route middleware for access decisions, not data preloading: for auth, prefer token-only guard; components/layouts calling `useCurrentUser()` activate query when `enabled` is true.
+Wrappers: use when removing repeated setup or exposing derived values. Auth: prefer token guards; use route middleware for access decisions, not preloading. Activate queries in components via enabled flag.
 
 ## Key factories
 
@@ -97,7 +98,7 @@ export const CONTACT_KEYS = {
 };
 ```
 
-Invalidating `CONTACT_KEYS.root` invalidates every contacts query. Invalidating `CONTACT_KEYS.byId(id)` invalidates that contact and notes.
+Invalidating `CONTACT_KEYS.root` invalidates all contacts queries; `CONTACT_KEYS.byId(id)` invalidates that contact and notes.
 
 For singleton resources, keep keys simple:
 
@@ -117,11 +118,11 @@ export const ALERT_KEYS = {
 
 ## API patterns
 
-Use **[references/api.md](references/api.md)** when choosing between `defineQueryOptions`, `useQuery`, `useMutation`, `defineMutationOptions`, `defineMutation`, `defineQuery`, `refresh()`, `refetch()`, `state`, and `asyncStatus`.
+Consult **[references/api.md](references/api.md)** when choosing between `defineQueryOptions`, `useQuery`, `useMutation`, `defineMutationOptions`, `defineMutation`, `defineQuery`, `refresh()`, `refetch()`, `state`, and `asyncStatus`.
 
 ## Active queries
 
-Query is active while live Vue code uses it through `useQuery()` or wrapper. Invalidating active query refetches; inactive query becomes stale for next use.
+Active query: used by live Vue code via `useQuery()` or wrapper. Invalidation triggers refetch; inactive becomes stale.
 
 ## Folder structure
 
@@ -137,6 +138,7 @@ src/
 ```
 
 State management responsibilities:
+
 - **Pinia stores** — UI state, user preferences, app-wide flags
 - **Pinia Colada** — server data: fetching, caching, revalidation
 - **Plain composables** — local shared state that doesn't need caching

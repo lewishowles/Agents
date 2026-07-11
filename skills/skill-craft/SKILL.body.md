@@ -16,15 +16,15 @@ If any of the three fails, extend an existing skill or discard the idea.
 
 1. Name the failure mode — one sentence: what does the model do wrong today that this skill would correct?
 2. Verify it's repeated — more than once, in different sessions or projects.
-3. Check for existing coverage — `rg -r "skills/" -l "<keyword>"` before creating anything new.
-4. Define the trigger — what user phrase or task type fires this skill? Triggers should be specific enough to avoid misfires, broad enough to catch the real cases.
+3. Check for existing coverage — `rg "skills/" -l "<keyword>"` before creating anything new.
+4. Define the trigger — what user phrase or task type fires this skill? Specific enough to avoid misfires, broad enough to catch real cases.
 
 ## Design
 
-1. **State the contract** — what will an agent reliably do differently after loading this skill? Write it as one invariant sentence before drafting the body.
-2. **Choose structure** — ordered checklists for procedural workflows; bullet lists for independent constraints; avoid prose paragraphs for anything that needs to be followed step-by-step.
-3. **Write do-not-use-when** — at least one exclusion clause. Overly broad trigger coverage creates false positives that waste context.
-4. **File-triggered vs. prompt-triggered** — file-triggered loads on every edit of matching file types; prompt-triggered loads when trigger phrases appear. Use file-triggering only when the skill should apply to every edit of those types, not just when the user mentions a topic.
+1. **State the contract** — what will an agent reliably do differently after loading this skill? Write as one invariant sentence.
+2. **Choose structure** — ordered checklists for workflows; bullets for independent constraints; avoid prose for step-by-step instructions.
+3. **Write do-not-use-when** — at least one exclusion. Broad trigger coverage creates false positives.
+4. **File-triggered vs. prompt-triggered** — file-triggered loads on every edit of matching types; prompt-triggered loads when phrases appear. File-triggering applies to every edit of those types, not just mentions.
 
 ## Build
 
@@ -35,14 +35,14 @@ If any of the three fails, extend an existing skill or discard the idea.
 
 ## Eval
 
-After writing or materially changing a skill, run these six checks without re-reading the skill body:
+After writing or materially changing a skill, run these checks without re-reading the skill body:
 
-1. **Recall test** — without re-reading, answer: what does an agent do differently after loading this skill? If the answer is vague, the body is too abstract.
-2. **Misfire test** — imagine the trigger phrase arriving with no skill loaded. Does the model handle it correctly anyway from training? If yes, the skill is likely redundant.
-3. **Scope test** — does the skill cover more than one coherent domain? Each section should belong to one job description. Split if not.
-4. **Checklist test** — find any prose instruction paragraph. Can it be rewritten as a numbered list without losing meaning? If yes, do it — checklists are more reliably followed than prose.
-5. **Minimality test** — could the same behavioural change be achieved with fewer tokens? If a shorter version would work, the skill is over-specified. The model often needs permission or instruction, not a tutorial.
-6. **Behaviour-trap test**: for high-impact guidance, write one tiny prompt or fixture that used to trigger the failure. Confirm the updated skill changes the next action, not just the wording. Keep the trap near the changed source or note why it is not worth keeping.
+1. **Recall test** — without re-reading: what does an agent do differently? Vague answer means body is too abstract.
+2. **Misfire test** — would the model handle the trigger phrase correctly without this skill? If yes, the skill is likely redundant.
+3. **Scope test** — does it cover multiple coherent domains? Each section should be one job. Split if not.
+4. **Checklist test** — can any prose instruction paragraph become a numbered list without loss? Checklists are more reliable.
+5. **Minimality test** — could the same change be achieved with fewer tokens? Over-specified skills waste context. Permission or instruction often suffices.
+6. **Behaviour-trap test** — for high-impact guidance, write one tiny prompt that triggers the failure. Confirm the skill changes the next action, not wording. Keep it near the source or note why it's not worth keeping.
 
 ## Skill vs. rule boundary
 

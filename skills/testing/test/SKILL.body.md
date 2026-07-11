@@ -14,7 +14,7 @@
 
 More tests at bottom: fast, isolated, cheap. Fewer at top: slow, realistic, expensive.
 
-When `.agent/scripts/project-diagnostics.py` exists, it is the default way to run tests — not raw CLI commands. Use `--list` before choosing verification. Prefer `--check <name>` for narrowest useful layer; reserve `--all` for user-approved broad checks.
+Use diagnostics script: `.agent/scripts/project-diagnostics.py --list` to choose verification. Prefer `--check <name>` for the narrowest layer; reserve `--all` for user-approved broad checks.
 
 ## What to test at each layer
 
@@ -30,19 +30,19 @@ When `.agent/scripts/project-diagnostics.py` exists, it is the default way to ru
 
 Use this when deciding where coverage belongs:
 
-| System type | Useful coverage |
-| ----------- | --------------- |
-| API endpoints | Unit-test business rules; integration-test HTTP contracts, auth failures, validation, and error responses |
-| Data pipelines | Validate inputs, transformations, idempotency, retry behaviour, and corrupt or partial data |
-| Frontend | Cover composables, component interactions, accessibility states, and critical user journeys |
+| System type    | Useful coverage                                                                                                         |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| API endpoints  | Unit-test business rules; integration-test HTTP contracts, auth failures, validation, and error responses               |
+| Data pipelines | Validate inputs, transformations, idempotency, retry behaviour, and corrupt or partial data                             |
+| Frontend       | Cover composables, component interactions, accessibility states, and critical user journeys                             |
 | Infrastructure | Prefer smoke tests, config validation, rollback rehearsal, and monitoring checks over brittle implementation assertions |
 
 ## What to skip
 
-- Methods that delegate entirely to `@lewishowles/helpers` — the library has its own tests
-- Implementation details: internal refs, private methods, component structure users cannot see
-- Framework behaviour: Vue's reactivity system, Vitest's mock machinery
-- Rendered DOM structure for its own sake — test what it communicates, not which tag was used
+- Methods delegating entirely to `@lewishowles/helpers` — tested there.
+- Implementation details: internal refs, private methods, hidden structure.
+- Framework behaviour: Vue reactivity, Vitest machinery.
+- Rendered DOM structure for its own sake — test what it communicates, not tag choice.
 
 ## TDD workflow
 
@@ -62,16 +62,16 @@ Use for new behaviour, especially composables and helpers.
 
 ## When to write tests after the fact
 
-TDD is not always feasible for existing bugs, exploratory work, or spikes. In those cases:
+TDD isn't always feasible for existing bugs, spikes, or exploration. Instead:
 
-- Write a failing test that reproduces the bug _before_ fixing it (even for bug fixes)
-- Add tests for touched paths when refactoring
-- Prioritise tests for code that has broken before or is frequently changed
+- Write a failing test that reproduces the bug _before_ fixing it.
+- Add tests for touched paths when refactoring.
+- Prioritise tests for code that has broken before or changes frequently.
 
 ## Coverage
 
-Coverage measures what ran, not what was verified. 100% with weak assertions is worse than 70% with sharp ones. Cover:
+Coverage measures execution, not verification. 100% with weak assertions is worse than 70% with sharp ones. Cover:
 
-- All happy paths
-- Key unhappy paths (invalid input, network failure, empty state)
-- Boundary conditions (0, 1, many; empty string; null/undefined)
+- All happy paths.
+- Key unhappy paths: invalid input, network failure, empty state.
+- Boundary conditions: 0, 1, many; empty string; null/undefined.

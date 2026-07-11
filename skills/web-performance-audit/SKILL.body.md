@@ -4,12 +4,12 @@ Standalone performance review of a page, PR, or app — distinct from building p
 
 ## Scope reality
 
-There is no single command that audits "the whole codebase" for performance. Two different kinds of check exist, and they don't combine into one:
+No single command audits "the whole codebase" — two check types exist and don't combine:
 
-- **Static checks** — anti-patterns visible in source (missing image dimensions, no lazy-loading, missing `font-display`, synchronous route imports). These are fast, deterministic, and genuinely whole-repo: a handful of `rg` searches cover the entire codebase in seconds.
-- **Live checks** — Core Web Vitals (LCP, CLS, INP) only exist for a rendered page under real network/CPU conditions. Lighthouse audits one URL at a time against a running build. Auditing "the whole app" means picking the key pages or routes to run it against, the same way an accessibility audit picks target pages rather than claiming to cover everything at once.
+- **Static checks** — anti-patterns in source (missing image dimensions, no lazy-loading, missing `font-display`, synchronous route imports). Fast, deterministic, whole-repo: a few `rg` searches cover everything in seconds.
+- **Live checks** — Core Web Vitals (LCP, CLS, INP) exist only for rendered pages under real network/CPU. Lighthouse runs one URL at a time. "The whole app" means picking key pages/routes, as accessibility audits pick target pages.
 
-Confirm which pages matter before running live checks — home, highest-traffic routes, and anything the user flags — rather than guessing at full coverage.
+Identify which pages matter before running live checks — home, highest-traffic routes, user-flagged — not guesses at full coverage.
 
 ## Quick triage (PR / single page)
 
@@ -31,23 +31,21 @@ rg -n -B2 '@font-face' -g '*.css' -g '*.scss' | rg -L 'font-display'
 rg -n 'component:\s*\(\)\s*=>\s*import' -g 'router*' -g 'routes*'
 ```
 
-A hit isn't automatically wrong (a hero LCP image legitimately skips `loading="lazy"`) — check each against the `web-performance` skill's guidance before flagging it.
+Not all hits are wrong (hero LCP images legitimately skip `loading="lazy"`). Check each against `web-performance` guidance before flagging.
 
 ### 2. Live check
 
-Ask the user to run Lighthouse against the affected page (production build, not dev — dev numbers are unreliable):
+Ask user to run Lighthouse against the affected page (production build only — dev numbers are unreliable):
 
 ```bash
 npx lighthouse <url> --view
 ```
 
-Or DevTools → Lighthouse → run in Incognito.
+Or DevTools → Lighthouse → run in Incognito. If triage precedes planned fixes, record the date, tool, and build/cache conditions with the score — the baseline the fair-comparison check below will need.
 
-If this triage happens before planned fix work rather than after it, record the date, tool, and build/cache conditions alongside the score — this is the "before" baseline the fair-comparison check below will need once the fix lands.
+### 3. Compare fairly
 
-### 3. Fair-comparison check
-
-If the PR claims a measured improvement, confirm before/after numbers used the same page state, cache state, and throttling profile. A faster number from a warmed cache or a narrower test isn't a real improvement (see `code-review` skill).
+For claimed improvements, confirm before/after used same page state, cache state, and throttling. Warmed-cache or narrower-test gains aren't real (see `code-review`).
 
 ### Triage output
 
@@ -71,13 +69,13 @@ If the PR claims a measured improvement, confirm before/after numbers used the s
 
 ## Full audit
 
-Systematic pass across an app's key pages, with a report suitable for a client or stakeholder.
+Systematic review of key pages, with a client-ready report.
 
 ### 1. Confirm scope
 
-- Target pages or routes (home, highest-traffic, anything the user flags) — not "everything"
-- Whether a production build is available to test against, or one needs building first
-- Whether historical CrUX field data exists (PageSpeed Insights) alongside lab data
+- Target pages/routes (home, highest-traffic, user-flagged) — not "everything"
+- Production build available to test, or needs building?
+- Historical CrUX field data (PageSpeed Insights) alongside lab data?
 
 ### 2. Static baseline
 
@@ -85,15 +83,15 @@ Run the quick-triage static scan across the whole repo, not just touched files.
 
 ### 3. Live measurement per page
 
-For each target page, run Lighthouse (or `lhci autorun` if CI is set up — see [references/measurement.md](../web-performance/references/measurement.md)) and record LCP, CLS, and INP against the targets in the `web-performance` skill.
+For each target page, run Lighthouse (or `lhci autorun` if CI is set up — see [references/measurement.md](../web-performance/references/measurement.md)) and record LCP, CLS, INP against `web-performance` targets.
 
-If this audit precedes planned fix work, this measurement is the baseline: record the date, tool, and build/cache conditions alongside each score, not just the number. A later "after" comparison is only defensible if it can match this method (see the fair-comparison check in `code-review`).
+If this audit precedes planned fixes, record date, tool, build/cache conditions alongside each score — not just numbers. Later "after" comparisons are defensible only if they match this method (see `code-review`).
 
-### 4. Bundle check
+### 4. Check bundle
 
-Run the bundle visualiser (`rollup-plugin-visualizer`) and note any unexpectedly large chunks or missing code-splitting at route boundaries.
+Run `rollup-plugin-visualizer` and note unexpectedly large chunks or missing code-splitting at route boundaries.
 
-### 5. Map findings to severity
+### 5. Severity map
 
 | Severity     | Definition                                           |
 | ------------ | ---------------------------------------------------- |

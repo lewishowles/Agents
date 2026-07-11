@@ -17,13 +17,13 @@ related-skills:
 ---
 # Library release
 
-Conservative release guardrails for `@lewishowles/components`, `@lewishowles/helpers`, `@lewishowles/testing`, `@lewishowles/cli-style`, and `@lewishowles/lint-config`. Inspect current repo process first; preserve explicit approval for irreversible steps.
+Conservative release guardrails for `@lewishowles/components`, `@lewishowles/helpers`, `@lewishowles/testing`, `@lewishowles/cli-style`, and `@lewishowles/lint-config`. Inspect current repo process first; require explicit approval for irreversible steps.
 
 ## Release stance
 
 - Release the smallest coherent change set
 - Decide semver from user-facing impact, not code volume
-- Use existing package scripts/docs; don't invent release tooling unless asked
+- Use existing package scripts and docs; don't invent tooling unless asked
 - Keep publish, tag, push, and registry actions as explicit confirmation points
 - Record release rough edges instead of baking in workarounds
 
@@ -53,14 +53,14 @@ When unsure between bumps, name uncertainty and ask before editing version files
 
 ## Step 3 — prepare notes
 
-Write changelog/release notes before publishing. Include only externally relevant changes:
+Write changelog and release notes before publishing. Include only externally relevant changes:
 
 - Breaking changes and migration notes
-- New APIs, components, helpers, props, slots, or options
+- New APIs, components, helpers, props, slots, options
 - Fixes users may notice
 - Deprecations and follow-up timing
 
-Do not include internal refactors unless they explain consumer-visible behaviour.
+Don't include internal refactors unless they explain consumer-visible behaviour.
 
 ## Step 4 — verify locally
 
@@ -77,18 +77,18 @@ If useful check is missing, mention gap rather than inventing release blocker.
 
 ## Step 5 — validate likely consumers
 
-For releases that can affect consumers, test at least one realistic downstream path before publishing. This applies when the release changes public APIs, exports, CLI behaviour, generated output, styling contracts, package metadata, or documented setup.
+For releases affecting consumers, test at least one realistic downstream path before publishing. This applies when the release changes public APIs, exports, CLI behaviour, generated output, styling contracts, package metadata, or documented setup.
 
 Use local process first:
 
-- Identify known consumers from package metadata, import searches, repo docs, existing boilerplate baselines, and user-provided repo lists
-- Include `~/Dev/Repositories/Packages/boilerplate` when the change affects future project scaffolding or shared defaults
-- Use package dry-run or pack commands when the package tooling supports them
-- Install an unpublished package into a consumer repo only after explicit user approval
-- Run the consumer repo's documented diagnostics, preferring its diagnostics wrapper when present
-- Record which consumers were checked and which were skipped, with the reason
+- Identify known consumers from package metadata, import searches, repo docs, boilerplate baselines, user-provided lists
+- Include `~/Dev/Repositories/Packages/boilerplate` when change affects future scaffolding or shared defaults
+- Use package dry-run or pack commands when supported
+- Install unpublished packages into consumer repos only after explicit user approval
+- Run consumer repo's documented diagnostics, preferring diagnostics wrapper when present
+- Record which consumers checked and which skipped, with reason
 
-Skip this step for docs-only, metadata-only, or internal patch releases unless there is a plausible consumer impact. If no consumer can be checked locally, report that gap before publishing rather than treating local package tests as complete release proof.
+Skip this step for docs-only, metadata-only, or internal patch releases unless plausible consumer impact exists. If no consumer can be checked locally, report that gap before publishing; local package tests don't prove release completeness.
 
 ## Step 6 — inspect publish contents
 
@@ -123,7 +123,7 @@ Report:
 - Package and version released
 - Verification run
 - Downstream consumers checked or explicitly skipped
-- Publish/tag/release status
-- Any release-process rough edges worth fixing later
+- Publish, tag, release status
+- Any release-process rough edges worth fixing
 
-Do not update consuming projects unless user asks; use `library-update` for follow-up.
+Don't update consuming projects unless user asks; use `library-update` for follow-up.

@@ -48,11 +48,11 @@ watch(
 
 - Remove event listeners, timers, and subscriptions on unmount or route change
 - Stop watchers created outside component setup scopes
-- Do not rely on `beforeRouteEnter` having component `this`; use Composition API guards where possible
+- Avoid beforeRouteEnter; use Composition API guards instead
 
 ## Accessibility
 
-- Move focus to page heading or main region after route changes when app does not fully reload
+- Move focus to main region/heading after route changes (when not fully reloading)
 - Update document titles from route metadata or page setup
 - Preserve meaningful browser history for user-triggered navigation
 

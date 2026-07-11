@@ -1,6 +1,6 @@
 # Bash and Python scripts
 
-Applies to standalone bash scripts and Python build/utility scripts. Keep both consistent.
+Standalone bash and Python scripts; keep both consistent.
 
 ## Shared conventions
 
@@ -31,11 +31,7 @@ Every script opens with `#` purpose comment after shebang. For build scripts, in
 
 ## Function comments
 
-Every function gets purpose comment and JSDoc-style `@param` lines before definition. Bash/Python use code-style parameter format:
-
-`# @param  {type}  name`
-
-Put description on next indented line, even for few words. Add blank `#` line between purpose and first `@param`.
+Every function: purpose comment + JSDoc-style `@param` lines. Use format `# @param  {type}  name`. Put description on indented next line, even brief ones. Add blank `#` before first `@param`.
 
 ```bash
 # Moves a file to its backup location and prints the backup path.
@@ -137,7 +133,7 @@ jq -r '.name // "unknown"' "$config_path"
 
 ## File existence checks
 
-Use `[[ -f path ]]` (or `[[ -d path ]]`) with an explicit branch, not a `&&` chain. A `&&` exits non-zero silently on any failure — not just a missing file — making it unreliable for existence conclusions.
+Use `[[ -f path ]]` or `[[ -d path ]]` with explicit branch, not `&&` chain. A `&&` exits silently on any failure (not just missing files), making it unreliable for existence checks.
 
 ```bash
 # Correct

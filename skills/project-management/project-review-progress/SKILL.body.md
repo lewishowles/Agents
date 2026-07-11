@@ -17,17 +17,17 @@ Don't invent requirements or recommend complexity for its own sake. Mark ideas d
 
 ## Startup
 
-Read in this order, stopping when you have enough context:
+Read in order, stopping when you have enough context:
 
 1. `<project-root>/AGENTS.md`
 2. `<project-root>/WORKSPACE.md`, when present
 3. `.agent/scripts/project-diagnostics.py --list`, when present
 4. `PROGRESS.md`
-5. Related specs, docs, source files, or generated-file facts only when `PROGRESS.md` references them or the review needs evidence
+5. Related specs, docs, source, or generated-file facts only when referenced or needed for evidence
 
-If `WORKSPACE.md` is missing, do not create it. Use `AGENTS.md`, package scripts, and nearby docs only as needed.
+Skip `WORKSPACE.md` if missing. Use `AGENTS.md`, package scripts, nearby docs as needed.
 
-Prefer codebase-memory tools for structural code questions when available. Use targeted file reads and searches; avoid broad generated, vendored, cached, build, dependency, coverage, or binary output.
+Prefer codebase-memory tools for structural questions. Use targeted reads; avoid generated, vendored, cached, build, dependency, coverage, or binary output.
 
 ## Review method
 
@@ -43,13 +43,13 @@ When reviewing content, challenge the plan rather than polishing only the file. 
 
 ## Judgement standards
 
-Prioritise recommendations by impact:
+Prioritise by impact:
 
-- **Must address** — plan gaps that risk incorrect work, broken verification, misleading commits, data loss, security issues, accessibility regressions, or blocked handoff
-- **Recommended** — changes that materially improve sequencing, scope, tests, docs, maintainability, or developer experience
-- **Optional** — broader or exploratory ideas that could raise quality but should not block current work
+- **Must address** — plan gaps risking incorrect work, broken verification, misleading commits, data loss, security, accessibility regressions, or blocked handoff
+- **Recommended** — changes improving sequencing, scope, tests, docs, maintainability, or developer experience
+- **Optional** — broader ideas that could raise quality but shouldn't block current work
 
-Be practical. Prefer small plan edits when they solve the problem. Recommend a new spec or ADR only when the existing plan cannot carry the context cleanly and the decision is durable, surprising, and trade-off driven.
+Be practical. Prefer small plan edits. Recommend a spec or ADR only when existing plan cannot carry context cleanly and decision is durable, surprising, and trade-off driven.
 
 ## Output
 

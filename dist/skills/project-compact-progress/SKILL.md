@@ -15,13 +15,13 @@ Reduce noisy or hard-to-scan `PROGRESS.md`. Cut words aggressively without losin
 
 ## What to preserve
 
-- `## Session handoff` — keep this at the top and make it accurate
-- Decisions, especially rationale that would otherwise be re-debated
-- Discoveries — unexpected findings that affect current or future work
-- Completed milestones: brief summary only; move detail to `## Archived milestones`
-- **Future roadmap sections with concrete task lists** — do not collapse to one-liner. If tasks are not done, detail is the point. Archive only once complete.
-- **Acceptance criteria** — constraints, not narrative. Preserve verbatim even when compressing nearby prose.
-- **Spec links** — preserve links from `PROGRESS.md` to specs and ensure each linked spec still explains why work matters.
+- `## Session handoff` — keep at top, make accurate
+- Decisions with rationale (prevent re-debate)
+- Discoveries — unexpected findings affecting current or future work
+- Completed milestones: brief summary; move detail to `## Archived milestones`
+- **Future roadmap with concrete tasks** — do not collapse to one-liner. Archive only when complete.
+- **Acceptance criteria** — preserve verbatim, even when compressing nearby prose
+- **Spec links** — preserve; ensure each explains why work matters
 
 ## What to remove
 
@@ -34,14 +34,14 @@ Reduce noisy or hard-to-scan `PROGRESS.md`. Cut words aggressively without losin
 
 ## Compression target
 
-Optimise for context density — reduce words, not meaning. Keep normal professional prose.
+Optimise for context density — reduce words, not meaning.
 
-- Prefer one precise sentence over a paragraph
-- Replace narrative history with outcome, evidence, and current implication
-- Collapse completed task lists into one outcome summary
-- Keep names, paths, commands, dates, decisions, risks, and blockers exact
-- Preserve enough context for next agent to continue without re-discovery
-- Do not make the file cryptic, jokey, or persona-driven
+- One precise sentence over a paragraph
+- Replace history with outcome, evidence, and implication
+- Collapse completed tasks to one summary
+- Keep names, paths, commands, dates, decisions, risks, blockers exact
+- Preserve enough context to continue without re-discovery
+- Avoid cryptic, jokey, or persona-driven wording
 
 ## What to rewrite
 
@@ -96,12 +96,12 @@ Spec files should keep this outline:
 
 ## Handoff-first format
 
-If file does not start with `## Session handoff`, create it above deeper sections. Agents read from top and stop after handoff when it gives enough context.
+If missing `## Session handoff`, create it at top. Agents read from top and stop after handoff when it has enough context.
 
 ```markdown
 ## Session handoff
 
-Read this section first. Stop after this section unless the task needs deeper context.
+Read first. Stop after this unless task needs deeper context.
 
 ### Current goal
 
@@ -111,15 +111,15 @@ Read this section first. Stop after this section unless the task needs deeper co
 
 ### Context
 
-Project-specific patterns, scaffold commands, or known constraints needed for next step. Omit if AGENTS.md and loaded skills are enough.
+Project-specific patterns, scaffold commands, constraints needed for next step. Omit if AGENTS.md and loaded skills suffice.
 
 ### Verify with
 
-Scoped command to confirm step completion. Single line; pipe through `tail -5` or equivalent. Omit if no automated check.
+Scoped command confirming step completion. Single line; pipe through `tail -5` or equivalent. Omit if no automated check.
 
 ### Stop here
 
-Only continue reading if the next step is unclear, the user asks for planning/review/history, or implementation needs decisions, discoveries, risks, or file lists below.
+Only continue if next step is unclear, user asks for planning/review/history, or implementation needs decisions/discoveries/risks/file lists below.
 ```
 
 ## Populating Context and Verify with

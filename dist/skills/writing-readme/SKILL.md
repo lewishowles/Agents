@@ -27,15 +27,15 @@ README job: help someone who just landed — what it is, why it exists, how to u
 ## Tone
 
 - Friendly, conversational, second-person ("you'll need…")
-- Short steps; concrete commands; no preamble before sections
+- Short steps and concrete commands; no preamble
 - Sentence-case headings (`## Getting started`, not `## Getting Started`)
 - UK spelling
 
-## Quick checklist before publishing
+## Before publishing
 
-- Can new reader run setup from clean machine using only this?
+- Can a new reader run setup from a clean machine using only this?
 - Platform assumptions stated explicitly?
-- Cut anything that doesn't help the average reader?
+- Cut anything that doesn't help the average reader
 
 ## Minimal structure
 

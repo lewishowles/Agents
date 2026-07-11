@@ -24,17 +24,17 @@ WCAG AA baseline; AAA where feasible. Inaccessible = incorrect. Covers blind/low
 ## Content & copy
 
 - **Clear language**: no jargon; assume zero context. Provide hints and links
-- **Descriptive links & buttons**: link text alone explains action. Not "Delete" — "Delete user Lewis Howles". Not "Learn more" — "Visit MDN docs for the `button` tag"
-- **Confirmation & reassurance**: show chosen option (e.g. plan name). Success messages use identifiable info: "User 'Lewis Howles' successfully deleted", not "User deleted"
-- **Vue components**: prefer `@lewishowles/components` before bespoke UI. Follow the Vue skill and check live component docs when available
+- **Descriptive links & buttons**: link text explains action alone. Not "Delete" — "Delete user Lewis Howles". Not "Learn more" — "Visit MDN docs for the `button` tag"
+- **Confirmation & reassurance**: show chosen option (e.g. plan name). Success messages use identifiable info: "User 'Lewis Howles' successfully deleted", not generic text
+- **Vue components**: prefer `@lewishowles/components`. Follow the Vue skill and check live component docs
 
 ## Documentation
 
-- Treat accessibility fixes as bug fixes, not announceable features
-- Don't update docs, README files, changelogs, or UI copy just to say something is accessible or "now does" accessible behaviour
-- Only update documentation when the user-facing workflow, API, configuration, or support guidance genuinely changed
+- Treat accessibility fixes as bug fixes, not features
+- Don't update docs or README just to say something is now accessible
+- Update documentation only when user-facing workflow, API, configuration, or support guidance changed
 
-Test: if a sighted developer using component normally needs to know it, document it. If it only explains accessibility mechanics, omit it.
+Test: if a sighted developer needs to know it, document it. If it only explains a11y mechanics, omit it.
 
 ```
 ❌ "Each option is labelled with a unit-aware string so screen readers announce meaningful names."
@@ -60,8 +60,8 @@ Test: if a sighted developer using component normally needs to know it, document
 
 ## Interaction
 
-- **Keyboard access**: every action works by keyboard. For drag-drop, provide button alternative. For focusable selectors, see code-style
-- **Visible focus**: show keyboard focus. Ring indicator, no outline removal. Delete in table? Move focus sensibly: next row, not page top
+- **Keyboard access**: every action works by keyboard. For drag-drop, provide button alternative. Focusable selectors: see code-style
+- **Visible focus**: show keyboard focus with ring indicator; never remove outline. After delete, move focus sensibly (next row, not page top)
 - **Focus after errors**: after failed form submission, move focus to the error summary or first invalid field
 - **Skip links**: `<a href="#main">Skip to main content</a>` with `<main id="main" tabindex="-1">`
 - **Motion**: respect `prefers-reduced-motion`. Guard animations: `@media (prefers-reduced-motion: reduce) { ... }`

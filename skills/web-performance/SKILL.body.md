@@ -8,7 +8,7 @@
 | **CLS** | < 0.1   | Layout shift from elements loading or resizing      |
 | **INP** | < 200ms | Responsiveness: time from interaction to next paint |
 
-Measure with Lighthouse (DevTools → Lighthouse) or [web.dev/measure](https://web.dev/measure). Ask user to run Lighthouse against production; dev numbers are unreliable.
+Measure with Lighthouse (DevTools → Lighthouse) or [web.dev/measure](https://web.dev/measure). Run against production only; dev numbers are unreliable.
 
 ## LCP
 
@@ -43,10 +43,10 @@ INP measures response time for clicks, taps, and keyboard input.
 
 ## Vue reactivity cost
 
-- Use `shallowRef` for large objects, fetched payloads, and library instances not needing deep reactivity
-- Avoid deeply reactive objects (`reactive({...})`) for data with many nested properties
-- Use `v-memo` on expensive list rows when the template is costly to re-evaluate
-- `defineAsyncComponent` to defer component initialisation until needed:
+- Use `shallowRef` for large objects, fetched payloads, library instances
+- Avoid `reactive({...})` for deeply nested data
+- Use `v-memo` on expensive list rows
+- Defer component init with `defineAsyncComponent`:
 
 ```javascript
 const HeavyChart = defineAsyncComponent(() => import("./heavy-chart.vue"));
@@ -54,13 +54,13 @@ const HeavyChart = defineAsyncComponent(() => import("./heavy-chart.vue"));
 
 ## Code splitting
 
-Vite splits at route boundaries with dynamic imports. Ensure route components use `defineAsyncComponent` or dynamic router imports:
+Vite splits at route boundaries with dynamic imports. Route components must use `defineAsyncComponent` or dynamic imports:
 
 ```javascript
 const routes = [{ path: "/dashboard", component: () => import("./views/dashboard.vue") }];
 ```
 
-Check bundles with `rollup-plugin-visualizer`; ask the user to run `bun run build --report` if configured.
+Check bundles with `rollup-plugin-visualizer` or `bun run build --report` if configured.
 
 ## Images
 
@@ -96,13 +96,13 @@ Prefer variable fonts over multiple static weights.
 
 ## GitHub Pages specifics
 
-- Hashed asset filenames get 1-year `Cache-Control` via CDN — Vite does this by default
-- `index.html` is short-lived — keep it small and don't inline critical data in it
-- No server-side rendering or edge caching — all optimisation is client-side
-- Use the `404.html` redirect trick for SPA routing (copy `index.html` to `404.html`)
+- Hashed asset filenames get 1-year `Cache-Control` via CDN (Vite default)
+- Keep `index.html` small; don't inline critical data
+- No server-side rendering or edge caching — client-side only
+- Use `404.html` redirect for SPA routing (copy `index.html` to `404.html`)
 
 For measurement tooling and Lighthouse CI setup, see [references/measurement.md](references/measurement.md).
 
-## Completion
+## Before handoff
 
-For UI-facing performance changes, run [the accessibility checklist](../accessibility/references/checklist.md) before handoff.
+For UI-facing performance changes, run [the accessibility checklist](../accessibility/references/checklist.md).

@@ -17,30 +17,30 @@ Add new work to existing plan. Insert where it belongs, not necessarily at the e
 
 Use `<project-root>/WORKSPACE.md` when present to choose verification commands, generated outputs, expensive checks, forbidden operations, and progress locations.
 
-When `<project-root>/.agent/scripts/project-diagnostics.py` exists, prefer diagnostics `--check <name>` in `Verify with` over raw package scripts. Use `--list` for names; use `--all` only when section needs broad verification and user agrees.
+When `<project-root>/.agent/scripts/project-diagnostics.py` exists, prefer `--check <name>` in `Verify with` over raw package scripts. Use `--list` for names; `--all` only when section needs broad verification and user agrees.
 
-Do not generate a missing workspace file just to add plan work. If missing, inspect `AGENTS.md`, package scripts, and nearby docs. If workspace context would materially improve the plan, mention the global command:
+Do not generate a missing workspace file. If missing, inspect `AGENTS.md`, package scripts, nearby docs. Mention this command if workspace context would materially improve the plan:
 
 ```sh
 agents:workspace --write
 ```
 
-Run only when user asks and `agents:workspace` exists in current shell.
+Run only when user asks and it exists in current shell.
 
 ## Workflow
 
 1. **Discuss** — clarify requirements, scope, and dependencies before editing `PROGRESS.md`
-2. **Risk triage** (opt-in, for unfamiliar or complex areas) — identify high-risk files before planning so the section can flag them:
-   - **Git churn**: `git log --oneline --since="1 month ago" -- <path> | wc -l` — files with high recent change frequency are defect-prone
-   - **Complexity**: large files or high function counts (use codebase-memory `search_graph` with degree filters, or `wc -l` as a proxy)
-   - **Fan-in**: high caller count = high blast radius. Use codebase-memory `search_graph(min_degree=10, relationship="CALLS", direction="inbound")` for the target area
-   - If any file scores high on two or more signals, note it in the section's **Risks** with a brief reason
-   - Skip for routine work, single-file changes, or areas you've recently worked in
-3. **Locate** — identify whether the work fits before, after, or between upcoming sections
-4. **Approach exploration** (opt-in) — for complex or ambiguous tasks, surface 2–3 structurally different approaches, each with a one-sentence tradeoff, then wait for the user to choose before continuing. Skip when: the task is a single-file change, there is clearly only one sensible approach, or the user has already decided. Do not combine approach selection with plan writing — present options first, write the section after confirmation.
-5. **Reorganise** — if the new work changes what's needed later, update upcoming sections to match
-6. **Insert** — add a section using standard structure: purpose, expected commit, model tier, files likely to change, tasks, risks, notes
-7. **Update parking lot** — move related ideas into the new section or leave them parked
+2. **Risk triage** (opt-in) — identify high-risk files before planning:
+   - **Git churn**: `git log --oneline --since="1 month ago" -- <path> | wc -l` — high recent change = defect-prone
+   - **Complexity**: large files or high function counts (use codebase-memory or `wc -l`)
+   - **Fan-in**: high caller count = high blast radius (use codebase-memory `search_graph(min_degree=10, relationship="CALLS", direction="inbound")`)
+   - Flag files high on two+ signals in **Risks**
+   - Skip for routine/single-file/familiar work
+3. **Locate** — identify placement relative to upcoming sections
+4. **Approach exploration** (opt-in) — for complex tasks, surface 2–3 approaches with tradeoffs; wait for user choice before writing. Skip single-file, obvious, or decided work. Present options first, write after confirmation.
+5. **Reorganise** — if new work changes later needs, update upcoming sections
+6. **Insert** — add section: purpose, expected commit, model tier, files likely to change, tasks, risks, notes
+7. **Update parking lot** — move related ideas into new section or leave parked
 
 ## Cross-repo work
 
@@ -59,13 +59,13 @@ For broad dependency questions, start with local evidence: package metadata, imp
 
 ## Placement principles
 
-- Insert before other upcoming sections if this work is a prerequisite
-- Split into two sections if the task spans more than one commit
-- Avoid appending by default; order reflects dependencies, not arrival
-- Treat each section with its own `### Expected commit` as an execution boundary
-- If asked to implement multi-section plan, implement only first incomplete section unless user explicitly asks for all chunks
-- After implementing one section, stop for review with changed files, verification performed, and the suggested commit message
-- Do not combine release code, repo policy, tooling, docs, and roadmap sections into one working-tree change unless the plan explicitly defines them as one expected commit
+- Insert before upcoming sections if this work is a prerequisite
+- Split into two sections if task spans multiple commits
+- Order by dependency, not arrival
+- Each section with `### Expected commit` is an execution boundary
+- When asked to implement multi-section plan, do only first incomplete section unless user asks for all
+- After one section, stop for review: changed files, verification, commit message
+- Do not combine release, policy, tooling, docs, roadmap into one working-tree change unless explicitly one commit
 
 ## Feature specs
 

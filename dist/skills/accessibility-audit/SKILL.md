@@ -17,7 +17,7 @@ WCAG 2.2 AA baseline; AAA where feasible. Choose mode by context.
 
 ## Quick triage (PR / pre-release)
 
-Fast check before release or PR merge. Not compliance audit.
+Fast pre-release check; not full compliance audit.
 
 ### Automated scan first
 
@@ -73,7 +73,7 @@ Or use Lighthouse: DevTools → Lighthouse → Accessibility.
 | Loading, empty, and error states checked, not just happy path |       |
 | Error states are announced, not just visually distinct        |       |
 
-These states are only checkable if the app exposes a way to reach them (seeded empty data, a throttled/failed network request, an existing Storybook or mock harness). Don't assume one exists: see [references/manual-checks.md](references/manual-checks.md#component-states) for how to tell what's actually reachable.
+These states are only checkable if reachable (seeded empty data, throttled/failed network, or existing mock harness). See [references/manual-checks.md](references/manual-checks.md#component-states) for what's reachable.
 
 ### Triage output
 
@@ -110,7 +110,7 @@ Systematic WCAG 2.2 AA audit with client-ready report.
 
 ### 2. Automated baseline
 
-Ask user to run axe, pa11y, or Lighthouse across in-scope pages. Automated tools catch roughly 30–50%; manually verify rest.
+Ask user to run axe, pa11y, or Lighthouse. Automated tools catch ~30–50%; manually verify rest.
 
 ### 3. Manual verification
 
@@ -123,7 +123,7 @@ Priority areas:
 - **Understandable**: error messages, form labels, consistent navigation, plain language
 - **Robust**: valid HTML, ARIA used correctly, works with screen readers
 
-Not every "manual" check needs a human. If browser tool access is available (Claude's built-in browser tools, or a browser MCP server such as Safari Technology Preview's), run the agent-assistable checks directly rather than only asking the user to do them by hand — keyboard traversal, focus order, contrast calculation, reflow at zoom, landmark/heading structure, and more. See [references/manual-checks.md](references/manual-checks.md) for which checks an agent can run directly, which need a human to confirm agent-surfaced signal, and which always need a human.
+Not every manual check needs a human. If browser access is available, run agent-assistable checks directly: keyboard traversal, focus order, contrast, reflow at zoom, landmark structure, etc. See [references/manual-checks.md](references/manual-checks.md) for what an agent can run directly vs. what needs human confirmation.
 
 Screen reader testing is the one category no browser MCP replaces — it needs real AT on a real device. For VoiceOver, NVDA, and JAWS commands, see [references/screen-reader-testing.md](references/screen-reader-testing.md).
 

@@ -6,12 +6,12 @@
 - Meaningful assertions over snapshots for volatile content
 - For JSON/serialised output, assert decoded structure or user-visible behaviour unless key order is a deliberate contract. Do not test standard encoder key order.
 - Separate test setup from assertions like separating variables from logic in JS — use a blank line between the action and any `expect()` calls
-- Keep imports at the top of the file
-- Test and group names are capitalised, human-readable, and self-contained; method/computed names may stay exact
-- Group tests by collection, e.g. "Initialisation", "Render contracts", "Computed", "Methods"
-- Static render contracts may live in unit tests when materially cheaper than browser tests and not needing layout, interaction, browser APIs, focus, keyboard behaviour, or timing. Use "Render contracts".
-- Keep interaction, layout-sensitive rendered state, browser API behaviour, focus movement, keyboard behaviour, and live-region timing in browser component tests.
-- When `.agent/scripts/project-diagnostics.py` exists, it is the default way to run unit tests — not raw CLI commands. Run `--list` to discover unit-test checks and `--check <name>` for the relevant one. For a specific fix, narrow the check with repeatable `--test-file <path>` or `--test-glob '<pattern>'` arguments. Quote glob patterns so diagnostics expands them safely. Ask the user for full suites or diagnostics `--all`.
+- Keep imports at the top.
+- Test and group names are capitalised, human-readable, and self-contained; method/computed names may stay exact.
+- Group tests by collection: "Initialisation", "Render contracts", "Computed", "Methods".
+- Static render contracts may live in unit tests when cheaper than browser tests and not needing layout, interaction, browser APIs, focus, keyboard, or timing. Use "Render contracts".
+- Keep interaction, layout-sensitive state, browser APIs, focus movement, keyboard, and live-region timing in component tests.
+- Use diagnostics script: `.agent/scripts/project-diagnostics.py --list` to discover checks, `--check <name>` for the relevant one. For fixes, narrow with `--test-file <path>` or `--test-glob '<pattern>'`. Ask the user for full suites or `--all`.
 
 ## Vue & Vitest
 
@@ -63,7 +63,7 @@ vi.mock("@vendor/sdk", () => ({
 ```
 
 - Clear or restore mocks in lifecycle hooks when handler state can leak between tests
-- Only promote a shared package helper when the abstraction does not need to know the mocked module path, export shape, SDK class shape, or composable return shape
+- Only promote a shared package helper when it doesn't need to know the mocked module path, export shape, SDK class, or composable return shape.
 
 For component, composable, helper, and `test.for` examples, see [references/examples.md](references/examples.md).
 

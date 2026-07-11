@@ -26,18 +26,18 @@ Look for bugs, regressions, incomplete work, weak tests, missing docs or plan up
 
 ## Startup
 
-Read in this order:
+Read in order:
 
 1. `<project-root>/AGENTS.md`
 2. `<project-root>/WORKSPACE.md`, when present
 3. `.agent/scripts/project-diagnostics.py --list`, when present
-4. `PROGRESS.md`, focusing on session handoff, active work, relevant risks, and the expected commit
+4. `PROGRESS.md` — session handoff, active work, relevant risks, expected commit
 5. `git status --short`
-6. The changed source files and relevant nearby context
+6. Changed files and relevant nearby context
 
-If `WORKSPACE.md` is missing, do not create it. Use `AGENTS.md`, package scripts, and nearby docs only as needed.
+Skip `WORKSPACE.md` if missing. Use `AGENTS.md`, package scripts, nearby docs as needed.
 
-Prefer codebase-memory tools for structural code questions when available. Use targeted file reads and searches; avoid broad generated, vendored, cached, build, dependency, coverage, or binary output.
+Prefer codebase-memory tools for structural questions. Use targeted reads; avoid generated, vendored, cached, build, dependency, coverage, or binary output.
 
 ## Skill routing
 
@@ -45,16 +45,16 @@ Always apply `code-review` standards. Load additional skills only when the touch
 
 ## Review method
 
-1. Identify the intended task from the user request, `PROGRESS.md`, branch name, and changed files.
+1. Identify intended task from user request, `PROGRESS.md`, branch name, changed files
 2. List changed files with `git status --short`. Do not stage or commit.
-3. Inspect each changed file enough to understand behaviour and risk. Do not rely on remembered line numbers; search for current locations before citing lines.
-4. Compare implementation with the plan: expected commit, active tasks, risks, notes, docs expectations, and verification guidance.
-5. Before calling docs drift, classify docs: current reference must match code; roadmap/target-state may describe future shape.
-6. Check whether generated files were edited directly or source/generated output is stale.
-7. Run only focused verification that is cheap and justified. When diagnostics exist, use `.agent/scripts/project-diagnostics.py --check <name>` rather than raw package commands.
-8. Lead with findings. If there are no must-fix issues, say so clearly and note any remaining verification gaps.
+3. Inspect each file to understand behaviour and risk. Search for current line locations; don't rely on memory.
+4. Compare implementation with plan: expected commit, active tasks, risks, notes, docs expectations, verification
+5. Classify docs: reference must match code; roadmap may describe future shape
+6. Check whether generated files were edited directly or source/generated output is stale
+7. Run only cheap, justified verification. Use `.agent/scripts/project-diagnostics.py --check <name>` when available
+8. Lead with findings. State clearly if no must-fix issues; note remaining verification gaps.
 
-Do not use `git diff` for routine self-review when you made the changes. For independent review of another agent's work, use targeted diffs or file reads when they are the clearest way to understand what changed, keeping output narrow.
+Don't use `git diff` for routine self-review. For independent review, use targeted diffs or file reads when clearest, keeping output narrow.
 
 ## Finding standards
 

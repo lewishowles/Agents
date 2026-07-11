@@ -11,22 +11,22 @@ do-not-use-when:
 ---
 # Library update check
 
-Check Lewis shared libraries for new releases, surface changes, and identify project updates needed.
+Check Lewis shared libraries for new releases, surface changes, and identify updates needed.
 
 ## Invocation
 
 ```
-/library-update              — check whichever libraries are present in package.json
-/library-update components   — check @lewishowles/components only
-/library-update helpers      — check @lewishowles/helpers only
-/library-update testing      — check @lewishowles/testing only
-/library-update cli-style    — check @lewishowles/cli-style only
-/library-update lint-config  — check @lewishowles/lint-config only
+/library-update              check libraries present in package.json
+/library-update components   check @lewishowles/components only
+/library-update helpers      check @lewishowles/helpers only
+/library-update testing      check @lewishowles/testing only
+/library-update cli-style    check @lewishowles/cli-style only
+/library-update lint-config  check @lewishowles/lint-config only
 ```
 
 ## Step 1 — determine which libraries to check
 
-If argument given, use it. Otherwise read `package.json` and check listed dependencies/devDependencies:
+If argument given, use it. Otherwise read `package.json` and check dependencies and devDependencies:
 
 - `@lewishowles/components`
 - `@lewishowles/helpers`
@@ -34,18 +34,18 @@ If argument given, use it. Otherwise read `package.json` and check listed depend
 - `@lewishowles/cli-style`
 - `@lewishowles/lint-config`
 
-If a known library is not present, still check whether the project or its generators contain boilerplate that the library is meant to replace. Report missing-library adoption separately from version updates. For example, a project without `@lewishowles/testing` might still need it if test setup or Boilersuit templates duplicate utilities it now provides.
+If a known library is not present, check whether the project or generators contain boilerplate the library replaces. Report missing-library adoption separately from version updates. For example, a project without `@lewishowles/testing` might still need it if test setup or Boilersuit templates duplicate utilities it provides.
 
-If no known libraries are present and no missing-library adoption opportunity applies, stop and say so.
+If no known libraries are present and no adoption opportunity applies, stop and say so.
 
 ## Step 2 — find the installed version
 
 For each library in scope:
 
-1. Read `package.json` to find the declared version constraint.
-2. Find the exact resolved version from the lockfile — check in order:
-   - `bun.lock` or `bun.lockb` — search for the package entry
-3. Use resolved version (e.g. `2.2.1`) as **installed version**.
+1. Read `package.json` to find the declared version constraint
+2. Find the exact resolved version from lockfile:
+   - `bun.lock` or `bun.lockb`: search for the package entry
+3. Use resolved version (e.g. `2.2.1`) as **installed version**
 
 ## Step 3 — find the latest release
 
@@ -65,36 +65,36 @@ If installed version matches latest release, report up to date and stop.
 
 ## Step 4 — fetch release notes for all versions between installed and latest
 
-Use npm package metadata and package contents before GitHub. For each newer version, ascending:
+Use npm package metadata and contents before GitHub. For each newer version, ascending:
 
 ```bash
 npm view @lewishowles/components@X.Y.Z description homepage repository readme --json
 npm pack @lewishowles/components@X.Y.Z --dry-run
 ```
 
-If npm metadata or package contents include release notes, changelog entries, or README release sections, collect those. If npm does not include enough release detail, ask the user for the release notes excerpt instead of using GitHub releases or GitHub Packages as the primary source.
+If npm metadata or package contents include release notes, changelog entries, or README sections, collect those. If insufficient, ask the user for release notes excerpt instead of GitHub releases or GitHub Packages.
 
 Identify:
 
 - **Breaking changes** — API removals, renamed props, changed defaults, removed exports
-- **Adoption opportunities** — helpers, components, composables, or test utilities that replace local boilerplate or make existing project code simpler
-- **New components or composables** — things the project might benefit from using where there is no current equivalent
+- **Adoption opportunities** — helpers, components, composables, test utilities replacing boilerplate or simplifying existing code
+- **New components or composables** — things the project might benefit from where no equivalent exists
 - **Bug fixes** — particularly for patterns the project already uses
 - **Deprecations** — things still working but flagged for removal
 
 ## Step 5 — scan the project and generators
 
-Scan project source (`src/`) and project-owned Boilersuit generators (`.boilersuit/generators/`) when present. Generators are starting points for future files, so treat stale imports, props, helper usage, and boilerplate there as adoption work even when generated output in the current project is already up to date.
+Scan project source (`src/`) and project-owned Boilersuit generators (`.boilersuit/generators/`) when present. Generators are starting points for future files, so treat stale imports, props, helper usage, and boilerplate there as adoption work even when current project output is up to date.
 
 Focus on:
 
 - Imports from `@lewishowles/components` or `@lewishowles/helpers`
 - Imports from `@lewishowles/testing` or `@lewishowles/cli-style`
-- Component names, prop names, composable names, and slot names that appear in the release notes
-- Any pattern the release notes flag as changed or removed
-- Local helpers, repeated boilerplate, custom test setup, CLI styling code, or generator templates that a newer shared library API now replaces
+- Component names, prop names, composable names, slot names in release notes
+- Patterns release notes flag as changed or removed
+- Local helpers, repeated boilerplate, custom test setup, CLI styling code, or templates a newer shared library replaces
 
-Use `rg` scoped to `src/` and `.boilersuit/generators/` when those directories exist:
+Use `rg` scoped to `src/` and `.boilersuit/generators/`:
 
 ```bash
 rg "@lewishowles/components" src/ --files-with-matches
@@ -104,11 +104,11 @@ rg "ComponentName" src/ -l   # repeat per affected component
 
 ## Step 6 — compare the boilerplate baseline
 
-Check `~/Dev/Repositories/Packages/boilerplate` after the current project scan. It is a baseline for future projects, not an automated freshness oracle.
+Check `~/Dev/Repositories/Packages/boilerplate` after the current project scan. It's a baseline for future projects, not an automated oracle.
 
-If the repo exists and is readable, inspect its relevant package files, source templates, and `.boilersuit/generators/` files for the same release-note patterns and adoption opportunities. Report improvements separately from the current project so the user can decide whether to update the boilerplate repo in another chunk.
+If the repo exists and is readable, inspect relevant package files, source templates, and `.boilersuit/generators/` files for the same patterns and adoption opportunities. Report improvements separately from the current project so the user can decide whether to update boilerplate in another chunk.
 
-Do not claim the boilerplate repo is "up to date" from version checks alone. At most, say which relevant files or patterns were checked and whether the current release notes suggested any concrete changes.
+Don't claim boilerplate is "up to date" from version checks alone. At most, say which files or patterns were checked and whether current release notes suggested any concrete changes.
 
 ## Step 7 — report findings
 
@@ -118,30 +118,30 @@ Structure the output as follows:
 
 #### Must update
 
-Breaking changes affecting project code. Include path(s) and needed change.
+Breaking changes affecting project code. Include path and needed change.
 
 #### Adopt now
 
-New shared-library APIs that replace existing project code, reduce local boilerplate, or make current usage more direct. Include all affected paths and say whether the adoption belongs in the same dependency-update chunk or should be split into the next chunk because it touches many files.
+New shared-library APIs replacing existing code, reducing boilerplate, or making current usage more direct. Include all affected paths and say whether adoption belongs in the same dependency-update chunk or should split because it touches many files.
 
-Treat `@lewishowles/helpers` simplifications as adoption work by default, even when they require broad mechanical edits. Defer only when adoption changes product behaviour, needs design or product judgement, or is large enough to deserve a separate reviewable chunk.
+Treat `@lewishowles/helpers` simplifications as adoption work by default, even with broad mechanical edits. Defer only when adoption changes product behaviour, needs design or product judgement, or deserves separate review.
 
 #### Consider later
 
-New features/components relevant to the project where there is no existing local equivalent to replace.
+New features/components relevant to the project with no existing local equivalent to replace.
 
 #### Good to know
 
-Fixes/deprecations worth knowing, no immediate action.
+Fixes and deprecations worth knowing, no immediate action.
 
 #### Boilerplate baseline
 
-Concrete changes to consider in `~/Dev/Repositories/Packages/boilerplate`, including `.boilersuit/generators/` paths where relevant. Say "not checked" only if the repo was missing or unreadable, or if the user asked to skip it.
+Concrete changes to consider in `~/Dev/Repositories/Packages/boilerplate`, including `.boilersuit/generators/` paths. Say "not checked" only if repo was missing or unreadable.
 
 #### Not relevant
 
-Omit this section — only report what applies to the project.
+Omit this section; only report what applies.
 
 ---
 
-If multiple libraries in scope, report separately. Keep concrete: file, import/component, specific change.
+If multiple libraries in scope, report separately. Keep concrete: file, import, component, specific change.

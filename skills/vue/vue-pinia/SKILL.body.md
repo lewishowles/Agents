@@ -4,11 +4,11 @@ Pinia is for app state: UI state, preferences, cross-page flags, and client-owne
 
 ## Store shape
 
-- Prefer setup stores for stores with composables, watchers, or non-trivial logic
+- Prefer setup stores for composables, watchers, complex logic
 - Keep option stores where the project already uses them consistently
 - Use one store per domain, not one store per component
-- Keep derived state in getters/computed values, not duplicated state
-- Keep actions as named functions; actions can be destructured safely
+- Keep derived state in getters/computed, not duplicated
+- Use named actions; safe to destructure
 
 ```typescript
 import { computed, ref } from "vue";
@@ -33,7 +33,7 @@ export const usePreferencesStore = defineStore("preferences", () => {
 
 - Use `storeToRefs()` when destructuring state or getters
 - Destructure actions directly from the store
-- Avoid mutating store state from unrelated components when action would name behaviour clearly
+- Avoid direct state mutations when an action would clarify intent
 
 ```typescript
 import { storeToRefs } from "pinia";
@@ -52,7 +52,7 @@ const { setColourMode } = preferencesStore;
 
 ## SSR and lifecycle
 
-- In SSR-capable apps, call `useStore()` inside setup, actions, middleware, or functions with active app context
+- Call useStore() within setup, actions, or middleware (where context is active)
 - Avoid module-scope `useStore()` in files that can run before Pinia is installed
 - Clean up watchers or subscriptions created outside component scope
 
@@ -69,7 +69,7 @@ if (import.meta.hot) {
 ## Testing
 
 - Configure a fresh Pinia instance for each test
-- Use `@pinia/testing` for component tests that need store behaviour without real action side effects
+- Use @pinia/testing when mocking store behaviour in component tests
 - Test store actions and derived state directly when they contain logic
 - Keep server cache behaviour in Pinia Colada tests, not Pinia tests
 
