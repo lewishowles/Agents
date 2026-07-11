@@ -122,6 +122,7 @@ Test: if a sighted developer using component normally needs to know it, document
 ## Controls
 
 - Icon-only buttons need an accessible name via visible text, `aria-label`, or `aria-labelledby`
+- Use `aria-label` and `aria-labelledby` only when the element's implicit or explicit role supports an author-provided name. Prefer visible or visually hidden text, and don't add ARIA names to paragraphs, generic spans/divs, or presentational content
 - Do not put click handlers on non-interactive elements when button/link is correct semantic control
 - Do not block paste in form fields
 - Destructive actions need confirmation, undo, or both

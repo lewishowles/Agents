@@ -46,7 +46,7 @@ Quick-reference for WCAG 2.2 AA. Paste into a PR description or use as a review 
 
 - [ ] Status messages use `aria-live="polite"` (or `"assertive"` for urgent alerts)
 - [ ] No auto-dismissing messages
-- [ ] Icon-only buttons have an accessible name (`aria-label` or visually hidden text)
+- [ ] Icon-only buttons have an accessible name (visible or visually hidden text preferred; `aria-label` only on roles that support author-provided names)
 
 ## Motion
 
