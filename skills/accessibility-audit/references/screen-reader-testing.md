@@ -1,6 +1,6 @@
 # Screen reader testing
 
-Screen reader testing is **manual** — Claude cannot drive a screen reader. This is a reference for you to test with, or to share with clients.
+Screen reader testing is **manual** — no agent, including one with browser tool access (Claude's built-in browser tools or a browser MCP server such as Safari Technology Preview's), can drive a screen reader or hear its output. Those tools can inspect the accessibility tree structurally (see [manual-checks.md](manual-checks.md)), but that's not the same as verifying what VoiceOver, NVDA, or JAWS actually announces. This is a reference for you to test with, or to share with clients.
 
 ## Testing priority
 

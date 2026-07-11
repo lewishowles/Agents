@@ -101,7 +101,9 @@ Priority areas:
 - **Understandable**: error messages, form labels, consistent navigation, plain language
 - **Robust**: valid HTML, ARIA used correctly, works with screen readers
 
-Screen reader testing is manual and needs AT on real device. For VoiceOver, NVDA, and JAWS commands, see [references/screen-reader-testing.md](references/screen-reader-testing.md).
+Not every "manual" check needs a human. If browser tool access is available (Claude's built-in browser tools, or a browser MCP server such as Safari Technology Preview's), run the agent-assistable checks directly rather than only asking the user to do them by hand — keyboard traversal, focus order, contrast calculation, reflow at zoom, landmark/heading structure, and more. See [references/manual-checks.md](references/manual-checks.md) for which checks an agent can run directly, which need a human to confirm agent-surfaced signal, and which always need a human.
+
+Screen reader testing is the one category no browser MCP replaces — it needs real AT on a real device. For VoiceOver, NVDA, and JAWS commands, see [references/screen-reader-testing.md](references/screen-reader-testing.md).
 
 ### 4. Map findings to severity
 
