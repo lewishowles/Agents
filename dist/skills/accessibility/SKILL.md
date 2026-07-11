@@ -140,6 +140,10 @@ Test: if a sighted developer using component normally needs to know it, document
 
 PR-pasteable checklist: [`references/checklist.md`](references/checklist.md).
 
+## Before handoff
+
+Review changed UI against [`references/checklist.md`](references/checklist.md), fix issues found, and state which checks were actually performed. Passing the checklist or an automated scan does not prove WCAG conformance; manual and assistive-technology testing may still be needed.
+
 ## Content warnings & safety
 
 - **Flashing & strobing**: max 3 flashes/second in any 1-second window. Test GIFs, videos, carousels
