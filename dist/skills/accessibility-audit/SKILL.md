@@ -66,6 +66,15 @@ Or use Lighthouse: DevTools → Lighthouse → Accessibility.
 | Respects `prefers-reduced-motion`         |       |
 | Dynamic updates announced via `aria-live` |       |
 
+**Component states**
+
+| Check                                                         | Pass? |
+| ------------------------------------------------------------- | ----- |
+| Loading, empty, and error states checked, not just happy path |       |
+| Error states are announced, not just visually distinct        |       |
+
+These states are only checkable if the app exposes a way to reach them (seeded empty data, a throttled/failed network request, an existing Storybook or mock harness). Don't assume one exists: see [references/manual-checks.md](references/manual-checks.md#component-states) for how to tell what's actually reachable.
+
 ### Triage output
 
 ```markdown

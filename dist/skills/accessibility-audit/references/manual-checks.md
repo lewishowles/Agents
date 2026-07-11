@@ -72,6 +72,17 @@ Tag meanings:
 | `aria-live` regions actually announce to a screen reader                  | Human   | No browser MCP drives real AT output; needs VoiceOver/NVDA/JAWS                |
 | Full screen reader pass (VoiceOver, NVDA, JAWS)                           | Human   | See [screen-reader-testing.md](screen-reader-testing.md) — always manual       |
 
+## Component states
+
+Unlike most checks above, these depend on whether the app exposes a way to reach the state at all. There's no dedicated tool that reliably forces a real app's loading/empty/error states the way a Storybook harness or mocked test environment would: an agent working against a live product has to find or ask for the seam.
+
+| Check                                   | Who     | Method                                                                                                                                                     |
+| --------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Loading state reachable and inspectable | Partial | Throttle the network (browser MCP network conditions, if supported) or ask the user for a seam (query param, delay flag); if none exists, don't guess, ask |
+| Empty state reachable and inspectable   | Partial | Look for a seeded empty account/dataset or a way to clear data; often needs the user to point at one                                                       |
+| Error state reachable and inspectable   | Agent   | Submitting invalid data or disconnecting the network usually surfaces this directly                                                                        |
+| Error state announced (not colour-only) | Agent   | Once the error state is reached, check for `aria-live`, icon, or text markers, same method as other error-announcement checks above                        |
+
 ## Using this during an audit
 
 1. Run every **Agent** check directly if browser tools are available; report pass/fail with evidence (screenshot, DOM snippet).
