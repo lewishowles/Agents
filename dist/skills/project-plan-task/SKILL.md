@@ -70,12 +70,26 @@ Placement follows the same principle as section order: when inserting new work, 
 
 On completion, delete the finished task file and promote the next queue entry into the active slot in `PROGRESS.md`. This mechanical step, not a "stop and read further" instruction, is what keeps the next agent from re-deriving the whole plan.
 
+### Status and dependencies
+
+Every task file states `## Status` (`ready`, `in progress`, `blocked`, or `needs decision`) and `## Depends on` (links to other tasks that must land first, or "None"). This is what lets a second agent, or the user, pick up any task that isn't already claimed instead of assuming the queue order is a strict dependency chain: most queued tasks are independent unless `Depends on` says otherwise. Mark a task `needs decision` rather than `ready` when an open risk or ambiguity needs the user's input before implementation; don't resolve it by guessing.
+
+Default to a plain status convention over building a dispatcher: branch name matches the task slug (`task/<slug>`), and whoever picks up work reads the queue's inline status and opens the file directly. Only propose actual dispatch tooling (a script or bot that assigns tasks) if the backlog is large enough, and independent enough, that manual pickup has become the bottleneck: for a handful of tasks it isn't.
+
 ## Section structure
 
 Inline `PROGRESS.md` section (fields nest under the section heading, so `###`):
 
 ```markdown
 ## <Section name>
+
+### Status
+
+Optional. Only needed once tasks can be picked up out of order: `ready`, `in progress`, `blocked`, or `needs decision`.
+
+### Depends on
+
+Optional, paired with Status. Other sections/tasks that must land first, or "None".
 
 ### Purpose
 
@@ -108,6 +122,14 @@ Standalone `.agent/tasks/<slug>.md` file (same fields, one level shallower — t
 
 ```markdown
 # <Task name>
+
+## Status
+
+`ready`, `in progress`, `blocked`, or `needs decision`. Use `needs decision` when an open risk needs the user's input before an agent should implement.
+
+## Depends on
+
+Other task files that must land first, or "None". Independent tasks (most of the queue, unless stated otherwise) can be picked up out of order, each on its own `task/<slug>` branch.
 
 ## Purpose
 

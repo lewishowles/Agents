@@ -211,6 +211,14 @@ Task file shape (`.agent/tasks/<slug>.md`), same fields as an inline `## Active 
 ```markdown
 # <Task name>
 
+## Status
+
+`ready`, `in progress`, `blocked`, or `needs decision`. Use `needs decision` when an open risk needs the user's input before an agent should implement.
+
+## Depends on
+
+Other task files that must land first, or "None". Independent tasks can be picked up out of order, each on its own `task/<slug>` branch.
+
 ## Purpose
 
 ## Expected commit
