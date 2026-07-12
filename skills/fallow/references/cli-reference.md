@@ -23,6 +23,7 @@ Complete command and flag specifications for all fallow CLI commands.
 - [`schema`: CLI Introspection](#schema-cli-introspection)
 - [`config-schema`: Config JSON Schema](#config-schema-config-json-schema)
 - [`plugin-schema`: Plugin JSON Schema](#plugin-schema-plugin-json-schema)
+- [`plugin-check`: Verify external plugins](#plugin-check-verify-external-plugins)
 - [`rule-pack-schema`: Rule Pack JSON Schema](#rule-pack-schema-rule-pack-json-schema)
 - [`config`: Show Resolved Config](#config-show-resolved-config)
 - [Global Flags](#global-flags)
@@ -508,7 +509,7 @@ fallow health --format json --quiet --trend
 {
   "kind": "health",
   "schema_version": 7,
-  "version": "3.2.0",
+  "version": "3.3.0",
   "elapsed_ms": 32,
   "summary": {
     "files_analyzed": 482,
@@ -906,7 +907,7 @@ fallow audit \
 {
   "kind": "audit",
   "schema_version": 7,
-  "version": "3.2.0",
+  "version": "3.3.0",
   "command": "audit",
   "verdict": "fail",
   "changed_files_count": 12,
@@ -981,7 +982,7 @@ fallow flags --format json --quiet --workspace my-package
 ```json
 {
   "schema_version": 7,
-  "version": "3.2.0",
+  "version": "3.3.0",
   "elapsed_ms": 116,
   "feature_flags": [],
   "total_flags": 0
@@ -1082,7 +1083,7 @@ fallow security --gate newly-reachable --changed-since origin/main
 {
   "kind": "security",
   "schema_version": "4",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "elapsed_ms": 42,
   "config": {
     "rules": {
@@ -1111,7 +1112,7 @@ fallow security --gate newly-reachable --changed-since origin/main
 {
   "kind": "security",
   "schema_version": "4",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "elapsed_ms": 42,
   "config": {
     "rules": {
@@ -1337,6 +1338,16 @@ Prints the JSON Schema for external plugin definition files.
 
 ```bash
 fallow plugin-schema > plugin-schema.json
+```
+
+---
+
+## `plugin-check`: Verify external plugins
+
+Read-only dry-run of your external plugins. Reports, per plugin, whether it activated (with the unmet `detection`/`enabler` requirement when inactive), and for `manifestEntries` rules which manifests each matched, what it seeded (with `path_exists`), and typed warnings (`manifests-matched-none`, `when-excluded-all`, `field-path-unresolved`, `entries-empty`, `manifest-parse-failed`, `entry-outside-root`, `seeded-paths-missing`). Run it after authoring a `fallow-plugin-*.jsonc` to verify it before a full analysis. Deterministic output; always exits 0 (advisory, never a gate).
+
+```bash
+fallow plugin-check --format json
 ```
 
 ---
@@ -1621,7 +1632,8 @@ Available on all commands:
 |---|---|---|---|
 | `-r, --root` | `string` | - | Project root directory |
 | `-c, --config` | `string` | - | Config file path |
-| `-f, --format` | `human\|json\|sarif\|compact\|markdown\|codeclimate\|pr-comment-github\|pr-comment-gitlab\|review-github\|review-gitlab\|badge` | `human` | Output format (alias: --output) |
+| `--allow-remote-extends` | `bool` | `false` | Allow trusted config files to extend HTTPS URLs |
+| `-f, --format` | `human\|json\|sarif\|compact\|markdown\|codeclimate\|pr-comment-github\|pr-comment-gitlab\|review-github\|review-gitlab\|badge\|github-annotations\|github-summary` | `human` | Output format (alias: --output) |
 | `-q, --quiet` | `bool` | `false` | Suppress progress output |
 | `--no-cache` | `bool` | `false` | Disable incremental caching |
 | `--threads` | `string` | - | Number of parser threads |
@@ -1649,6 +1661,7 @@ Available on all commands:
 | `--fail-on-issues` | `bool` | `false` | Exit 1 if any issues found (promotes `warn` to `error`) |
 | `--sarif-file` | `string` | - | Write SARIF output to a file instead of stdout |
 | `-o, --output-file` | `string` | - | Write the report to a file instead of stdout, for any --format (no ANSI codes). Useful on large projects where the terminal scrollback truncates the top. Progress and the confirmation stay on stderr |
+| `--annotations-path-prefix` | `string` | - | Prefix prepended to every `file=` path in `--format github-annotations` output. GitHub resolves annotation paths against the repository root, so when the analyzed project lives in a subdirectory (e.g. `packages/app/`), paths need that offset. fallow detects the offset via the git toplevel automatically; this flag overrides the detection. Valid only with the GitHub-native formats |
 | `--fail-on-regression` | `bool` | `false` | Fail if issue count increased beyond tolerance vs a regression baseline |
 | `--tolerance` | `string` | `0` | Allowed increase: `"2%"` (percentage) or `"5"` (absolute). Default: `"0"` |
 | `--regression-baseline` | `string` | - | Path to regression baseline file (default: `.fallow/regression-baseline.json`) |
@@ -1820,7 +1833,7 @@ The HTTP layer mirrors the bash `gh_api_retry` / `curl_retry` helpers: `FALLOW_A
 {
   "kind": "dead-code",
   "schema_version": 7,
-  "version": "3.2.0",
+  "version": "3.3.0",
   "elapsed_ms": 45,
   "total_issues": 12,
   "entry_points": {
@@ -1980,7 +1993,7 @@ When `--baseline` is used in combined output, the JSON includes a `baseline_delt
 {
   "kind": "dupes",
   "schema_version": 7,
-  "version": "3.2.0",
+  "version": "3.3.0",
   "elapsed_ms": 82,
   "total_clones": 15,
   "total_lines_duplicated": 230,
@@ -2024,11 +2037,11 @@ When running `fallow` with no subcommand (all analyses), the JSON output combine
 {
   "kind": "combined",
   "schema_version": 7,
-  "version": "3.2.0",
+  "version": "3.3.0",
   "elapsed_ms": 159,
   "check": {
     "schema_version": 7,
-    "version": "3.2.0",
+    "version": "3.3.0",
     "elapsed_ms": 45,
     "total_issues": 12,
     "unused_files": [],
