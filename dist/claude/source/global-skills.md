@@ -22,8 +22,8 @@ Apply across all projects. See individual skills for detailed rules. Use project
 - `/caveman` — When the user requests compressed or terse communication, says "caveman mode", "less tokens", "be brief", or invokes /caveman
 - `/code-review` — When reviewing a PR or diff, or receiving review feedback
 - `/code-style` — When formatting code, covering naming, comments, arrays, objects
-- `/component-api-design` — When designing component props, slots, emits, v-model, expose, and public API
-- `/component-library` — When using @lewishowles/components and the component API or pattern is unclear
+- `/component-api-design` — When creating a component or changing its public props, slots, emits, models, expose, or contract
+- `/component-library` — When choosing, reusing, or wrapping @lewishowles/components APIs, especially when unclear
 - `/debugging` — When encountering any bug, test failure, or unexpected behaviour — before proposing a fix
 - `/dependencies` — When adding packages, what to choose, when to add
 - `/error-handling` — When validating input, graceful fallbacks, error handling

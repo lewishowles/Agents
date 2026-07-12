@@ -28,7 +28,7 @@ When `<project-root>/.agent/scripts/project-diagnostics.py` exists, use `--list`
 2. **Compact** — repair stale/missing handoff; remove duplicate notes and obsolete TODOs; compress completed sub-tasks to one line
 3. **Verify** — spot-check recently-completed work landed
 4. **Reorient** — confirm active work still fits; move to upcoming if priorities changed
-5. **Present** — name next task, explain why, flag unknowns, wait for confirmation before starting
+5. **Present** — digest the active task file into the confirmed contract, current repository state, intended files, verification, and unknowns; the user should not need to open the task file. Wait for confirmation before editing when the task has material API, behaviour, or interpretation decisions
 6. **Continue** — work through confirmed task; update `PROGRESS.md` as discoveries emerge
 7. **Wrap up** — refresh handoff before stopping
 
@@ -41,7 +41,7 @@ Read only enough to orient. Stale sessions (5+ min idle) restart from scratch.
 - Continue to `## Active work`, `## Decisions`, `## Discoveries`, `## Risks` only when needed
 - Read linked feature specs only when active; skip unrelated specs
 - Skip completed or archived sections unless current task depends on their history
-- Confirm branch state and uncommitted work
+- Inspect repository state and any branch or uncommitted-work claims in the task file. Branch creation or switching is not part of task setup unless the user requests it.
 - Read `WORKSPACE.md` if present before running local commands
 - Verify unfinished tasks belong to current section
 
@@ -51,8 +51,9 @@ When user signals readiness ("next please", "let's continue", "what's next") wit
 
 1. **Name the task** — one sentence: what and where in the plan
 2. **Explain why** — one or two sentences: what it unlocks or why it's next
-3. **Flag unknowns** — name key questions or decisions before starting
-4. **Wait for confirmation** — do not start until user agrees (applies at all verbosity levels)
+3. **Summarise the contract** — include the task file's public behaviour, files, acceptance criteria, and verification in plain language
+4. **Flag unknowns** — name key questions or decisions before starting
+5. **Wait for confirmation** — do not start until user agrees (applies at all verbosity levels)
 
 Keep outline short: 3–5 sentences. Give enough context to redirect without a full plan.
 

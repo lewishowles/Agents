@@ -12,7 +12,7 @@ Canonical contract for `PROGRESS.md` and `.agent/tasks/` across projects. The `p
 
 ### Naming
 
-Filenames are three-digit IDs: `001.md`, `002.md`. Allocate the next ID as max existing + 1 (including done files); never reuse an ID. Filenames carry no meaning; the human-facing name lives in front matter. Branch names use the ID: `task/001`.
+Filenames are three-digit IDs: `001.md`, `002.md`. Allocate the next ID as max existing + 1 (including done files); never reuse an ID. Filenames carry no meaning; the human-facing name lives in front matter. Task files do not prescribe branch names.
 
 ### Front matter
 
@@ -45,6 +45,10 @@ No `# Title` heading; front matter `title` is the single source. Sections, in or
 ```markdown
 ## Purpose
 
+## Contract              (required for public or user-visible work)
+
+Public behaviour, data shape, UI states, or API surface affected.
+
 ## Expected commit
 
 <Conventional Commit message>
@@ -60,6 +64,14 @@ No `# Title` heading; front matter `title` is the single source. Sections, in or
 ## Tasks
 
 - [ ] step
+
+## Acceptance criteria
+
+- Observable condition that proves the work is done
+
+## Verification
+
+Focused checks, manual review, or evidence required before handoff.
 
 ## Risks
 

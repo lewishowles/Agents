@@ -1,10 +1,13 @@
 {
 	"name": "component-api-design",
-	"description": "Use this skill when designing a new component's public API — props, slots, emits, v-model, expose — or reviewing whether an existing API is consistent and discoverable.",
-	"when": "When designing component props, slots, emits, v-model, expose, and public API",
+	"description": "Use this skill when creating a component or designing its public API — props, slots, emits, v-model, expose — or reviewing whether an existing API is consistent and discoverable.",
+	"when": "When creating a component or changing its public props, slots, emits, models, expose, or contract",
 	"triggers": [
 		"component api",
 		"component public api",
+		"new component",
+		"public component",
+		"component contract",
 		"prop design",
 		"props design",
 		"slot design",

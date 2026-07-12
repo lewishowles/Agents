@@ -2,7 +2,7 @@
 # Generated — edit skill.json and SKILL.body.md instead.
 name: component-api-design
 description: >
-  Use this skill when designing a new component's public API — props, slots, emits, v-model, expose — or reviewing whether an existing API is consistent and discoverable.
+  Use this skill when creating a component or designing its public API — props, slots, emits, v-model, expose — or reviewing whether an existing API is consistent and discoverable.
 do-not-use-when:
   - Editing component internals without changing its public props, slots, emits, models, or exposed methods
   - Fixing Vue reactivity, lifecycle, routing, store, or styling issues with no component API decision
@@ -16,6 +16,23 @@ related-skills:
 # Component API design
 
 Design public contract before internals: props, slots, emits, `v-model`, `defineExpose`.
+
+## Before implementation
+
+Write a compact contract table before editing component internals. Include:
+
+| Area | Decision |
+| --- | --- |
+| Job | The user-visible responsibility of the component |
+| Model | The value shape and single/multiple states |
+| Props | Consumer configuration and defaults |
+| Slots | Caller-owned content, slot names, and slot props |
+| Emits/expose | Domain events and narrow imperative methods |
+| Copy | Default user-facing text and translation/override points |
+| Accessibility | Labels, descriptions, focus, keyboard, and errors |
+| Styling | Root hooks, parts, states, and visual constraints |
+
+Use the table to resolve competing interpretations before implementation. If a decision is still material or ambiguous, present the alternatives and wait for the user before editing.
 
 ## API shape
 

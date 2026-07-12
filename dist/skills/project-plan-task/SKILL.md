@@ -53,7 +53,7 @@ Capture these facts in the section, task file, or linked spec:
 - **Relationship**: package consumer, API client, generated-output consumer, documentation/example repo, CI dependency, or release baseline
 - **Permission boundary**: do not clone, add, edit, push, open PRs, or run remote/networked commands in another repo without explicit user approval
 - **Validation owner**: which repo's diagnostics prove the change, including any downstream checks required before release
-- **Handoff references**: branch names, PR links, task or session IDs, diagnostic log paths, and repo-specific risks
+- **Handoff references**: PR links, task or session IDs, diagnostic log paths, and repo-specific risks
 
 For broad dependency questions, start with local evidence: package metadata, import searches, codebase-memory graph queries when available, and documented consumer lists. If the affected repo set is still unclear, mark the task `needs-decision` and ask before expanding the working set.
 
@@ -77,7 +77,9 @@ Spec explains why now, problem, goals, current status (optional), non-goals, app
 
 Once a plan has more than the current one or two active items, prefer a standalone file under `.agent/tasks/NNN.md` over an inline `PROGRESS.md` section for concrete, ready-to-pick-up work. This keeps the read surface small: the next agent opens only the active task's file, not the whole plan. The canonical contract is `docs/progress-format.md` in the Configuration/Agents repo — keep this skill's template in sync with it.
 
-Filenames are three-digit IDs (`001.md`), allocated as max existing + 1 (including done files), never reused. The human-facing name lives in front matter `title`, not the filename. Branch names use the ID: `task/001`.
+Filenames are three-digit IDs (`001.md`), allocated as max existing + 1 (including done files), never reused. The human-facing name lives in front matter `title`, not the filename. Task files do not prescribe branch names.
+
+Task files are complete agent-facing contracts, not labels such as “implement form file”. For public, user-visible, or behaviourally significant work, fill in the contract, acceptance criteria, and verification sections so an agent can implement and check the task without asking the user to restate it.
 
 `PROGRESS.md`'s session handoff then holds only: a link to the active task file, the upcoming queue (numbered `[NNN — Title](.agent/tasks/NNN.md) — status` links, non-done tasks only, priority order), and standing context that doesn't change per task (verification commands, recurring gotchas). Backlog items with no concrete task file yet stay as prose bullets elsewhere in `PROGRESS.md` (with a spec link if one exists) — do not create a task file until the item is genuinely next; write it just-in-time.
 
@@ -110,6 +112,10 @@ Optional, paired with Status. Other sections/tasks that must land first, or "Non
 
 ### Purpose
 
+### Contract
+
+Public behaviour, data shape, UI states, or API surface affected. Required for public or user-visible work.
+
 ### Expected commit
 
 <Conventional Commit message>
@@ -130,6 +136,14 @@ Optional. Link to `.agent/specs/<feature>.md` only when this section needs heavi
 
 - [ ] item
 
+### Acceptance criteria
+
+- Observable condition that proves the work is done
+
+### Verification
+
+Focused checks, manual review, or evidence required before handoff.
+
 ### Risks
 
 ### Notes
@@ -148,6 +162,10 @@ completed:               # YYYY-MM-DD, set when status becomes done
 ---
 
 ## Purpose
+
+## Contract
+
+Public behaviour, data shape, UI states, or API surface affected. Required for public or user-visible work.
 
 ## Expected commit
 
@@ -170,6 +188,14 @@ Optional. Link to `.agent/specs/<feature>.md` only when this task needs heavier 
 ## Tasks
 
 - [ ] item
+
+## Acceptance criteria
+
+- Observable condition that proves the work is done
+
+## Verification
+
+Focused checks, manual review, or evidence required before handoff.
 
 ## Risks
 

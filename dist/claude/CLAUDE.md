@@ -16,6 +16,8 @@ If no workspace file exists, fall back to targeted inspection of `AGENTS.md`, pa
 
 When local context, `WORKSPACE.md`, package metadata, README usage docs, or a loaded skill identifies a CLI for discovery, examples, validation, or generation, prefer that interface before searching source files. Skip the CLI check when the correct pattern is already clear from current context.
 
+Task and handoff files are complete agent-facing contracts. Read the active task file before implementation, even when the user has not seen it. Do not ask the user to reproduce its contents. Before editing, provide a concise overview derived from the task file, the current repository state, and the current request: the confirmed contract, intended files, verification, and unresolved decisions.
+
 Before running any build, test, typecheck, or lint command, check the exact path `.agent/scripts/project-diagnostics.py` with a direct file check (`[[ -f .agent/scripts/project-diagnostics.py ]]` or read/stat equivalent). Do not use glob, `rg`, `find`, or other discovery search to prove this known path is absent. When present, use it for all build, test, typecheck, and lint checks, not raw package commands unless the user explicitly asks. It writes full logs to `.agent/diagnostics/` while keeping stdout compact. Run `--list` as part of startup after checking `WORKSPACE.md`, `--check <name>` for the specific check needed, `--all` only when the user asks for broad verification. For unit tests, run the full suite through diagnostics by default; narrow with repeatable `--test-file <path>` or `--test-glob '<pattern>'` only when investigating a failing area, when the full check is unusually slow, or when the user asks. Quote glob patterns so the script expands and validates them. If a check fails, extract details from the returned log path with targeted `rg` or `sed`; do not re-run the same check for more output. Only when the exact-path check proves the script absent may you use `WORKSPACE.md` common checks or manually inspected commands.
 
 ### Token budget discipline
@@ -67,6 +69,7 @@ For analysis-only requests, do not load implementation skills or begin coding. U
 
 - Request names both a fix and the symptom it's meant to solve? Confirm the fix actually intercepts that symptom before implementing — otherwise report the mismatch first instead of building it.
 - Multiple interpretations? Present all, don't pick silently
+- Treat explicit user corrections as acceptance criteria. Restate the resulting behaviour, update the working contract, and verify each corrected case before making another completion claim. Do not keep proposing an interpretation the user has rejected.
 - Simpler approach exists? Say so; push back when warranted
 - User's premise or assessment wrong? Say so directly. Don't agree to keep the user happy; agreement that hides a problem is worse than disagreement that surfaces one.
 - Unclear? Stop and name what's confusing
@@ -78,6 +81,7 @@ For analysis-only requests, do not load implementation skills or begin coding. U
 **Unexpected state — stop and ask. Don't dig.**
 
 - File missing? Symlink broken? Output unexpected? Stop. If a user says a missing file exists, state whether gitignored files were included before concluding it is missing.
+- If repository state conflicts with a task file's claimed branch, working tree, commit, or generated output, report both facts without calling the task file stale or asking the user to reconstruct it. Treat the task's intent and acceptance criteria as the agent-facing contract, verify the repository facts, and ask only how to resolve a material mismatch.
 - Don't workaround, retry, or dig deeper — state what you expected vs. what you found
 - Recovers faster than chasing wrong paths. You know the system; I don't.
 
@@ -199,6 +203,13 @@ Designer, front-end dev, strong full-stack. Focus: accessible design (WCAG AA, A
 ## Skill use policy
 
 Skills are authoritative when their trigger conditions match. Before coding, editing prose, changing config, or reviewing files, inspect the task and file paths, then load the matching skills. If multiple skills match, use all relevant ones — especially `code-style` plus language/framework skills. Do not wait for explicit slash-command invocation.
+
+Use these routing rules when the task matches them:
+
+- Creating a new component or changing a component's public props, slots, emits, models, or exposed methods → `component-api-design`
+- Choosing, reusing, or wrapping an existing `@lewishowles/components` component or API → `component-library`, including when the work is inside the component library repository itself
+
+When a PreToolUse hook injects a skill requirement, treat it as binding. Stop before the edit, assess every named skill, load the relevant skills, and only then resume the tool call. A repeated requirement is evidence that the prerequisite was not completed, not a reminder to ignore.
 
 **Skill vs. rule boundary:** if guidance should apply on every turn regardless of task, it belongs in `rules/`. If it is triggered by a specific task type or file context, it belongs in `skills/`. Do not add always-on conventions to a skill, and do not put task-specific workflows in a rule.
 

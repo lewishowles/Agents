@@ -1,7 +1,7 @@
 {
 	"name": "component-library",
-	"description": "Use this skill when choosing or using components from @lewishowles/components. Prefer its CLI and docs before source searches.",
-	"when": "When using @lewishowles/components and the component API or pattern is unclear",
+	"description": "Use this skill when choosing, reusing, or wrapping components from @lewishowles/components, including sibling components inside the library. Prefer its CLI and docs before source searches.",
+	"when": "When choosing, reusing, or wrapping @lewishowles/components APIs, especially when unclear",
 	"triggers": [
 		"@lewishowles/components",
 		"data table",
@@ -13,7 +13,7 @@
 		"component pattern"
 	],
 	"do-not-use-when": [
-		"Creating or changing the component library itself",
+		"Changing an existing component's internals when no sibling component or API discovery is involved",
 		"Preparing a library-release",
 		"General Vue stack guidance without an @lewishowles/components discovery question; use vue-project-stack instead",
 		"The component API and pattern are already clear from current context",

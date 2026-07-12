@@ -2,9 +2,9 @@
 # Generated — edit skill.json and SKILL.body.md instead.
 name: component-library
 description: >
-  Use this skill when choosing or using components from @lewishowles/components. Prefer its CLI and docs before source searches.
+  Use this skill when choosing, reusing, or wrapping components from @lewishowles/components, including sibling components inside the library. Prefer its CLI and docs before source searches.
 do-not-use-when:
-  - Creating or changing the component library itself
+  - Changing an existing component's internals when no sibling component or API discovery is involved
   - Preparing a library-release
   - General Vue stack guidance without an @lewishowles/components discovery question; use vue-project-stack instead
   - The component API and pattern are already clear from current context
@@ -14,7 +14,7 @@ related-skills:
 ---
 # Component library
 
-Use @lewishowles/components discovery (CLI, live docs) before source files when the component or API is unclear.
+Use @lewishowles/components discovery (CLI, live docs) before source files when the component or API is unclear. Apply this when composing sibling components inside the library as well as when consuming the published package elsewhere.
 
 ## Core contract
 
@@ -25,7 +25,7 @@ After loading this skill, do this before searching `src/components/**` or `@lewi
 3. Use live docs next when the CLI does not answer the question.
 4. Search source only when the CLI/docs are missing, stale, incomplete, or the implementation detail itself is the task.
 
-Skip when current context already identifies the component and API.
+Skip only when current context identifies the exact component API and no sibling discovery is needed, or when the task is solely an internal implementation change.
 
 ## `@lewishowles/components`
 

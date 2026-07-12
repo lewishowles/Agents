@@ -1,6 +1,6 @@
 # Component library
 
-Use @lewishowles/components discovery (CLI, live docs) before source files when the component or API is unclear.
+Use @lewishowles/components discovery (CLI, live docs) before source files when the component or API is unclear. Apply this when composing sibling components inside the library as well as when consuming the published package elsewhere.
 
 ## Core contract
 
@@ -11,7 +11,7 @@ After loading this skill, do this before searching `src/components/**` or `@lewi
 3. Use live docs next when the CLI does not answer the question.
 4. Search source only when the CLI/docs are missing, stale, incomplete, or the implementation detail itself is the task.
 
-Skip when current context already identifies the component and API.
+Skip only when current context identifies the exact component API and no sibling discovery is needed, or when the task is solely an internal implementation change.
 
 ## `@lewishowles/components`
 

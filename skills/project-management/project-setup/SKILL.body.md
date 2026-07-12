@@ -214,7 +214,7 @@ Ideas and concerns not belonging to the current section.
 Completed work that predates task files, or milestone-level summaries worth keeping. Done task files (kept in `.agent/tasks/` with `status: done` and an `## Outcome` section) are the per-task record, so this section stays small.
 ```
 
-Task file shape (`.agent/tasks/NNN.md`): three-digit ID filename (allocate max + 1, never reuse; the human-facing name lives in front matter `title`, and branches use `task/NNN`). Keep in sync with the `project-plan-task` skill's "Section structure" if either changes:
+Task file shape (`.agent/tasks/NNN.md`): three-digit ID filename (allocate max + 1, never reuse; the human-facing name lives in front matter `title`; task files do not prescribe branch names). Keep in sync with the `project-plan-task` skill's "Section structure" if either changes:
 
 ```markdown
 ---
@@ -227,6 +227,10 @@ completed:               # YYYY-MM-DD, set when status becomes done
 ---
 
 ## Purpose
+
+## Contract
+
+Public behaviour, data shape, UI states, or API surface affected. Required for public or user-visible work.
 
 ## Expected commit
 
@@ -249,6 +253,14 @@ Optional. Link to `.agent/specs/<feature>.md` only when this task needs heavier 
 ## Tasks
 
 - [ ] item
+
+## Acceptance criteria
+
+- Observable condition that proves the work is done
+
+## Verification
+
+Focused checks, manual review, or evidence required before handoff.
 
 ## Risks
 
