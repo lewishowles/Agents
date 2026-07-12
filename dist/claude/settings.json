@@ -172,6 +172,9 @@
       }
     ]
   },
+  "disabledMcpjsonServers": [
+    "mdn"
+  ],
   "enabledPlugins": {},
   "agentPushNotifEnabled": true,
   "contextCompactionThreshold": 80,

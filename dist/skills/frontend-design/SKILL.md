@@ -11,6 +11,8 @@ related-skills:
 
 Before UI code, establish design direction. Aesthetic decisions are cheap upfront; mismatched typography and colour are expensive after implementation.
 
+Never assert a CSS or web-platform feature's browser support or Baseline status from training memory; it ages fast. The MDN MCP server (live docs and browser-compat data) is configured but disabled by default: ask the user to enable it, then query it to confirm support before relying on it.
+
 ## Decision sequence
 
 Work through in order. If an answer is missing, ask; don't guess.

@@ -45,6 +45,14 @@ Global setup preserves the existing `~/.codex/config.toml` and ensures this MCP 
 command = "codebase-memory-mcp"
 ```
 
+Setup also registers the MDN docs and browser-compat server, shipped disabled so it loads nothing until enabled. Ask the user to enable it when a browser-support or Baseline fact needs a live source:
+
+```toml
+[mcp_servers.mdn]
+url = "https://mcp.mdn.mozilla.net/"
+enabled = false
+```
+
 Indexing is explicit by default. `codebase-memory-mcp config list` currently reports `auto_index = false`, so run `index_repository` for a project before expecting graph queries to work. The CLI form is:
 
 ```bash

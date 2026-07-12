@@ -109,6 +109,7 @@ ensure_codex_config() {
 	awk '
 		/^\[mcp_servers\.codebase-memory-mcp(\.|\])/{ skip = 1; next }
 		/^\[mcp_servers\.serena(\.|\])/{ skip = 1; next }
+		/^\[mcp_servers\.mdn(\.|\])/{ skip = 1; next }
 		/^\[/{ skip = 0 }
 		!skip { print }
 	' "$config" > "$temp"
@@ -116,6 +117,10 @@ ensure_codex_config() {
 	# Re-add managed MCP server entries with canonical config.
 	printf '\n[mcp_servers.codebase-memory-mcp]\ncommand = "codebase-memory-mcp"\n' >> "$temp"
 	printf '\n[mcp_servers.serena]\nstartup_timeout_sec = 15\ncommand = "serena"\nargs = ["start-mcp-server", "--project-from-cwd", "--context=codex"]\n' >> "$temp"
+
+	# MDN docs/browser-compat server, shipped disabled: enable on request
+	# when a browser-support or Baseline fact needs a live source.
+	printf '\n[mcp_servers.mdn]\nurl = "https://mcp.mdn.mozilla.net/"\nenabled = false\n' >> "$temp"
 
 	# Migrate the deprecated codex_hooks key to hooks, and ensure the hooks
 	# feature flag is present in [features].

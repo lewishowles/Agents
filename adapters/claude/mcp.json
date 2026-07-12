@@ -5,11 +5,11 @@
 		},
 		"serena": {
 			"command": "serena",
-			"args": [
-				"start-mcp-server",
-				"--context=claude-code",
-				"--project-from-cwd"
-			]
+			"args": ["start-mcp-server", "--context=claude-code", "--project-from-cwd"]
+		},
+		"mdn": {
+			"type": "http",
+			"url": "https://mcp.mdn.mozilla.net/"
 		}
 	}
 }

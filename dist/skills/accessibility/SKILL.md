@@ -12,6 +12,8 @@ related-skills:
 
 WCAG AA baseline; AAA where feasible. Inaccessible = incorrect. Covers blind/low-vision, colourblind, keyboard-only, neurodivergent, and plain-language users.
 
+Never assert a feature's browser or assistive-tech support from training memory; it ages fast. The MDN MCP server (live docs and browser-compat data) is configured but disabled by default: ask the user to enable it, then query it to confirm support before relying on it.
+
 ## Visual
 
 - **Colour contrast**: min 4.5:1 (normal text), 3:1 (large text). Use colorcontrast.app. Check text vs background and button vs page

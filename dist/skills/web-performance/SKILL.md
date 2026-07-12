@@ -23,6 +23,8 @@ related-skills:
 
 Measure with Lighthouse (DevTools → Lighthouse) or [web.dev/measure](https://web.dev/measure). Run against production only; dev numbers are unreliable.
 
+Never assert a feature's browser support or Baseline status from training memory; it ages fast. The MDN MCP server (live docs and browser-compat data) is configured but disabled by default: ask the user to enable it, then query it to confirm support before relying on it.
+
 ## LCP
 
 LCP is usually hero image or large heading above fold.
