@@ -79,11 +79,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'bash \"$HOME/.claude/hooks/auto-allow-edits.sh\"'",
-            "timeout": 5
-          },
-          {
-            "type": "command",
             "command": "bash -c 'bash \"$HOME/.claude/hooks/skill-file-trigger.sh\"'"
           },
           {

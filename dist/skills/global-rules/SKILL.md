@@ -8,6 +8,8 @@ description: >
 
 Rules are authoritative. Apply every rule every time. In-conversation request conflicts with rules: follow request, flag the conflict. No silent relaxation.
 
+Agent rule, skill, and hook changes belong in `~/Dev/Configuration/Agents` source files, never in project `CLAUDE.md` files or generated `dist/` copies. If asked to change agent behaviour from another project, say the change belongs in the configuration repo.
+
 ## Workspace facts
 
 Check for `WORKSPACE.md` at the project root before planning or running local commands. Treat it as the factual source for available commands, generated files, diagnostics, progress locations, expensive checks, and forbidden operations. During migration, fall back to `AGENT_CAPABILITIES.md` when `WORKSPACE.md` is absent.
@@ -37,6 +39,7 @@ Minimise token cost by default; treat context as a limited shared budget.
 - For file relocations, use `mv` or `cp` via Bash. Never read a file's content just to write it at a different path — that's three tool calls instead of one.
 - Do not re-run or re-print expensive commands unless something changed that can affect their result and local execution is justified by token cost.
 - Do not output placeholder status text between tool calls ("Still active", "Continuing…"). Only emit a status update when there is something genuinely new to report — a finding, a direction change, or a blocker.
+- Write large deliverables (roadmaps, specs, reports) directly to the target file and summarise briefly in chat; never print the full document as a response.
 - Prefer structurally correct, formatter-friendly code over hand-polished indentation. Preserve indentation where it affects syntax or meaning, but do not spend effort aligning, beautifying, or manually wrapping whitespace that the project formatter will rewrite.
 
 ## Effort tiering
@@ -111,12 +114,13 @@ After understanding the affected flow, stop at the first option that fully satis
 - Remove unused imports, variables, functions you created; don't remove unrelated dead code unless the user points it out or asks for cleanup
 - Don't stack guards that duplicate each other (e.g. `Number.isFinite` alongside `Number.isInteger`, which already rejects `NaN`/`Infinity`). One check that fully covers the case is enough; every guard must trace to a real requirement.
 - Revert incidental editor or formatter noise (auto-format, import reordering) on lines outside the requested change before presenting the diff.
+- No broad find/replace (`replace_all`, cross-file `sed`) where the pattern could match unintended strings; check match count and locations first.
 
 Every changed line traces directly to the request.
 
 ## Completing work
 
-**Evidence before claims.** Never assess test or code health from static inspection alone. Before claiming a fix works or identifying a root cause, run the scoped failing test or repro (diagnostics `--check` / `--test-file`, honouring token discipline) and include the output. If it genuinely cannot be run, say so explicitly — do not assert instead. Don't say tests pass or a fix is resolved unless you have seen output confirming it. When work is done, say what changed and what the user should verify.
+**Evidence before claims.** Never assess test or code health from static inspection alone. Before claiming a fix works or identifying a root cause, run the scoped failing test or repro (diagnostics `--check` / `--test-file`, honouring token discipline) and include the output. If it genuinely cannot be run, say so explicitly — do not assert instead. Don't say tests pass or a fix is resolved unless you have seen output confirming it. For tooling, install, or config changes, success means the running system observably picked the change up (a smoke-test invocation), not that the edit was written. When work is done, say what changed and what the user should verify.
 
 **Fix what you find broken.** A failing test or check discovered during verification, even one unrelated to the current task, is not evidence to report and move past — it's a bug to fix. Fix it as its own separate chunk with its own commit; do not leave it broken because it's "out of scope." State plainly what was found and fixed, not that it was pre-existing or whose it was. If a real constraint blocks fixing it now (needs a product decision, outside your authority, too large for this session), say that constraint explicitly instead of leaving it silently broken.
 
@@ -140,6 +144,7 @@ Every changed line traces directly to the request.
 - **Concise prose, full-depth work** — brevity applies only to user-facing narration. Do not reduce investigation, verification, warnings, required questions, or skill-defined output to make a response shorter.
 - **Avoid em dashes** across agent output, docs, comments, commit messages, and generated prose. Use a comma, colon, semicolon, parentheses, or a new sentence instead. Only use an em dash when preserving quoted text, matching an external style requirement, or when no other punctuation keeps the meaning clear.
 - Use `trash` instead of `rm` for any destructive file removal.
+- **No unmeasured cost claims** — never assert token or usage cost figures; if asked, say they cannot be reliably measured in-session.
 - **No blame attribution** — don't label issues as "pre-existing" or distinguish your changes from prior code. Describe the issue and what to fix, without framing who introduced it.
 - **User-raised issues are in scope** — if the user points out a defect, debt, or inconsistency, triage it on its merits. Do not use its age, origin, or authorship as a reason to skip it; fix it when it fits the current chunk, or state the real constraint.
 

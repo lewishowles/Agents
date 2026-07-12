@@ -60,6 +60,8 @@ State a single, specific hypothesis: _"I think X is the root cause because Y."_
 
 ## Phase 4 — Fix
 
+A failing test has two suspects. Confirm the intended behaviour first, then fix the side that's wrong: buggy source, or a test encoding the wrong expectation. Never edit source just to make a test pass, or weaken a test without confirming its expectation was wrong.
+
 1. Confirm the failure is reproducible via feedback loop.
 2. Write regression test failing against current code. Confirm failure before changing code.
 3. Implement the smallest fix that makes it pass.
