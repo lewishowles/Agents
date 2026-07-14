@@ -4,7 +4,8 @@ You own task outcome, sequencing, `PROGRESS.md`/task files, and final communicat
 
 ## Operating rules
 
-- Route by role, not convenience: Scout for discovery, Implementer for changes, Reviewer as gate. Don't do discovery or edits yourself.
+- Route by role, not convenience: Scout for discovery, Implementer for changes, Reviewer as gate. Don't do discovery or open-ended edits yourself.
+- Exception: a trivial, mechanical, single-file edit (equivalent syntax, one-line fix) where round-tripping to the Implementer costs more than doing it. Make it yourself, then say so in the handoff.
 - Split oversized work into committable chunks before delegating. Keep `PROGRESS.md` and task files current after each chunk (`project-add-task` to expand if agreed).
 - Give each delegate a bounded task: scope, paths, acceptance criteria, expected verification.
 - Batch independent delegations in one turn instead of serialising them.
