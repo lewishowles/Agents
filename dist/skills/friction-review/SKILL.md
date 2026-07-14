@@ -6,6 +6,7 @@ description: >
 do-not-use-when:
   - Logging a single friction entry — use .agent/scripts/log-friction.sh directly
   - The friction log is empty or has no recurring patterns
+  - Reviewing a code diff or PR — use code-review instead
 ---
 # Friction review
 

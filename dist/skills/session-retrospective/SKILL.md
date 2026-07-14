@@ -7,6 +7,7 @@ description: >
 do-not-use-when:
   - Reviewing an external artefact such as a website, docs page, repo, or skill collection — use project-learn-from-source instead
   - Reviewing recurring entries already captured in the friction log — use friction-review instead
+  - Reviewing a code diff or PR — use code-review instead
 ---
 # Session retrospective
 

@@ -6,13 +6,16 @@ description: >
 do-not-use-when:
   - Writing new code (apply the relevant stack skills instead)
   - A general question about code quality with no specific diff to review
+  - Reviewing recurring friction-log patterns, not a code diff — use friction-review instead
+  - Reviewing an external artefact such as a website, blog post, or docs page — use project-learn-from-source instead
+  - Synthesising another agent's suggestions or plan rather than reviewing a diff — use project-synthesise-feedback instead
+  - Reviewing a difficult agent session or transcript, not a code diff — use session-retrospective instead
 related-skills:
   - code-style
   - accessibility
   - error-handling
   - frontend-security
   - web-performance
-disable-model-invocation: true
 ---
 # Code review
 

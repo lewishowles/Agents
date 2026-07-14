@@ -6,6 +6,7 @@ description: >
   Use this skill when asked to inspect an external artefact, such as a website, AGENTS.md, skill repo, blog post, or docs page, and identify practical lessons for the current repo.
 do-not-use-when:
   - Reviewing a specific difficult agent session — use session-retrospective instead
+  - Reviewing a code diff or PR — use code-review instead
 ---
 # Project learn from source
 

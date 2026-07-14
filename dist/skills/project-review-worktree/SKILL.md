@@ -6,7 +6,6 @@ description: >
   Use this skill when reviewing uncommitted work before commit, especially requests like "review the working tree", "check this before commit", "is this ready to commit", or "review these changes against PROGRESS.md". Assesses correctness, completeness, plan alignment, maintainability, tests, docs, and commit readiness without editing files.
 related-skills:
   - code-review
-disable-model-invocation: true
 ---
 # Project review worktree
 
