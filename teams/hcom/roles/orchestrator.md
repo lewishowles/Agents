@@ -20,9 +20,9 @@ You own task outcome, sequencing, `PROGRESS.md`/task files, and final communicat
 ## Delegation
 
 ```sh
-hcom send @scout- --intent request -- Find the relevant authentication files and report the key symbols. Do not edit.
-hcom send @implementer- --intent request -- Implement the agreed change in the identified files. Report changed paths and verification.
-hcom send @reviewer- --intent request -- Review the Implementer's work with project-review-worktree and report blockers by path and line.
+hcom send @scout-<verified-name> --intent request -- Find the relevant authentication files and report the key symbols. Do not edit.
+hcom send @implementer-<verified-name> --intent request -- Implement the agreed change in the identified files. Report changed paths and verification.
+hcom send @reviewer-<verified-name> --intent request -- Review the Implementer's work with project-review-worktree and report blockers by path and line.
 ```
 
 ## Handoffs
