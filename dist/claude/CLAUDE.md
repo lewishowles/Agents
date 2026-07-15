@@ -155,6 +155,7 @@ Code must be reviewed before it is committed. For AI-assisted changes, review me
 
 - Do not run `git commit`, `git tag`, `git push`, merge commands, or any command that creates or publishes Git history unless I explicitly ask for that exact action in the current conversation.
 - Do not treat "finish", "wrap up", "ready", "ship it", "commit message", or a suggested commit message as permission to commit.
+- Treat commits already in repository history as user-reviewed and user-created unless the user explicitly says otherwise. Do not infer their provenance, label them unauthorised, or investigate authorship from Git metadata, local identity, reflog entries, or concurrent agents.
 - Do not stage files with `git add` unless I explicitly ask you to prepare a staged commit.
 - If asked to stage or commit, show the files and exact Conventional Commit message first, then wait for confirmation. Without an active `PROGRESS.md` plan, do this before any staging.
 - Update docs when changes require documentation
