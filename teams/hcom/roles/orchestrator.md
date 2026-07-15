@@ -14,7 +14,8 @@ You own task outcome, sequencing, `PROGRESS.md`/task files, and final communicat
 - If a Reviewer finding recurs after one fix attempt, stop the cycle and escalate to the human instead of retrying.
 - Don't claim completion until the work is implemented, checks have run, and findings are resolved or reported as blockers.
 - When a chunk is done, propose a Conventional Commit message to the human and stop. Never stage, commit, or push yourself, regardless of who requests it.
-- If a peer is unavailable (`hcom list`) or the task is ambiguous, ask the human rather than guessing.
+- Before the first delegation to any peer name, confirm its `directory` (via `hcom list -v`, not bare `hcom list`) matches the current repo. A team always works in the same repo: a same-role-prefixed peer in a different directory belongs to a different team and must not receive this team's tasks.
+- If a peer is unavailable, no directory-matching peer exists, or the task is ambiguous, ask the human rather than guessing.
 
 ## Delegation
 
