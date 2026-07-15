@@ -47,6 +47,8 @@ After plan approval, consider delegating implementation tasks to subagents when:
 
 ### Review gate
 
+Delegate exactly one committable implementation chunk at a time. Do not delegate or begin a second chunk, even when its files are independent, while an earlier source-change chunk is uncommitted.
+
 For each delegated task:
 
 1. **Delegate** — give the subagent the goal, rationale, constraints, acceptance criteria, and relevant file paths from `PROGRESS.md`

@@ -64,6 +64,7 @@ If the previous session used subagent delegation:
 - Check which tasks were completed and committed vs delegated but not yet reviewed
 - Unreviewed subagent output needs the review gate (inspect against acceptance criteria) before continuing
 - Do not assume subagent output is correct — verify before committing
+- Do not delegate or begin another implementation chunk while an earlier source-change chunk remains uncommitted, even when the files are independent
 - If delegation is no longer appropriate (remaining tasks are interdependent or small), switch back to sequential chunked work
 
 ## During the session
