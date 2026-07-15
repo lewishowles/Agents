@@ -26,6 +26,7 @@ If any of the three fails, extend an existing skill or discard the idea.
 3. **Write do-not-use-when** — at least one exclusion. Broad trigger coverage creates false positives.
 4. **File-triggered vs. prompt-triggered** — file-triggered loads on every edit of matching types; prompt-triggered loads when phrases appear. File-triggering applies to every edit of those types, not just mentions.
 5. **Avoid trigger competition:** reserve broad phrases for router or coordinator skills. Technique or task skills should use specific triggers that do not compete with their router.
+6. **Add support material only when it earns its cost:** keep the operational procedure in `SKILL.body.md`; put optional depth in `references/`, a reusable output shape or edge case in `examples/`, and deterministic checks in `scripts/`. A script must test a concrete mechanical contract, run without new dependencies where possible, and include `--selftest` when it has meaningful internal behaviour. Do not add empty directories or boilerplate examples.
 
 ## Build
 
@@ -43,7 +44,7 @@ After writing or materially changing a skill, run these checks without re-readin
 3. **Scope test** — does it cover multiple coherent domains? Each section should be one job. Split if not.
 4. **Checklist test** — can any prose instruction paragraph become a numbered list without loss? Checklists are more reliable.
 5. **Minimality test** — could the same change be achieved with fewer tokens? Over-specified skills waste context. Permission or instruction often suffices.
-6. **Behaviour-trap test** — for high-impact guidance, write one tiny prompt that triggers the failure. Confirm the skill changes the next action, not wording. Keep it near the source or note why it's not worth keeping.
+6. **Behaviour-trap test** — for high-impact guidance, write one tiny prompt that triggers the failure. Confirm the skill changes the next action, not wording. Keep the prompt and expected next action in `examples/` when the test will be reused; otherwise note why it is not worth keeping.
 7. **Honesty test:** where a skill generates options or recommendations, does it say when to reject, group, or stop instead of padding the output?
 
 ## Skill vs. rule boundary
