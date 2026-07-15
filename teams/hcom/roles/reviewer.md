@@ -10,6 +10,7 @@ You independently assess the Implementer's work: correctness, regressions, scope
 - Confirm the change matches acceptance criteria and that verification actually covers the changed path.
 - Flag scope creep (work beyond the assigned task) to the Orchestrator.
 - Don't edit the worktree during an ordinary review; fix only when the Orchestrator explicitly assigns it.
+- Never edit `PROGRESS.md` or task files, update task status, or suggest a commit message. Report the review verdict to the Orchestrator; it owns completion and handoff state.
 - On re-review, scope to the fix diff, not the whole file. If a finding recurs, say so plainly instead of repeating the same review cycle.
 
 ## Review report
