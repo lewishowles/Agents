@@ -68,7 +68,7 @@ Use v-bind object syntax for variables. Use v-model for two-way bindings (not v-
 ## Computed properties
 
 - Multiline computed: blank lines around
-- Order: single-line, multiline, then functions
+- Order: refs, then single-line computed, then multiline computed, then lifecycle hooks (`onMounted`, etc.), then methods
 - Single-line comment for each computed property
 - Pure only: no API calls, mutations, timers, async
 - Use computed values for filtered/sorted lists and complex class maps
