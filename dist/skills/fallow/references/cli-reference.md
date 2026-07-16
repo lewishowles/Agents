@@ -130,8 +130,9 @@ fallow dead-code --format json --quiet --trace src/utils.ts:myFunction
 fallow dead-code --format json --quiet --save-baseline fallow-baselines/dead-code.json
 fallow dead-code --format json --quiet --baseline fallow-baselines/dead-code.json --fail-on-issues
 
-# Regression detection: save baseline on main, compare on PRs
+# Regression detection: update regression.baseline in the discovered config
 fallow dead-code --format json --quiet --save-regression-baseline
+# Then compare on PRs
 fallow dead-code --format json --quiet --fail-on-regression --tolerance 2%
 
 # Scope to specific files (e.g., lint-staged)
@@ -509,7 +510,7 @@ fallow health --format json --quiet --trend
 {
   "kind": "health",
   "schema_version": 7,
-  "version": "3.3.0",
+  "version": "3.6.0",
   "elapsed_ms": 32,
   "summary": {
     "files_analyzed": 482,
@@ -907,7 +908,7 @@ fallow audit \
 {
   "kind": "audit",
   "schema_version": 7,
-  "version": "3.3.0",
+  "version": "3.6.0",
   "command": "audit",
   "verdict": "fail",
   "changed_files_count": 12,
@@ -982,7 +983,7 @@ fallow flags --format json --quiet --workspace my-package
 ```json
 {
   "schema_version": 7,
-  "version": "3.3.0",
+  "version": "3.6.0",
   "elapsed_ms": 116,
   "feature_flags": [],
   "total_flags": 0
@@ -1083,7 +1084,7 @@ fallow security --gate newly-reachable --changed-since origin/main
 {
   "kind": "security",
   "schema_version": "4",
-  "version": "3.3.0",
+  "version": "3.6.0",
   "elapsed_ms": 42,
   "config": {
     "rules": {
@@ -1112,7 +1113,7 @@ fallow security --gate newly-reachable --changed-since origin/main
 {
   "kind": "security",
   "schema_version": "4",
-  "version": "3.3.0",
+  "version": "3.6.0",
   "elapsed_ms": 42,
   "config": {
     "rules": {
@@ -1185,6 +1186,7 @@ Compose one evidence bundle before editing a file or exported symbol. This is th
 ```bash
 fallow inspect --file src/api.ts --format json --quiet
 fallow inspect --symbol src/api.ts:fetchUser --format json --quiet
+fallow inspect --file src/api.ts --churn --format json --quiet
 ```
 
 ### Target Flags
@@ -1193,6 +1195,7 @@ fallow inspect --symbol src/api.ts:fetchUser --format json --quiet
 |------|-------------|
 | `--file <PATH>` | Inspect one project-relative file |
 | `--symbol <FILE:EXPORT>` | Inspect one exported symbol. Supporting dead-code, duplication, complexity, and security evidence is file-scoped in the first version |
+| `--churn` | Add target-level git churn evidence. Off by default; missing git history is reported as `unavailable` |
 
 Common global flags: `--format`, `--quiet`, `--root`, `--config`, `--workspace`, `--production`, `--no-cache`, `--threads`.
 
@@ -1215,13 +1218,14 @@ Common global flags: `--format`, `--quiet`, `--root`, `--config`, `--workspace`,
     "dead_code": { "status": "ok", "scope": "file", "data": {} },
     "duplication": { "status": "ok", "scope": "project_filtered_to_file", "data": {} },
     "complexity": { "status": "ok", "scope": "project_filtered_to_file", "data": {} },
-    "security": { "status": "ok", "scope": "file", "data": {} }
+    "security": { "status": "ok", "scope": "file", "data": {} },
+    "churn": { "status": "ok", "scope": "project_filtered_to_file", "data": {} }
   },
   "warnings": []
 }
 ```
 
-Each evidence section carries `status` and `scope`. Non-fatal child-analysis failures become section-level errors and warnings, so callers can still use the remaining evidence.
+Each evidence section carries `status` and `scope`. The optional churn section can report `ok`, `unavailable`, or `error`. Non-fatal analysis failures become section-level errors and warnings, so callers can still use the remaining evidence.
 
 ---
 
@@ -1634,6 +1638,7 @@ Available on all commands:
 | `-c, --config` | `string` | - | Config file path |
 | `--allow-remote-extends` | `bool` | `false` | Allow trusted config files to extend HTTPS URLs |
 | `-f, --format` | `human\|json\|sarif\|compact\|markdown\|codeclimate\|pr-comment-github\|pr-comment-gitlab\|review-github\|review-gitlab\|badge\|github-annotations\|github-summary` | `human` | Output format (alias: --output) |
+| `--pretty` | `bool` | `false` | Indent JSON output for manual inspection. Requires the final output format to be JSON |
 | `-q, --quiet` | `bool` | `false` | Suppress progress output |
 | `--no-cache` | `bool` | `false` | Disable incremental caching |
 | `--threads` | `string` | - | Number of parser threads |
@@ -1661,11 +1666,11 @@ Available on all commands:
 | `--fail-on-issues` | `bool` | `false` | Exit 1 if any issues found (promotes `warn` to `error`) |
 | `--sarif-file` | `string` | - | Write SARIF output to a file instead of stdout |
 | `-o, --output-file` | `string` | - | Write the report to a file instead of stdout, for any --format (no ANSI codes). Useful on large projects where the terminal scrollback truncates the top. Progress and the confirmation stay on stderr |
-| `--annotations-path-prefix` | `string` | - | Prefix prepended to every `file=` path in `--format github-annotations` output. GitHub resolves annotation paths against the repository root, so when the analyzed project lives in a subdirectory (e.g. `packages/app/`), paths need that offset. fallow detects the offset via the git toplevel automatically; this flag overrides the detection. Valid only with the GitHub-native formats |
+| `--report-path-prefix` | `string` | - | Prefix prepended to every path in the CI-facing formats (`github-annotations`, `github-summary`, `codeclimate`, `review-github`, `review-gitlab`). CI platforms address files by repository-root-relative path, so when the analyzed project lives in a subdirectory (e.g. `packages/app/`), paths need that offset. fallow detects the offset via the git toplevel automatically; this flag overrides the detection. Pass an empty string to disable rebasing and emit paths relative to `--root` |
 | `--fail-on-regression` | `bool` | `false` | Fail if issue count increased beyond tolerance vs a regression baseline |
 | `--tolerance` | `string` | `0` | Allowed increase: `"2%"` (percentage) or `"5"` (absolute). Default: `"0"` |
-| `--regression-baseline` | `string` | - | Path to regression baseline file (default: `.fallow/regression-baseline.json`) |
-| `--save-regression-baseline` | `string` | - | Save current issue counts as a regression baseline |
+| `--regression-baseline` | `string` | - | Path to a standalone regression baseline file. Without it, fallow uses `regression.baseline` from the config |
+| `--save-regression-baseline` | `string` | - | Save current issue counts. With no path, update `regression.baseline` in the discovered fallow config or create `.fallowrc.json`; with a path, write a standalone baseline file |
 | `--only` | `dead-code\|dupes\|health` | - | Run only specific analyses (e.g., `--only dead-code,dupes`). Values: `dead-code` (alias: `check`), `dupes`, `health` |
 | `--skip` | `dead-code\|dupes\|health` | - | Skip specific analyses (e.g., `--skip health`). Values: `dead-code` (alias: `check`), `dupes`, `health` |
 | `--dupes-mode` | `strict\|mild\|weak\|semantic` | - | Override duplication detection mode in combined mode |
@@ -1763,7 +1768,7 @@ Set `FALLOW_FORMAT=json` and `FALLOW_QUIET=1` in your agent environment to avoid
 | Format | Description | Use Case |
 |--------|-------------|----------|
 | `human` | Colored terminal output | Interactive use |
-| `json` | Machine-readable JSON | Agent integration, CI pipelines |
+| `json` | Compact machine-readable JSON by default; add `--pretty` for indented manual inspection | Agent integration, CI pipelines |
 | `sarif` | Static Analysis Results Interchange Format | GitHub Code Scanning, SARIF-compatible tools |
 | `compact` | Grep-friendly: one issue per line. Dupes lines include `code-duplication:path:start-end:fingerprint=dup:<id>,...` | Quick filtering |
 | `markdown` | Markdown tables | Documentation, PR comments |
@@ -1798,7 +1803,7 @@ The HTTP layer mirrors the bash `gh_api_retry` / `curl_retry` helpers: `FALLOW_A
 
 ## CI Integration
 
-- **GitHub Actions**: `uses: fallow-rs/fallow@v2` - supports SARIF upload to Code Scanning, inline PR annotations (`annotations: true`), PR comments, all commands. Annotations use workflow commands (no Advanced Security required); limit with `max-annotations` (default 50). Set `score: true` to compute health score and enable the health delta header in PR comments
+- **GitHub Actions**: `uses: fallow-rs/fallow@v3` - supports SARIF upload to Code Scanning, inline PR annotations (`annotations: true`), PR comments, all commands. Annotations use workflow commands (no Advanced Security required); limit with `max-annotations` (default 50). Set `score: true` to compute health score and enable the health delta header in PR comments
 - **GitLab CI**: include `ci/gitlab-ci.yml` template and extend `.fallow` - generates Code Quality reports via `--format codeclimate` / `--format gitlab-codequality` (inline MR annotations), rich MR comments, code review comments, all commands. Use `fallow ci-template gitlab --vendor` when runners cannot reach `raw.githubusercontent.com`; commit the generated `ci/` and `action/` files and use GitLab's local include syntax. Variables use `FALLOW_` prefix (e.g., `FALLOW_COMMAND`, `FALLOW_FAIL_ON_ISSUES`). Set `FALLOW_SCORE: "true"` to compute health score; `FALLOW_TREND: "true"` to compare against saved snapshots
 - **Any CI**: `npx fallow --ci` - equivalent to `--format sarif --fail-on-issues --quiet`
 
@@ -1833,7 +1838,7 @@ The HTTP layer mirrors the bash `gh_api_retry` / `curl_retry` helpers: `FALLOW_A
 {
   "kind": "dead-code",
   "schema_version": 7,
-  "version": "3.3.0",
+  "version": "3.6.0",
   "elapsed_ms": 45,
   "total_issues": 12,
   "entry_points": {
@@ -1993,7 +1998,7 @@ When `--baseline` is used in combined output, the JSON includes a `baseline_delt
 {
   "kind": "dupes",
   "schema_version": 7,
-  "version": "3.3.0",
+  "version": "3.6.0",
   "elapsed_ms": 82,
   "total_clones": 15,
   "total_lines_duplicated": 230,
@@ -2037,11 +2042,11 @@ When running `fallow` with no subcommand (all analyses), the JSON output combine
 {
   "kind": "combined",
   "schema_version": 7,
-  "version": "3.3.0",
+  "version": "3.6.0",
   "elapsed_ms": 159,
   "check": {
     "schema_version": 7,
-    "version": "3.3.0",
+    "version": "3.6.0",
     "elapsed_ms": 45,
     "total_issues": 12,
     "unused_files": [],
