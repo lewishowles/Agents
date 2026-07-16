@@ -37,11 +37,11 @@ When `<project-root>/.agent/scripts/project-diagnostics.py` exists, use `--list`
 Read only enough to orient. Stale sessions (5+ min idle) restart from scratch.
 
 - Read full `## Session handoff` (all subsections above `### Stop here`, including `### Context` and `### Verify with`)
-- Verify the active task file's front matter before starting it: `status` and `completed` are the source of truth and can change outside a session (work reviewed, committed, or marked done from Boilersuit's Progress tab). If the active task is already `done`, promote the next queue entry instead of redoing it; if the queue annotation disagrees with front matter, trust front matter and fix the queue line.
+- Verify the active task file's front matter before starting it: `status` and `completed` are the source of truth. If the active task is already `done`, promote the next queue entry instead of redoing it; if the queue annotation disagrees with front matter, trust front matter and fix the queue line.
 - Continue to `## Active work`, `## Decisions`, `## Discoveries`, `## Risks` only when needed
 - Read linked feature specs only when active; skip unrelated specs
 - Skip completed or archived sections unless current task depends on their history
-- Inspect repository state and any branch or uncommitted-work claims in the task file. Branch creation or switching is not part of task setup unless the user requests it.
+- Run `git status --short` before editing to avoid overwriting work the user has not handled. Do not put its result in `PROGRESS.md`, or use it to infer task completion. Branch creation or switching is not part of task setup unless the user requests it.
 - Read `WORKSPACE.md` if present before running local commands
 - Verify unfinished tasks belong to current section
 
@@ -61,10 +61,10 @@ Keep outline short: 3–5 sentences. Give enough context to redirect without a f
 
 If the previous session used subagent delegation:
 
-- Check which tasks were completed and committed vs delegated but not yet reviewed
+- Check which delegated tasks were implemented and which still need review
 - Unreviewed subagent output needs the review gate (inspect against acceptance criteria) before continuing
-- Do not assume subagent output is correct — verify before committing
-- Do not delegate or begin another implementation chunk while an earlier source-change chunk remains uncommitted, even when the files are independent
+- Do not assume subagent output is correct — verify before handing it back to the user
+- Do not begin another implementation chunk until the user has accepted the previous handoff with “committed”, “continue”, “next”, or equivalent
 - If delegation is no longer appropriate (remaining tasks are interdependent or small), switch back to sequential chunked work
 
 ## During the session
@@ -79,7 +79,7 @@ If the previous session used subagent delegation:
 Finishing work includes updating `PROGRESS.md` and giving handoff. Do not leave either to next session.
 
 - Tick completed `## Tasks` checkboxes in the active task file (or completed tasks in an inline `## Active work` section)
-- When the active task is finished, keep the file: set `status: done` and `completed: <date>` in front matter, append a short `## Outcome` section (what landed, how it was verified), remove it from the upcoming queue, and promote the next entry into the active slot
+- When implementation is finished, tick the task checkboxes, append a short `## Outcome` section (what changed and how it was verified), and refresh the handoff. Leave the task `in-progress` and do not promote the queue until the user signals acceptance with “committed”, “continue”, “next”, or equivalent. Then set `status: done` and `completed: <date>`, remove it from the upcoming queue, and promote the next entry.
 - Update `### Previous step` with what just changed and any verification performed
 - Update `### Next step` with the first concrete follow-up action
 - Update the `## Roadmap` row Status when a release becomes active or its last task lands as done
@@ -99,6 +99,6 @@ Never say "ready to move on to X" without this context. User needs enough to red
 ## Wrapping up
 
 - Update `## Session handoff` — current goal, previous step, next step, and stop guidance
-- Complete finished tasks per the flow above (front matter, `## Outcome`, queue); move done inline sections toward `## Archived milestones`
+- Complete user-accepted tasks per the flow above (front matter, `## Outcome`, queue); move done inline sections toward `## Archived milestones`
 - Add `### Failed approaches` under the current section when a dead end occurred — one line per entry: `Approach X failed because Y; don't retry`. Omit when nothing failed.
 - Do not leave `PROGRESS.md` in a half-updated state

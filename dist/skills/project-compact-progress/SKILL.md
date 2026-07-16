@@ -144,7 +144,7 @@ If scope changed, update "files likely to change" in the current section.
 
 ## Finishing work
 
-After work finishes, treat work as incomplete unless handoff is refreshed. Mark completed tasks, update `### Previous step`, set next concrete action in `### Next step`, archive/remove stale active notes.
+After work finishes, refresh the handoff: tick verified implementation steps, update `### Previous step`, and state that the task awaits the user's acceptance. Mark a task complete, promote the queue, or archive it only after the user says “committed”, “continue”, “next”, or equivalent.
 
 ## Archive mode
 
@@ -152,7 +152,7 @@ Archive when completed work makes active work hard to find. Done task files (kep
 
 Archive completed sections when:
 
-- Tasks are done and the commit has landed
+- Tasks are done after the user accepted their handoff
 - Section no longer affects current or upcoming work
 - Detailed implementation notes are redundant with the code
 - New major phase starts and old phases are settled

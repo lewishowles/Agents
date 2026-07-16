@@ -39,7 +39,7 @@ Run only when user asks and it exists in current shell.
 3. **Locate** — identify placement relative to upcoming sections
 4. **Approach exploration** (opt-in) — for complex tasks, surface 2–3 approaches with tradeoffs; wait for user choice before writing. Skip single-file, obvious, or decided work. Present options first, write after confirmation.
 5. **Reorganise** — if new work changes later needs, update upcoming sections
-6. **Insert** — add section: purpose, expected commit, model tier, files likely to change, tasks, risks, notes
+6. **Insert** — add section: purpose, model tier, files likely to change, tasks, risks, notes
 7. **Update parking lot** — move related ideas into new section or leave parked
 
 ## Cross-repo work
@@ -62,7 +62,7 @@ For broad dependency questions, start with local evidence: package metadata, imp
 - Insert before upcoming sections if this work is a prerequisite
 - Split into two sections if task spans multiple commits
 - Order by dependency, not arrival
-- Each section with `### Expected commit` is an execution boundary
+- Each active section is an execution boundary
 - When asked to implement multi-section plan, do only first incomplete section unless user asks for all
 - After one section, stop for review: changed files, verification, commit message
 - Do not combine release, policy, tooling, docs, roadmap into one working-tree change unless explicitly one commit
@@ -87,13 +87,13 @@ Release boundaries live in one `## Roadmap` table (`ID | Title | Overview | Stat
 
 Placement follows the same principle as section order: when inserting new work, if it's the immediate next task, write or update the active task file directly; if it's later in the queue, add a new task file and insert its link into the queue list in dependency order, not at the end.
 
-On completion, keep the file: set `status: done` and `completed: <date>` in front matter, append a short `## Outcome` section (what landed, how it was verified), remove the task from the queue, and promote the next entry into the active slot in `PROGRESS.md`. Done files are the historical record, replacing most per-task archived-milestone prose. When every task file is done, the folder may be bulk-cleaned — a deliberate user or agent action, never automatic.
+After the user signals acceptance with “committed”, “continue”, “next”, or equivalent, keep the file: set `status: done` and `completed: <date>` in front matter, append a short `## Outcome` section (what changed and how it was verified), remove the task from the queue, and promote the next entry into the active slot in `PROGRESS.md`. Before that signal, leave the task `in-progress` even when implementation and verification are complete. Done files are the historical record, replacing most per-task archived-milestone prose. When every task file is done, the folder may be bulk-cleaned — a deliberate user or agent action, never automatic.
 
 ### Status and dependencies
 
 Every task file's front matter states `status` (`ready`, `in-progress`, `blocked`, `needs-decision`, or `done`) and `depends` (task IDs that must land first, or `[]`). This is what lets a second agent, or the user, pick up any task that isn't already claimed instead of assuming the queue order is a strict dependency chain: most queued tasks are independent unless `depends` says otherwise. Mark a task `needs-decision` rather than `ready` when an open risk or ambiguity needs the user's input before implementation; don't resolve it by guessing. Use `blocked` only for external blocks; blocking by another task is expressed through `depends`.
 
-Front matter is the source of truth for status: the queue's inline annotation is convenience and may lag (the user can mark work done from outside a session, e.g. Boilersuit's Progress tab). Check the active task's front matter before starting it. Only propose actual dispatch tooling (a script or bot that assigns tasks) if the backlog is large enough, and independent enough, that manual pickup has become the bottleneck: for a handful of tasks it isn't.
+Front matter is the source of truth for status: the queue's inline annotation is convenience and may lag. A verified implementation remains `in-progress` until the user signals acceptance; Git state does not change this. Check the active task's front matter before starting it. Only propose actual dispatch tooling (a script or bot that assigns tasks) if the backlog is large enough, and independent enough, that manual pickup has become the bottleneck: for a handful of tasks it isn't.
 
 ## Section structure
 
@@ -115,10 +115,6 @@ Optional, paired with Status. Other sections/tasks that must land first, or "Non
 ### Contract
 
 Public behaviour, data shape, UI states, or API surface affected. Required for public or user-visible work.
-
-### Expected commit
-
-<Conventional Commit message>
 
 ### Model tier
 
@@ -166,10 +162,6 @@ completed:               # YYYY-MM-DD, set when status becomes done
 ## Contract
 
 Public behaviour, data shape, UI states, or API surface affected. Required for public or user-visible work.
-
-## Expected commit
-
-<Conventional Commit message>
 
 ## Model tier
 

@@ -54,14 +54,14 @@ After plan approval, consider delegating implementation tasks to subagents when:
 
 ### Review gate
 
-Delegate exactly one committable implementation chunk at a time. Do not delegate or begin a second chunk, even when its files are independent, while an earlier source-change chunk is uncommitted.
+Delegate exactly one implementation chunk at a time. Do not delegate or begin a second chunk, even when files are independent, until the user has accepted the earlier handoff with “committed”, “continue”, “next”, or equivalent.
 
 For each delegated task:
 
 1. **Delegate** — give the subagent the goal, rationale, constraints, acceptance criteria, and relevant file paths from `PROGRESS.md`
 2. **Review** — inspect the subagent's output against acceptance criteria; do not trust blindly
 3. **Approve or request changes** — if output is correct, proceed; if not, send specific feedback
-4. **Commit** — after approval, commit the task's output before delegating the next
+4. **Hand off** — after approval, present the verified result and wait for the user's acceptance before delegating the next task
 
 After two comparable failures, escalate to a more capable agent or resume in the main session.
 
@@ -176,7 +176,7 @@ Read this section first. Only open the active task file. Stop after this section
 
 ### Active task
 
-`.agent/tasks/NNN.md`, or, for a brand-new plan with no task file yet, a one-sentence current goal plus next step. Verify the active task's front matter status before starting: it can change outside a session (work reviewed, committed, or marked done from Boilersuit).
+`.agent/tasks/NNN.md`, or, for a brand-new plan with no task file yet, a one-sentence current goal plus next step. Verify the active task's front matter status before starting. Check Git separately for safety, but never use Git state as progress state.
 
 ### Upcoming queue
 
@@ -240,10 +240,6 @@ completed:               # YYYY-MM-DD, set when status becomes done
 ## Contract
 
 Public behaviour, data shape, UI states, or API surface affected. Required for public or user-visible work.
-
-## Expected commit
-
-<Conventional Commit message>
 
 ## Model tier
 

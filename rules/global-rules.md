@@ -79,7 +79,7 @@ For analysis-only requests, do not load implementation skills or begin coding. U
 **Unexpected state — stop and ask. Don't dig.**
 
 - File missing? Symlink broken? Output unexpected? Stop. If a user says a missing file exists, state whether gitignored files were included before concluding it is missing.
-- If repository state conflicts with a task file's claimed branch, working tree, commit, or generated output, report both facts without calling the task file stale or asking the user to reconstruct it. Treat the task's intent and acceptance criteria as the agent-facing contract, verify the repository facts, and ask only how to resolve a material mismatch.
+- At session start, check `git status --short` before editing so existing work is not overwritten. Git state is a safety signal, not progress state: do not use it to infer, report, or reconcile task status, and never record commit hashes, branch state, or clean/dirty-tree claims in `PROGRESS.md`.
 - Don't workaround, retry, or dig deeper — state what you expected vs. what you found
 - Recovers faster than chasing wrong paths. You know the system; I don't.
 
@@ -123,9 +123,9 @@ Every changed line traces directly to the request.
 
 **Distil before closing.** Before updating the handoff, ask what was learned: what belongs in `## Discoveries`, what belongs in `## Decisions`, and whether any dead ends should be recorded as `### Failed approaches`. Add only what isn't already captured.
 
-**PROGRESS.md update is blocking.** When a `PROGRESS.md` plan is active, update it before offering the commit message — not after, not as an optional follow-up.
+**PROGRESS.md update is blocking.** When a `PROGRESS.md` plan is active, update the handoff before stopping — not after, not as an optional follow-up. Record work completed and verification, but leave the task `in-progress` until the user signals acceptance with “committed”, “continue”, “next”, or equivalent. Only then mark it `done`, set `completed`, and promote the queue. This is a user-handoff decision, not a Git-state check.
 
-**Always state what's next.** After completing any step — or finishing everything — close with the next substantive project step, an open question to resolve, or an explicit "nothing remains" if there is no more planned work. Do not treat review, staging, committing, or waiting for commit confirmation as the next project step; if that is the immediate handoff action, say what work resumes after it or that no further work remains.
+**Always state what's next.** After completing any step — or finishing everything — close with the next substantive project step, an open question to resolve, or an explicit "nothing remains" if there is no more planned work. If the work awaits the user's handoff decision, say so and stop; do not promote the next task yet.
 
 **Boilerplate impact.** After a change to a project's public API, function signatures, dependency versions, or stack conventions, state in the closing summary whether it is worth back-porting to the boilerplate baseline (`~/Dev/Repositories/Packages/boilerplate`), or say "not applicable" if the change is project-specific. Do not back-port automatically — this is a note for the user to action separately.
 

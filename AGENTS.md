@@ -127,4 +127,4 @@ Managed external skills also live under `skills/<name>`, but are listed in `exte
 
 ## Current phase
 
-See root `PROGRESS.md` for local session state. It is intentionally ignored because it tracks maintenance work for this checkout, not distributable repo output.
+When present, root `PROGRESS.md` tracks local maintenance session state. It is intentionally ignored because it tracks maintenance work for this checkout, not distributable repo output. Its absence means there is no active maintenance plan, not a setup problem or follow-up item.

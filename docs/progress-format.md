@@ -36,7 +36,7 @@ completed:
 - `release` — a roadmap ID from the `## Roadmap` table. Omit for backlog tasks.
 - `completed` — date (`YYYY-MM-DD`), set when status becomes `done`, otherwise left empty.
 
-Front matter is the source of truth for status. Inline annotations elsewhere (the upcoming queue) are convenience and may lag.
+Front matter is the source of truth for status. An agent leaves a verified implementation `in-progress` until the user signals acceptance with “committed”, “continue”, “next”, or equivalent; it must not infer completion from Git state. Inline annotations elsewhere (the upcoming queue) are convenience and may lag.
 
 ### Body
 
@@ -48,10 +48,6 @@ No `# Title` heading; front matter `title` is the single source. Sections, in or
 ## Contract              (required for public or user-visible work)
 
 Public behaviour, data shape, UI states, or API surface affected.
-
-## Expected commit
-
-<Conventional Commit message>
 
 ## Model tier          (optional)
 
@@ -84,7 +80,7 @@ Step progress is the `- [ ]` / `- [x]` items under `## Tasks`.
 
 ### Completion
 
-On completion, keep the file:
+After the user signals acceptance, keep the file:
 
 1. Set `status: done` and `completed: <date>` in front matter.
 2. Append a short `## Outcome` section: what landed, how it was verified.
@@ -96,7 +92,7 @@ Done task files are the historical record, replacing most per-task `## Archived 
 
 ### Session handoff
 
-Unchanged from the handoff-first convention: `## Session handoff` first (current goal, active task link, previous/next step, standing context, verify with, stop marker). Because status can change outside a session (work reviewed, committed, or marked done from Boilersuit), verify the active task's front matter before starting it rather than trusting the handoff alone.
+Unchanged from the handoff-first convention: `## Session handoff` first (current goal, active task link, previous/next step, standing context, verify with, stop marker). Verify the active task's front matter before starting it rather than trusting the handoff alone. `git status --short` is a separate safety check before editing, and does not change progress status.
 
 ### Roadmap
 
