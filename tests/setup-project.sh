@@ -176,6 +176,26 @@ test_existing_files_are_skipped() {
 	assert_contains "$output" "2 unchanged"
 }
 
+test_existing_capn_config_is_skipped() {
+	local target_dir="$TEST_ROOT/capn-configured"
+	mkdir -p "$target_dir/.capn"
+	printf '{"custom":true}\n' > "$target_dir/.capn/config.json"
+
+	run_setup "$target_dir" --both
+
+	assert_equals "$(cat "$target_dir/.capn/config.json")" '{"custom":true}'
+	assert_not_contains "$CAPN_TEST_LOG" "$target_dir|init --git"
+}
+
+test_incomplete_capn_directory_is_initialised() {
+	local target_dir="$TEST_ROOT/capn-incomplete"
+	mkdir -p "$target_dir/.capn"
+
+	run_setup "$target_dir" --both
+
+	assert_capn_setup "$target_dir"
+}
+
 test_init_workspace_previews_current_project() {
 	local target_dir="$TEST_ROOT/init-preview"
 	local output="$TEST_ROOT/init-preview.md"
@@ -380,6 +400,8 @@ test_claude_setup
 test_codex_setup
 test_both_setup
 test_existing_files_are_skipped
+test_existing_capn_config_is_skipped
+test_incomplete_capn_directory_is_initialised
 test_init_workspace_previews_current_project
 test_write_workspace_writes_current_project
 test_write_workspace_protects_existing_manifest

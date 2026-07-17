@@ -122,9 +122,18 @@ ensure_dir() {
 	cli_group_status success "created" "$label"
 }
 
+# Returns 0 when Capn has already initialised the project.
+capn_is_initialised() {
+	[[ -f "$PROJECT_DIR/.capn/config.json" ]]
+}
+
 # Validates the prerequisites for Capn's Git-aware project initialisation.
 check_capn_requirements() {
 	local git_root
+
+	if capn_is_initialised; then
+		return
+	fi
 
 	if ! command -v capn &>/dev/null; then
 		cli_status failed "Capn unavailable" "Install capn-hook globally before project setup"
@@ -145,6 +154,12 @@ check_capn_requirements() {
 # Initialises disposable navigational memory and project hooks through Capn.
 initialise_capn() {
 	cli_group_begin "Navigational memory"
+	if capn_is_initialised; then
+		cli_group_status muted ".capn/config.json" "already configured"
+		cli_group_end
+		return
+	fi
+
 	if ! (
 		cd "$PROJECT_DIR"
 		capn init --git >/dev/null
