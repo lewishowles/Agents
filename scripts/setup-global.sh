@@ -95,8 +95,46 @@ setup_stagewise() {
 	cli_group_end
 }
 
-# Ensures ~/.codex/config.toml contains managed MCP server entries and the
-# hooks feature flag. Existing entries for managed servers are replaced
+# Ensures the Codex TUI uses the managed status line while preserving all
+# unrelated TUI preferences.
+#
+# @param  {string}  config
+#     Codex config file to update.
+ensure_codex_status_line() {
+	local config="$1"
+	local temp
+
+	temp=$(mktemp)
+	awk '
+		BEGIN {
+			in_tui = 0
+			tui_found = 0
+		}
+		/^\[tui\]$/ {
+			print
+			print "status_line = [\"run-state\", \"project-name\", \"used-tokens\", \"context-used\", \"five-hour-limit\", \"weekly-limit\", \"model-with-reasoning\"]"
+			print "status_line_use_colors = true"
+			in_tui = 1
+			tui_found = 1
+			next
+		}
+		/^\[/ { in_tui = 0 }
+		in_tui && /^status_line(_use_colors)?[[:space:]]*=/ { next }
+		{ print }
+		END {
+			if (!tui_found) {
+				print ""
+				print "[tui]"
+				print "status_line = [\"run-state\", \"project-name\", \"used-tokens\", \"context-used\", \"five-hour-limit\", \"weekly-limit\", \"model-with-reasoning\"]"
+				print "status_line_use_colors = true"
+			}
+		}
+	' "$config" > "$temp"
+	mv "$temp" "$config"
+}
+
+# Ensures ~/.codex/config.toml contains managed MCP server entries, the hooks
+# feature flag, and the TUI status line. Existing managed entries are replaced
 # rather than duplicated, so this function is safe to run on every setup.
 ensure_codex_config() {
 	local config="$HOME/.codex/config.toml"
@@ -122,6 +160,7 @@ ensure_codex_config() {
 	# MDN docs/browser-compat server, shipped disabled: enable on request
 	# when a browser-support or Baseline fact needs a live source.
 	printf '\n[mcp_servers.mdn]\nurl = "https://mcp.mdn.mozilla.net/"\nenabled = false\n' >> "$temp"
+	ensure_codex_status_line "$temp"
 
 	# Migrate the deprecated codex_hooks key to hooks, and ensure the hooks
 	# feature flag is present in [features].
