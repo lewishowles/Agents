@@ -25,6 +25,7 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 
 ### Before reviewing
 
+- Inspect changes summary-first: start with status, changed file names, and stats or numstat. Read a patch only for the selected file or hunk needed to assess a risk; do not print the entire diff by default.
 - Understand intent: what problem does this solve?
 - Check scope: one thing or several?
 - Load relevant language/framework skills.

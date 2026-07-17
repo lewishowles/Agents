@@ -27,6 +27,8 @@ Do not use this skill for:
 
 Start from user-visible evidence. Don't rely on private reasoning, hidden tool outputs user didn't ask about, or reconstructed context user may not have seen.
 
+When inspecting local session records, aggregate or project the required fields with a script or `jq`. Do not print raw JSONL records, session metadata, or complete transcripts into context. Inspect only the selected events needed to support a finding.
+
 If evidence is thin, ask for smallest useful excerpt:
 
 1. What the user asked for
