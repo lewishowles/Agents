@@ -5,14 +5,66 @@ set -euo pipefail
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 TEST_ROOT=$(mktemp -d)
+TEST_BIN="$TEST_ROOT/bin"
+CAPN_TEST_LOG="$TEST_ROOT/capn.log"
 
 source "$SCRIPT_DIR/lib/test-helpers.sh"
 
 trap cleanup EXIT
 
+# Installs a deterministic Capn stub so project setup tests do not depend on
+# globally installed tooling or model downloads.
+setup_capn_stub() {
+	mkdir -p "$TEST_BIN"
+	cat > "$TEST_BIN/capn" <<'EOF'
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+printf '%s|%s\n' "$PWD" "$*" >> "$CAPN_TEST_LOG"
+mkdir -p .capn .claude .codex .git/hooks
+printf '{"embedding":true}\n' > .capn/config.json
+printf '{"hooks":{"SessionStart":[{"hooks":[{"type":"command","command":"/usr/bin/env capn context"}]}]}}\n' > .claude/settings.json
+printf '{"hooks":{"SessionStart":[{"hooks":[{"type":"command","command":"/usr/bin/env capn context"}]}]}}\n' > .codex/hooks.json
+printf '#!/bin/sh\ncapn prune\n' > .git/hooks/post-commit
+printf '.capn/\n' >> .gitignore
+EOF
+	chmod +x "$TEST_BIN/capn"
+	export CAPN_TEST_LOG
+	export PATH="$TEST_BIN:$PATH"
+}
+
+# Ensures setup targets match the capn init --git precondition.
+#
+# @param  {string}  target_dir
+#     Test project directory.
+prepare_git_repository() {
+	local target_dir="$1"
+
+	git -C "$target_dir" init --quiet
+}
+
+# Asserts the Capn storage and hook contract created by project setup.
+#
+# @param  {string}  target_dir
+#     Configured test project directory.
+assert_capn_setup() {
+	local target_dir="$1"
+
+	assert_file "$target_dir/.capn/config.json"
+	assert_contains "$target_dir/.claude/settings.json" "/usr/bin/env capn context"
+	assert_contains "$target_dir/.codex/hooks.json" "/usr/bin/env capn context"
+	assert_contains "$target_dir/.git/hooks/post-commit" "capn prune"
+	assert_contains "$target_dir/.gitignore" ".capn/"
+	assert_contains "$CAPN_TEST_LOG" "$target_dir|init --git"
+}
+
+setup_capn_stub
+
 run_setup() {
 	local target_dir="$1"
 	shift
+	prepare_git_repository "$target_dir"
 
 	(
 		cd "$target_dir"
@@ -23,6 +75,7 @@ run_setup() {
 run_setup_output() {
 	local target_dir="$1"
 	shift
+	prepare_git_repository "$target_dir"
 
 	(
 		cd "$target_dir"
@@ -34,6 +87,7 @@ run_setup_input() {
 	local target_dir="$1"
 	local input="$2"
 	shift 2
+	prepare_git_repository "$target_dir"
 
 	(
 		cd "$target_dir"
@@ -58,7 +112,7 @@ test_claude_setup() {
 	assert_contains "$target_dir/WORKSPACE.md" ".agent/scripts/project-diagnostics.py"
 	assert_dir "$target_dir/.claude"
 	assert_file "$target_dir/.claude/.claudeignore"
-	assert_not_exists "$target_dir/.claude/settings.json"
+	assert_capn_setup "$target_dir"
 	assert_not_exists "$target_dir/.claude/templates"
 	assert_contains "$target_dir/AGENTS.md" "Claude Code"
 }
@@ -79,7 +133,7 @@ test_codex_setup() {
 	assert_link "$target_dir/.agent/scripts/log-friction.sh"
 	assert_contains "$target_dir/WORKSPACE.md" ".agent/scripts/project-diagnostics.py"
 	assert_not_exists "$target_dir/.agents"
-	[ ! -e "$target_dir/.claude" ] || fail "Codex-only setup should not create .claude"
+	assert_capn_setup "$target_dir"
 	assert_contains "$target_dir/AGENTS.md" "Codex"
 }
 
@@ -99,7 +153,7 @@ test_both_setup() {
 	assert_link "$target_dir/.agent/scripts/log-friction.sh"
 	assert_contains "$target_dir/WORKSPACE.md" ".agent/scripts/project-diagnostics.py"
 	assert_file "$target_dir/.claude/.claudeignore"
-	assert_not_exists "$target_dir/.claude/settings.json"
+	assert_capn_setup "$target_dir"
 	assert_not_exists "$target_dir/.claude/templates"
 	assert_not_exists "$target_dir/.agents"
 	assert_contains "$target_dir/AGENTS.md" "Claude Code and Codex"
@@ -270,6 +324,41 @@ test_status_reports_configured_project() {
 	assert_contains "$output" "both"
 	assert_contains "$output" "Project rules"
 	assert_contains "$output" "Shared agent tools"
+	assert_contains "$output" "Navigational memory"
+}
+
+test_setup_requires_git_repository() {
+	local target_dir="$TEST_ROOT/not-git"
+	local output="$TEST_ROOT/not-git.out"
+	mkdir -p "$target_dir/src"
+
+	if (
+		cd "$target_dir"
+		"$REPO_DIR/scripts/setup-project.sh" --codex > "$output" 2>&1
+	); then
+		fail "Expected setup outside a Git working tree to fail"
+	fi
+
+	assert_contains "$output" "Git repository required"
+	assert_not_exists "$target_dir/AGENTS.md"
+}
+
+test_setup_requires_git_repository_root() {
+	local repository_dir="$TEST_ROOT/parent-git"
+	local target_dir="$repository_dir/nested"
+	local output="$TEST_ROOT/parent-git.out"
+	mkdir -p "$target_dir/src"
+	git -C "$repository_dir" init --quiet
+
+	if (
+		cd "$target_dir"
+		"$REPO_DIR/scripts/setup-project.sh" --codex > "$output" 2>&1
+	); then
+		fail "Expected setup below the Git repository root to fail"
+	fi
+
+	assert_contains "$output" "Git repository root required"
+	assert_not_exists "$target_dir/.git"
 }
 
 test_status_reports_drifted_project() {
@@ -304,5 +393,7 @@ test_no_skill_packs_suppresses_detection
 test_status_reports_clean_project
 test_status_reports_configured_project
 test_status_reports_drifted_project
+test_setup_requires_git_repository
+test_setup_requires_git_repository_root
 
 printf '✓ setup-project tests passed\n'

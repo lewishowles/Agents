@@ -32,7 +32,7 @@ Read user feedback first. Gather only context needed to judge it:
 
 If feedback can be judged from provided text, skip repo inspection. Say what needs checking if evidence is missing; don't guess.
 
-Prefer codebase-memory tools. Use targeted reads; avoid generated, vendored, cached, build, dependency, coverage, or binary output.
+Apply the `code-lookup` routing skill for structural questions. Use targeted reads; avoid generated, vendored, cached, build, dependency, coverage, or binary output.
 
 ## Review method
 

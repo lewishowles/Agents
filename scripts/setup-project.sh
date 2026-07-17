@@ -45,6 +45,7 @@ usage() {
 }
 
 setup_claude() {
+	check_capn_requirements
 	cli_section "Claude project setup"
 
 	cli_group_begin "Project files"
@@ -58,9 +59,11 @@ setup_claude() {
 	cli_group_end
 	copy_claude_support_files
 	install_project_skill_packs
+	initialise_capn
 }
 
 setup_codex() {
+	check_capn_requirements
 	cli_section "Codex project setup"
 
 	cli_group_begin "Project files"
@@ -73,9 +76,11 @@ setup_codex() {
 	write_workspace_file
 	cli_group_end
 	install_project_skill_packs
+	initialise_capn
 }
 
 setup_both() {
+	check_capn_requirements
 	cli_section "Claude + Codex project setup"
 
 	cli_group_begin "Project files"
@@ -89,6 +94,7 @@ setup_both() {
 	cli_group_end
 	copy_claude_support_files
 	install_project_skill_packs
+	initialise_capn
 }
 
 prompt_target() {

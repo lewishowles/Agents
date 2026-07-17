@@ -27,6 +27,7 @@ Before running any build, test, typecheck, or lint command, check the exact path
 Minimise token cost by default; treat context as a limited shared budget.
 
 - Do not run full test suites, builds, typechecks, or e2e checks directly. Full unit suites are allowed through `.agent/scripts/project-diagnostics.py` (compact stdout, full logs on disk). If the diagnostics script is missing, scoped commands are allowed when they save more tokens than asking would, for example a single unit test file, a lint check on a changed path, or a minimal repro script. Ask the user to run broad or slow commands when no diagnostics wrapper exists.
+- Never run a full Playwright or Cypress suite, including through diagnostics. Diagnostics controls output volume, not execution time. Run only specific browser test files, and ask the user to run broad browser suites.
 - When running any script that produces large output (tests, linters, build steps), pipe output through `tail`: `2>&1 | tail -20`. If a check fails, follow up with a targeted command to extract the first error — never print the full output.
 - When using persistent shell sessions, run `clear` before each command so poll output does not include prior scrollback. Polls that return full session history waste tokens proportional to session age.
 - For long-running commands (builds, validation suites, test runs), redirect output to a file and read targeted line ranges with the `read` tool instead of polling the shell. One `read` call on a 20-line range costs a fraction of a poll that returns thousands of lines of scrollback.
@@ -227,24 +228,3 @@ Minimise token cost while discovering files; answer the narrow question with the
 - If a user says a file exists and a search cannot find it, state that gitignored files were included before concluding it is missing.
 - Never rely on a remembered line number to offset-read into a file. Formatters shift lines on save. Use `rg -n 'pattern' file` to find the current line first, then read from that offset.
 - Never use a `&&` chain to conclude a file exists or is absent. A `&&` exits non-zero silently on any failure in the chain, not just a missing file. Use the Read tool or an explicit `[[ -f path ]]` check with a verified exit status instead.
-
-## Prefer codebase-memory-mcp graph tools
-
-Before reading source files or scanning a codebase, use codebase-memory-mcp when its MCP tools are available. The graph gives structural answers faster than broad `rg`, `find`, or file reads.
-
-Priority order:
-
-1. `list_projects` or `index_status` — check whether the project is indexed.
-2. `index_repository` — index the current project if no usable graph exists.
-3. `search_graph` — find functions, classes, routes, variables, and files by label, name pattern, or qualified-name pattern.
-4. `trace_path` — inspect callers, callees, call chains, data flow, or cross-service paths.
-5. `get_code_snippet` — read the exact source for a discovered function, class, or method.
-6. `query_graph` — run Cypher for complex structural questions.
-7. `get_architecture` — get high-level project structure and relationships.
-8. `detect_changes` — map local git changes to affected graph symbols.
-
-For query tools, pass the `project` name returned by `list_projects`.
-
-Use `search_code` for graph-augmented text search. Fall back to normal file discovery only for non-code files, config values, literal strings, generated assets, or when codebase-memory-mcp returns insufficient results.
-
-If codebase-memory-mcp is unavailable in the current runtime, do not spend tokens searching for it or trying repeated failing calls. State once that the graph tools are unavailable, then use the narrowest normal file-discovery command allowed by the file-discovery rules.

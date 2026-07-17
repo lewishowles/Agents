@@ -47,7 +47,7 @@ Then gather only local context needed to judge fit:
 
 If high-level context suffices, skip implementation files. If evidence is missing, say what needs checking rather than guessing.
 
-Prefer codebase-memory tools for structural questions. Use targeted reads; avoid generated, vendored, cached, build, dependency, coverage, or binary output.
+Apply the `code-lookup` routing skill for structural questions. Use targeted reads; avoid generated, vendored, cached, build, dependency, coverage, or binary output.
 
 ## Review method
 

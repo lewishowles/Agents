@@ -20,6 +20,7 @@ Apply across all projects. See individual skills for detailed rules. Use project
 - `/boilersuit` — When using Boilersuit generators for repeatable file generation
 - `/boilersuit-generator-authoring` — When creating or editing a Boilersuit generator definition
 - `/caveman` — When the user requests compressed or terse communication, says "caveman mode", "less tokens", "be brief", or invokes /caveman
+- `/code-lookup` — When choosing a code discovery, tracing, health analysis, or semantic editing tool
 - `/code-review` — When reviewing a PR or diff, or receiving review feedback
 - `/code-style` — When formatting code, covering naming, comments, arrays, objects
 - `/component-api-design` — When creating a component or changing its public props, slots, emits, models, expose, or contract
@@ -27,7 +28,6 @@ Apply across all projects. See individual skills for detailed rules. Use project
 - `/debugging` — When encountering any bug, test failure, or unexpected behaviour — before proposing a fix
 - `/dependencies` — When adding packages, what to choose, when to add
 - `/error-handling` — When validating input, graceful fallbacks, error handling
-- `/fallow` — When running fallow for codebase health, dead code, duplication, or boundary analysis in JS/TS projects
 - `/friction-review` — When reviewing recurring friction-log entries to propose rule/skill amendments
 - `/frontend-design` — When designing UI or making aesthetic decisions for a public-facing interface
 - `/frontend-security` — When writing or reviewing client-side code for security: XSS, CSP, auth tokens, secrets hygiene

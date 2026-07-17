@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-printf 'For code discovery, prefer codebase-memory-mcp graph tools (search_graph, trace_path, get_code_snippet) over shell search.\n'

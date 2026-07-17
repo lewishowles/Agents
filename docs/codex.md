@@ -67,6 +67,8 @@ Project setup does not create `.agents/skills/` by default. Add that directory o
 
 Skill matching is description-driven. Keep frontmatter descriptions specific, action-led, and prefixed with `Use this skill when...` so Codex has enough signal before loading the full skill body.
 
+The `code-lookup` skill routes code discovery between Serena, Fallow, codebase-memory, and targeted text search. Codebase-memory remains available for broad graph questions but is not a mandatory first step.
+
 ## Hooks
 
 Codex hooks are configured through `~/.codex/hooks.json` (symlinked from `dist/codex/hooks.json`) and require the `codex_hooks` feature flag in `~/.codex/config.toml`. The official Codex hook events include `SessionStart`, `PreToolUse`, `PermissionRequest`, `PostToolUse`, `UserPromptSubmit`, and `Stop`.

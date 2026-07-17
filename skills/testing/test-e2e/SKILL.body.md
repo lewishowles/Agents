@@ -6,7 +6,7 @@ E2E and component tests verify real-browser user experience. Playwright is stand
 
 - Avoid browser tests by default; output is token-heavy. Run focused tests only for specific fixes and suggest broader user-run commands.
 - Use diagnostics script: `.agent/scripts/project-diagnostics.py --list` to discover checks, `--check <name>` for specific fixes. Ask before running tests directly if diagnostics script is absent.
-- Do not run full suites or `--all` unless the user explicitly asks.
+- Never run a full Playwright or Cypress suite or use `--all`, including through diagnostics. Diagnostics controls output volume, not execution time. Run only specific test files, and ask the user to run broad browser suites.
 
 ## Which tool to use
 

@@ -36,15 +36,14 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/boilersuit` | `boilersuit` | When using Boilersuit generators for repeatable file generation |
 | `/boilersuit-generator-authoring` | `boilersuit-generator-authoring` | When creating or editing a Boilersuit generator definition |
 | `/caveman` | `caveman` | When the user requests compressed or terse communication, says "caveman mode", "less tokens", "be brief", or invokes /caveman |
+| `/code-lookup` | `code-lookup` | When choosing a code discovery, tracing, health analysis, or semantic editing tool |
 | `/code-review` | `code-review` | When reviewing a PR or diff, or receiving review feedback |
 | `/code-style` | `code-style` | When formatting code, covering naming, comments, arrays, objects |
-| `/codebase-memory` | `codebase-memory` | Use this skill when answering structural code queries with the codebase knowledge graph, including architecture, callers, dependencies, impact analysis, dead code, graph query syntax, Cypher examples, edge types, and search_graph usage. |
 | `/component-api-design` | `component-api-design` | When creating a component or changing its public props, slots, emits, models, expose, or contract |
 | `/component-library` | `component-library` | When choosing, reusing, or wrapping @lewishowles/components APIs, especially when unclear |
 | `/debugging` | `debugging` | When encountering any bug, test failure, or unexpected behaviour — before proposing a fix |
 | `/dependencies` | `dependencies` | When adding packages, what to choose, when to add |
 | `/error-handling` | `error-handling` | When validating input, graceful fallbacks, error handling |
-| `/fallow` | `fallow` | When running fallow for codebase health, dead code, duplication, or boundary analysis in JS/TS projects |
 | `/friction-review` | `friction-review` | When reviewing recurring friction-log entries to propose rule/skill amendments |
 | `/frontend-design` | `frontend-design` | When designing UI or making aesthetic decisions for a public-facing interface |
 | `/frontend-security` | `frontend-security` | When writing or reviewing client-side code for security: XSS, CSP, auth tokens, secrets hygiene |

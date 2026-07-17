@@ -29,7 +29,6 @@
     "project-continue": "name-only",
     "claude-api": "name-only",
     "code-style": "on",
-    "codebase-memory": "name-only",
     "dependencies": "name-only",
     "test-e2e": "name-only",
     "error-handling": "on",
@@ -132,10 +131,6 @@
     "SessionStart": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/cbm-session-reminder"
-          },
           {
             "type": "command",
             "command": "serena-hooks activate --client=claude-code"

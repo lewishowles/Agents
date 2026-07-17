@@ -11,7 +11,6 @@ Hooks are shell scripts that Claude Code runs automatically at specific points i
 | Hook | Purpose | Event | Behaviour on failure |
 | ---- | ------- | ----- | -------------------- |
 | `auto-format` | Runs oxfmt after supported file writes when available. | PostToolUse (`Edit\|Write`) | `silent` |
-| `cbm-session-reminder` | One-time session advisory to prefer codebase-memory graph tools for code discovery. | SessionStart | `silent` |
 | `plan-verify` | Warns when an exited plan is missing a validation section. | PostToolUse (`ExitPlanMode`) | `silent` |
 | `pre-stop-checks` | Runs configured lint and unit checks before Claude stops. | Stop | `silent` |
 | `progress-resume` | Injects project progress context when the prompt asks to resume work. | UserPromptSubmit | `silent` |
@@ -114,16 +113,6 @@ Always exits 0. The hook can never block a write.
 Defined directly in `settings.json` rather than as a separate script. Fires before every Read call. If the file path matches `.env` (using `grep -q '\.env'`), exits with code 2, which Claude Code treats as a block. Prevents Claude from reading secrets files that could appear in context.
 
 **No dependencies.** Inline `jq` + shell pipe — runs in any environment.
-
-### cbm-code-discovery-gate
-
-Fires on the first broad code-discovery tool call in a Claude session. It blocks once and tells Claude to use codebase-memory-mcp graph tools such as `search_graph`, `trace_path`, `get_code_snippet`, and `index_repository` before falling back to broad reads or searches.
-
-The hook stores a per-session marker in `/tmp` using Claude's parent process ID, so subsequent file discovery in the same session is allowed.
-
-### cbm-session-reminder
-
-Fires on Claude session startup, resume, clear, and compact. It injects a concise reminder that code discovery should start with codebase-memory-mcp graph tools and fall back to `Grep`, `Glob`, or `Read` only for text content, config values, and non-code files.
 
 ### serena-activate
 

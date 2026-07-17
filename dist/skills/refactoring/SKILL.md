@@ -34,7 +34,7 @@ related-skills:
 | Simplify condition          | Flatten nested `if`s, remove double negatives | Medium — verify all branches  |
 | Split component             | Decompose large component into smaller ones   | Higher — re-test interactions |
 
-For cross-file renames or moves spanning many files, consider Serena MCP (see [docs/tools.md](../../docs/tools.md)) — an LSP-backed MCP server that updates all references atomically, reducing the risk of manual find-and-replace errors. Use codebase-memory first to trace the impact set, then Serena to apply the changes.
+For cross-file renames or moves spanning many files, use Serena MCP (see [docs/tools.md](../../docs/tools.md)) for language-server-backed reference updates. Use codebase-memory first only when the impact question is broader than a symbol or language-server relationship.
 
 ## Module structure vocabulary
 
@@ -69,7 +69,7 @@ Use this when the user asks where code should live, whether a helper should exis
 
 ## Technical debt triage
 
-For JS/TS projects, run `fallow health` before triaging for a structured report of dead code, duplication, complexity hotspots, and boundary violations.
+For JS/TS project-health triage, route through `code-lookup` and use the narrowest suitable Fallow analysis rather than running a broad report automatically.
 
 ### Categories
 

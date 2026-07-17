@@ -27,7 +27,6 @@ ALLOWLIST = {
 	frozenset({"bash", "typescript"}),  # known overlap, out of scope: "type alias" is generic to both
 	frozenset({"boilersuit-generator-authoring", "vue"}),  # known overlap, out of scope: "template" is generic
 	frozenset({"code-review", "project-review-worktree"}),  # dependency: project-review-worktree always applies code-review's standards
-	frozenset({"codebase-memory", "fallow"}),  # known overlap, out of scope: both flag "dead code"
 	frozenset({"component-api-design", "frontend-design"}),  # known overlap, out of scope: "design" is generic
 	frozenset({"component-api-design", "vue"}),  # known overlap, out of scope: shared Vue API vocabulary
 	frozenset({"component-api-design", "vue-project-stack"}),  # known overlap, out of scope: shared Vue API vocabulary

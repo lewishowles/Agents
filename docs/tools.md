@@ -2,7 +2,7 @@
 
 These are per-project runtime dependencies that users install — not skills, not plugins, and not managed by this repo. Agents don't load them automatically; users install them in projects where the additional capability is worth the setup cost.
 
-Last reviewed: 2026-07-12.
+Last reviewed: 2026-07-17.
 
 ## Serena MCP
 
@@ -18,9 +18,9 @@ LSP-backed MCP server providing atomic semantic refactoring operations: cross-fi
 
 - Large refactors spanning many files where manual find-and-replace is error-prone
 - When you need to rename a widely-used symbol and update all call sites correctly
-- When codebase-memory has identified the impact set and you need to apply the actual changes
+- Exact definitions, references, diagnostics, and reference-aware source changes
 
-**How it complements codebase-memory:** codebase-memory finds the references and traces the impact; Serena applies the changes atomically. Use codebase-memory for analysis, Serena for execution.
+**How it complements codebase-memory:** Serena is the default for exact language-server relationships and semantic edits. Use codebase-memory first only for broader multi-hop, cross-service, cross-repository, or language-agnostic graph questions.
 
 **Installation:** MCP server, requires a language server for the target language. This repo manages the server registration and lifecycle hooks for both Claude Code and Codex:
 
@@ -97,28 +97,23 @@ Code intelligence tool that combines graph traversal with git history analysis f
 
 **Installation:** Standalone tool. See the repowise documentation for setup details.
 
-## Comparison: codebase-memory vs ast-grep vs repowise vs fallow
+## Comparison: Serena vs codebase-memory vs ast-grep vs repowise vs Fallow
 
-|                           | codebase-memory                            | ast-grep                           | repowise                                  | fallow                                                                        |
-| ------------------------- | ------------------------------------------ | ---------------------------------- | ----------------------------------------- | ----------------------------------------------------------------------------- |
-| **Type**                  | MCP server (skill in this repo)            | CLI or MCP server (user-installed) | Runtime tool (user-installed)             | CLI tool (skill in this repo)                                                 |
-| **Languages**             | Language-agnostic (via LSP)                | Multi-language AST patterns        | Language-agnostic                         | JS/TS only (122 framework plugins)                                            |
-| **Graph traversal**       | Yes — callers, callees, impact, dead code  | No                                 | Yes — callers, callees, dependencies      | No                                                                            |
-| **Structural search**     | Partial — graph symbols and relationships  | Yes — AST-shaped patterns          | Partial — graph symbols and relationships | Partial — JS/TS analysis rules                                                |
-| **Codemods and rewrites** | No                                         | Yes — syntax-pattern rewrites      | No                                        | No (use Serena MCP for semantic edits)                                        |
-| **Duplication detection** | No                                         | No                                 | No                                        | Yes — 4 modes                                                                 |
-| **Boundary violations**   | No                                         | Custom rules only                  | No                                        | Yes — architecture boundary enforcement                                       |
-| **Complexity hotspots**   | Partial — fan-out/fan-in via graph queries | No                                 | Yes — composite health scoring            | Yes — with ownership and refactoring targets                                  |
-| **Git hotspot analysis**  | No (use `git log` commands directly)       | No                                 | Yes — churn + defect density over time    | No                                                                            |
-| **ADR mining**            | No                                         | No                                 | Yes                                       | No                                                                            |
-| **Atomic refactors**      | No (analysis only)                         | No (syntax rewrites only)          | No                                        | No (use Serena MCP for execution)                                             |
-| **Dead code detection**   | Yes — `search_graph(max_degree=0)`         | Custom rules only                  | Yes                                       | Yes — unused files, exports, types, deps                                      |
-| **Cost to adopt**         | Already a skill — zero marginal cost       | New runtime dependency per project | New runtime dependency per project        | Already a skill — zero marginal cost; CLI must be installed in target project |
+|                           | Serena                            | codebase-memory                       | ast-grep                           | repowise                                  | Fallow                                      |
+| ------------------------- | --------------------------------- | ------------------------------------- | ---------------------------------- | ----------------------------------------- | ------------------------------------------- |
+| **Primary job**           | Exact semantic lookup and editing | Broad graph traversal and impact      | Syntax-shaped search and rewrites  | Git-informed health and defect prediction | JS/TS health, cleanup, boundaries, and risk |
+| **Languages**             | Language-server dependent         | Language-agnostic                     | Multi-language AST patterns        | Language-agnostic                         | JS/TS                                      |
+| **Graph traversal**       | Exact symbol relationships        | Multi-hop and cross-service paths     | No                                 | Callers, callees, and dependencies         | Best-effort syntactic tracing               |
+| **Codemods and rewrites** | Semantic renames and symbol edits | No                                    | Syntax-pattern rewrites            | No                                        | No                                          |
+| **Project health**        | Diagnostics only                  | Structural graph signals              | Custom rules only                  | Composite scoring and temporal signals     | Dead code, duplication, complexity, audits  |
+| **Literal text/config**   | No                                | No                                    | Usually unnecessary                | No                                        | No                                          |
 
 **Decision guide:**
 
-- Use **codebase-memory** for graph traversal, impact analysis, and dead code detection across any language
+- Apply **`code-lookup`** first when the correct discovery tool is unclear
+- Use **Serena** for exact symbols, references, diagnostics, and semantic edits
+- Use **codebase-memory** for broad multi-hop, cross-service, cross-repository, or language-agnostic graph questions
 - Add **ast-grep** only when syntax-shaped search, custom AST lint rules, or mechanical rewrites would avoid brittle `rg` patterns
-- Use **fallow** for JS/TS-specific cleanup: duplication, boundary violations, complexity hotspots, unused exports
+- Use **Fallow** for JS/TS-specific health and cleanup analysis
 - Add **repowise** only for large repos where git-driven defect prediction and health scoring would change prioritisation
-- Add **Serena MCP** when you need atomic cross-file refactors that codebase-memory's analysis can't execute
+- Use targeted text or file lookup for literals, configuration, documentation, and generated assets

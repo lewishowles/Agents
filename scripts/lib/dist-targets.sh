@@ -8,9 +8,8 @@ CLAUDE_TARGET="$REPO_DIR/dist/claude/CLAUDE.md"
 CODEX_TARGET="$REPO_DIR/dist/codex/AGENTS.md"
 
 # Ordered fragment lists for each agent's composed output file.
-# global-skills.md and codebase-memory.md are omitted from Claude output:
-# skill-file-trigger injects skill reminders on file writes,
-# and cbm-session-reminder injects the codebase-memory advisory at session start.
+# global-skills.md is omitted from Claude output because skill-file-trigger
+# injects skill reminders on file writes.
 CLAUDE_PARTS=(
 	"$REPO_DIR/dist/claude/source/header.md"
 	"$REPO_DIR/rules/global-rules.md"
@@ -26,7 +25,6 @@ CODEX_PARTS=(
 	"$REPO_DIR/rules/identity.md"
 	"$REPO_DIR/rules/skills-policy.md"
 	"$REPO_DIR/rules/file-discovery.md"
-	"$REPO_DIR/dist/codex/source/codebase-memory.md"
 )
 
 # Concatenates ordered fragment files into a single target file, with a blank

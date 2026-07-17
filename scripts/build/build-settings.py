@@ -6,8 +6,8 @@
 # entry (the .env read-guard) that cannot be expressed as a named hook script.
 # All other hooks are derived from hooks/claude/*/hook.json.
 #
-# Hooks without a .sh extension (e.g. cbm-code-discovery-gate) use a top-level
-# 'command' field in hook.json to override the default bash-wrapper command.
+# Hooks without a .sh extension use a top-level 'command' field in hook.json
+# to override the default bash-wrapper command.
 
 import json
 from pathlib import Path
