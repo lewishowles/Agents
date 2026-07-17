@@ -20,6 +20,9 @@ Before running any build, test, typecheck, or lint command, check the exact path
 
 Minimise token cost by default; treat context as a limited shared budget.
 
+- Treat each model/tool round-trip as expensive because it carries the current context again, even when the command and result are small.
+- Before the first read-only tool call, identify the evidence needed and batch independent checks. Prefer one bounded aggregation command over a sequence of exploratory queries.
+- Every additional tool call must answer a question that blocks the next decision. Stop when the requested conclusion is supported; do not gather corroborating evidence by default.
 - Do not run full test suites, builds, typechecks, or e2e checks directly. Full unit suites are allowed through `.agent/scripts/project-diagnostics.py` (compact stdout, full logs on disk). If the diagnostics script is missing, scoped commands are allowed when they save more tokens than asking would, for example a single unit test file, a lint check on a changed path, or a minimal repro script. Ask the user to run broad or slow commands when no diagnostics wrapper exists.
 - Never run a full Playwright or Cypress suite, including through diagnostics. Diagnostics controls output volume, not execution time. Run only specific browser test files, and ask the user to run broad browser suites.
 - Agent-initiated Playwright runs must use one worker, through the project diagnostics command or `--workers=1`, unless the user explicitly approves more concurrency. Treat browser-launch or page-creation timeouts, build contention, or system resource pressure as a hard stop: do not run another browser check in the same turn without approval.
@@ -50,8 +53,9 @@ Match effort to risk and ambiguity:
 
 - Batch clarifying questions — minimise back and forth
 - Propose changes as a plan; get review before proceeding
-- Multi-step processes: one step at a time; explain, wait for confirmation
+- Multi-step processes: use one user-visible decision or approval checkpoint at a time. Within an approved step, batch safe read-only work and routine implementation substeps; do not pause between actions that require no new user decision.
 - After an interrupted, failed, or partially delivered turn, treat prompts like "try again", "you stopped", "continue", or "resume" as applying only to the last user-visible action. Do not rely on assistant-private reconstructed context, unsent output, or a dangling question the user may not have received. If the user's account of what they saw differs from your context, trust the user's transcript and ask one clarifying question before editing.
+- When a completed phase has accumulated large tool outputs, or the user changes to an unrelated subject, recommend a fresh task before beginning further tool-heavy work.
 
 ### Scope default
 
