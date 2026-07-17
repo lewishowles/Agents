@@ -19,7 +19,10 @@ E2E and component tests verify real-browser user experience. Playwright is stand
 - Avoid browser tests by default; output is token-heavy. Run focused tests only for specific fixes and suggest broader user-run commands.
 - Use diagnostics script: `.agent/scripts/project-diagnostics.py --list` to discover checks, `--check <name>` for specific fixes. Ask before running tests directly if diagnostics script is absent.
 - Never run a full Playwright or Cypress suite or use `--all`, including through diagnostics. Diagnostics controls output volume, not execution time. Run only specific test files, and ask the user to run broad browser suites.
-- Do not assume a scoped component-test file is cheap. Shared Vite configuration may still compile a broad component graph before running the selected tests. Start with one representative file and observe its startup cost. If compilation dominates, batch the necessary scoped files into one invocation instead of running each file separately; ask before continuing when the combined check may be slow or resource-intensive.
+- Run agent-initiated Playwright checks with one worker, through the diagnostics configuration or `--workers=1`, unless the user explicitly approves more concurrency.
+- Do not assume a scoped component-test file is cheap. Shared Vite configuration may still compile a broad component graph before running the selected tests. Start with the narrowest relevant test case or one representative file and observe its startup cost. If compilation succeeds but dominates, batch the necessary scoped files into one single-worker invocation instead of rebuilding for each file; ask before continuing when the combined check may be slow or resource-intensive.
+- Treat browser-launch or page-creation timeouts, build contention, or system resource pressure as a hard stop. Do not run another browser check in the same turn without user approval.
+- After a failed run, rerun only unresolved tests using a title, line, or equivalent runner filter. Do not rerun an entire browser test file solely to confirm narrower cases.
 
 ## Which tool to use
 
