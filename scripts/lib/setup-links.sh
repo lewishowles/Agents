@@ -93,7 +93,7 @@ prune_stale_repo_links() {
 		[ -L "$link" ] || continue
 		target=$(readlink "$link")
 		if [[ "$target" == "$repo_prefix"* ]] && [ ! -e "$link" ]; then
-			rm "$link"
+			trash "$link"
 			cli_group_status warning "removed stale" "$label/$(basename "$link")"
 		fi
 	done
