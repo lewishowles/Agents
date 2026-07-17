@@ -20,7 +20,7 @@ When local context, `WORKSPACE.md`, package metadata, README usage docs, or a lo
 
 Task and handoff files are complete agent-facing contracts. Read the active task file before implementation, even when the user has not seen it. Do not ask the user to reproduce its contents. Before editing, provide a concise overview derived from the task file, the current repository state, and the current request: the confirmed contract, intended files, verification, and unresolved decisions.
 
-Before running any build, test, typecheck, or lint command, check the exact path `.agent/scripts/project-diagnostics.py` with a direct file check (`[[ -f .agent/scripts/project-diagnostics.py ]]` or read/stat equivalent). Do not use glob, `rg`, `find`, or other discovery search to prove this known path is absent. When present, use it for all build, test, typecheck, and lint checks, not raw package commands unless the user explicitly asks. It writes full logs to `.agent/diagnostics/` while keeping stdout compact. Run `--list` as part of startup after checking `WORKSPACE.md`, `--check <name>` for the specific check needed, `--all` only when the user asks for broad verification. For unit tests, run the full suite through diagnostics by default; narrow with repeatable `--test-file <path>` or `--test-glob '<pattern>'` only when investigating a failing area, when the full check is unusually slow, or when the user asks. Quote glob patterns so the script expands and validates them. If a check fails, extract details from the returned log path with targeted `rg` or `sed`; do not re-run the same check for more output. Only when the exact-path check proves the script absent may you use `WORKSPACE.md` common checks or manually inspected commands.
+Before running any build, test, typecheck, or lint command, check the exact path `.agent/scripts/project-diagnostics.py` directly. Do not use discovery searches to prove this known path is absent. When present, use it instead of raw package commands unless the user explicitly asks otherwise; discover checks with `--list`, run the relevant `--check <name>`, and inspect failure logs selectively. Only when the direct check proves the script absent may you use `WORKSPACE.md` commands or manually inspected alternatives.
 
 ### Token budget discipline
 
@@ -31,7 +31,6 @@ Minimise token cost by default; treat context as a limited shared budget.
 - Every additional tool call must answer a question that blocks the next decision. Stop when the requested conclusion is supported; do not gather corroborating evidence by default.
 - Do not run full test suites, builds, typechecks, or e2e checks directly. Full unit suites are allowed through `.agent/scripts/project-diagnostics.py` (compact stdout, full logs on disk). If the diagnostics script is missing, scoped commands are allowed when they save more tokens than asking would, for example a single unit test file, a lint check on a changed path, or a minimal repro script. Ask the user to run broad or slow commands when no diagnostics wrapper exists.
 - Never run a full Playwright or Cypress suite, including through diagnostics. Diagnostics controls output volume, not execution time. Run only specific browser test files, and ask the user to run broad browser suites.
-- Agent-initiated Playwright runs must use one worker, through the project diagnostics command or `--workers=1`, unless the user explicitly approves more concurrency. Treat browser-launch or page-creation timeouts, build contention, or system resource pressure as a hard stop: do not run another browser check in the same turn without approval.
 - When running any script that produces large output (tests, linters, build steps), pipe output through `tail`: `2>&1 | tail -20`. If a check fails, follow up with a targeted command to extract the first error — never print the full output.
 - When using persistent shell sessions, run `clear` before each command so poll output does not include prior scrollback. Polls that return full session history waste tokens proportional to session age.
 - Prefer local aggregation over returning raw records: use counts, `--files-with-matches`, selected JSON fields, Git stats, or another bounded projection that answers the question.
@@ -128,7 +127,7 @@ Every changed line traces directly to the request.
 
 ### Completing work
 
-**Evidence before claims.** Never assess test or code health from static inspection alone. Before claiming a fix works or identifying a root cause, run the scoped failing test or repro (diagnostics `--check` / `--test-file`, honouring token discipline) and include the output. If it genuinely cannot be run, say so explicitly — do not assert instead. Don't say tests pass or a fix is resolved unless you have seen output confirming it. For tooling, install, or config changes, success means the running system observably picked the change up (a smoke-test invocation), not that the edit was written. When work is done, say what changed and what the user should verify.
+**Evidence before claims.** Never assess test or code health from static inspection alone. Before claiming a fix works or identifying a root cause, run the relevant test or repro and include the result. If it genuinely cannot be run, say so explicitly; do not assert instead. For tooling, install, or config changes, success means the running system observably picked the change up, not that the edit was written. When work is done, say what changed and what the user should verify.
 
 **Fix what you find broken.** A failing test or check discovered during verification, even one unrelated to the current task, is not evidence to report and move past — it's a bug to fix. Fix it as its own separate chunk with its own commit; do not leave it broken because it's "out of scope." State plainly what was found and fixed, not that it was pre-existing or whose it was. If a real constraint blocks fixing it now (needs a product decision, outside your authority, too large for this session), say that constraint explicitly instead of leaving it silently broken.
 
@@ -139,8 +138,6 @@ Every changed line traces directly to the request.
 **PROGRESS.md update is blocking.** When a `PROGRESS.md` plan is active, update the handoff before stopping — not after, not as an optional follow-up. Record work completed and verification, but leave the task `in-progress` until the user signals acceptance with “committed”, “continue”, “next”, or equivalent. Only then mark it `done`, set `completed`, and promote the queue. This is a user-handoff decision, not a Git-state check.
 
 **Always state what's next.** After completing any step — or finishing everything — close with the next substantive project step, an open question to resolve, or an explicit "nothing remains" if there is no more planned work. If the work awaits the user's handoff decision, say so and stop; do not promote the next task yet.
-
-**Boilerplate impact.** After a change to a project's public API, function signatures, dependency versions, or stack conventions, state in the closing summary whether it is worth back-porting to the boilerplate baseline (`~/Dev/Repositories/Packages/boilerplate`), or say "not applicable" if the change is project-specific. Do not back-port automatically — this is a note for the user to action separately.
 
 ## Communication
 
@@ -174,27 +171,11 @@ Code must be reviewed before it is committed. For AI-assisted changes, review me
 - When I specify a number or grouping of commits (e.g. "four commits", "one per file"), produce exactly that — confirm the grouping plan before staging, and do not collapse multiple requested commits into fewer.
 - Never add a `Co-Authored-By` trailer or any attribution line to commit messages.
 
-## Architecture Decision Records
-
-Only propose writing an ADR when all three are true:
-
-1. **Hard to reverse** — changing course later carries meaningful cost
-2. **Surprising without context** — a future reader would wonder "why did they do it this way?"
-3. **Result of a real trade-off** — there were genuine alternatives and one was chosen for specific reasons
-
-If any of the three is missing, skip the ADR. Ephemeral reasons ("not worth it right now") and self-evident choices don't warrant one. When all three are met, offer it — don't write it unasked.
-
-_Three-gate criteria inspired by [mattpocock/skills](https://github.com/mattpocock/skills) (MIT)._
-
 ## Working across sessions
 
 **PROGRESS.md lives at the project root.** Locate the existing file by reading or globbing from the root — never create `.claude/PROGRESS.md`, `.agent/PROGRESS.md`, or a second copy. If a search cannot find one, say so and ask where to create it. Root holds human-facing contracts (`AGENTS.md`, `PROGRESS.md`, `README.md`); `.agent/` holds agent-operated internals (`scripts/`, `specs/`, `diagnostics/`). Keep new files on the correct side.
 
-**Task names are stable; queue position is not identity.** Give new `.agent/tasks/` files descriptive kebab-case names and refer to tasks by title or path, never by a positional number. The physical order of `### Upcoming queue` is the intended sequence. Reorder queue entries without renaming task files or rewriting references. Existing numeric task filenames are tolerated as legacy; never renumber or bulk-rename them merely to match queue order or the current naming convention.
-
-**Split broad roadmap items before implementation.** If a plan exceeds roughly 7 steps, decompose it into smaller chunks rather than writing a longer plan.
-
-For file location, chunking, handoff, and compaction mechanics, see the `project-continue` and `project-compact-progress` skills.
+For task naming, queue order, chunking, handoff, and compaction mechanics, follow the matching project-management skill and `docs/progress-format.md` where available.
 
 ## Subagent delegation
 
