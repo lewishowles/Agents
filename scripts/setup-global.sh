@@ -71,6 +71,7 @@ setup_codex() {
 
 	cli_group_begin "Codex skills"
 	prune_stale_repo_links "$HOME/.agents/skills" "$REPO_DIR" "skills"
+	prune_stale_repo_links "$HOME/.codex/skills" "$REPO_DIR" "legacy skills"
 	link_skills "$HOME/.agents/skills"
 	cli_group_end
 }
