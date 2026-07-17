@@ -293,8 +293,10 @@ test_diagnostics_guidance_discourages_direct_commands() {
 
 	assert_contains "$output" '.agent/scripts/project-diagnostics.py --list'
 	assert_contains "$output" '.agent/scripts/project-diagnostics.py --check <name>'
+	assert_contains "$output" '.agent/scripts/project-diagnostics.py --check test:component --test-file <path>'
 	assert_contains "$output" '.agent/scripts/change-impact.py'
 	assert_contains "$output" 'Run checks through this script rather than direct package commands.'
+	assert_contains "$output" 'Playwright-backed component checks require `--test-file <path>` or `--test-glob'
 	assert_contains "$output" 'extract details from the returned log path'
 }
 

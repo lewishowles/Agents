@@ -27,9 +27,9 @@ requested.
 EPILOG = """Commands:
   --list              Discover available diagnostics without running them.
   --check NAME        Run one named check, such as test:unit or lint.
-  --test-file PATH    Run a unit-test check against one test file. Repeat for multiple files.
-  --test-glob PATTERN Run a unit-test check against matching files. Repeat for multiple globs.
-  --all               Run all conservative checks. Use only after approval for broad verification.
+  --test-file PATH    Run a targetable test check against one file. Repeat for multiple files.
+  --test-glob PATTERN Run a targetable test check against matching files. Repeat for multiple globs.
+  --all               Run conservative checks that do not require explicit targets.
   --json              Return machine-readable output for the selected mode.
 
 Xcode targeting maps the nearest directory ending in Tests to the test target
@@ -40,6 +40,7 @@ Examples:
   .agent/scripts/project-diagnostics.py --check test:unit
   .agent/scripts/project-diagnostics.py --check test:unit --test-file src/example.test.ts
   .agent/scripts/project-diagnostics.py --check test:unit --test-glob 'src/**/*.test.ts'
+  .agent/scripts/project-diagnostics.py --check test:component --test-file src/example.pw.ts
   .agent/scripts/project-diagnostics.py --check build:cli
   .agent/scripts/project-diagnostics.py --check lint --check test:unit
   .agent/scripts/project-diagnostics.py --all
@@ -102,6 +103,7 @@ XCODE_DESTINATION = os.environ.get("PROJECT_DIAGNOSTICS_XCODE_DESTINATION", "pla
 
 # Test target argument formats used by supported runners.
 TEST_TARGET_STYLE_PATHS = "paths"
+TEST_TARGET_STYLE_PLAYWRIGHT = "playwright"
 TEST_TARGET_STYLE_XCODE = "xcode"
 
 # Lines worth keeping from a verbose xcodebuild log when building the compact summary.
@@ -136,6 +138,7 @@ class Check:
 	timeout: int | None = None
 	xcresult: bool = False
 	test_target_style: str | None = None
+	test_targets_required: bool = False
 
 
 @dataclass
@@ -384,6 +387,14 @@ def script_skip_reason(name: str, command: str) -> str | None:
 	return None
 
 
+def package_test_target_style(name: str, command: str) -> str | None:
+	if name in UNIT_TEST_SCRIPT_NAMES:
+		return TEST_TARGET_STYLE_PATHS
+	if name == "test:component" and "playwright" in command.lower():
+		return TEST_TARGET_STYLE_PLAYWRIGHT
+	return None
+
+
 def discover_checks(project_dir: Path) -> tuple[list[Check], list[str]]:
 	checks: list[Check] = []
 	skipped: list[str] = []
@@ -404,12 +415,14 @@ def discover_checks(project_dir: Path) -> tuple[list[Check], list[str]]:
 			continue
 
 		if runner and script_is_safe(name, command):
+			test_target_style = package_test_target_style(name, command)
 			checks.append(
 				Check(
 					name,
 					[*runner, name],
-					"conservative package script",
-					test_target_style=TEST_TARGET_STYLE_PATHS if name in UNIT_TEST_SCRIPT_NAMES else None,
+					"targeted Playwright package script" if test_target_style == TEST_TARGET_STYLE_PLAYWRIGHT else "conservative package script",
+					test_target_style=test_target_style,
+					test_targets_required=test_target_style == TEST_TARGET_STYLE_PLAYWRIGHT,
 				)
 			)
 
@@ -436,7 +449,7 @@ def dedupe_checks(checks: list[Check]) -> list[Check]:
 
 def selected_checks(checks: list[Check], requested_names: list[str], run_all: bool) -> tuple[list[Check], list[str]]:
 	if run_all:
-		return dedupe_checks(checks), []
+		return [check for check in dedupe_checks(checks) if not check.test_targets_required], []
 
 	by_name = {check.name: check for check in checks}
 	selected = []
@@ -528,6 +541,13 @@ def xcode_test_arguments(targets: list[str]) -> tuple[list[str], list[str]]:
 
 def apply_test_targets(checks: list[Check], targets: list[str]) -> tuple[list[Check], list[str]]:
 	if not targets:
+		required_checks = [check for check in checks if check.test_targets_required]
+		if required_checks:
+			return checks, [
+				f"{check.name} requires --test-file or --test-glob; for example: "
+				f".agent/scripts/project-diagnostics.py --check {check.name} --test-file <path>"
+				for check in required_checks
+			]
 		return checks, []
 	if len(checks) != 1:
 		return checks, ["test targets require exactly one check"]
@@ -537,7 +557,9 @@ def apply_test_targets(checks: list[Check], targets: list[str]) -> tuple[list[Ch
 		return checks, [f"check does not support test targets: {check.name}"]
 
 	target_arguments = ["--", *targets]
-	if check.test_target_style == TEST_TARGET_STYLE_XCODE:
+	if check.test_target_style == TEST_TARGET_STYLE_PLAYWRIGHT:
+		target_arguments = ["--", "--workers=1", *targets]
+	elif check.test_target_style == TEST_TARGET_STYLE_XCODE:
 		target_arguments, errors = xcode_test_arguments(targets)
 		if errors:
 			return checks, errors
@@ -549,6 +571,7 @@ def apply_test_targets(checks: list[Check], targets: list[str]) -> tuple[list[Ch
 		timeout=check.timeout,
 		xcresult=check.xcresult,
 		test_target_style=check.test_target_style,
+		test_targets_required=check.test_targets_required,
 	)
 	return [targeted], []
 
@@ -835,9 +858,9 @@ def main() -> int:
 	parser.add_argument("--timeout", type=int, default=120, help="Timeout per check in seconds. Default: 120.")
 	parser.add_argument("--list", action="store_true", help="List available and skipped checks without running anything. This is the default.")
 	parser.add_argument("--check", action="append", default=[], metavar="NAME", help="Run one named check. Repeat to run multiple checks.")
-	parser.add_argument("--test-file", action="append", default=[], metavar="PATH", help="Run a unit-test check against one project-relative test file. Repeat for multiple files.")
-	parser.add_argument("--test-glob", action="append", default=[], metavar="PATTERN", help="Run a unit-test check against matching project-relative files. Repeat for multiple globs.")
-	parser.add_argument("--all", action="store_true", help="Run all conservative checks. Use only after approval for broad verification.")
+	parser.add_argument("--test-file", action="append", default=[], metavar="PATH", help="Run a targetable test check against one project-relative file. Repeat for multiple files.")
+	parser.add_argument("--test-glob", action="append", default=[], metavar="PATTERN", help="Run a targetable test check against matching project-relative files. Repeat for multiple globs.")
+	parser.add_argument("--all", action="store_true", help="Run conservative checks that do not require explicit targets. Use only after approval for broad verification.")
 	args = parser.parse_args()
 
 	if args.all and args.check:
@@ -861,6 +884,12 @@ def main() -> int:
 		return 0
 
 	checks_to_run, selection_errors = selected_checks(checks, args.check, args.all)
+	if args.all:
+		skipped.extend(
+			f"{check.name}: requires --test-file or --test-glob and is excluded from --all"
+			for check in dedupe_checks(checks)
+			if check.test_targets_required
+		)
 	if selection_errors:
 		for error in selection_errors:
 			print(error, file=sys.stderr)

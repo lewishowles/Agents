@@ -25,6 +25,21 @@ write_xcode_project() {
 	printf '// !$*UTF8*$!\n{\n\tobjects = {\n%b\n\t};\n}\n' "$body" > "$project_dir/App.xcodeproj/project.pbxproj"
 }
 
+# Writes a Bun project whose Playwright executable records the received arguments.
+#
+# @param  {string}  project_dir
+#     Project root to populate.
+write_fake_playwright_project() {
+	local project_dir="$1"
+
+	mkdir -p "$project_dir/node_modules/.bin" "$project_dir/src/components"
+	printf '{"packageManager":"bun@1.2.0","scripts":{"test:component":"playwright test -c test/playwright-ct.config.js --project=chromium"}}\n' > "$project_dir/package.json"
+	printf 'lock\n' > "$project_dir/bun.lock"
+	printf '#!/usr/bin/env bash\nprintf "%%s\\n" "$@" > component-test-args\n' > "$project_dir/node_modules/.bin/playwright"
+	chmod +x "$project_dir/node_modules/.bin/playwright"
+	printf 'test\n' > "$project_dir/src/components/ui-button.pw.js"
+}
+
 test_local_validate_script() {
 	local target_dir="$TEST_ROOT/with-validate"
 	local list_output="$TEST_ROOT/with-validate-list.md"
@@ -79,6 +94,44 @@ test_scoped_unit_test_files_and_globs() {
 	assert_contains "$output" "| test:unit | passed |"
 	assert_contains "$output" "src/example.test.js"
 	assert_contains "$output" "src/components/button.test.js"
+}
+
+test_scoped_playwright_component_tests() {
+	local targeted_dir="$TEST_ROOT/scoped-component"
+	local unscoped_dir="$TEST_ROOT/unscoped-component"
+	local all_dir="$TEST_ROOT/all-component"
+	local output="$TEST_ROOT/scoped-component.md"
+	local error_output="$TEST_ROOT/unscoped-component.txt"
+	local all_output="$TEST_ROOT/all-component.md"
+	local expected_arguments="$TEST_ROOT/scoped-component-arguments.txt"
+
+	write_fake_playwright_project "$targeted_dir"
+	write_fake_playwright_project "$unscoped_dir"
+	write_fake_playwright_project "$all_dir"
+
+	"$REPO_DIR/scripts/project-diagnostics.py" \
+		--project "$targeted_dir" \
+		--check test:component \
+		--test-file src/components/ui-button.pw.js > "$output"
+
+	printf 'test\n-c\ntest/playwright-ct.config.js\n--project=chromium\n--workers=1\nsrc/components/ui-button.pw.js\n' > "$expected_arguments"
+	if ! diff -u "$expected_arguments" "$targeted_dir/component-test-args"; then
+		fail "Expected targeted Playwright arguments"
+	fi
+	assert_contains "$output" "| test:component | passed |"
+
+	if "$REPO_DIR/scripts/project-diagnostics.py" \
+		--project "$unscoped_dir" \
+		--check test:component > "$error_output" 2>&1; then
+		fail "Expected unscoped Playwright component check to be rejected"
+	fi
+	assert_contains "$error_output" "test:component requires --test-file or --test-glob"
+	assert_not_exists "$unscoped_dir/component-test-args"
+
+	"$REPO_DIR/scripts/project-diagnostics.py" --project "$all_dir" --all > "$all_output"
+
+	assert_contains "$all_output" "test:component: requires --test-file or --test-glob and is excluded from --all"
+	assert_not_exists "$all_dir/component-test-args"
 }
 
 test_xcode_cli_targets_are_discovered() {
@@ -213,6 +266,7 @@ test_scoped_unit_tests_reject_unsafe_targets() {
 test_local_validate_script
 test_json_skipped_when_no_safe_checks
 test_scoped_unit_test_files_and_globs
+test_scoped_playwright_component_tests
 test_xcode_cli_targets_are_discovered
 test_scoped_xcode_unit_test_files_and_globs
 test_scoped_unit_tests_reject_unsafe_targets

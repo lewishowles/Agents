@@ -898,6 +898,7 @@ def diagnostics_lines(project_dir: Path) -> List[str]:
 		".agent/scripts/project-diagnostics.py --check <name>",
 		".agent/scripts/project-diagnostics.py --check test:unit --test-file <path>",
 		".agent/scripts/project-diagnostics.py --check test:unit --test-glob '<pattern>'",
+		".agent/scripts/project-diagnostics.py --check test:component --test-file <path>",
 	]
 
 	if change_impact_path.exists():
@@ -912,6 +913,8 @@ def diagnostics_lines(project_dir: Path) -> List[str]:
 			"`.agent/scripts/project-diagnostics.py` is installed as a shared symlink from the agent configuration repo. Record project-specific check names and expectations in this `WORKSPACE.md` file rather than editing the script.",
 			"",
 			"For unit-test checks, run the full unit suite through diagnostics by default. Use `--test-file <path>` or `--test-glob '<pattern>'` only when investigating a known failing area, when the full unit check is unusually slow, or when a narrower run was requested.",
+			"",
+			"Playwright-backed component checks require `--test-file <path>` or `--test-glob '<pattern>'`. Diagnostics enforces one worker and excludes these checks from `--all` so a full browser suite is never started implicitly.",
 			"",
 			"Use `--all` only for broad verification after user approval. If a check fails, extract details from the returned log path with targeted search commands instead of re-running the check.",
 		]
@@ -1077,6 +1080,8 @@ def render_workspace(project_dir: Path, tree_depth: int, tree_excludes: List[str
 			"Prefer the narrowest command that verifies the changed area. Classifications are conservative; inspect the script before running if behaviour is unclear.",
 			"",
 			"When project diagnostics exposes a unit-test check, run it without `--test-file` or `--test-glob` by default. Both narrowing arguments are repeatable when needed; quote glob patterns so diagnostics validates and expands them. For Xcode checks, the nearest directory ending in `Tests` identifies the test target and the Swift filename identifies the test suite.",
+			"",
+			"Playwright-backed component checks require `--test-file` or `--test-glob`; diagnostics enforces one worker and excludes them from `--all`.",
 			"",
 			"Broad test commands can produce large output. When only the failure summary is needed, capture output to a temp file or use shell-safe truncation such as `command 2>&1 | tail -20`, taking care not to hide the original exit status.",
 			"",
