@@ -33,7 +33,7 @@ Minimise token cost by default; treat context as a limited shared budget.
 - Read targeted file ranges instead of whole files. Do not repeatedly read large progress files; use targeted headings or searches.
 - For file relocations, use `mv` or `cp` via Bash. Never read a file's content just to write it at a different path — that's three tool calls instead of one.
 - Do not re-run or re-print expensive commands unless something changed that can affect their result and local execution is justified by token cost.
-- Do not output placeholder status text between tool calls ("Still active", "Continuing…"). Only emit a status update when there is something genuinely new to report — a finding, a direction change, or a blocker.
+- Do not output placeholder status text between tool calls ("Still active", "Continuing…"). Notification-only wake-ups such as `<hcom>` do not require a status reply. Wait silently until there is something genuinely new to report: completion, a finding, a direction change, or a blocker. If identical wake-ups recur without a state change, treat them as a possible delivery failure, check `hcom status --logs` when HCOM inspection is authorised, and report the concrete error once rather than narrating each retry.
 - Write large deliverables (roadmaps, specs, reports) directly to the target file and summarise briefly in chat; never print the full document as a response.
 - Prefer structurally correct, formatter-friendly code over hand-polished indentation. Preserve indentation where it affects syntax or meaning, but do not spend effort aligning, beautifying, or manually wrapping whitespace that the project formatter will rewrite.
 
