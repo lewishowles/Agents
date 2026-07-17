@@ -82,7 +82,7 @@ Release boundaries live in one `## Roadmap` table (`ID | Title | Overview | Stat
 
 Placement follows the same principle as section order: when inserting new work, if it's the immediate next task, write or update the active task file directly; if it's later in the queue, add a new task file and insert its link into the queue list in dependency order, not at the end.
 
-After the user signals acceptance with “committed”, “continue”, “next”, or equivalent, keep the file: set `status: done` and `completed: <date>` in front matter, append a short `## Outcome` section (what changed and how it was verified), remove the task from the queue, and promote the next entry into the active slot in `PROGRESS.md`. Before that signal, leave the task `in-progress` even when implementation and verification are complete. Done files are the historical record, replacing most per-task archived-milestone prose. When every task file is done, the folder may be bulk-cleaned — a deliberate user or agent action, never automatic.
+After the user signals acceptance with “committed”, “continue”, “next”, or equivalent: append a short `## Outcome` section to the task file (what changed and how it was verified), condense that outcome into a one-line, dated entry in `PROGRESS.md`'s `## Archived milestones`, delete the task file, remove the task from the queue, and promote the next entry into the active slot in `PROGRESS.md`. Before that signal, leave the task `in-progress` even when implementation and verification are complete. `## Archived milestones` is the sole historical record and is release-scoped, not permanent: once a roadmap release ships, remove its milestone entries too.
 
 ### Status and dependencies
 

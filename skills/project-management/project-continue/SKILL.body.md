@@ -79,7 +79,7 @@ If the previous session used subagent delegation:
 Finishing work includes updating `PROGRESS.md` and giving handoff. Do not leave either to next session.
 
 - Tick completed `## Tasks` checkboxes in the active task file (or completed tasks in an inline `## Active work` section)
-- When implementation is finished, tick the task checkboxes, append a short `## Outcome` section (what changed and how it was verified), and refresh the handoff. Leave the task `in-progress` and do not promote the queue until the user signals acceptance with “committed”, “continue”, “next”, or equivalent. Then set `status: done` and `completed: <date>`, remove it from the upcoming queue, and promote the next entry.
+- When implementation is finished, tick the task checkboxes, append a short `## Outcome` section (what changed and how it was verified), and refresh the handoff. Leave the task `in-progress` and do not promote the queue until the user signals acceptance with “committed”, “continue”, “next”, or equivalent. Then condense the outcome into a one-line, dated entry in `PROGRESS.md`'s `## Archived milestones`, delete the task file, remove it from the upcoming queue, and promote the next entry.
 - Update `### Previous step` with what just changed and any verification performed
 - Update `### Next step` with the first concrete follow-up action
 - Update the `## Roadmap` row Status when a release becomes active or its last task lands as done

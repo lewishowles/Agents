@@ -25,8 +25,7 @@ Reduce noisy or hard-to-scan `PROGRESS.md`. Cut words aggressively without losin
 - Stale investigations that led nowhere
 - Implementation details already visible in the code
 - Wording that explains process without preserving a decision, result, blocker, or next action
-- Archived-milestone prose duplicating a done task file's `## Outcome` — the task file is the per-task record; keep only milestone-level summaries in `PROGRESS.md`
-- Done task files, but only when every file in `.agent/tasks/` is done and the user confirms the bulk cleanup — never delete individual done files during routine compaction
+- Archived milestone entries whose roadmap release has shipped — `## Archived milestones` is release-scoped, not a permanent log; drop entries once the release closes
 - Spec files in `.agent/specs/` that may no longer be active — list every file, check whether each is referenced by a `### Spec` link in active `PROGRESS.md` sections, then inspect enough to explain its real status. Do not flag a spec only because it is unlinked. For each, state whether it appears completed, superseded, partly future-facing, or unclear; give the reason; recommend keep, archive, link from active work, or ask. Do not delete silently.
 
 ## Compression target
@@ -141,7 +140,7 @@ After work finishes, refresh the handoff: tick verified implementation steps, up
 
 ## Archive mode
 
-Archive when completed work makes active work hard to find. Done task files (kept in `.agent/tasks/` with `status: done` and an `## Outcome` section) are already the per-task record, so archiving mostly applies to inline sections and pre-task-file history; a milestone-level summary line in `## Archived milestones` is still worth adding when a whole release lands.
+Archive when completed work makes active work hard to find. Task files are deleted at completion time (see `project-plan-task`), so archiving here mostly applies to inline sections and pre-task-file history; a milestone-level summary line in `## Archived milestones` is still worth adding when a whole release lands, and should itself be pruned once that release ships.
 
 Archive completed sections when:
 

@@ -213,7 +213,7 @@ Ideas and concerns not belonging to the current section.
 
 ## Archived milestones
 
-Completed work that predates task files, or milestone-level summaries worth keeping. Done task files (kept in `.agent/tasks/` with `status: done` and an `## Outcome` section) are the per-task record, so this section stays small.
+Completed work, one dated line per finished task. This is the sole historical record: task files are deleted on completion, not kept. It's also release-scoped, not permanent — prune entries once their roadmap release ships.
 ```
 
 Task file shape (`.agent/tasks/<task-slug>.md`): stable descriptive kebab-case filename; the human-facing name lives in front matter `title`, and task files do not prescribe branch names. Never rename files to reflect priority or queue position. Existing numeric files are tolerated as legacy and must not be bulk-renamed merely to adopt this convention. Keep in sync with the `project-plan-task` skill's "Section structure" if either changes:
@@ -268,7 +268,7 @@ Optional.
 
 ## Outcome
 
-Appended at completion, not pre-written: what landed and how it was verified. On completion, keep the file — set `status: done` and `completed:`, append this section, remove the task from the queue, and promote the next entry.
+Appended at completion, not pre-written: what landed and how it was verified. On completion, condense this into a one-line, dated entry in `PROGRESS.md`'s `## Archived milestones`, then delete the task file, remove it from the queue, and promote the next entry.
 ```
 
 Front matter is a deliberately flat subset of YAML: plain `key: value` pairs treated as strings, inline `[a, b]` lists, no nesting, no quoting, unknown keys ignored. Consumers never need a YAML library.

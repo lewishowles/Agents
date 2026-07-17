@@ -82,13 +82,14 @@ Step progress is the `- [ ]` / `- [x]` items under `## Tasks`.
 
 ### Completion
 
-After the user signals acceptance, keep the file:
+After the user signals acceptance:
 
-1. Set `status: done` and `completed: <date>` in front matter.
-2. Append a short `## Outcome` section: what landed, how it was verified.
-3. Remove the task from the upcoming queue in `PROGRESS.md` and promote the next entry into the active slot.
+1. Append a short `## Outcome` section to the task file: what landed, how it was verified.
+2. Condense that outcome into a one-line, dated entry in `PROGRESS.md`'s `## Archived milestones`.
+3. Delete the task file.
+4. Remove the task from the upcoming queue in `PROGRESS.md` and promote the next entry into the active slot.
 
-Done task files are the historical record, replacing most per-task `## Archived milestones` prose. When every task file in `.agent/tasks/` is done, the folder may be bulk-cleaned (a deliberate user or agent action, never automatic).
+`## Archived milestones` is the sole historical record, and it is release-scoped, not permanent: once a roadmap release's Status is `done` and the release has shipped, remove its milestone entries too.
 
 ## PROGRESS.md
 
