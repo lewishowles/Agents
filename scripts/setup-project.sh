@@ -10,7 +10,7 @@ set -euo pipefail
 # Resolved at startup so aliases can call this script from any project directory.
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
-PROJECT_DIR=$(pwd)
+PROJECT_DIR=$(pwd -P)
 
 source "$REPO_DIR/scripts/lib/cli-style-output.sh"
 source "$REPO_DIR/scripts/lib/setup-links.sh"
