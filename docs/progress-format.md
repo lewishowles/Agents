@@ -5,14 +5,16 @@ Canonical contract for `PROGRESS.md` and `.agent/tasks/` across projects. The `p
 ## Files
 
 - `<project-root>/PROGRESS.md` — session handoff, roadmap, queue, decisions, discoveries.
-- `<project-root>/.agent/tasks/NNN.md` — one file per concrete task.
+- `<project-root>/.agent/tasks/<task-slug>.md` — one file per concrete task.
 - `<project-root>/.agent/specs/<feature>.md` — durable feature designs, unchanged by this contract.
 
 ## Task files
 
 ### Naming
 
-Filenames are three-digit IDs: `001.md`, `002.md`. Allocate the next ID as max existing + 1 (including done files); never reuse an ID. Filenames carry no meaning; the human-facing name lives in front matter. Task files do not prescribe branch names.
+New task filenames use stable, descriptive kebab-case slugs such as `progress-format-parser.md`. The filename identifies the task; it does not encode priority or queue position. Choose a concise slug from the task's purpose and add a meaningful qualifier if another task already uses it.
+
+Reordering work changes only the physical order of links in `### Upcoming queue`. Do not rename task files when titles, priorities, or queue positions change. Refer to tasks by their human-facing title or path in prose, not by a positional number or bare filename stem. Existing numeric filenames are valid legacy input and must not be bulk-renamed or renumbered merely to adopt this convention. New tasks use descriptive slugs even when existing tasks are numeric. Task files do not prescribe branch names.
 
 ### Front matter
 
@@ -32,7 +34,7 @@ completed:
 - `title` — display name for lists and cards.
 - `overview` — the at-a-glance reminder; one or two sentences.
 - `status` — `ready`, `in-progress`, `blocked`, `needs-decision`, or `done`. Use `needs-decision` when an open risk needs the user's input before an agent should implement; don't resolve it by guessing. Use `blocked` for external blocks; blocking by another task is expressed through `depends` instead.
-- `depends` — task IDs that must land first, e.g. `[001, 003]`, or `[]`. Most queued tasks are independent unless this says otherwise.
+- `depends` — task filename stems that must land first, e.g. `[progress-format-parser, metadata-validation]`, or `[]`. Use it only for real prerequisites; queue order already expresses the intended sequence. Legacy numeric stems remain valid references to existing numeric task files.
 - `release` — a roadmap ID from the `## Roadmap` table. Omit for backlog tasks.
 - `completed` — date (`YYYY-MM-DD`), set when status becomes `done`, otherwise left empty.
 
@@ -111,15 +113,15 @@ One canonical table. Row order is the timeline; `ID` is what task `release:` fie
 
 ### Upcoming queue
 
-Numbered list under the session handoff, non-done tasks only, priority order:
+Bulleted list under the session handoff, non-done tasks only. Physical order is priority and the intended pickup sequence:
 
 ```markdown
-1. [001 — Progress format parser service](.agent/tasks/001.md) — ready
-2. [002 — Progress CLI command](.agent/tasks/002.md) — ready, depends on 001
+- [Progress format parser service](.agent/tasks/progress-format-parser.md) (ready)
+- [Progress CLI command](.agent/tasks/progress-cli-command.md) (ready; depends on `progress-format-parser`)
 ```
 
 The inline status annotation is a convenience so agents can pick work without opening every file; front matter wins on conflict, and drift is a doctor finding, not a parse error.
 
 ## Tolerance
 
-Consumers parse tolerantly: missing sections, legacy heading-based task files (`## Status` / `## Depends on`), or absent front matter degrade to partial results plus warnings, never errors. Producers (skills, agents) always write the full contract.
+Consumers parse tolerantly: numeric legacy task filenames, numbered legacy queues, missing sections, legacy heading-based task files (`## Status` / `## Depends on`), or absent front matter degrade to partial results plus warnings, never errors. Producers (skills, agents) always write the current contract.

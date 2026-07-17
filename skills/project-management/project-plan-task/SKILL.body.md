@@ -68,13 +68,15 @@ Spec explains why now, problem, goals, current status (optional), non-goals, app
 
 ## Task files vs progress sections
 
-Once a plan has more than the current one or two active items, prefer a standalone file under `.agent/tasks/NNN.md` over an inline `PROGRESS.md` section for concrete, ready-to-pick-up work. This keeps the read surface small: the next agent opens only the active task's file, not the whole plan. The canonical contract is `docs/progress-format.md` in the Configuration/Agents repo — keep this skill's template in sync with it.
+Once a plan has more than the current one or two active items, prefer a standalone file under `.agent/tasks/<task-slug>.md` over an inline `PROGRESS.md` section for concrete, ready-to-pick-up work. This keeps the read surface small: the next agent opens only the active task's file, not the whole plan. The canonical contract is `docs/progress-format.md` in the Configuration/Agents repo — keep this skill's template in sync with it.
 
-Filenames are three-digit IDs (`001.md`), allocated as max existing + 1 (including done files), never reused. The human-facing name lives in front matter `title`, not the filename. Task files do not prescribe branch names.
+New task filenames use stable, descriptive kebab-case slugs such as `repair-cli-help.md`. The filename identifies the task, not its priority or queue position. Choose a concise slug from the task's purpose and add a meaningful qualifier on collision. The human-facing name lives in front matter `title`; task files do not prescribe branch names.
+
+Reordering work moves only queue entries. Never rename task files because their title, priority, or position changed, and never renumber or bulk-rename legacy numeric files merely to adopt the current convention. New tasks use descriptive slugs even in a folder containing numeric legacy tasks. Refer to tasks by title or path in user-facing prose, not by a positional number or bare filename stem.
 
 Task files are complete agent-facing contracts, not labels such as “implement form file”. For public, user-visible, or behaviourally significant work, fill in the contract, acceptance criteria, and verification sections so an agent can implement and check the task without asking the user to restate it.
 
-`PROGRESS.md`'s session handoff then holds only: a link to the active task file, the upcoming queue (numbered `[NNN — Title](.agent/tasks/NNN.md) — status` links, non-done tasks only, priority order), and standing context that doesn't change per task (verification commands, recurring gotchas). Backlog items with no concrete task file yet stay as prose bullets elsewhere in `PROGRESS.md` (with a spec link if one exists) — do not create a task file until the item is genuinely next; write it just-in-time.
+`PROGRESS.md`'s session handoff then holds only: a link to the active task file, the upcoming queue (bulleted title links with inline status, non-done tasks only, in physical priority order), and standing context that doesn't change per task (verification commands, recurring gotchas). Backlog items with no concrete task file yet stay as prose bullets elsewhere in `PROGRESS.md` (with a spec link if one exists) — do not create a task file until the item is genuinely next; write it just-in-time.
 
 Release boundaries live in one `## Roadmap` table (`ID | Title | Overview | Status`, row order is the timeline; Status is `planned`/blank, `active`, or `done`). A task's `release:` front matter references a roadmap ID; omit it for backlog tasks.
 
@@ -84,7 +86,7 @@ After the user signals acceptance with “committed”, “continue”, “next�
 
 ### Status and dependencies
 
-Every task file's front matter states `status` (`ready`, `in-progress`, `blocked`, `needs-decision`, or `done`) and `depends` (task IDs that must land first, or `[]`). This is what lets a second agent, or the user, pick up any task that isn't already claimed instead of assuming the queue order is a strict dependency chain: most queued tasks are independent unless `depends` says otherwise. Mark a task `needs-decision` rather than `ready` when an open risk or ambiguity needs the user's input before implementation; don't resolve it by guessing. Use `blocked` only for external blocks; blocking by another task is expressed through `depends`.
+Every task file's front matter states `status` (`ready`, `in-progress`, `blocked`, `needs-decision`, or `done`) and `depends` (task filename stems that must land first, or `[]`). Use `depends` only for real prerequisites; physical queue order already expresses priority and intended sequence. It lets a second agent or the user safely pick independent work out of order. Legacy numeric stems remain valid references to existing numeric task files. Mark a task `needs-decision` rather than `ready` when an open risk or ambiguity needs the user's input before implementation; don't resolve it by guessing. Use `blocked` only for external blocks; blocking by another task is expressed through `depends`.
 
 Front matter is the source of truth for status: the queue's inline annotation is convenience and may lag. A verified implementation remains `in-progress` until the user signals acceptance; Git state does not change this. Check the active task's front matter before starting it. Only propose actual dispatch tooling (a script or bot that assigns tasks) if the backlog is large enough, and independent enough, that manual pickup has become the bottleneck: for a handful of tasks it isn't.
 
@@ -138,14 +140,14 @@ Focused checks, manual review, or evidence required before handoff.
 ### Notes
 ```
 
-Standalone `.agent/tasks/NNN.md` file. No `# Title` heading — front matter `title` is the single source. Front matter is a deliberately flat subset of YAML (plain `key: value`, values are strings, inline `[a, b]` lists, no nesting, no quoting) so consumers never need a YAML library:
+Standalone `.agent/tasks/<task-slug>.md` file. No `# Title` heading — front matter `title` is the single source. Front matter is a deliberately flat subset of YAML (plain `key: value`, values are strings, inline `[a, b]` lists, no nesting, no quoting) so consumers never need a YAML library:
 
 ```markdown
 ---
 title: Human-readable task name
 overview: One or two sentences reminding a human what this task is and why it exists.
 status: ready            # ready | in-progress | blocked | needs-decision | done
-depends: []              # task IDs that must land first, e.g. [001, 003]
+depends: []              # task filename stems that must land first, e.g. [metadata-validation]
 release: phase-5         # roadmap ID; omit for backlog
 completed:               # YYYY-MM-DD, set when status becomes done
 ---

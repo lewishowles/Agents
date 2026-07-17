@@ -165,7 +165,7 @@ _Pattern inspired by [mattpocock/skills](https://github.com/mattpocock/skills) (
 
 ## PROGRESS.md schema
 
-For a brand-new project the initial plan is usually small enough to stay inline. Once there's a first concrete unit of ready-to-pick-up work, create it as `.agent/tasks/NNN.md` (see the `project-plan-task` skill's "Task files vs progress sections") rather than growing the `## Active work` section indefinitely. The canonical contract for `PROGRESS.md` and task files is `docs/progress-format.md` in the Configuration/Agents repo — keep the templates below in sync with it.
+For a brand-new project the initial plan is usually small enough to stay inline. Once there's a first concrete unit of ready-to-pick-up work, create it as `.agent/tasks/<task-slug>.md` (see the `project-plan-task` skill's "Task files vs progress sections") rather than growing the `## Active work` section indefinitely. The canonical contract for `PROGRESS.md` and task files is `docs/progress-format.md` in the Configuration/Agents repo — keep the templates below in sync with it.
 
 ```markdown
 # <Project name>
@@ -176,11 +176,11 @@ Read this section first. Only open the active task file. Stop after this section
 
 ### Active task
 
-`.agent/tasks/NNN.md`, or, for a brand-new plan with no task file yet, a one-sentence current goal plus next step. Verify the active task's front matter status before starting. Check Git separately for safety, but never use Git state as progress state.
+`.agent/tasks/<task-slug>.md`, or, for a brand-new plan with no task file yet, a one-sentence current goal plus next step. Use a stable descriptive kebab-case slug; it identifies the task rather than its position. Verify the active task's front matter status before starting. Check Git separately for safety, but never use Git state as progress state.
 
 ### Upcoming queue
 
-Numbered `[NNN — Title](.agent/tasks/NNN.md) — status` links, non-done tasks only, in priority order — or brief bullets if not yet broken into files. Front matter wins over the inline annotation on conflict.
+Bulleted title links with inline status, non-done tasks only. Physical order is priority and the intended pickup sequence. Reorder links without renaming task files. Front matter wins over the inline annotation on conflict.
 
 ### Standing context
 
@@ -223,14 +223,14 @@ Ideas and concerns not belonging to the current section.
 Completed work that predates task files, or milestone-level summaries worth keeping. Done task files (kept in `.agent/tasks/` with `status: done` and an `## Outcome` section) are the per-task record, so this section stays small.
 ```
 
-Task file shape (`.agent/tasks/NNN.md`): three-digit ID filename (allocate max + 1, never reuse; the human-facing name lives in front matter `title`; task files do not prescribe branch names). Keep in sync with the `project-plan-task` skill's "Section structure" if either changes:
+Task file shape (`.agent/tasks/<task-slug>.md`): stable descriptive kebab-case filename; the human-facing name lives in front matter `title`, and task files do not prescribe branch names. Never rename files to reflect priority or queue position. Existing numeric files are tolerated as legacy and must not be bulk-renamed merely to adopt this convention. Keep in sync with the `project-plan-task` skill's "Section structure" if either changes:
 
 ```markdown
 ---
 title: Human-readable task name
 overview: One or two sentences reminding a human what this task is and why it exists.
 status: ready            # ready | in-progress | blocked | needs-decision | done
-depends: []              # task IDs that must land first, e.g. [001, 003]
+depends: []              # task filename stems that must land first, e.g. [metadata-validation]
 release: phase-1         # roadmap ID; omit for backlog
 completed:               # YYYY-MM-DD, set when status becomes done
 ---

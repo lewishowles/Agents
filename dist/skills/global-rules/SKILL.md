@@ -184,6 +184,8 @@ _Three-gate criteria inspired by [mattpocock/skills](https://github.com/mattpoco
 
 **PROGRESS.md lives at the project root.** Locate the existing file by reading or globbing from the root — never create `.claude/PROGRESS.md`, `.agent/PROGRESS.md`, or a second copy. If a search cannot find one, say so and ask where to create it. Root holds human-facing contracts (`AGENTS.md`, `PROGRESS.md`, `README.md`); `.agent/` holds agent-operated internals (`scripts/`, `specs/`, `diagnostics/`). Keep new files on the correct side.
 
+**Task names are stable; queue position is not identity.** Give new `.agent/tasks/` files descriptive kebab-case names and refer to tasks by title or path, never by a positional number. The physical order of `### Upcoming queue` is the intended sequence. Reorder queue entries without renaming task files or rewriting references. Existing numeric task filenames are tolerated as legacy; never renumber or bulk-rename them merely to match queue order or the current naming convention.
+
 **Split broad roadmap items before implementation.** If a plan exceeds roughly 7 steps, decompose it into smaller chunks rather than writing a longer plan.
 
 For file location, chunking, handoff, and compaction mechanics, see the `project-continue` and `project-compact-progress` skills.
