@@ -72,7 +72,7 @@ ensure_container_dir() {
 	fi
 }
 
-# Removes broken symlinks in a directory that point into this repo.
+# Removes stale or repo-owned symlinks in a directory.
 # Symlinks pointing elsewhere are left alone.
 #
 # @param  {string}  dir
@@ -81,10 +81,13 @@ ensure_container_dir() {
 #     Only prune links whose target starts with this path.
 # @param  {string}  label
 #     Human-readable name used in output messages.
+# @param  {string}  remove_all
+#     Set to 1 to remove all repo-owned links, including valid links.
 prune_stale_repo_links() {
 	local dir="$1"
 	local repo_prefix="$2"
 	local label="$3"
+	local remove_all="${4:-0}"
 
 	[ -d "$dir" ] || return 0
 
@@ -92,9 +95,15 @@ prune_stale_repo_links() {
 	for link in "$dir"/*; do
 		[ -L "$link" ] || continue
 		target=$(readlink "$link")
-		if [[ "$target" == "$repo_prefix"* ]] && [ ! -e "$link" ]; then
+		if [[ "$target" == "$repo_prefix"* ]] && {
+			[ "$remove_all" = "1" ] || [ ! -e "$link" ]
+		}; then
 			trash "$link"
-			cli_group_status warning "removed stale" "$label/$(basename "$link")"
+			if [ "$remove_all" = "1" ]; then
+				cli_group_status warning "removed repo-owned" "$label/$(basename "$link")"
+			else
+				cli_group_status warning "removed stale" "$label/$(basename "$link")"
+			fi
 		fi
 	done
 }
