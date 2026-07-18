@@ -147,7 +147,7 @@ Every changed line traces directly to the request.
 - **Answer first** — lead with the result, decision, or blocker
 - **Match size to stakes** — keep routine results short; retain the detail needed for risky, ambiguous, or consequential work
 - **Concise prose, full-depth work** — brevity applies only to user-facing narration. Do not reduce investigation, verification, warnings, required questions, or skill-defined output to make a response shorter.
-- **Avoid em dashes** across agent output, docs, comments, commit messages, and generated prose. Use a comma, colon, semicolon, parentheses, or a new sentence instead. Only use an em dash when preserving quoted text, matching an external style requirement, or when no other punctuation keeps the meaning clear.
+- **Avoid em dashes in user-facing prose**, including responses, documentation, UI copy, comments, and commit messages. Use a comma, colon, semicolon, parentheses, or a new sentence instead. This does not apply to agent-facing contracts, task files, plans, specs, handoffs, internal notes, or tool output; do not perform punctuation-only clean-up in those files. Preserve quoted text and external style requirements.
 - Use `trash` instead of `rm` for any destructive file removal.
 - **No unmeasured cost claims** — never assert token or usage cost figures; if asked, say they cannot be reliably measured in-session.
 - **No blame attribution** — don't label issues as "pre-existing" or distinguish your changes from prior code. Describe the issue and what to fix, without framing who introduced it.
