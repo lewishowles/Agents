@@ -1,6 +1,6 @@
 {
 	"name": "writing",
-	"description": "Use this skill when writing or editing prose: blog posts, documentation, longform content, marketing copy. Covers voice, tone, structure, examples, language conventions (UK spelling, sentence case, punctuation), and what to avoid (em dashes, preachy tone, padding, opening summaries, formulaic AI-prose patterns). For README files specifically, see the writing-readme skill. For UI microcopy (buttons, error messages, empty states), see the writing-copy skill.",
+	"description": "Use this skill when writing or editing prose, including blogs, docs, longform, and marketing copy. For README files, see writing-readme; for UI microcopy, see writing-copy.",
 	"when": "When writing prose/documentation, voice, tone, structure, style",
 	"triggers": [
 		"documentation",

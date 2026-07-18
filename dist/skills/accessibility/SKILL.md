@@ -2,7 +2,7 @@
 # Generated — edit skill.json and SKILL.body.md instead.
 name: accessibility
 description: >
-  Use this skill when writing or reviewing any HTML, UI components, or interface copy — even if accessibility isn't mentioned. Covers WCAG 2.2 AA baseline (AAA where feasible): colour contrast, keyboard access, screen readers, semantic HTML, focus management, forms & validation, live regions, touch targets (iOS 44×44, Android 48×48), dynamic content, and inclusive design. Apply proactively: accessible design is correct design.
+  Use this skill when editing HTML, UI components, or interface copy, even if accessibility isn't mentioned. Covers WCAG 2.2 AA, keyboard, screen readers, semantics, focus, forms, and contrast.
 related-skills:
   - code-style
   - vue

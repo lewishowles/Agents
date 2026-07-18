@@ -2,7 +2,7 @@
 # Generated — edit skill.json and SKILL.body.md instead.
 name: writing-copy
 description: >
-  Use this skill when writing or reviewing UI microcopy — button labels, error messages, empty states, tooltips, CTAs, form helper text, confirmation dialogs, or related interface strings across a flow. Covers establishing product context, adapting tone to stakes, maintaining terminology, being specific and action-oriented, and avoiding vague filler. Pair with the writing skill for voice baselines and the accessibility skill for screen-reader-friendly phrasing.
+  Use this skill when writing or reviewing UI microcopy: labels, errors, empty states, tooltips, CTAs, form help, confirmations. See writing for voice and accessibility for screen-reader phrasing.
 related-skills:
   - writing
 ---

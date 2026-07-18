@@ -3,7 +3,7 @@
 name: project-synthesise-feedback
 displayName: Project synthesise feedback
 description: >
-  Use this skill when asked to review, compare, or combine suggestions from another agent or reviewer, especially requests like "what do you think of this", "another agent suggested this", "combine these recommendations", or "review this plan and make it stronger". Critically synthesises outside feedback with the current agent's own judgement into practical next steps.
+  Use this skill when asked to review, compare, or combine suggestions from another agent or reviewer. Turn feedback into practical next steps. For direct code or PR review, use code-review.
 do-not-use-when:
   - Reviewing a code diff or PR directly — use code-review instead
 ---

@@ -2,7 +2,7 @@
 # Generated — edit skill.json and SKILL.body.md instead.
 name: frontend-design
 description: >
-  Use this skill when designing or building any public-facing UI, landing page, marketing page, hero section, or component where visual quality and brand distinctiveness matter — before touching code. Covers design-first decision-making, aesthetic direction, typography, colour, motion, and composition. Distinct from accessibility (WCAG compliance) and web-performance (Core Web Vitals).
+  Use this skill before public-facing UI where visual quality or brand distinctiveness matters. Covers typography, colour, motion, and composition. Distinct from accessibility and web-performance.
 related-skills:
   - accessibility
   - code-style

@@ -2,7 +2,7 @@
 # Generated — edit skill.json and SKILL.body.md instead.
 name: caveman
 description: >
-  Ultra-compressed communication mode. Cuts token usage ~14-21% on structured/agentic tasks (one benchmark — not a general result) by speaking like caveman while keeping full technical accuracy. Supports intensity levels: lite, full (default), ultra, wenyan-lite, wenyan-full, wenyan-ultra. Use when user says "caveman mode", "talk like caveman", "use caveman", "less tokens", "be brief", or invokes /caveman. Also auto-triggers when token efficiency is requested.
+  Use this skill when the user requests caveman mode, brief replies, or token-efficient prose, including `/caveman`; supports lite/full/ultra and Wenyan variants.
 do-not-use-when:
   - Writing code, commits, or PRs — caveman applies to prose only
   - Security warnings or irreversible-action confirmations — Auto-Clarity drops to normal prose

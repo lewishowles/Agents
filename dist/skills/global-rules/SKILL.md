@@ -2,7 +2,7 @@
 # Generated — edit skill.json and SKILL.body.md instead.
 name: global-rules
 description: >
-  Use this skill at the start of every session and when making any change to code, config, documentation, or project structure. Contains global rules: token budget discipline, effort tiering, communication conventions (UK spelling, trash over rm), git workflow constraints, surgical changes, completion standards, PROGRESS.md workflow, ADR criteria, file discovery, and skill use policy.
+  Use this skill at every session start and when changing code, config, docs, or project structure. Baseline rules cover file discovery, PROGRESS.md workflow, ADR criteria, skill use policy, communication, Git, and completion.
 ---
 # Global rules
 

@@ -1,6 +1,6 @@
 {
 	"name": "vue",
-	"description": "Use this skill when working with .vue files, Vue components, composables, or Vue templates \u2014 even for small edits. Covers Vue 3 Composition API patterns, script setup, macro order, computed property organisation, component patterns, and component directory organisation. For project-specific stack choices (Bun, Vitest, Gitflow, @lewishowles/helpers, @lewishowles/components), see the vue-project-stack skill.",
+	"description": "Use this skill when working with `.vue` files, Vue components, composables, or templates, even for small edits. For project-specific stack choices, see vue-project-stack.",
 	"when": "When writing Vue code, formatting, patterns, composables, components",
 	"triggers": [
 		".vue",
