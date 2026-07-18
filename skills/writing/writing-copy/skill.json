@@ -1,6 +1,6 @@
 {
 	"name": "writing-copy",
-	"description": "Use this skill when writing UI microcopy \u2014 button labels, error messages, empty states, tooltips, CTAs, form helper text, confirmation dialogs. Covers being specific and action-oriented, surfacing useful context, and avoiding vague filler. Pair with the writing skill for voice baselines and the accessibility skill for screen-reader-friendly phrasing.",
+	"description": "Use this skill when writing or reviewing UI microcopy \u2014 button labels, error messages, empty states, tooltips, CTAs, form helper text, confirmation dialogs, or related interface strings across a flow. Covers establishing product context, adapting tone to stakes, maintaining terminology, being specific and action-oriented, and avoiding vague filler. Pair with the writing skill for voice baselines and the accessibility skill for screen-reader-friendly phrasing.",
 	"when": "When writing microcopy, buttons, errors, empty states, CTAs",
 	"triggers": [
 		"ui copy",
@@ -15,6 +15,9 @@
 		"confirmation dialog",
 		"helper text",
 		"form label",
+		"ux writing",
+		"ui strings",
+		"ui copy consistency",
 		"user-facing",
 		"user facing"
 	],
