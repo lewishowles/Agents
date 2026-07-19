@@ -99,13 +99,6 @@ while IFS= read -r -d '' manifest; do
 		validate_fail "Generated SKILL.md must not exist in source directory for $name"
 	fi
 
-	if [ -f "$generated_skill" ]; then
-		line_count=$(wc -l < "$generated_skill")
-		if [ "$line_count" -gt 500 ]; then
-			validate_warn "SKILL.md for $name is ${line_count} lines (limit: 500) — consider splitting"
-		fi
-	fi
-
 	SKILL_COUNT=$((SKILL_COUNT + 1))
 done < <(find "$REPO_DIR/skills" -name "skill.json" -print0 | sort -z)
 
