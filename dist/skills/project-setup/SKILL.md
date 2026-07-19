@@ -243,6 +243,8 @@ Public behaviour, data shape, UI states, or API surface affected. Required for p
 
 For public, user-visible, or behaviourally significant work, name only applicable failure and recovery states, such as loading, empty, denied, error, partial, stale, interrupted, or recovery. Keep the contract observable and invariant-focused, not implementation or testing steps; route accessibility, security, error-handling, and testing mechanics to specialist skills. Example: a UI flow might define loading, empty, denied, and error; an API or CLI flow might define partial, stale, interrupted, or recovery.
 
+See docs/progress-format.md for the Contract, Tasks, and Verification boundary, including the skill and rule split.
+
 ## Model tier
 
 Optional. Note if this task needs a specific tier (Haiku for mechanical/high-volume work, Sonnet for implementation, Opus for planning or cross-file synthesis) — skip if the session default is fine.
