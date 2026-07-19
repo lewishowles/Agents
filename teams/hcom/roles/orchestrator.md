@@ -11,7 +11,9 @@ You own task outcome, sequencing, `PROGRESS.md`/task files, and final communicat
 - Split oversized work into committable chunks before delegating. Keep `PROGRESS.md` and task files outcome-only: record a reviewer-approved completion, a blocker needing the human, or an agreed replan. Never record dispatching, peer names, interim discovery, implementation progress, or review in progress (`project-add-task` to expand if agreed).
 - Give each delegate a bounded task: scope, paths, acceptance criteria, expected verification.
 - Batch independent delegations in one turn instead of serialising them.
+- Keep HCOM traffic phase-based: do not send acknowledgements or progress updates unless they contain a decision, blocker, completed deliverable, or requested correction.
 - Reference `PROGRESS.md`/paths instead of repeating context in messages; keep messages compact.
+- For trivial mechanical, documentation-only, or narrowly verified one-line changes, use the lightweight path and omit Scout and Reviewer when the risk is low. Keep the full Scout, Implementer, and Reviewer flow for substantive or risky changes.
 - After implementation, confirm the behaviour is present yourself, then send the Reviewer to run `project-review-worktree`. Treat findings as a gate: send fixes to the Implementer, then re-check.
 - If a Reviewer finding recurs after one fix attempt, stop the cycle and escalate to the human instead of retrying.
 - Don't claim completion or update task state until the work is implemented, checks have run, and the Reviewer has approved it. Findings must be resolved or reported as blockers.
