@@ -57,6 +57,8 @@ When user signals readiness ("next please", "let's continue", "what's next") wit
 
 Keep outline short: 3–5 sentences. Give enough context to redirect without a full plan.
 
+Skip this whole flow if the contract was already shown in the finishing-work handoff for the task just completed (see below): the readiness signal that accepted that handoff already confirms it, so start the task instead of re-presenting the contract. Use this flow only for a cold start, where no contract has been shown yet, such as a new session or a mid-session "what's next" with no prior handoff.
+
 ## Resuming delegated work
 
 If the previous session used subagent delegation:
@@ -88,11 +90,11 @@ Finishing work includes updating `PROGRESS.md` and giving handoff. Do not leave 
 
 Before updating `PROGRESS.md`, distil what was learned: what belongs in `## Discoveries` (facts about the codebase or environment), what belongs in `## Decisions` (choices made and why), and whether any dead ends should be recorded in `### Failed approaches` under the current section. Add only what isn't already captured.
 
-After updating `PROGRESS.md`, show brief handoff before offering to continue:
+After updating `PROGRESS.md`, show the handoff before offering to continue:
 
 1. **What changed** — 1–3 sentences: what was done and what was verified (or skipped and why)
-2. **What's next** — same format as "Starting the next task": name it, explain why it's next
-3. **Wait** — do not start the next chunk until the user confirms
+2. **What's next** — if a task is already queued with a task file, give its full contract now, not just its name: what it is, why it's next, files, acceptance criteria, and verification, the same detail as "Starting the next task" step 3. If nothing is queued yet, name the open question or say so.
+3. **Wait** — do not start the next chunk until the user confirms. The contract is already in front of them, so that confirmation both accepts the finished task and greenlights the next; don't make them confirm a second time once the contract is re-presented.
 
 Never say "ready to move on to X" without this context. User needs enough to redirect.
 

@@ -137,7 +137,7 @@ Every changed line traces directly to the request.
 
 **PROGRESS.md update is blocking.** When a `PROGRESS.md` plan is active, update the handoff before stopping — not after, not as an optional follow-up. Record work completed and verification, but leave the task `in-progress` until the user signals acceptance with “committed”, “continue”, “next”, or equivalent. Only then mark it `done`, set `completed`, and promote the queue. This is a user-handoff decision, not a Git-state check.
 
-**Always state what's next.** After completing any step — or finishing everything — close with the next substantive project step, an open question to resolve, or an explicit "nothing remains" if there is no more planned work. If the work awaits the user's handoff decision, say so and stop; do not promote the next task yet.
+**Always state what's next.** After completing any step — or finishing everything — close with the next substantive project step, an open question to resolve, or an explicit "nothing remains" if there is no more planned work. If the work awaits the user's handoff decision, say so and stop; do not promote the next task yet. If a next task is already queued with a task file, show its full confirmed contract in this same message, not just its name. Otherwise the user's acceptance ("committed"/"continue"/"next") only unblocks a second round-trip, where the contract still has to be presented and re-confirmed before work can start. Showing it now lets one confirmation cover both: accepting the finished task and greenlighting the next.
 
 ## Communication
 
