@@ -29,7 +29,7 @@ Minimise token cost by default; treat context as a limited shared budget.
 - When using persistent shell sessions, run `clear` before each command so poll output does not include prior scrollback. Polls that return full session history waste tokens proportional to session age.
 - Prefer local aggregation over returning raw records: use counts, `--files-with-matches`, selected JSON fields, Git stats, or another bounded projection that answers the question.
 - For long-running commands (builds, validation suites, test runs), redirect output to a file instead of polling the shell. Retain the full log only when it may be needed for diagnosis or audit, and return the command status, a concise summary, the log path, and the first relevant error when present. Read only targeted ranges from that log afterwards, never the whole file by default.
-- Always pass `--no-pager` to `git diff`, `git log`, and other git commands that invoke a pager. A pager blocks the shell session and requires an extra keystroke to resume.
+- Put Git global options before the subcommand: `git -C <path> --no-pager log …`, never `git log … --no-pager`. Pass `--no-pager` to `git diff`, `git log`, and other commands that invoke a pager. A pager blocks the shell session and requires an extra keystroke to resume.
 - Do not read build output, generated bundles, coverage, screenshots, or generated artefacts unless a reported failure points to a specific file or path.
 - Do not print large command output; if you do, acknowledge it briefly, switch to narrower commands, and avoid repeating the pattern.
 - For user-run failures, ask for the smallest useful excerpt: command, failing file/test, error message, and relevant stack frame.
