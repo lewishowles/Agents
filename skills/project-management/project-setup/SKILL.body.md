@@ -222,10 +222,9 @@ Task file shape (`.agent/tasks/<task-slug>.md`): stable descriptive kebab-case f
 ---
 title: Human-readable task name
 overview: One or two sentences reminding a human what this task is and why it exists.
-status: ready            # ready | in-progress | blocked | needs-decision | done
+status: ready            # ready | in-progress | blocked | needs-decision
 depends: []              # task filename stems that must land first, e.g. [metadata-validation]
 release: phase-1         # roadmap ID; omit for backlog
-completed:               # YYYY-MM-DD, set when status becomes done
 ---
 
 ## Purpose
@@ -270,9 +269,6 @@ Focused checks, manual review, or evidence required before handoff.
 
 Optional.
 
-## Outcome
-
-Appended at completion, not pre-written: what landed and how it was verified. On completion, condense this into a one-line, dated entry in `PROGRESS.md`'s `## Archived milestones`, then delete the task file, remove it from the queue, and promote the next entry.
 ```
 
 Front matter is a deliberately flat subset of YAML: plain `key: value` pairs treated as strings, inline `[a, b]` lists, no nesting, no quoting, unknown keys ignored. Consumers never need a YAML library.

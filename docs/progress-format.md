@@ -27,16 +27,15 @@ overview: One or two sentences reminding a human what this task is and why it ex
 status: ready
 depends: []
 release: phase-5
-completed:
 ---
 ```
 
 - `title` — display name for lists and cards.
 - `overview` — the at-a-glance reminder; one or two sentences.
-- `status` — `ready`, `in-progress`, `blocked`, `needs-decision`, or `done`. Use `needs-decision` when an open risk needs the user's input before an agent should implement; don't resolve it by guessing. Use `blocked` for external blocks; blocking by another task is expressed through `depends` instead.
+- `status` — `ready`, `in-progress`, `blocked`, or `needs-decision`. Use `needs-decision` when an open risk needs the user's input before an agent should implement; don't resolve it by guessing. Use `blocked` for external blocks; blocking by another task is expressed through `depends` instead. `done` is tolerated only in legacy task files that were left mid-archive.
 - `depends` — task filename stems that must land first, e.g. `[progress-format-parser, metadata-validation]`, or `[]`. Use it only for real prerequisites; queue order already expresses the intended sequence. Legacy numeric stems remain valid references to existing numeric task files.
 - `release` — a roadmap ID from the `## Roadmap` table. Omit for backlog tasks.
-- `completed` — date (`YYYY-MM-DD`), set when status becomes `done`, otherwise left empty.
+- `completed` — legacy date field, tolerated when present but not written by current task producers.
 
 Front matter is the source of truth for status. An agent leaves a verified implementation `in-progress` until the user signals acceptance with “committed”, “continue”, “next”, or equivalent; it must not infer completion from Git state. Inline annotations elsewhere (the upcoming queue) are convenience and may lag.
 
@@ -79,7 +78,6 @@ Focused checks, manual review, or evidence required before handoff.
 
 ## Notes               (optional)
 
-## Outcome             (appended at completion)
 ```
 
 Step progress is the `- [ ]` / `- [x]` items under `## Tasks`.
@@ -88,10 +86,9 @@ Step progress is the `- [ ]` / `- [x]` items under `## Tasks`.
 
 After the user signals acceptance:
 
-1. Append a short `## Outcome` section to the task file: what landed, how it was verified.
-2. Condense that outcome into a one-line, dated entry in `PROGRESS.md`'s `## Archived milestones`.
-3. Delete the task file.
-4. Remove the task from the upcoming queue in `PROGRESS.md` and promote the next entry into the active slot.
+1. Add a one-line, dated outcome to `PROGRESS.md`'s `## Archived milestones`: what landed and how it was verified.
+2. Remove the task from the upcoming queue and promote the next entry into the active slot.
+3. Trash the task file after the `PROGRESS.md` update is complete.
 
 `## Archived milestones` is the sole historical record, and it is release-scoped, not permanent: once a roadmap release's Status is `done` and the release has shipped, remove its milestone entries too.
 

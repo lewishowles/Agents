@@ -37,7 +37,7 @@ When `<project-root>/.agent/scripts/project-diagnostics.py` exists, use `--list`
 Read only enough to orient. Stale sessions (5+ min idle) restart from scratch.
 
 - Read full `## Session handoff` (all subsections above `### Stop here`, including `### Context` and `### Verify with`)
-- Verify the active task file's front matter before starting it: `status` and `completed` are the source of truth. If the active task is already `done`, promote the next queue entry instead of redoing it; if the queue annotation disagrees with front matter, trust front matter and fix the queue line.
+- Verify the active task file's front matter before starting it: `status` is the source of truth. If a legacy task is already `done`, finish its archive directly in `PROGRESS.md` before removing it; if the queue annotation disagrees with front matter, trust front matter and fix the queue line.
 - Continue to `## Active work`, `## Decisions`, `## Discoveries`, `## Risks` only when needed
 - Read linked feature specs only when active; skip unrelated specs
 - Skip completed or archived sections unless current task depends on their history
@@ -81,7 +81,7 @@ If the previous session used subagent delegation:
 Finishing work includes updating `PROGRESS.md` and giving handoff. Do not leave either to next session.
 
 - Tick completed `## Tasks` checkboxes in the active task file (or completed tasks in an inline `## Active work` section)
-- When implementation is finished, tick the task checkboxes, append a short `## Outcome` section (what changed and how it was verified), and refresh the handoff. Leave the task `in-progress` and do not promote the queue until the user signals acceptance with “committed”, “continue”, “next”, or equivalent. Then condense the outcome into a one-line, dated entry in `PROGRESS.md`'s `## Archived milestones`, delete the task file, remove it from the upcoming queue, and promote the next entry.
+- When implementation is finished, tick the task checkboxes and refresh the handoff with what changed and how it was verified. Leave the task `in-progress` and do not promote the queue until the user signals acceptance with “committed”, “continue”, “next”, or equivalent. Then add that evidence as a one-line, dated entry in `PROGRESS.md`'s `## Archived milestones`, remove the task from the upcoming queue, promote the next entry, and trash the task file.
 - Update `### Previous step` with what just changed and any verification performed
 - Update `### Next step` with the first concrete follow-up action
 - Update the `## Roadmap` row Status when a release becomes active or its last task lands as done
@@ -101,6 +101,6 @@ Never say "ready to move on to X" without this context. User needs enough to red
 ## Wrapping up
 
 - Update `## Session handoff` — current goal, previous step, next step, and stop guidance
-- Complete user-accepted tasks per the flow above (front matter, `## Outcome`, queue); move done inline sections toward `## Archived milestones`
+- Complete user-accepted tasks per the flow above (archive entry, queue, task removal); move completed inline sections toward `## Archived milestones`
 - Add `### Failed approaches` under the current section when a dead end occurred — one line per entry: `Approach X failed because Y; don't retry`. Omit when nothing failed.
 - Do not leave `PROGRESS.md` in a half-updated state

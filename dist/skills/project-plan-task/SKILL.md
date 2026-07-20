@@ -89,11 +89,11 @@ Release boundaries live in one `## Roadmap` table (`ID | Title | Overview | Stat
 
 Placement follows the same principle as section order: when inserting new work, if it's the immediate next task, write or update the active task file directly; if it's later in the queue, add a new task file and insert its link into the queue list in dependency order, not at the end.
 
-After the user signals acceptance with “committed”, “continue”, “next”, or equivalent: append a short `## Outcome` section to the task file (what changed and how it was verified), condense that outcome into a one-line, dated entry in `PROGRESS.md`'s `## Archived milestones`, delete the task file, remove the task from the queue, and promote the next entry into the active slot in `PROGRESS.md`. Before that signal, leave the task `in-progress` even when implementation and verification are complete. `## Archived milestones` is the sole historical record and is release-scoped, not permanent: once a roadmap release ships, remove its milestone entries too.
+After the user signals acceptance with “committed”, “continue”, “next”, or equivalent: add what changed and how it was verified as a one-line, dated entry in `PROGRESS.md`'s `## Archived milestones`, remove the task from the queue, promote the next entry into the active slot, then trash the task file. Before that signal, leave the task `in-progress` even when implementation and verification are complete. `## Archived milestones` is the sole historical record and is release-scoped, not permanent: once a roadmap release ships, remove its milestone entries too.
 
 ### Status and dependencies
 
-Every task file's front matter states `status` (`ready`, `in-progress`, `blocked`, `needs-decision`, or `done`) and `depends` (task filename stems that must land first, or `[]`). Use `depends` only for real prerequisites; physical queue order already expresses priority and intended sequence. It lets a second agent or the user safely pick independent work out of order. Legacy numeric stems remain valid references to existing numeric task files. Mark a task `needs-decision` rather than `ready` when an open risk or ambiguity needs the user's input before implementation; don't resolve it by guessing. Use `blocked` only for external blocks; blocking by another task is expressed through `depends`.
+Every task file's front matter states `status` (`ready`, `in-progress`, `blocked`, or `needs-decision`) and `depends` (task filename stems that must land first, or `[]`). Use `depends` only for real prerequisites; physical queue order already expresses priority and intended sequence. It lets a second agent or the user safely pick independent work out of order. Legacy numeric stems and `done` statuses remain valid input. Mark a task `needs-decision` rather than `ready` when an open risk or ambiguity needs the user's input before implementation; don't resolve it by guessing. Use `blocked` only for external blocks; blocking by another task is expressed through `depends`.
 
 Front matter is the source of truth for status: the queue's inline annotation is convenience and may lag. A verified implementation remains `in-progress` until the user signals acceptance; Git state does not change this. Check the active task's front matter before starting it. Only propose actual dispatch tooling (a script or bot that assigns tasks) if the backlog is large enough, and independent enough, that manual pickup has become the bottleneck: for a handful of tasks it isn't.
 
@@ -153,10 +153,9 @@ Standalone `.agent/tasks/<task-slug>.md` file. No `# Title` heading — front ma
 ---
 title: Human-readable task name
 overview: One or two sentences reminding a human what this task is and why it exists.
-status: ready            # ready | in-progress | blocked | needs-decision | done
+status: ready            # ready | in-progress | blocked | needs-decision
 depends: []              # task filename stems that must land first, e.g. [metadata-validation]
 release: phase-5         # roadmap ID; omit for backlog
-completed:               # YYYY-MM-DD, set when status becomes done
 ---
 
 ## Purpose
@@ -201,7 +200,4 @@ Focused checks, manual review, or evidence required before handoff.
 
 Optional.
 
-## Outcome
-
-Appended at completion, not pre-written: what landed and how it was verified.
 ```
