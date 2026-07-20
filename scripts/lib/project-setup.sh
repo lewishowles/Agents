@@ -122,56 +122,6 @@ ensure_dir() {
 	cli_group_status success "created" "$label"
 }
 
-# Returns 0 when Capn has already initialised the project.
-capn_is_initialised() {
-	[[ -f "$PROJECT_DIR/.capn/config.json" ]]
-}
-
-# Validates the prerequisites for Capn's Git-aware project initialisation.
-check_capn_requirements() {
-	local git_root
-
-	if capn_is_initialised; then
-		return
-	fi
-
-	if ! command -v capn &>/dev/null; then
-		cli_status failed "Capn unavailable" "Install capn-hook globally before project setup"
-		return 1
-	fi
-
-	if ! git_root="$(git -C "$PROJECT_DIR" rev-parse --show-toplevel 2>/dev/null)"; then
-		cli_status failed "Git repository required" "capn init --git needs an initialised Git repository"
-		return 1
-	fi
-
-	if [ "$git_root" != "$PROJECT_DIR" ]; then
-		cli_status failed "Git repository root required" "run project setup from $git_root"
-		return 1
-	fi
-}
-
-# Initialises disposable navigational memory and project hooks through Capn.
-initialise_capn() {
-	cli_group_begin "Navigational memory"
-	if capn_is_initialised; then
-		cli_group_status muted ".capn/config.json" "already configured"
-		cli_group_end
-		return
-	fi
-
-	if ! (
-		cd "$PROJECT_DIR"
-		capn init --git >/dev/null
-	); then
-		cli_group_status failed "capn init --git" "project initialisation failed"
-		cli_group_end
-		return 1
-	fi
-	cli_group_status success "initialised" "Capn hooks and post-commit pruning"
-	cli_group_end
-}
-
 # Copies Claude support files into the target project.
 copy_claude_support_files() {
 	cli_group_begin "Claude support files"
@@ -452,29 +402,6 @@ check_status() {
 		fi
 		cli_group_end
 	fi
-
-	cli_group_begin "Navigational memory"
-	if [ -f "$PROJECT_DIR/.capn/config.json" ]; then
-		cli_group_status muted ".capn/config.json" "exists"
-	else
-		cli_group_status warning ".capn/config.json" "missing"
-	fi
-	if [ -f "$PROJECT_DIR/.claude/settings.json" ] && grep -Fq "/usr/bin/env capn context" "$PROJECT_DIR/.claude/settings.json"; then
-		cli_group_status muted "Claude hook" "configured"
-	else
-		cli_group_status warning "Claude hook" "missing"
-	fi
-	if [ -f "$PROJECT_DIR/.codex/hooks.json" ] && grep -Fq "/usr/bin/env capn context" "$PROJECT_DIR/.codex/hooks.json"; then
-		cli_group_status muted "Codex hook" "configured"
-	else
-		cli_group_status warning "Codex hook" "missing"
-	fi
-	if [ -f "$PROJECT_DIR/.git/hooks/post-commit" ] && grep -Fq "capn prune" "$PROJECT_DIR/.git/hooks/post-commit"; then
-		cli_group_status muted "post-commit hook" "configured"
-	else
-		cli_group_status warning "post-commit hook" "missing"
-	fi
-	cli_group_end
 
 	# Unexpected runtime directories.
 	cli_group_begin "Runtime directories"

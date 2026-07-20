@@ -126,7 +126,7 @@ cd /path/to/project
 /path/to/repository/scripts/setup-project.sh --both
 ```
 
-Each flag requires an initialised Git working tree, copies the matching `AGENTS.md` template, links `.agent/scripts/`, writes `WORKSPACE.md`, and (for Claude targets) copies `.claudeignore`. It then runs `capn init --git`, which creates local navigational memory, Claude and Codex session hooks, a post-commit prune hook, and the local `.capn/` ignore entry. After setup, replace the placeholders in `AGENTS.md` with project-specific rules and review the generated `WORKSPACE.md`.
+Each flag copies the matching `AGENTS.md` template, links `.agent/scripts/`, writes `WORKSPACE.md`, and (for Claude targets) copies `.claudeignore`. After setup, replace the placeholders in `AGENTS.md` with project-specific rules and review the generated `WORKSPACE.md`.
 
 For project types with useful local skills, setup can install centrally managed project skill packs as symlinks into both `.agents/skills/` and `.claude/skills/`:
 
