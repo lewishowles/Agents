@@ -104,14 +104,28 @@ assert_equal '' "$TEST_OUTPUT" "pass case output"
 printf 'PASS pass case\n'
 
 write_baseline 0 0 0
-run_validator
+NO_COLOR= run_validator
 assert_equal 0 "$TEST_STATUS" "warning case status"
-	assert_contains 'dist/codex/AGENTS.md:' 'always-loaded warning'
-	assert_contains 'dist/skills/demo/SKILL.md:' 'skill-body warning'
-	assert_contains 'skills/demo/skill.json:' 'eager-metadata warning'
+assert_contains 'dist/codex/AGENTS.md:' 'always-loaded warning'
+assert_contains '⚠' 'warning status icon'
+assert_contains $'\n↳ edit:' 'muted source hint'
+assert_contains 'dist/codex/source or rules/ inputs' 'always-loaded source hint'
+assert_contains 'skills/demo/SKILL.body.md' 'skill-body source hint'
+assert_contains 'skills/demo/skill.json' 'eager-metadata source hint'
 assert_contains 'bytes' 'warning byte details'
 assert_contains 'baseline' 'warning baseline details'
 printf 'PASS warning case\n'
+
+NO_COLOR=1 run_validator
+assert_equal 0 "$TEST_STATUS" "no-colour warning case status"
+case "$TEST_OUTPUT" in
+	*$'\033'*)
+		printf 'FAIL no-colour warning case contains ANSI escape codes\n%s\n' "$TEST_OUTPUT" >&2
+		exit 1
+		;;
+esac
+assert_contains $'\n↳ edit:  dist/codex/source or rules/ inputs' 'no-colour source hint'
+printf 'PASS no-colour warning case\n'
 
 printf '{\n' > "$BASELINE_FILE"
 run_validator

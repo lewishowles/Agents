@@ -3,7 +3,7 @@
 
 set -euo pipefail
 
-VERSION="0.7.0"
+VERSION="0.10.0"
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 INSTALL_DIR="$REPO_DIR/.agent/tools/cli-style"

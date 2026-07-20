@@ -36,8 +36,18 @@ run_check() {
 	local output
 	shift
 	cli_status info "Checking" "$label"
+	if [ "$label" = "instruction budgets" ]; then
+		if "$@"; then
+			cli_status success "$label"
+		else
+			cli_status error "$label" "failed"
+			FAILED_CHECKS=$((FAILED_CHECKS + 1))
+		fi
+		return
+	fi
+
 	if output=$("$@" 2>&1); then
-		if { [ "$label" = "staleness" ] || [ "$label" = "instruction budgets" ]; } && [ -n "$output" ]; then
+		if [ "$label" = "staleness" ] && [ -n "$output" ]; then
 			printf '%s\n' "$output"
 		fi
 		cli_status success "$label"

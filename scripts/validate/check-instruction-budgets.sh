@@ -73,7 +73,17 @@ report_growth() {
 	local current_bytes="$3"
 	local baseline_bytes="$4"
 
-	validate_warn "$relative_file: current ${current_bytes} bytes exceeds baseline ${baseline_bytes} bytes; edit $(source_hint "$class" "$relative_file")"
+	cli_style_row \
+		'⚠' \
+		"$relative_file: current $current_bytes bytes exceeds baseline $baseline_bytes bytes" \
+		--label-colour warning \
+		--label-width 1 >&2
+	cli_style_row \
+		'↳ edit:' \
+		"$(source_hint "$class" "$relative_file")" \
+		--label-colour muted \
+		--value-colour muted \
+		--label-width 6 >&2
 }
 
 if [ ! -f "$BASELINE_FILE" ]; then
