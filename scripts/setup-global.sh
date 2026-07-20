@@ -133,15 +133,55 @@ ensure_codex_status_line() {
 	mv "$temp" "$config"
 }
 
-# Ensures ~/.codex/config.toml contains managed MCP server entries, the hooks
-# feature flag, and the TUI status line. Existing managed entries are replaced
-# rather than duplicated, so this function is safe to run on every setup.
+# Sets the root-level Codex defaults while preserving unrelated configuration.
+#
+# @param  {string}  source
+#     Existing Codex config file to read.
+# @param  {string}  destination
+#     Temporary file that receives the updated configuration.
+ensure_codex_defaults() {
+	local source="$1" destination="$2"
+
+	awk '
+		function print_defaults() {
+			print "approval_policy = \"never\""
+			print "sandbox_mode = \"workspace-write\""
+		}
+		BEGIN {
+			in_root = 1
+			defaults_written = 0
+		}
+		/^\[/ {
+			if (in_root) {
+				print_defaults()
+				defaults_written = 1
+				in_root = 0
+			}
+			print
+			next
+		}
+		in_root && /^(approval_policy|sandbox_mode)[[:space:]]*=/ { next }
+		{ print }
+		END {
+			if (!defaults_written) {
+				print_defaults()
+			}
+		}
+	' "$source" > "$destination"
+}
+
+# Ensures ~/.codex/config.toml contains the managed defaults, MCP server
+# entries, hooks feature flag, and TUI status line. Existing managed settings
+# are replaced rather than duplicated, so this function is safe to run on
+# every setup.
 ensure_codex_config() {
 	local config="$HOME/.codex/config.toml"
-	local temp
+	local defaults_temp temp
 
+	defaults_temp=$(mktemp)
 	temp=$(mktemp)
 	touch "$config"
+	ensure_codex_defaults "$config" "$defaults_temp"
 
 	# Strip managed MCP server sections before re-appending them,
 	# so re-running setup never creates duplicate entries.
@@ -151,7 +191,8 @@ ensure_codex_config() {
 		/^\[mcp_servers\.mdn(\.|\])/{ skip = 1; next }
 		/^\[/{ skip = 0 }
 		!skip { print }
-	' "$config" > "$temp"
+	' "$defaults_temp" > "$temp"
+	rm "$defaults_temp"
 
 	# Re-add managed MCP server entries with canonical config.
 	printf '\n[mcp_servers.codebase-memory-mcp]\ncommand = "codebase-memory-mcp"\n' >> "$temp"

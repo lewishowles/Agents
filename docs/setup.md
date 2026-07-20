@@ -33,6 +33,9 @@ ln -s /path/to/repository/dist/codex/AGENTS.md ~/.codex/AGENTS.md
 Ensure `~/.codex/config.toml` includes:
 
 ```toml
+approval_policy = "never"
+sandbox_mode = "workspace-write"
+
 [mcp_servers.codebase-memory-mcp]
 command = "codebase-memory-mcp"
 ```

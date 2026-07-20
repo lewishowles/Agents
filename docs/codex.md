@@ -38,9 +38,12 @@ project_doc_max_bytes = 65536
 
 The official reference also documents `skills.config` for per-skill path and enablement overrides.
 
-Global setup preserves the existing `~/.codex/config.toml` and ensures this MCP server is present:
+Global setup preserves unrelated settings in `~/.codex/config.toml` and sets these defaults alongside the managed MCP server:
 
 ```toml
+approval_policy = "never"
+sandbox_mode = "workspace-write"
+
 [mcp_servers.codebase-memory-mcp]
 command = "codebase-memory-mcp"
 ```
