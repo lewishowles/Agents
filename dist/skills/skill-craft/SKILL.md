@@ -37,6 +37,7 @@ If any of the three fails, extend an existing skill or discard the idea.
 4. **File-triggered vs. prompt-triggered** — file-triggered loads on every edit of matching types; prompt-triggered loads when phrases appear. File-triggering applies to every edit of those types, not just mentions.
 5. **Avoid trigger competition:** reserve broad phrases for router or coordinator skills. Technique or task skills should use specific triggers that do not compete with their router.
 6. **Add support material only when it earns its cost:** keep the operational procedure in `SKILL.body.md`; put optional depth in `references/`, a reusable output shape or edge case in `examples/`, and deterministic checks in `scripts/`. A script must test a concrete mechanical contract, run without new dependencies where possible, and include `--selftest` when it has meaningful internal behaviour. Do not add empty directories or boilerplate examples.
+7. **Extract mechanical workflow:** when a skill repeatedly dispatches agents, re-evaluates their output, carries intermediate state, or mechanically adjudicates results, move those parts into a deterministic helper, hook, or validation. Keep model calls for judgement. Confirm equivalent black-box behaviour and report unresolved findings rather than treating a budget limit as success.
 
 ## Build
 

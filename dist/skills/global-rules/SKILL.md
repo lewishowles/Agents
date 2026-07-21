@@ -100,6 +100,7 @@ For analysis-only requests, do not load implementation skills or begin coding. U
 - File missing? Symlink broken? Output unexpected? Stop. If a user says a missing file exists, state whether gitignored files were included before concluding it is missing.
 - At session start, check `git status --short` before editing so existing work is not overwritten. Git state is a safety signal, not progress state: do not use it to infer, report, or reconcile task status, and never record commit hashes, branch state, or clean/dirty-tree claims in `PROGRESS.md`.
 - Don't workaround, retry, or dig deeper — state what you expected vs. what you found
+- After a command fails, do not retry equivalent variants when success depends on user-owned environment, credentials, permissions, external state, or a broad or expensive operation. Give the user the exact command to run and request the smallest useful result; resume from that evidence.
 - Recovers faster than chasing wrong paths. You know the system; I don't.
 
 ## Staleness and recall
