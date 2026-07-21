@@ -12,6 +12,13 @@ If no workspace file exists, fall back to targeted inspection of `AGENTS.md`, pa
 
 When local context, `WORKSPACE.md`, package metadata, README usage docs, or a loaded skill identifies a CLI for discovery, examples, validation, or generation, prefer that interface before searching source files. Skip the CLI check when the correct pattern is already clear from current context.
 
+When the task needs evidence from a web page or package repository, use the matching dev-tools package:
+
+- `page-to-markdown` fetches or reads HTML, converts it to clean Markdown, and reports confidence. Prefer it before summarising raw or noisy browser text; low-confidence or app-shell output may need a rendered-page follow-up.
+- `web-audit` renders pages, runs axe and custom ARIA checks, and produces HTML reports. Use it when an accessibility review needs rendered-page evidence, alongside the accessibility or accessibility-audit skill.
+- `pkg-checks` validates `package.json` and export correctness in JavaScript package repositories. It is consumed there as an npm devDependency.
+- `project-checks` is installed globally with `uv tool install` and replaces the old repo-local canonical implementations. Use `project-checks` for diagnostics (`--list` or `--check`), `project-checks-change-impact` for change-impact checks, `project-checks-generated-file-guard` for generated-file boundaries, `project-checks-markdown-claims` for Markdown claims, and `project-checks-repo-context` for compact repository context. Existing repo-local shims and consuming-repository `.agent/scripts/*` symlinks continue to work, so do not add a second local implementation.
+
 Task and handoff files are complete agent-facing contracts. Read the active task file before implementation, even when the user has not seen it. Do not ask the user to reproduce its contents. Before editing, provide a concise overview derived from the task file, the current repository state, and the current request: the confirmed contract, intended files, verification, and unresolved decisions.
 
 Before running any build, test, typecheck, or lint command, check the exact path `.agent/scripts/project-diagnostics.py` directly. Do not use discovery searches to prove this known path is absent. When present, use it instead of raw package commands unless the user explicitly asks otherwise; discover checks with `--list`, run the relevant `--check <name>`, and inspect failure logs selectively. Only when the direct check proves the script absent may you use `WORKSPACE.md` commands or manually inspected alternatives.
