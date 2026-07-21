@@ -135,14 +135,61 @@ copy_claude_support_files() {
 # project tracking the central source, so improvements and fixes propagate without re-copying.
 copy_shared_agent_tools() {
 	cli_group_begin "Shared agent tools"
+	ensure_project_checks
 	ensure_dir "$PROJECT_DIR/.agent/scripts" ".agent/scripts/"
 
 	link_file "$REPO_DIR/scripts/project-diagnostics.py" "$PROJECT_DIR/.agent/scripts/project-diagnostics.py" ".agent/scripts/project-diagnostics.py"
-	link_file "$REPO_DIR/scripts/validate/generated-file-guard.py" "$PROJECT_DIR/.agent/scripts/generated-file-guard.py" ".agent/scripts/generated-file-guard.py"
 	link_file "$REPO_DIR/scripts/repo-context.py" "$PROJECT_DIR/.agent/scripts/repo-context.py" ".agent/scripts/repo-context.py"
 	link_file "$REPO_DIR/scripts/validate/change-impact.py" "$PROJECT_DIR/.agent/scripts/change-impact.py" ".agent/scripts/change-impact.py"
+	link_file "$REPO_DIR/scripts/validate/generated-file-guard.py" "$PROJECT_DIR/.agent/scripts/generated-file-guard.py" ".agent/scripts/generated-file-guard.py"
+	link_file "$REPO_DIR/scripts/validate/markdown-claims.py" "$PROJECT_DIR/.agent/scripts/markdown-claims.py" ".agent/scripts/markdown-claims.py"
 	link_file "$REPO_DIR/scripts/log-friction.sh" "$PROJECT_DIR/.agent/scripts/log-friction.sh" ".agent/scripts/log-friction.sh"
 	cli_group_end
+}
+
+# Ensures all project-checks entry points are available globally before linking
+# their project-local shims.
+ensure_project_checks() {
+	local command_name
+	local missing_commands=()
+	local expected_commands=(
+		project-checks
+		project-checks-change-impact
+		project-checks-generated-file-guard
+		project-checks-markdown-claims
+		project-checks-repo-context
+	)
+
+	for command_name in "${expected_commands[@]}"; do
+		if ! command -v "$command_name" >/dev/null 2>&1; then
+			missing_commands+=("$command_name")
+		fi
+	done
+
+	if [ "${#missing_commands[@]}" -eq 0 ]; then
+		cli_group_status muted "project-checks" "globally installed"
+		return
+	fi
+
+	if ! command -v uv >/dev/null 2>&1; then
+		cli_group_status failed "project-checks" "missing and uv is not installed"
+		return 1
+	fi
+
+	cli_group_status warning "project-checks" "installing globally"
+	if ! uv tool install --from ~/Dev/Repositories/Packages/dev-tools/packages/project-checks project-checks >/dev/null; then
+		cli_group_status failed "project-checks" "global installation failed"
+		return 1
+	fi
+
+	for command_name in "${expected_commands[@]}"; do
+		if ! command -v "$command_name" >/dev/null 2>&1; then
+			cli_group_status failed "project-checks" "installation did not expose $command_name"
+			return 1
+		fi
+	done
+
+	cli_group_status success "project-checks" "installed globally"
 }
 
 # Prints the review warning for generated workspace files.
@@ -359,9 +406,10 @@ check_status() {
 	local scripts_dir="$PROJECT_DIR/.agent/scripts"
 	local expected_tools=(
 		"project-diagnostics.py|$REPO_DIR/scripts/project-diagnostics.py"
-		"generated-file-guard.py|$REPO_DIR/scripts/validate/generated-file-guard.py"
-		"repo-context.py|$REPO_DIR/scripts/repo-context.py"
 		"change-impact.py|$REPO_DIR/scripts/validate/change-impact.py"
+		"repo-context.py|$REPO_DIR/scripts/repo-context.py"
+		"generated-file-guard.py|$REPO_DIR/scripts/validate/generated-file-guard.py"
+		"markdown-claims.py|$REPO_DIR/scripts/validate/markdown-claims.py"
 	)
 	if [ ! -d "$scripts_dir" ]; then
 		cli_group_status warning ".agent/scripts/" "missing"

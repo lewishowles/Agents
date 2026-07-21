@@ -8,7 +8,7 @@ This is a Claude Code project rules template. Copy this to your project as AGENT
 
 This project uses Claude Code with the global rules and skills from the agent configuration repo. Project-specific rules in this file override global defaults when they conflict.
 
-Workspace facts live in `WORKSPACE.md`. Read that file for factual local commands, generated paths, diagnostics, and safety constraints before planning or running project commands. When `.agent/scripts/project-diagnostics.py` exists, use `--list` to discover checks and `--check <name>` to run the specific check needed. That script is a shared symlink from the agent configuration repo, so record project-specific checks in `WORKSPACE.md` rather than editing the script. Current work belongs in `PROGRESS.md` at the project root when a multi-session plan is active.
+Workspace facts live in `WORKSPACE.md`. Read that file for factual local commands, generated paths, diagnostics, and safety constraints before planning or running project commands. When `.agent/scripts/project-diagnostics.py` exists, use it as the local `project-checks` shim with `--list` to discover checks and `--check <name>` to run the specific check needed. Setup also links `.agent/scripts/repo-context.py` to `project-checks-repo-context`, `.agent/scripts/change-impact.py` to `project-checks-change-impact`, `.agent/scripts/generated-file-guard.py` to `project-checks-generated-file-guard`, and `.agent/scripts/markdown-claims.py` to `project-checks-markdown-claims`. These shared symlinks exec the globally installed commands, so record project-specific checks in `WORKSPACE.md` rather than editing them. Current work belongs in `PROGRESS.md` at the project root when a multi-session plan is active.
 
 ## Purpose
 

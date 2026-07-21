@@ -880,37 +880,61 @@ def configured_table(values: Dict[str, str], first_heading: str, second_heading:
 
 
 def diagnostics_lines(project_dir: Path) -> List[str]:
-	diagnostics_path = project_dir / ".agent" / "scripts" / "project-diagnostics.py"
-	change_impact_path = project_dir / ".agent" / "scripts" / "change-impact.py"
+	scripts_dir = project_dir / ".agent" / "scripts"
+	diagnostics_path = scripts_dir / "project-diagnostics.py"
+	project_checks_paths = [
+		(
+			diagnostics_path,
+			[
+				".agent/scripts/project-diagnostics.py --list  # invokes project-checks --list",
+				".agent/scripts/project-diagnostics.py --check <name>  # invokes project-checks --check <name>",
+				".agent/scripts/project-diagnostics.py --check test:unit --test-file <path>  # invokes project-checks --check test:unit --test-file <path>",
+				".agent/scripts/project-diagnostics.py --check test:unit --test-glob '<pattern>'  # invokes project-checks --check test:unit --test-glob '<pattern>'",
+				".agent/scripts/project-diagnostics.py --check test:component --test-file <path>  # invokes project-checks --check test:component --test-file <path>",
+			],
+		),
+		(
+			scripts_dir / "repo-context.py",
+			[".agent/scripts/repo-context.py  # invokes project-checks-repo-context"],
+		),
+		(
+			scripts_dir / "change-impact.py",
+			[".agent/scripts/change-impact.py  # invokes project-checks-change-impact"],
+		),
+		(
+			scripts_dir / "generated-file-guard.py",
+			[".agent/scripts/generated-file-guard.py  # invokes project-checks-generated-file-guard"],
+		),
+		(
+			scripts_dir / "markdown-claims.py",
+			[".agent/scripts/markdown-claims.py  # invokes project-checks-markdown-claims"],
+		),
+	]
 
 	if not diagnostics_path.exists():
 		return [
-			"Project diagnostics script: Not detected.",
+			"Project checks shims: Not detected.",
 			"",
 			"Use the Common checks below conservatively.",
 		]
 
 	lines = [
-		"Preferred local command:",
+		"Preferred local commands via project-checks:",
 		"",
 		"```sh",
-		".agent/scripts/project-diagnostics.py --list",
-		".agent/scripts/project-diagnostics.py --check <name>",
-		".agent/scripts/project-diagnostics.py --check test:unit --test-file <path>",
-		".agent/scripts/project-diagnostics.py --check test:unit --test-glob '<pattern>'",
-		".agent/scripts/project-diagnostics.py --check test:component --test-file <path>",
 	]
 
-	if change_impact_path.exists():
-		lines.append(".agent/scripts/change-impact.py")
+	for path, commands in project_checks_paths:
+		if path.exists():
+			lines.extend(commands)
 
 	lines.extend(
 		[
 			"```",
 			"",
-			"Run checks through this script rather than direct package commands. It keeps stdout compact and writes full logs to `.agent/diagnostics/`.",
+			"Run checks through these shims rather than direct package commands. They keep stdout compact and write full logs to `.agent/diagnostics/`.",
 			"",
-			"`.agent/scripts/project-diagnostics.py` is installed as a shared symlink from the agent configuration repo. Record project-specific check names and expectations in this `WORKSPACE.md` file rather than editing the script.",
+			"These local shims are linked from the agent configuration repo and exec the globally installed project-checks commands. Record project-specific check names and expectations in this `WORKSPACE.md` file rather than editing the shims.",
 			"",
 			"For unit-test checks, run the full unit suite through diagnostics by default. Use `--test-file <path>` or `--test-glob '<pattern>'` only when investigating a known failing area, when the full unit check is unusually slow, or when a narrower run was requested.",
 			"",

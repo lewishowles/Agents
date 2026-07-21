@@ -40,6 +40,7 @@ IGNORED_DRIFT = {
 	("setup_path_not_documented", ".agent/scripts"),  # documented in prose as linked shared tools
 	("setup_path_not_documented", ".agent/scripts/change-impact.py"),  # covered by .agent/scripts prose
 	("setup_path_not_documented", ".agent/scripts/generated-file-guard.py"),  # covered by .agent/scripts prose
+	("setup_path_not_documented", ".agent/scripts/markdown-claims.py"),  # covered by .agent/scripts prose
 	("setup_path_not_documented", ".agent/scripts/repo-context.py"),  # covered by .agent/scripts prose
 	("setup_path_not_documented", ".claude"),  # documented in prose through Claude support files
 	("setup_path_not_documented", ".claude/.claudeignore"),  # documented in prose, not fenced block

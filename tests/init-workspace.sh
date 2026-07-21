@@ -68,7 +68,10 @@ create_project_with_diagnostics() {
 	create_nested_test_project "$target_dir"
 	mkdir -p "$target_dir/.agent/scripts"
 	printf '#!/usr/bin/env python3\n' > "$target_dir/.agent/scripts/project-diagnostics.py"
+	printf '#!/usr/bin/env python3\n' > "$target_dir/.agent/scripts/repo-context.py"
 	printf '#!/usr/bin/env python3\n' > "$target_dir/.agent/scripts/change-impact.py"
+	printf '#!/usr/bin/env python3\n' > "$target_dir/.agent/scripts/generated-file-guard.py"
+	printf '#!/usr/bin/env python3\n' > "$target_dir/.agent/scripts/markdown-claims.py"
 }
 
 test_preview_does_not_write() {
@@ -91,7 +94,7 @@ test_preview_does_not_write() {
 	assert_contains "$output" '| End-to-end tests | `bun run test:e2e` |'
 	assert_contains "$output" '| Build | `bun run build` |'
 	assert_contains "$output" '| None detected |  |  |'
-	assert_contains "$output" 'Project diagnostics script: Not detected.'
+	assert_contains "$output" 'Project checks shims: Not detected.'
 	assert_contains "$output" "## Package metadata"
 	assert_contains "$output" '| Name | `example-app` |'
 	assert_contains "$output" '| Private | `true` |'
@@ -292,10 +295,14 @@ test_diagnostics_guidance_discourages_direct_commands() {
 	run_init "$target_dir" > "$output"
 
 	assert_contains "$output" '.agent/scripts/project-diagnostics.py --list'
+	assert_contains "$output" 'project-checks --list'
 	assert_contains "$output" '.agent/scripts/project-diagnostics.py --check <name>'
 	assert_contains "$output" '.agent/scripts/project-diagnostics.py --check test:component --test-file <path>'
-	assert_contains "$output" '.agent/scripts/change-impact.py'
-	assert_contains "$output" 'Run checks through this script rather than direct package commands.'
+	assert_contains "$output" '.agent/scripts/repo-context.py  # invokes project-checks-repo-context'
+	assert_contains "$output" '.agent/scripts/change-impact.py  # invokes project-checks-change-impact'
+	assert_contains "$output" '.agent/scripts/generated-file-guard.py  # invokes project-checks-generated-file-guard'
+	assert_contains "$output" '.agent/scripts/markdown-claims.py  # invokes project-checks-markdown-claims'
+	assert_contains "$output" 'Run checks through these shims rather than direct package commands.'
 	assert_contains "$output" 'Playwright-backed component checks require `--test-file <path>` or `--test-glob'
 	assert_contains "$output" 'extract details from the returned log path'
 }
