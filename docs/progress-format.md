@@ -46,6 +46,8 @@ No `# Title` heading; front matter `title` is the single source. Sections, in or
 ```markdown
 ## Purpose
 
+State the user, business, or operational problem being solved, who experiences it, and the observable result that would show the work succeeded. For routine maintenance, one concise sentence is enough.
+
 ## Contract              (required for public or user-visible work)
 
 Public behaviour, data shape, UI states, or API surface affected.

@@ -93,6 +93,10 @@ User or system problem.
 
 - Outcome that must be true
 
+## First usable version
+
+Smallest end-to-end path that solves the problem, including deliberate manual steps.
+
 ## Current status
 
 Optional; omit if obvious or the spec is new. What's already done vs what's still outstanding, so a fresh agent can gauge progress without reading history.
@@ -104,6 +108,10 @@ Optional; omit if obvious or the spec is new. What's already done vs what's stil
 ## Proposed approach
 
 Intended solution shape, including important alternatives or tradeoffs.
+
+## High-cost assumptions
+
+Optional. Assumptions most costly if wrong, and the earliest evidence that can test them.
 
 ## Entry point
 
@@ -226,6 +234,8 @@ release: phase-1         # roadmap ID; omit for backlog
 ---
 
 ## Purpose
+
+State the user, business, or operational problem being solved, who experiences it, and the observable result that would show the work succeeded. For routine maintenance, one concise sentence is enough.
 
 ## Contract
 

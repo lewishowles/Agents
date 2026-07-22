@@ -35,6 +35,16 @@ Run only when user asks and it exists in current shell.
 6. **Insert** — add section: purpose, model tier, files likely to change, tasks, risks, notes
 7. **Update parking lot** — move related ideas into new section or leave parked
 
+## Planning for learning
+
+For non-routine or consequential work, establish only the prompts that apply:
+
+- Problem, beneficiary, and observable success condition
+- Assumption with the highest cost if wrong, and the earliest evidence that can test it
+- For a deadline, whether date or scope is fixed, plus the first work that may be de-scoped
+- Smallest usable end-to-end path, including deliberate manual steps
+- For production-affecting work, deployment, observation, support, and reversal needs
+
 ## Cross-repo work
 
 When a task may span more than one repository, make the repo boundary explicit before adding it to the plan. This gives us most of the coordination benefit of a synthetic monorepo without requiring a hosted tool or account.
@@ -107,6 +117,8 @@ Optional, paired with Status. Other sections/tasks that must land first, or "Non
 
 ### Purpose
 
+State the user, business, or operational problem being solved, who experiences it, and the observable result that would show the work succeeded. For routine maintenance, one concise sentence is enough.
+
 ### Contract
 
 Public behaviour, data shape, UI states, or API surface affected. Required for public or user-visible work.
@@ -152,6 +164,8 @@ release: phase-5         # roadmap ID; omit for backlog
 ---
 
 ## Purpose
+
+State the user, business, or operational problem being solved, who experiences it, and the observable result that would show the work succeeded. For routine maintenance, one concise sentence is enough.
 
 ## Contract
 
