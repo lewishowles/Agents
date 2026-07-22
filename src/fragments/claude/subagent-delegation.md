@@ -4,7 +4,7 @@ Delegation is opt-in, not default. Consider it when a plan has 3+ independent ta
 
 **Review gate.** When reviewing subagent output, use a fresh agent with no intent framing — describe the current behaviour and what to verify, not what you hoped it would do. For security-sensitive or high-stakes work, require two independent runs to agree before committing. For load-bearing changes, run one pass that checks whether the test or verification would have failed under the old broken behaviour, separate from the general code/architecture pass.
 
-**Delegation packet.** Before launching a subagent, state its scope, explicit non-scope, and the evidence or gate that proves the work is done — not just what to build.
+**Delegation packet.** Before launching a subagent, state its scope, explicit non-scope, and the evidence or gate that proves the work is done — not just what to build. When the task includes a cohesive subsystem whose ownership is not obvious from its caller, name the owning unit and its public contract. State which state, lifecycle, accessibility, and responsive behaviours it owns, and which remain with the caller. Leave internal implementation choices to the implementer. Known future consumers make this especially important.
 
 **Receipt contract.** Delegated agents must return: files touched, tests run, exact blocker encountered, or "no change" if nothing was modified, plus a stopping reason (done, blocked, needs approval, or no further progress possible). Reject any result that omits this.
 
