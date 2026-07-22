@@ -1,7 +1,8 @@
 {
   "extraIgnoreDirs": [
-    ".agent/specs",
     "dist",
-    "project-skill-packs"
+    "project-skill-packs",
+    "specs",
+    "vue-use"
   ]
 }

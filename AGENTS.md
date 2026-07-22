@@ -12,7 +12,7 @@ Single source for shared rules and skills. `scripts/sync-external-skills.sh` ref
 
 ## Current vs target state
 
-**Current:** `src/` (`rules/`, `skills/`, `hooks/`, `adapters/`, `fragments/`), `dist/claude/`, `dist/codex/`, `dist/chatgpt/`, `scripts/`, `templates/`, and `docs/`. Dual-target phases are complete; deferred hook ideas remain in root `PROGRESS.md`.
+**Current:** `src/` (`src/rules/`, `src/skills/`, `src/hooks/`, `src/adapters/`, `src/fragments/`), `dist/claude/`, `dist/codex/`, `dist/chatgpt/`, `scripts/`, `templates/`, and `docs/`. Dual-target phases are complete; deferred hook ideas remain in root `PROGRESS.md`.
 
 ## Target directory structure
 

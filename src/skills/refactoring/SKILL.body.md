@@ -20,7 +20,7 @@
 | Simplify condition          | Flatten nested `if`s, remove double negatives | Medium — verify all branches  |
 | Split component             | Decompose large component into smaller ones   | Higher — re-test interactions |
 
-For cross-file renames or moves spanning many files, use Serena MCP (see [docs/tools.md](../../docs/tools.md)) for language-server-backed reference updates. Use codebase-memory first only when the impact question is broader than a symbol or language-server relationship.
+For cross-file renames or moves spanning many files, use Serena MCP for language-server-backed reference updates. Use codebase-memory first only when the impact question is broader than a symbol or language-server relationship.
 
 ## Module structure vocabulary
 
