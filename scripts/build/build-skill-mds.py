@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Generate runtime skill directories and the global-skills index for Claude.
+# Generate runtime skill directories for Claude and Codex.
 #
 # Sources per skill:
 #   skill.json    — metadata (name, description, dependencies, capabilities)
@@ -10,21 +10,20 @@
 #   dist/skills/<name>/*        — copied runtime references and supporting files
 #
 # Skill discovery supports two layouts:
-#   skills/<name>/           — flat skill
-#   skills/<group>/<name>/   — grouped skill (e.g. skills/vue/vue-pinia/)
+#   src/skills/<name>/           — flat skill
+#   src/skills/<group>/<name>/   — grouped skill (e.g. src/skills/vue/vue-pinia/)
 
 import json
 import shutil
 from pathlib import Path
 
 REPO_DIR = Path(__file__).resolve().parent.parent.parent
-SKILLS_DIR = REPO_DIR / "skills"
-RULES_DIR = REPO_DIR / "rules"
+SKILLS_DIR = REPO_DIR / "src" / "skills"
+RULES_DIR = REPO_DIR / "src" / "rules"
 DIST_SKILLS_DIR = REPO_DIR / "dist" / "skills"
-GLOBAL_SKILLS_OUT = REPO_DIR / "dist" / "claude" / "source" / "global-skills.md"
 
 # The global-rules skill has no authored SKILL.body.md — its body is composed
-# directly from rules/ fragments so it can never drift from the source rules.
+# directly from src/rules/ fragments so it can never drift from the source rules.
 GLOBAL_RULES_SKILL_NAME = "global-rules"
 GLOBAL_RULES_FRAGMENTS = [
 	"global-rules.md",
@@ -33,22 +32,14 @@ GLOBAL_RULES_FRAGMENTS = [
 	"file-discovery.md",
 ]
 
-PM_GROUP = "project-management"  # Listed first in the global index so it appears near slash-command docs.
-
 GENERATED_HEADER = "# Generated — edit skill.json and SKILL.body.md instead."
 # skill.json is copied to dist so the file-trigger hook can read
 # capabilities, filePatterns, and pathPatterns at runtime.
 SOURCE_FILENAMES = {"SKILL.body.md", "SKILL.md", "SYNC.md"}
 
-GLOBAL_SKILLS_HEADER = """\
-## Global skills
-
-Apply across all projects. See individual skills for detailed rules. Use project instructions and workspace facts to narrow the relevant skills for a repo.
-"""
-
 
 # Return all skill directories, sorted alphabetically at each level.
-# Handles both flat (skills/<name>/) and grouped (skills/<group>/<name>/) layouts.
+# Handles both flat (src/skills/<name>/) and grouped (src/skills/<group>/<name>/) layouts.
 def discover_skill_dirs() -> list[Path]:
 	dirs = []
 	for d in sorted(SKILLS_DIR.iterdir()):
@@ -63,10 +54,10 @@ def discover_skill_dirs() -> list[Path]:
 	return dirs
 
 
-# rules/global-rules.md nests its subsections under a "## General configuration"
+# src/rules/global-rules.md nests its subsections under a "## General configuration"
 # wrapper heading. Drop that wrapper and promote its direct ### children to ##
 # so the skill body reads as flat top-level sections, matching every other
-# rules/*.md fragment. Headings past the wrapper's own section (e.g. "###
+# src/rules/*.md fragment. Headings past the wrapper's own section (e.g. "###
 # Subagent delegation" under "## Working across sessions") are left alone.
 def promote_general_configuration(text: str) -> str:
 	lines = text.splitlines()
@@ -83,7 +74,7 @@ def promote_general_configuration(text: str) -> str:
 	return "\n".join(lines)
 
 
-# Compose the global-rules skill body directly from rules/ fragments, so the
+# Compose the global-rules skill body directly from src/rules/ fragments, so the
 # skill can never drift from the source rules the way a hand-maintained copy could.
 def build_global_rules_body() -> str:
 	parts = ["# Global rules"]
@@ -167,39 +158,6 @@ def generate_skill_md(skill_dir: Path) -> None:
 			shutil.copy2(source, target)
 
 
-# Write the global-skills index consumed by Claude's CLAUDE.md.
-# Project-management skills are listed before all others so they appear
-# near the slash-command section of the generated CLAUDE.md.
-# Skills without a 'when' field are omitted — they have no trigger description.
-def generate_global_skills_md() -> None:
-	pm_skills = []
-	other_skills = []
-
-	for skill_dir in discover_skill_dirs():
-		manifest = json.loads((skill_dir / "skill.json").read_text())
-		name = manifest.get("name", skill_dir.name)
-		when = manifest.get("when", "")
-		targets = manifest.get("targets", [])
-		if not when:
-			continue
-		if "stagewise" in targets:
-			continue
-		if skill_dir.parent.name == PM_GROUP:
-			pm_skills.append((name, when))
-		else:
-			other_skills.append((name, when))
-
-	pm_skills.sort(key=lambda x: x[0])
-	other_skills.sort(key=lambda x: x[0])
-
-	lines = [GLOBAL_SKILLS_HEADER, "\n"]
-	for name, when in pm_skills + other_skills:
-		lines.append(f"- `/{name}` — {when}\n")
-
-	GLOBAL_SKILLS_OUT.parent.mkdir(parents=True, exist_ok=True)
-	GLOBAL_SKILLS_OUT.write_text("".join(lines))
-
-
 def main() -> None:
 	if DIST_SKILLS_DIR.exists():
 		shutil.rmtree(DIST_SKILLS_DIR)
@@ -209,9 +167,6 @@ def main() -> None:
 	for skill_dir in skill_dirs:
 		generate_skill_md(skill_dir)
 	print(f"Generated {len(skill_dirs)} runtime skills in dist/skills/.")
-
-	generate_global_skills_md()
-	print("Generated dist/claude/source/global-skills.md.")
 
 
 if __name__ == "__main__":

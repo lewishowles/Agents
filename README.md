@@ -8,25 +8,28 @@ The included scripts generate the target files each tool expects for global and 
 
 ## What's inside
 
-- `rules/` - source fragments used by both Claude and Codex
-- `dist/claude/` - generated `CLAUDE.md`, Claude settings, hooks, and Claude-only source fragments
-- `dist/codex/` - generated `AGENTS.md` and Codex-only source fragments
+- `src/rules/` - source fragments used by both Claude and Codex
+- `src/fragments/` - per-tool preamble fragments (`claude/`, `codex/`, `chatgpt/`) assembled into each generated target
+- `src/skills/` - authored skill manifests and bodies, either flat (`src/skills/<name>/`) or grouped (`src/skills/<group>/<name>/`)
+- `src/hooks/` - hook source (`claude/`) and this repo's own git hooks (`git/`)
+- `src/adapters/` - editable settings/config sources for each tool's generated output
+- `dist/claude/` - generated `CLAUDE.md`, Claude settings, and hooks
+- `dist/codex/` - generated `AGENTS.md`
 - `dist/chatgpt/` - generated `INSTRUCTIONS.md` system prompt for a ChatGPT Custom GPT (skills are served live via the gateway, not uploaded)
-- `skills/` - authored skill manifests and bodies, either flat (`skills/<name>/`) or grouped (`skills/<group>/<name>/`)
 - `dist/skills/` - generated, flattened runtime skill directories
-- `external-skills.json` - official upstream skills synced into `skills/`
+- `external-skills.json` - official upstream skills synced into `src/skills/`
 - `scripts/` - sync and setup scripts
 - `templates/` - project templates for Claude, Codex, or both
 - `docs/` - deeper reference: [setup](docs/setup.md), [Codex](docs/codex.md), [hooks](docs/hooks.md), [skills](docs/skills.md), [commands](docs/commands.md), [agents](docs/agents.md), [plugins](docs/plugins.md)
 
 ## Runtime target capabilities
 
-| Target | Global rules | Project rules | Skills | Hooks / tooling | Setup | Main limitation |
-| --- | --- | --- | --- | --- | --- | --- |
-| Claude Code | `dist/claude/CLAUDE.md` → `~/.claude/CLAUDE.md` | `AGENTS.md` at project root | `~/.claude/skills/<name>` symlinks | [Claude hooks](docs/hooks.md); Serena MCP | `setup-global.sh --claude` | — |
-| Codex CLI | `dist/codex/AGENTS.md` → `~/.agents/AGENTS.md` | `AGENTS.md` at project root | `~/.agents/skills/<name>` symlinks | [Codex hooks](docs/codex.md); Serena MCP | `setup-global.sh --codex` | No subagent parity |
-| Stagewise | Global-rules skill in `~/.stagewise/skills/` | Mounted project files | `~/.stagewise/skills/<name>` copies | None | `setup-global.sh --both` | No project setup; no hooks |
-| ChatGPT | `dist/chatgpt/INSTRUCTIONS.md` as system prompt | [Gateway](servers/local-repo-gateway/README.md) `get_instructions` | Gateway `list_skills` / `read_skill` | None | [ChatGPT setup](#chatgpt-setup) | Read-only; no hooks |
+| Target      | Global rules                                    | Project rules                                                      | Skills                               | Hooks / tooling                           | Setup                           | Main limitation            |
+| ----------- | ----------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------ | ----------------------------------------- | ------------------------------- | -------------------------- |
+| Claude Code | `dist/claude/CLAUDE.md` → `~/.claude/CLAUDE.md` | `AGENTS.md` at project root                                        | `~/.claude/skills/<name>` symlinks   | [Claude hooks](docs/hooks.md); Serena MCP | `setup-global.sh --claude`      | —                          |
+| Codex CLI   | `dist/codex/AGENTS.md` → `~/.agents/AGENTS.md`  | `AGENTS.md` at project root                                        | `~/.agents/skills/<name>` symlinks   | [Codex hooks](docs/codex.md); Serena MCP  | `setup-global.sh --codex`       | No subagent parity         |
+| Stagewise   | Global-rules skill in `~/.stagewise/skills/`    | Mounted project files                                              | `~/.stagewise/skills/<name>` copies  | None                                      | `setup-global.sh --both`        | No project setup; no hooks |
+| ChatGPT     | `dist/chatgpt/INSTRUCTIONS.md` as system prompt | [Gateway](servers/local-repo-gateway/README.md) `get_instructions` | Gateway `list_skills` / `read_skill` | None                                      | [ChatGPT setup](#chatgpt-setup) | Read-only; no hooks        |
 
 See [docs/setup.md](docs/setup.md) for manual wiring, [docs/codex.md](docs/codex.md) for Codex details, and [docs/hooks.md](docs/hooks.md) for the Claude hook reference.
 
@@ -74,7 +77,7 @@ Once the gateway is connected, you can reference skills explicitly or let ChatGP
 - _"Use my vue and code-style skills."_ — explicit, most reliable
 - _"Use my skills."_ — ChatGPT calls `list_skills`, determines which are relevant, and calls `read_skill` for each
 
-Re-paste the system prompt after running `scripts/sync.sh` if `dist/chatgpt/source/system.md` changes.
+Re-paste the system prompt after running `scripts/sync.sh` if `src/fragments/chatgpt/system.md` changes.
 
 ## Project setup
 

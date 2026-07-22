@@ -28,6 +28,6 @@ while IFS= read -r -d '' manifest; do
 			STALE=$((STALE + 1))
 		fi
 	done
-done < <(find "$REPO_DIR/hooks/claude" -name "hook.json" -print0 | sort -z)
+done < <(find "$REPO_DIR/src/hooks/claude" -name "hook.json" -print0 | sort -z)
 
 validate_finish

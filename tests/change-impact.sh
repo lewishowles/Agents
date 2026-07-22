@@ -41,9 +41,9 @@ create_project() {
 create_config_repo() {
 	local target_dir="$1"
 
-	mkdir -p "$target_dir/dist/claude" "$target_dir/rules" "$target_dir/scripts"
+	mkdir -p "$target_dir/dist/claude" "$target_dir/src/rules" "$target_dir/scripts"
 	printf '#!/usr/bin/env bash\n' > "$target_dir/scripts/sync.sh"
-	printf 'source\n' > "$target_dir/rules/global-rules.md"
+	printf 'source\n' > "$target_dir/src/rules/global-rules.md"
 	printf 'generated\n' > "$target_dir/dist/claude/CLAUDE.md"
 	init_repo "$target_dir"
 }
@@ -67,7 +67,7 @@ test_generated_guard_findings_are_reported() {
 	local target_dir="$TEST_ROOT/stale"
 	local output="$TEST_ROOT/stale.md"
 	create_config_repo "$target_dir"
-	printf 'change\n' >> "$target_dir/rules/global-rules.md"
+	printf 'change\n' >> "$target_dir/src/rules/global-rules.md"
 
 	if run_impact "$target_dir" > "$output"; then
 		fail "Expected generated/source mismatch to fail"

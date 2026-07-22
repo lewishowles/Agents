@@ -234,17 +234,17 @@ ensure_codex_config() {
 	fi
 }
 
-# Configures git to use hooks/git/ as the hook directory for this repo.
+# Configures git to use src/hooks/git/ as the hook directory for this repo.
 # This installs the pre-push hook without touching ~/.git/hooks directly.
 configure_git_hooks() {
 	cli_section "Git hooks"
 
-	if ! git -C "$REPO_DIR" config core.hooksPath hooks/git &>/dev/null; then
+	if ! git -C "$REPO_DIR" config core.hooksPath src/hooks/git &>/dev/null; then
 		cli_status warning "Could not set core.hooksPath" "not a git repo?"
 		return
 	fi
 
-	cli_status success "git hooks path set" "hooks/git/"
+	cli_status success "git hooks path set" "src/hooks/git/"
 }
 
 prompt_target() {

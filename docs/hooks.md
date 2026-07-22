@@ -154,8 +154,8 @@ Skills aren't invoked automatically by Claude Code — they need an explicit `Sk
 
 ## Adding a new hook
 
-1. Create the script in `hooks/claude/<name>/` — make it executable (`chmod +x`)
-2. Add `hooks/claude/<name>/hook.json` with event, matcher, dependencies, and failure mode
+1. Create the script in `src/hooks/claude/<name>/` — make it executable (`chmod +x`)
+2. Add `src/hooks/claude/<name>/hook.json` with event, matcher, dependencies, and failure mode
 3. Run `scripts/sync.sh` to copy the hook into `dist/claude/hooks/`, regenerate `dist/claude/settings.json`, and update the hook table above
 
 Event types supported by Claude Code: `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `Stop`, `SessionStart`, `SessionEnd`.

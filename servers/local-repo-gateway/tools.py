@@ -189,13 +189,13 @@ def tool_git_status(repo: dict, arguments: dict) -> str:
 	return result.stdout.strip() or "Working tree clean."
 
 
-SKILLS_DIR = Path(__file__).resolve().parent.parent.parent / "skills"
+SKILLS_DIR = Path(__file__).resolve().parent.parent.parent / "src" / "skills"
 DIST_SKILLS_DIR = Path(__file__).resolve().parent.parent.parent / "dist" / "skills"
 
 
 def tool_list_skills(arguments: dict) -> str:
 	if not SKILLS_DIR.exists():
-		return "No skills/ directory found."
+		return "No src/skills/ directory found."
 
 	skills = []
 	for skill_json in sorted(SKILLS_DIR.rglob("skill.json")):

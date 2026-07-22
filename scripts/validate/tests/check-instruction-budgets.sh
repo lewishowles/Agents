@@ -12,12 +12,12 @@ FIXTURE_REPO="$TMP_DIR/repo"
 BASELINE_FILE="$TMP_DIR/instruction-budgets.json"
 
 mkdir -p "$FIXTURE_REPO/dist/claude" "$FIXTURE_REPO/dist/codex" \
-	"$FIXTURE_REPO/dist/skills/demo" "$FIXTURE_REPO/skills/demo"
+	"$FIXTURE_REPO/dist/skills/demo" "$FIXTURE_REPO/src/skills/demo"
 printf 'claude\n' > "$FIXTURE_REPO/dist/claude/CLAUDE.md"
 printf 'codex\n' > "$FIXTURE_REPO/dist/codex/AGENTS.md"
 printf 'skill\n' > "$FIXTURE_REPO/dist/skills/demo/SKILL.md"
-printf '{"name":"demo"}\n' > "$FIXTURE_REPO/skills/demo/skill.json"
-printf '# Demo\n' > "$FIXTURE_REPO/skills/demo/SKILL.body.md"
+printf '{"name":"demo"}\n' > "$FIXTURE_REPO/src/skills/demo/skill.json"
+printf '# Demo\n' > "$FIXTURE_REPO/src/skills/demo/SKILL.body.md"
 
 # Returns the UTF-8 byte count for a fixture file.
 #
@@ -42,7 +42,7 @@ write_baseline() {
 	local skill_body_bytes="$2"
 	local eager_metadata_bytes="$3"
 
-	printf '{\n  "always_loaded": {"dist/codex/AGENTS.md": %s},\n  "skill_bodies": {"dist/skills/demo/SKILL.md": %s},\n  "eager_metadata": {"skills/demo/skill.json": %s}\n}\n' \
+	printf '{\n  "always_loaded": {"dist/codex/AGENTS.md": %s},\n  "skill_bodies": {"dist/skills/demo/SKILL.md": %s},\n  "eager_metadata": {"src/skills/demo/skill.json": %s}\n}\n' \
 		"$always_loaded_bytes" "$skill_body_bytes" "$eager_metadata_bytes" > "$BASELINE_FILE"
 }
 
@@ -95,7 +95,7 @@ assert_contains() {
 claude_bytes=$(byte_count "$FIXTURE_REPO/dist/claude/CLAUDE.md")
 codex_bytes=$(byte_count "$FIXTURE_REPO/dist/codex/AGENTS.md")
 skill_bytes=$(byte_count "$FIXTURE_REPO/dist/skills/demo/SKILL.md")
-metadata_bytes=$(byte_count "$FIXTURE_REPO/skills/demo/skill.json")
+metadata_bytes=$(byte_count "$FIXTURE_REPO/src/skills/demo/skill.json")
 
 write_baseline "$codex_bytes" "$skill_bytes" "$metadata_bytes"
 run_validator
@@ -109,9 +109,9 @@ assert_equal 0 "$TEST_STATUS" "warning case status"
 assert_contains 'dist/codex/AGENTS.md:' 'always-loaded warning'
 assert_contains '⚠' 'warning status icon'
 assert_contains $'\n↳ edit:' 'muted source hint'
-assert_contains 'dist/codex/source or rules/ inputs' 'always-loaded source hint'
-assert_contains 'skills/demo/SKILL.body.md' 'skill-body source hint'
-assert_contains 'skills/demo/skill.json' 'eager-metadata source hint'
+assert_contains 'src/fragments/codex or src/rules/ inputs' 'always-loaded source hint'
+assert_contains 'src/skills/demo/SKILL.body.md' 'skill-body source hint'
+assert_contains 'src/skills/demo/skill.json' 'eager-metadata source hint'
 assert_contains 'bytes' 'warning byte details'
 assert_contains 'baseline' 'warning baseline details'
 printf 'PASS warning case\n'
@@ -124,7 +124,7 @@ case "$TEST_OUTPUT" in
 		exit 1
 		;;
 esac
-assert_contains $'\n↳ edit:  dist/codex/source or rules/ inputs' 'no-colour source hint'
+assert_contains $'\n↳ edit:  src/fragments/codex or src/rules/ inputs' 'no-colour source hint'
 printf 'PASS no-colour warning case\n'
 
 printf '{\n' > "$BASELINE_FILE"

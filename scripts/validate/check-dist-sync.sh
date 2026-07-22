@@ -14,13 +14,13 @@ trap 'rm -rf "$TMP_DIR"' EXIT
 # Mirror only the inputs build-skill-mds.py and the CLAUDE/AGENTS assembly
 # need, at the same relative paths, so REPO_DIR inside the copied script
 # resolves to $TMP_DIR instead of the real repo.
-mkdir -p "$TMP_DIR/skills" "$TMP_DIR/rules" "$TMP_DIR/scripts/build" "$TMP_DIR/scripts/lib" \
-	"$TMP_DIR/dist/claude/source" "$TMP_DIR/dist/codex/source"
+mkdir -p "$TMP_DIR/src/skills" "$TMP_DIR/src/rules" "$TMP_DIR/scripts/build" "$TMP_DIR/scripts/lib" \
+	"$TMP_DIR/src/fragments/claude" "$TMP_DIR/src/fragments/codex" "$TMP_DIR/dist/claude" "$TMP_DIR/dist/codex"
 
-cp -r "$REAL_REPO_DIR/skills/." "$TMP_DIR/skills/"
-cp "$REAL_REPO_DIR/rules/"*.md "$TMP_DIR/rules/"
-cp "$REAL_REPO_DIR/dist/claude/source/header.md" "$REAL_REPO_DIR/dist/claude/source/subagent-delegation.md" "$TMP_DIR/dist/claude/source/"
-cp "$REAL_REPO_DIR/dist/codex/source/header.md" "$TMP_DIR/dist/codex/source/"
+cp -r "$REAL_REPO_DIR/src/skills/." "$TMP_DIR/src/skills/"
+cp "$REAL_REPO_DIR/src/rules/"*.md "$TMP_DIR/src/rules/"
+cp "$REAL_REPO_DIR/src/fragments/claude/header.md" "$REAL_REPO_DIR/src/fragments/claude/subagent-delegation.md" "$TMP_DIR/src/fragments/claude/"
+cp "$REAL_REPO_DIR/src/fragments/codex/header.md" "$TMP_DIR/src/fragments/codex/"
 cp "$REAL_REPO_DIR/scripts/build/build-skill-mds.py" "$TMP_DIR/scripts/build/"
 cp "$REAL_REPO_DIR/scripts/lib/dist-targets.sh" "$TMP_DIR/scripts/lib/"
 

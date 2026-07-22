@@ -6,8 +6,8 @@ import json
 from pathlib import Path
 
 REPO_DIR = Path(__file__).resolve().parent.parent.parent
-SKILLS_DIR = REPO_DIR / "skills"
-HOOKS_DIR = REPO_DIR / "hooks" / "claude"
+SKILLS_DIR = REPO_DIR / "src" / "skills"
+HOOKS_DIR = REPO_DIR / "src" / "hooks" / "claude"
 
 
 # Return all skill manifests in display order.

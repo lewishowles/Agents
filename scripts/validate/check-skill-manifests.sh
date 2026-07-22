@@ -16,7 +16,7 @@ while IFS= read -r -d '' manifest; do
 	if [ -n "$name" ]; then
 		SKILL_NAMES["$name"]=1
 	fi
-done < <(find "$REPO_DIR/skills" -name "skill.json" -print0 | sort -z)
+done < <(find "$REPO_DIR/src/skills" -name "skill.json" -print0 | sort -z)
 
 SKILL_COUNT=0
 
@@ -100,6 +100,6 @@ while IFS= read -r -d '' manifest; do
 	fi
 
 	SKILL_COUNT=$((SKILL_COUNT + 1))
-done < <(find "$REPO_DIR/skills" -name "skill.json" -print0 | sort -z)
+done < <(find "$REPO_DIR/src/skills" -name "skill.json" -print0 | sort -z)
 
 validate_finish

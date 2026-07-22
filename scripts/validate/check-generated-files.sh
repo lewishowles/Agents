@@ -8,7 +8,6 @@ source "$(cd "$(dirname "$0")/.." && pwd)/lib/validate.sh"
 GENERATED_FILES=(
 	"dist/claude/CLAUDE.md"
 	"dist/claude/settings.json"
-	"dist/claude/source/global-skills.md"
 )
 
 for file in "${GENERATED_FILES[@]}"; do

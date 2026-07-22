@@ -60,6 +60,6 @@ while IFS= read -r -d '' manifest; do
 	fi
 
 	HOOK_COUNT=$((HOOK_COUNT + 1))
-done < <(find "$REPO_DIR/hooks/claude" -name "hook.json" -print0 | sort -z)
+done < <(find "$REPO_DIR/src/hooks/claude" -name "hook.json" -print0 | sort -z)
 
 validate_finish

@@ -159,9 +159,9 @@ sync_skill() {
 
 	local target_dir
 	if [ -n "$group" ]; then
-		target_dir="$REPO_DIR/skills/$group/$slug"
+		target_dir="$REPO_DIR/src/skills/$group/$slug"
 	else
-		target_dir="$REPO_DIR/skills/$slug"
+		target_dir="$REPO_DIR/src/skills/$slug"
 	fi
 
 	local skill_file="$target_dir/SKILL.body.md"

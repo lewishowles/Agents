@@ -5,7 +5,7 @@ description: >
   Use this skill when authoring, designing, or evaluating a new skill in this repo. Covers intake → design → build → lightweight eval lifecycle.
 do-not-use-when:
   - Updating the content of an existing skill — use the skill directly
-  - Authoring rules — those go in rules/, not skills/
+  - Authoring rules — those go in src/rules/, not src/skills/
   - General project maintenance — use the project-management skills
 ---
 # Skill-craft

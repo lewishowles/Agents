@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-# Generate dist/claude/settings.json from adapters/claude/settings.base.json
-# and hooks/claude/*/hook.json.
+# Generate dist/claude/settings.json from src/adapters/claude/settings.base.json
+# and src/hooks/claude/*/hook.json.
 #
 # The base file holds env, permissions, skillOverrides, and a single inline hook
 # entry (the .env read-guard) that cannot be expressed as a named hook script.
-# All other hooks are derived from hooks/claude/*/hook.json.
+# All other hooks are derived from src/hooks/claude/*/hook.json.
 #
 # Hooks without a .sh extension use a top-level 'command' field in hook.json
 # to override the default bash-wrapper command.
@@ -13,8 +13,8 @@ import json
 from pathlib import Path
 
 REPO_DIR = Path(__file__).resolve().parent.parent.parent
-BASE_FILE = REPO_DIR / "adapters" / "claude" / "settings.base.json"  # Editable settings source.
-HOOKS_DIR = REPO_DIR / "hooks" / "claude"
+BASE_FILE = REPO_DIR / "src" / "adapters" / "claude" / "settings.base.json"  # Editable settings source.
+HOOKS_DIR = REPO_DIR / "src" / "hooks" / "claude"
 OUT_FILE = REPO_DIR / "dist" / "claude" / "settings.json"
 
 

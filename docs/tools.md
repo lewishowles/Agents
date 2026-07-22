@@ -24,7 +24,7 @@ LSP-backed MCP server providing atomic semantic refactoring operations: cross-fi
 
 **Installation:** MCP server, requires a language server for the target language. This repo manages the server registration and lifecycle hooks for both Claude Code and Codex:
 
-- **Claude Code:** server registered in `dist/claude/.mcp.json`; hooks for activate, remind, auto-approve, and cleanup live in `hooks/claude/serena-activate/`, `hooks/claude/serena-remind/`, `hooks/claude/serena-auto-approve/`, and `hooks/claude/serena-cleanup/`
+- **Claude Code:** server registered in `dist/claude/.mcp.json`; hooks for activate, remind, auto-approve, and cleanup live in `src/hooks/claude/serena-activate/`, `src/hooks/claude/serena-remind/`, `src/hooks/claude/serena-auto-approve/`, and `src/hooks/claude/serena-cleanup/`
 - **Codex:** server managed in `~/.codex/config.toml` via `ensure_codex_config`; hooks in `dist/codex/hooks.json`
 
 Run `scripts/setup-global.sh --both` after cloning or pulling changes to Serena hook configuration.
@@ -99,14 +99,14 @@ Code intelligence tool that combines graph traversal with git history analysis f
 
 ## Comparison: Serena vs codebase-memory vs ast-grep vs repowise vs Fallow
 
-|                           | Serena                            | codebase-memory                       | ast-grep                           | repowise                                  | Fallow                                      |
-| ------------------------- | --------------------------------- | ------------------------------------- | ---------------------------------- | ----------------------------------------- | ------------------------------------------- |
-| **Primary job**           | Exact semantic lookup and editing | Broad graph traversal and impact      | Syntax-shaped search and rewrites  | Git-informed health and defect prediction | JS/TS health, cleanup, boundaries, and risk |
-| **Languages**             | Language-server dependent         | Language-agnostic                     | Multi-language AST patterns        | Language-agnostic                         | JS/TS                                      |
-| **Graph traversal**       | Exact symbol relationships        | Multi-hop and cross-service paths     | No                                 | Callers, callees, and dependencies         | Best-effort syntactic tracing               |
-| **Codemods and rewrites** | Semantic renames and symbol edits | No                                    | Syntax-pattern rewrites            | No                                        | No                                          |
-| **Project health**        | Diagnostics only                  | Structural graph signals              | Custom rules only                  | Composite scoring and temporal signals     | Dead code, duplication, complexity, audits  |
-| **Literal text/config**   | No                                | No                                    | Usually unnecessary                | No                                        | No                                          |
+|                           | Serena                            | codebase-memory                   | ast-grep                          | repowise                                  | Fallow                                      |
+| ------------------------- | --------------------------------- | --------------------------------- | --------------------------------- | ----------------------------------------- | ------------------------------------------- |
+| **Primary job**           | Exact semantic lookup and editing | Broad graph traversal and impact  | Syntax-shaped search and rewrites | Git-informed health and defect prediction | JS/TS health, cleanup, boundaries, and risk |
+| **Languages**             | Language-server dependent         | Language-agnostic                 | Multi-language AST patterns       | Language-agnostic                         | JS/TS                                       |
+| **Graph traversal**       | Exact symbol relationships        | Multi-hop and cross-service paths | No                                | Callers, callees, and dependencies        | Best-effort syntactic tracing               |
+| **Codemods and rewrites** | Semantic renames and symbol edits | No                                | Syntax-pattern rewrites           | No                                        | No                                          |
+| **Project health**        | Diagnostics only                  | Structural graph signals          | Custom rules only                 | Composite scoring and temporal signals    | Dead code, duplication, complexity, audits  |
+| **Literal text/config**   | No                                | No                                | Usually unnecessary               | No                                        | No                                          |
 
 **Decision guide:**
 

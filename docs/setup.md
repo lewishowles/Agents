@@ -105,12 +105,12 @@ codebase-memory-mcp cli list_projects '{}'
 Create `~/.agents/skills/`, then link each skill folder:
 
 ```bash
-ln -s /path/to/repository/skills/vue ~/.agents/skills/vue
+ln -s /path/to/repository/src/skills/vue ~/.agents/skills/vue
 ```
 
 This keeps Codex skill discovery under `~/.agents` while `~/.codex` holds app config and hooks.
 
-If external skill sync fails because the network is unavailable, keep the existing local `skills/<name>` copy and continue setup. `scripts/setup-global.sh --both` does this automatically; pass `--skip-external` to bypass the sync step intentionally.
+If external skill sync fails because the network is unavailable, keep the existing local `src/skills/<name>` copy and continue setup. `scripts/setup-global.sh --both` does this automatically; pass `--skip-external` to bypass the sync step intentionally.
 
 ## Project setup
 

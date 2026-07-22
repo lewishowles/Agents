@@ -19,13 +19,13 @@ Every script opens with `#` purpose comment after shebang. For build scripts, in
 # Build order:
 #   1. SKILL.md files (build-skill-mds.py)
 #   2. Hook scripts copied to dist/claude/hooks/
-#   3. Agent instruction files assembled from rules/
+#   3. Agent instruction files assembled from src/rules/
 ```
 
 ```python
 #!/usr/bin/env python3
-# Generate dist/claude/settings.json from adapters/claude/settings.base.json
-# and hooks/claude/*/hook.json. The base file holds env, permissions, and
+# Generate dist/claude/settings.json from src/adapters/claude/settings.base.json
+# and src/hooks/claude/*/hook.json. The base file holds env, permissions, and
 # skillOverrides; all hook entries are derived from manifests.
 ```
 

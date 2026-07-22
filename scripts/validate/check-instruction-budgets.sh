@@ -25,8 +25,8 @@ source_hint() {
 	case "$class" in
 		always_loaded)
 			case "$relative_file" in
-				dist/codex/AGENTS.md) printf '%s' 'dist/codex/source or rules/ inputs' ;;
-				dist/claude/CLAUDE.md) printf '%s' 'dist/claude/source or rules/ inputs' ;;
+				dist/codex/AGENTS.md) printf '%s' 'src/fragments/codex or src/rules/ inputs' ;;
+				dist/claude/CLAUDE.md) printf '%s' 'src/fragments/claude or src/rules/ inputs' ;;
 				*) printf '%s' 'the generated instruction source inputs' ;;
 			esac
 			;;
@@ -34,7 +34,7 @@ source_hint() {
 			skill_name="${relative_file#dist/skills/}"
 			skill_name="${skill_name%%/*}"
 			if [ "$skill_name" = "global-rules" ]; then
-				printf '%s' 'rules/global-rules.md, rules/identity.md, rules/skills-policy.md, and rules/file-discovery.md'
+				printf '%s' 'src/rules/global-rules.md, src/rules/identity.md, src/rules/skills-policy.md, and src/rules/file-discovery.md'
 				return
 			fi
 
@@ -44,9 +44,9 @@ source_hint() {
 					printf '%s/SKILL.body.md' "${manifest%/skill.json}"
 					return
 				fi
-			done < <(find "$TARGET_REPO_DIR/skills" -name "skill.json" -type f -print0 | sort -z)
+			done < <(find "$TARGET_REPO_DIR/src/skills" -name "skill.json" -type f -print0 | sort -z)
 
-			printf 'skills/%s/SKILL.body.md' "$skill_name"
+			printf 'src/skills/%s/SKILL.body.md' "$skill_name"
 			;;
 		eager_metadata)
 			printf '%s' "$relative_file"
