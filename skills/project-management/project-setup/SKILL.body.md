@@ -173,7 +173,7 @@ Read this section first. Only open the active task file. Stop after this section
 
 ### Upcoming queue
 
-Bulleted title links with inline status, non-done tasks only. Physical order is priority and the intended pickup sequence. Reorder links without renaming task files. Front matter wins over the inline annotation on conflict.
+A `Task | Release | Status` table, non-done tasks only, rows grouped by Release in roadmap order with priority as the order within each group. Reorder rows without renaming task files; move a task between releases by editing its `release:` front matter and its row's group, not by annotating the row text. Front matter wins over the table's Status column on conflict. A `blocked` row doesn't say what it's waiting on — that's in the task file's `depends`, which can be long.
 
 ### Standing context
 
@@ -191,17 +191,15 @@ One table; row order is the timeline. Task front matter references the `ID` colu
 | ------- | --------------- | ------------------------------- | ------ |
 | phase-1 | <Release title> | One sentence on what it means.  | active |
 
-## Project overview
-
-Brief description: purpose, tech, constraints.
+Purpose, tech, and constraints belong in `AGENTS.md`, not a `## Project overview` section here — don't duplicate it.
 
 ## Decisions
 
-Key architectural or process decisions. Date-stamped entries.
+Key architectural or process decisions still relevant to active or upcoming work. Date-stamped entries. Not a permanent log: promote a decision to `AGENTS.md` once it's durable and cross-session, or drop it once it's superseded or moot, and remove it from here either way.
 
 ## Discoveries
 
-Unexpected findings that affect the work. Date-stamped entries. Promote a discovery to `AGENTS.md`'s `## Need to know` section once it proves durable rather than task-specific.
+Unexpected findings that affect the work. Date-stamped entries. Not a permanent log: promote a discovery to `AGENTS.md`'s `## Need to know` section once it proves durable rather than task-specific, or drop it once it's stale or already visible in shipped code/docs, and remove it from here either way.
 
 ## Upcoming work
 

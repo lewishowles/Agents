@@ -17,9 +17,9 @@ Reduce noisy or hard-to-scan `PROGRESS.md`. Cut words aggressively without losin
 
 - `## Session handoff` — keep at top, make accurate
 - `## Roadmap` table — keep intact; task front matter references its IDs. Update row Status rather than deleting rows.
-- Upcoming queue — reconcile inline status annotations against task front matter (front matter wins); drop done tasks from the queue
-- Decisions with rationale (prevent re-debate)
-- Discoveries — unexpected findings affecting current or future work
+- Upcoming queue — reconcile the table's Release/Status columns against task front matter (front matter wins); drop done tasks from the queue
+- Decisions still relevant to active or upcoming work, with rationale (prevent re-debate)
+- Discoveries still affecting current or future work
 - Completed milestones: brief summary; move detail to `## Archived milestones`
 - **Future roadmap with concrete tasks** — do not collapse to one-liner. Archive only when complete.
 - **Acceptance criteria** — preserve verbatim, even when compressing nearby prose
@@ -33,6 +33,8 @@ Reduce noisy or hard-to-scan `PROGRESS.md`. Cut words aggressively without losin
 - Implementation details already visible in the code
 - Wording that explains process without preserving a decision, result, blocker, or next action
 - Archived milestone entries whose roadmap release has shipped — `## Archived milestones` is release-scoped, not a permanent log; drop entries once the release closes
+- `## Decisions`/`## Discoveries` entries that have become durable, cross-session facts and haven't been promoted yet — propose the smallest `AGENTS.md` entry, then remove here once approved
+- `## Decisions`/`## Discoveries` entries that are now moot — superseded, already visible in shipped code/docs/metadata, or resolved by a decision recorded elsewhere — remove outright, no promotion needed. These two sections are release-scoped like `## Archived milestones`, not a permanent log; an entry that's neither still-active nor worth promoting shouldn't linger just because nobody swept it
 - Spec files in `.agent/specs/` that may no longer be active — list every file, check whether each is referenced by a `### Spec` link in active `PROGRESS.md` sections, then inspect enough to explain its real status. Do not flag a spec only because it is unlinked. For each, state whether it appears completed, superseded, partly future-facing, or unclear; give the reason; recommend keep, archive, link from active work, or ask. Do not delete silently.
 
 ## Compression target

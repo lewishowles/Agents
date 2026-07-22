@@ -32,8 +32,8 @@ release: phase-5
 
 - `title` — display name for lists and cards.
 - `overview` — the at-a-glance reminder; one or two sentences.
-- `status` — `ready`, `in-progress`, `blocked`, or `needs-decision`. Use `needs-decision` when an open risk needs the user's input before an agent should implement; don't resolve it by guessing. Use `blocked` for external blocks; blocking by another task is expressed through `depends` instead. `done` is tolerated only in legacy task files that were left mid-archive.
-- `depends` — task filename stems that must land first, e.g. `[progress-format-parser, metadata-validation]`, or `[]`. Use it only for real prerequisites; queue order already expresses the intended sequence. Legacy numeric stems remain valid references to existing numeric task files.
+- `status` — `ready`, `in-progress`, `blocked`, or `needs-decision`. Use `needs-decision` when an open risk needs the user's input before an agent should implement; don't resolve it by guessing. Use `blocked` when the task isn't actionable yet, whether from an external block or an unresolved prerequisite listed in `depends` — the task file explains which, so the queue never needs to enumerate it. `ready` means actionable now: well-specified, with no unresolved `depends`. `done` is tolerated only in legacy task files that were left mid-archive.
+- `depends` — task filename stems that must land first, e.g. `[progress-format-parser, metadata-validation]`, or `[]`. Use it only for real prerequisites; queue order already expresses the intended sequence. A non-empty, unresolved `depends` means `status` should be `blocked`, not `ready`. Legacy numeric stems remain valid references to existing numeric task files.
 - `release` — a roadmap ID from the `## Roadmap` table. Omit for backlog tasks.
 - `completed` — legacy date field, tolerated when present but not written by current task producers.
 
@@ -115,15 +115,17 @@ One canonical table. Row order is the timeline; `ID` is what task `release:` fie
 
 ### Upcoming queue
 
-Bulleted list under the session handoff, non-done tasks only. Physical order is priority and the intended pickup sequence:
+Table under the session handoff, non-done tasks only. Rows are grouped by Release, in roadmap order; within a release, physical row order is priority and the intended pickup sequence. A flat priority order across releases is harder to scan than the Release column suggests — group first, then order within the group:
 
 ```markdown
-- [Progress format parser service](.agent/tasks/progress-format-parser.md) (ready)
-- [Progress CLI command](.agent/tasks/progress-cli-command.md) (ready; depends on `progress-format-parser`)
+| Task | Release | Status |
+| --- | --- | --- |
+| [Progress format parser service](.agent/tasks/progress-format-parser.md) | phase-5 | ready |
+| [Progress CLI command](.agent/tasks/progress-cli-command.md) | phase-5 | blocked |
 ```
 
-The inline status annotation is a convenience so agents can pick work without opening every file; front matter wins on conflict, and drift is a doctor finding, not a parse error.
+Release and Status are a convenience so agents (and external consumers like Boilersuit's progress surface) can group, skim pickability, and reorder without opening every file; front matter wins on conflict, and drift is a doctor finding, not a parse error. A `blocked` row does not enumerate what it is waiting on — that can be a long list once a task has several prerequisites, and it is already recorded in the task file's `depends`. Reordering rows or moving a task to a different release ID (rewriting its `release:` front matter) is how a consumer like Boilersuit re-plans the queue; it never needs a duplicate release marker inside the row text itself.
 
 ## Tolerance
 
-Consumers parse tolerantly: numeric legacy task filenames, numbered legacy queues, missing sections, legacy heading-based task files (`## Status` / `## Depends on`), or absent front matter degrade to partial results plus warnings, never errors. Producers (skills, agents) always write the current contract.
+Consumers parse tolerantly: numeric legacy task filenames, numbered legacy queues, a legacy bulleted queue (a title link to a task file, followed by `(status; depends on ...)`), missing sections, legacy heading-based task files (`## Status` / `## Depends on`), or absent front matter degrade to partial results plus warnings, never errors. Producers (skills, agents) always write the current contract.
