@@ -25,7 +25,7 @@ If no generator exists, don't create manually. Inspect `AGENTS.md`, package scri
 ## Workflow
 
 1. **Explore** — read repo, identify patterns, tech, relevant files; check `PROGRESS.md`, `AGENTS.md`, `WORKSPACE.md`, `CONTEXT.md`, `README.md`
-2. **Ask** — clarify ambiguous requirements, constraints; surface tradeoffs and alternatives
+2. **Ask** — identify all known decision-blocking ambiguities, constraints, tradeoffs, and alternatives, then ask them together. Do not cap this initial set. Ask further questions only when an answer reveals a material new unknown.
 3. **Discuss** — if multiple approaches exist, present them; don't pick silently
 4. **Plan** — create initial `PROGRESS.md` using standard schema below
 5. **Wait** — do not start until plan is reviewed and approved
