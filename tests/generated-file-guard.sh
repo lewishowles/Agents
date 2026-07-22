@@ -34,6 +34,7 @@ create_config_repo() {
 	printf '#!/usr/bin/env bash\n' > "$target_dir/scripts/sync.sh"
 	printf 'source\n' > "$target_dir/src/rules/global-rules.md"
 	printf 'generated\n' > "$target_dir/dist/claude/CLAUDE.md"
+	printf '{"rules": [{"generated": ["dist/claude/CLAUDE.md"], "sources": ["src/rules/"], "label": "Claude global instructions"}]}\n' > "$target_dir/generated-file-guard.config.json"
 	init_repo "$target_dir"
 }
 
@@ -49,6 +50,7 @@ create_skill_repo() {
 	printf 'excluded body\n' > "$target_dir/src/skills/example/excluded/SKILL.body.md"
 	printf 'excluded generated skill\n' > "$target_dir/dist/skills/excluded/SKILL.md"
 	printf 'docs\n' > "$target_dir/docs/skills.md"
+	printf '{"rules": [{"generated": ["dist/skills/"], "sources": ["src/skills/"], "label": "runtime skills"}]}\n' > "$target_dir/generated-file-guard.config.json"
 	init_repo "$target_dir"
 }
 
@@ -144,20 +146,6 @@ test_excluded_skill_body_change_is_in_sync() {
 	assert_contains "$output" "No generated-file issues detected."
 }
 
-test_skill_metadata_without_indexes_fails() {
-	local target_dir="$TEST_ROOT/skill-metadata"
-	local output="$TEST_ROOT/skill-metadata.md"
-	create_skill_repo "$target_dir"
-	printf '{"name":"example","description":"changed"}\n' > "$target_dir/src/skills/example/example/skill.json"
-	printf 'changed\n' >> "$target_dir/dist/skills/example/SKILL.md"
-
-	if run_guard "$target_dir" > "$output"; then
-		fail "Expected skill metadata change without docs or index updates to fail"
-	fi
-
-	assert_contains "$output" "generated docs tables source changed but generated output is not changed"
-}
-
 test_json_output_is_machine_readable() {
 	local target_dir="$TEST_ROOT/json"
 	local output="$TEST_ROOT/guard.json"
@@ -185,7 +173,6 @@ test_generic_generated_only_change_fails
 test_skill_source_with_generated_outputs_does_not_require_claude_index
 test_skill_body_with_generated_skill_output_does_not_require_indexes
 test_excluded_skill_body_change_is_in_sync
-test_skill_metadata_without_indexes_fails
 test_json_output_is_machine_readable
 
 printf '✓ generated-file-guard tests passed\n'

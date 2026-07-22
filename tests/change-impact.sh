@@ -45,6 +45,7 @@ create_config_repo() {
 	printf '#!/usr/bin/env bash\n' > "$target_dir/scripts/sync.sh"
 	printf 'source\n' > "$target_dir/src/rules/global-rules.md"
 	printf 'generated\n' > "$target_dir/dist/claude/CLAUDE.md"
+	printf '{"rules": [{"generated": ["dist/claude/CLAUDE.md"], "sources": ["src/rules/"], "label": "Claude global instructions"}]}\n' > "$target_dir/generated-file-guard.config.json"
 	init_repo "$target_dir"
 }
 

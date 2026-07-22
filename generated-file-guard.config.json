@@ -1,0 +1,55 @@
+{
+	"rules": [
+		{
+			"generated": ["dist/claude/CLAUDE.md"],
+			"sources": ["src/rules/", "src/fragments/claude/header.md"],
+			"label": "Claude global instructions"
+		},
+		{
+			"generated": ["dist/codex/AGENTS.md"],
+			"sources": ["src/rules/", "src/fragments/codex/"],
+			"label": "Codex global instructions"
+		},
+		{
+			"generated": ["dist/claude/settings.json"],
+			"sources": ["src/adapters/claude/settings.base.json", "src/hooks/claude/"],
+			"label": "Claude settings"
+		},
+		{
+			"generated": ["dist/claude/.mcp.json"],
+			"sources": ["src/adapters/claude/mcp.json"],
+			"label": "Claude MCP config"
+		},
+		{
+			"generated": ["dist/codex/hooks.json"],
+			"sources": ["src/adapters/codex/hooks.json"],
+			"label": "Codex hooks config"
+		},
+		{
+			"generated": ["dist/claude/hooks/"],
+			"sources": ["src/hooks/claude/"],
+			"label": "Claude hook scripts"
+		},
+		{
+			"generated": ["dist/skills/"],
+			"sources": ["src/skills/", "scripts/build/build-skill-mds.py"],
+			"label": "runtime skills"
+		},
+		{
+			"generated": ["dist/chatgpt/"],
+			"sources": ["src/fragments/chatgpt/", "scripts/build/build-chatgpt-target.py"],
+			"label": "ChatGPT target"
+		},
+		{
+			"generated": [
+				"docs/agents.md",
+				"docs/commands.md",
+				"docs/hooks.md",
+				"docs/plugins.md",
+				"docs/skills.md"
+			],
+			"sources": ["scripts/build/build-docs.py"],
+			"label": "generated docs tables"
+		}
+	]
+}
