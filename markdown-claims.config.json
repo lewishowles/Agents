@@ -1,0 +1,7 @@
+{
+  "extraIgnoreDirs": [
+    ".agent/specs",
+    "dist",
+    "project-skill-packs"
+  ]
+}

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Warns when generated instruction artefacts grow beyond checked-in byte baselines.
+# Warns when generated instruction artefacts grow beyond soft byte budgets.
 
 set -euo pipefail
 
@@ -10,6 +10,7 @@ validate_require_jq
 TARGET_REPO_DIR="${INSTRUCTION_BUDGET_REPO_DIR:-$REPO_DIR}"
 BASELINE_FILE="${INSTRUCTION_BUDGET_BASELINE:-$REPO_DIR/scripts/validate/instruction-budgets.json}"
 CLASSES=(always_loaded skill_bodies eager_metadata)
+HEADROOM_PERCENT=10
 
 # Returns the source path associated with a measured artefact.
 #
@@ -66,16 +67,19 @@ source_hint() {
 # @param  {string}  current_bytes
 #     Current UTF-8 byte count.
 # @param  {string}  baseline_bytes
-#     Checked-in baseline byte count.
+#     Checked-in byte measurement used to derive the soft budget.
 report_growth() {
 	local class="$1"
 	local relative_file="$2"
 	local current_bytes="$3"
 	local baseline_bytes="$4"
+	local warning_bytes
+
+	warning_bytes=$((baseline_bytes * (100 + HEADROOM_PERCENT) / 100))
 
 	cli_style_row \
 		'⚠' \
-		"$relative_file: current $current_bytes bytes exceeds baseline $baseline_bytes bytes" \
+		"$relative_file: current $current_bytes bytes exceeds soft budget $warning_bytes bytes" \
 		--label-colour warning \
 		--label-width 1 >&2
 	cli_style_row \
@@ -84,6 +88,12 @@ report_growth() {
 		--label-colour muted \
 		--value-colour muted \
 		--label-width 6 >&2
+	cli_style_row \
+		'↳ review:' \
+		'Remove duplicate, misplaced, or stale guidance before raising the baseline and its headroom.' \
+		--label-colour muted \
+		--value-colour muted \
+		--label-width 8 >&2
 }
 
 if [ ! -f "$BASELINE_FILE" ]; then

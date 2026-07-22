@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Exercises instruction byte-budget pass, warning, and malformed-baseline cases.
+# Exercises instruction soft-budget pass, warning, and malformed-baseline cases.
 
 set -euo pipefail
 
@@ -103,7 +103,7 @@ assert_equal 0 "$TEST_STATUS" "pass case status"
 assert_equal '' "$TEST_OUTPUT" "pass case output"
 printf 'PASS pass case\n'
 
-write_baseline 0 0 0
+write_baseline 1 1 1
 NO_COLOR= run_validator
 assert_equal 0 "$TEST_STATUS" "warning case status"
 assert_contains 'dist/codex/AGENTS.md:' 'always-loaded warning'
@@ -113,7 +113,8 @@ assert_contains 'src/fragments/codex or src/rules/ inputs' 'always-loaded source
 assert_contains 'src/skills/demo/SKILL.body.md' 'skill-body source hint'
 assert_contains 'src/skills/demo/skill.json' 'eager-metadata source hint'
 assert_contains 'bytes' 'warning byte details'
-assert_contains 'baseline' 'warning baseline details'
+assert_contains 'soft budget' 'soft-budget details'
+assert_contains 'Remove duplicate, misplaced, or stale guidance' 'slimming review prompt'
 printf 'PASS warning case\n'
 
 NO_COLOR=1 run_validator
