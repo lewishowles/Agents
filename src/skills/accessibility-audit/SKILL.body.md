@@ -8,14 +8,9 @@ Fast pre-release check; not full compliance audit.
 
 ### Automated scan first
 
-Ask user to run one:
+Use the project's documented `web-audit` command. It renders the target, runs axe and custom ARIA checks, and produces an HTML report.
 
-```bash
-npx @axe-core/cli <url>
-npx pa11y <url> --standard WCAG2AA
-```
-
-Or use Lighthouse: DevTools → Lighthouse → Accessibility.
+If `web-audit` is unavailable, stop and ask the user to run it, provide an existing report, or authorise installation. Do not invoke `npx`, install another scanner, or silently substitute Lighthouse without permission.
 
 ### Manual checks
 
@@ -27,7 +22,7 @@ Or use Lighthouse: DevTools → Lighthouse → Accessibility.
 | Focus indicator always visible             |       |
 | No keyboard traps                          |       |
 | Logical tab order                          |       |
-| Skip link present and working              |       |
+| Repeated blocks have a working bypass mechanism |       |
 
 **Semantics & labels**
 
@@ -50,8 +45,8 @@ Or use Lighthouse: DevTools → Lighthouse → Accessibility.
 
 | Check                                     | Pass? |
 | ----------------------------------------- | ----- |
-| Respects `prefers-reduced-motion`         |       |
-| Dynamic updates announced via `aria-live` |       |
+| Non-essential motion follows the project preference |       |
+| Status messages use appropriate programmatic semantics |       |
 
 **Component states**
 
@@ -67,7 +62,7 @@ These states are only checkable if reachable (seeded empty data, throttled/faile
 ```markdown
 ## Accessibility triage: [Component / Page]
 
-**Tool:** axe / pa11y / Lighthouse **Score:** \_
+**Evidence:** web-audit report / user-provided report / manual checks
 
 ### Blockers (fix before merge)
 
@@ -97,7 +92,7 @@ Systematic WCAG 2.2 AA audit with client-ready report.
 
 ### 2. Automated baseline
 
-Ask user to run axe, pa11y, or Lighthouse. Automated tools catch ~30–50%; manually verify rest.
+Use `web-audit` for rendered automated evidence. If it is unavailable, ask the user to run it, provide an existing report, or authorise installation. Automated results cover only machine-detectable issues, so continue with manual verification.
 
 ### 3. Manual verification
 
@@ -106,7 +101,7 @@ Work through WCAG 2.2 AA. For the per-criterion checklist, see [references/wcag-
 Priority areas:
 
 - **Perceivable**: alt text, captions, colour contrast, reflow at 400% zoom
-- **Operable**: keyboard access, focus management, no timing traps, skip links, motion control
+- **Operable**: keyboard access, focus management, timing, bypass mechanisms, motion control
 - **Understandable**: error messages, form labels, consistent navigation, plain language
 - **Robust**: valid HTML, ARIA used correctly, works with screen readers
 

@@ -1,59 +1,59 @@
-# Accessibility checklist
+# Accessibility implementation checklist
 
-Quick-reference for WCAG 2.2 AA. Paste into a PR description or use as a review gate. For implementation detail, see the accessibility skill.
+Quick reference for changed UI. It combines WCAG 2.2 A/AA outcomes, preferred techniques, and stricter project or platform defaults. The label on each item identifies which contract it represents. Paste it into a PR description or use it as a review gate. For criterion-by-criterion audit work, use the accessibility-audit skill.
 
 ## Visual
 
-- [ ] Colour contrast ≥ 4.5:1 for body text, ≥ 3:1 for large text and UI components
-- [ ] Colour is not the only means of conveying information (pair with icon or text)
-- [ ] Layout works at 400% zoom without horizontal scrolling
-- [ ] No content lost or overlapping below 320px wide
+- [ ] **WCAG 1.4.3 / 1.4.11:** Colour contrast ≥ 4.5:1 for normal text and ≥ 3:1 for large text and meaningful UI boundaries, states, and graphical objects where the criteria apply
+- [ ] **WCAG 1.4.1:** Colour is not the only visual means of conveying information
+- [ ] **WCAG 1.4.10:** Content reflows at 320 CSS px or 400% zoom without loss; two-dimensional scrolling remains only where content requires it
+- [ ] **Project default:** No content is lost or overlaps below 320px wide
 
 ## Structure and semantics
 
-- [ ] Heading hierarchy is logical — no skipped levels (h1 → h2 → h3)
-- [ ] Landmark regions used: `<main>`, `<nav>`, `<aside>`, `<article>`
-- [ ] Lists use `<ul>`, `<ol>`, or `<dl>` — no fake lists with divs or paragraphs
-- [ ] Tables have `<caption>`, `<thead>`, and `<th scope="col|row">`
-- [ ] `lang` attribute set on `<html>`
+- [ ] **Preferred technique:** Heading hierarchy is logical and avoids forward rank skips where possible
+- [ ] **Preferred technique:** Landmark regions use `<main>`, `<nav>`, `<aside>`, and `<article>` where they match the content
+- [ ] **Preferred technique:** Lists use `<ul>`, `<ol>`, or `<dl>` rather than visually styled generic elements
+- [ ] **Preferred technique:** Data-table relationships use appropriate captions, headers, and scopes
+- [ ] **WCAG 3.1.1:** The page language is programmatically identified
 
 ## Keyboard and focus
 
-- [ ] Every interactive element is reachable and operable by keyboard alone
-- [ ] Focus order matches visual/logical reading order
-- [ ] Focus indicator is visible (no `outline: none` without a replacement)
-- [ ] Modals trap focus on open; focus returns to trigger on close
-- [ ] Skip link present: `<a href="#main">Skip to main content</a>`
-- [ ] Widgets follow ARIA keyboard contract: Arrow keys navigate, Enter/Space activate, Escape closes
+- [ ] **WCAG 2.1.1:** Every action is operable by keyboard
+- [ ] **WCAG 2.4.3:** Focus order preserves meaning and operability
+- [ ] **WCAG 2.4.7:** Keyboard focus is visible
+- [ ] **APG modal pattern:** Modal tab order stays inside the dialog; focus moves inside on open and returns to the trigger or next logical element on close
+- [ ] **Preferred technique for WCAG 2.4.1:** Repeated blocks have a bypass mechanism, such as a skip link, headings, or landmarks
+- [ ] **APG widget pattern:** Keyboard interaction matches the selected widget pattern
 
 ## Forms
 
-- [ ] Every input has an associated `<label>` (not placeholder-only)
-- [ ] Related inputs grouped with `<fieldset>` + `<legend>`
-- [ ] Errors linked with `aria-errormessage` and `aria-invalid="true"`
-- [ ] Help text linked with `aria-describedby`
-- [ ] Form is not cleared on submission error
+- [ ] **WCAG 1.3.1 / 3.3.2:** Every input has a programmatically associated label or instruction; placeholder text is not the sole label
+- [ ] **Preferred technique:** Related inputs use `<fieldset>` + `<legend>`
+- [ ] **Preferred technique:** Invalid inputs use `aria-invalid` and associate their error text
+- [ ] **Preferred technique:** Help text is associated with `aria-describedby`
+- [ ] **Project default:** Form values remain available after a submission error
 
 ## Images and media
 
-- [ ] Informative images have descriptive `alt` text
-- [ ] Decorative images have `alt=""`
-- [ ] Complex images (charts, diagrams) have a text alternative
-- [ ] Video has captions; audio has a transcript
-- [ ] No autoplay
+- [ ] **WCAG 1.1.1:** Informative images have equivalent text alternatives
+- [ ] **WCAG 1.1.1:** Decorative images are ignored by assistive technologies
+- [ ] **WCAG 1.1.1:** Complex images have an equivalent description or data representation
+- [ ] **WCAG 1.2:** Prerecorded video has captions and audio-only content has an equivalent alternative
+- [ ] **Project default:** Media does not autoplay
 
 ## Dynamic content
 
-- [ ] Status messages use `aria-live="polite"` (or `"assertive"` for urgent alerts)
-- [ ] No auto-dismissing messages
-- [ ] Icon-only buttons have an accessible name (visible or visually hidden text preferred; `aria-label` only on roles that support author-provided names)
+- [ ] **WCAG 4.1.3:** Status messages are programmatically determinable without receiving focus; use suitable semantics such as `<output>`, `role="status"`, `role="alert"`, `role="log"`, or `aria-live`
+- [ ] **Project default:** Messages do not auto-dismiss
+- [ ] **WCAG 4.1.2:** Icon-only buttons have an accessible name; visible or visually hidden text is preferred
 
 ## Motion
 
-- [ ] Animations respect `prefers-reduced-motion: reduce`
-- [ ] No content flashes more than 3 times per second
+- [ ] **Project default / WCAG 2.3.3 AAA:** Non-essential interaction-triggered motion respects `prefers-reduced-motion: reduce`
+- [ ] **WCAG 2.3.1:** Flashing content remains below the permitted threshold
 
 ## Touch and mobile
 
-- [ ] Touch targets ≥ 44 × 44px (iOS) / 48 × 48dp (Android)
-- [ ] Viewport meta does not disable zoom (`user-scalable=no` absent)
+- [ ] **Platform guidance:** Touch targets are at least 44 × 44pt on iOS and 48 × 48dp on Android
+- [ ] **WCAG 1.4.4:** The viewport does not disable zoom (`user-scalable=no` is absent)
