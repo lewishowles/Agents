@@ -221,7 +221,19 @@ test_analyser_discovers_project_fallback_logs() {
 
 # Extracts the Codex Stop hook's check-run command from dist/codex/hooks.json.
 codex_stop_command() {
-	jq -r '.hooks.Stop[0].hooks[1].command' "$REPO_DIR/dist/codex/hooks.json"
+	jq -r '.hooks.Stop[0].hooks[] | select(.command | startswith("if [ -f package.json")) | .command' "$REPO_DIR/dist/codex/hooks.json"
+}
+
+test_codex_hcom_hooks_bootstrap_homebrew_path() {
+	local hcom_command_count
+	local bootstrapped_command_count
+	local hooks_file="$REPO_DIR/dist/codex/hooks.json"
+
+	hcom_command_count=$(jq '[.hooks | to_entries[] | .value[] | .hooks[] | select(.command | contains("hcom "))] | length' "$hooks_file")
+	bootstrapped_command_count=$(jq '[.hooks | to_entries[] | .value[] | .hooks[] | select(.command | contains("hcom ")) | select(.command | startswith("export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom "))] | length' "$hooks_file")
+
+	[ "$hcom_command_count" -eq 5 ] || fail "Expected five HCOM Codex hooks, found $hcom_command_count"
+	[ "$bootstrapped_command_count" -eq "$hcom_command_count" ] || fail "HCOM Codex hooks do not all bootstrap Homebrew PATH"
 }
 
 test_codex_hook_logs_check_failure() {
@@ -294,6 +306,7 @@ test_analyser_resurfaces_pattern_after_resolution
 test_manual_writer_logs_entry
 test_manual_writer_falls_back_to_project_log
 test_analyser_discovers_project_fallback_logs
+test_codex_hcom_hooks_bootstrap_homebrew_path
 test_codex_hook_logs_check_failure
 test_codex_hook_does_not_log_on_pass
 test_codex_hook_falls_back_to_project_log

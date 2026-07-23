@@ -82,6 +82,13 @@ This repo installs Serena MCP hooks for Codex:
 - **`serena-remind`** (`PreToolUse`, `Bash` matcher) — nudges the agent to use Serena's symbolic tools instead of consecutive shell-based grep and code-file reads.
 - **`serena-cleanup`** (`Stop`) — cleans up Serena hook session data when the session ends.
 
+The managed Codex adapter also preserves HCOM's hook events. Each HCOM command
+adds Homebrew's standard executable locations to `PATH` before invoking `hcom`,
+because Codex hook processes may not inherit the interactive shell's `PATH`.
+If `hcom hooks add codex` rewrites `~/.codex/hooks.json`, rerun
+`scripts/sync.sh` and `scripts/setup-global.sh --codex` to restore the managed
+configuration.
+
 The `PreToolUse` matcher is intentionally restricted to `Bash` because the Serena reminder hook for Codex tracks shell-based grep and code-file reads, so running it for every tool call is unnecessary.
 
 `scripts/setup-global.sh --codex` links `~/.codex/hooks.json` to `dist/codex/hooks.json` and ensures `codex_hooks = true` is present in the `[features]` section of `~/.codex/config.toml`.
