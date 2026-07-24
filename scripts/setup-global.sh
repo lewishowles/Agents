@@ -28,6 +28,7 @@ setup_claude() {
 	link_path "$REPO_DIR/dist/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md" "CLAUDE.md"
 	link_path "$REPO_DIR/dist/claude/settings.json" "$HOME/.claude/settings.json" "settings.json"
 	link_path "$REPO_DIR/dist/claude/.mcp.json" "$HOME/.claude/.mcp.json" ".mcp.json"
+	link_path "$REPO_DIR/dist/claude/statusline.sh" "$HOME/.claude/statusline.sh" "statusline.sh"
 	cli_group_end
 
 	cli_group_begin "Claude skills"

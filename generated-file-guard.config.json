@@ -21,6 +21,11 @@
 			"label": "Claude MCP config"
 		},
 		{
+			"generated": ["dist/claude/statusline.sh"],
+			"sources": ["src/adapters/claude/statusline.sh"],
+			"label": "Claude status line script"
+		},
+		{
 			"generated": ["dist/codex/hooks.json"],
 			"sources": ["src/adapters/codex/hooks.json"],
 			"label": "Codex hooks config"

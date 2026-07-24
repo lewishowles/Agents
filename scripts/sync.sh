@@ -61,6 +61,8 @@ python3 "$REPO_DIR/scripts/build/build-settings.py" >/dev/null
 
 # Copy static config files from adapters to dist.
 cp "$REPO_DIR/src/adapters/claude/mcp.json" "$REPO_DIR/dist/claude/.mcp.json"
+cp "$REPO_DIR/src/adapters/claude/statusline.sh" "$REPO_DIR/dist/claude/statusline.sh"
+chmod +x "$REPO_DIR/dist/claude/statusline.sh"
 cp "$REPO_DIR/src/adapters/codex/hooks.json" "$REPO_DIR/dist/codex/hooks.json"
 
 cli_status success "synced" "dist/claude/CLAUDE.md"
