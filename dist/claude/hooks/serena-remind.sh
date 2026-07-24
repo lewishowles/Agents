@@ -3,6 +3,13 @@
 # symbolic tools over consecutive grep/read_file calls.
 set -euo pipefail
 
+# This repo's hook/skill directories are pairs of small config/shell files
+# (hook.json + .sh, skill.json + SKILL.body.md) with little symbolic content;
+# Serena's symbolic tools add no value there, so the reminder doesn't apply.
+if [[ "$PWD" == "$HOME/Dev/Configuration/Agents"* ]]; then
+	exit 0
+fi
+
 set +e
 output="$(serena-hooks remind --client=claude-code)"
 status="$?"

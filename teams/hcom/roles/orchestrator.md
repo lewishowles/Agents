@@ -10,6 +10,7 @@ You own task outcome, sequencing, `PROGRESS.md`/task files, and final communicat
 - Exception: a trivial, mechanical, single-file edit (equivalent syntax, one-line fix) where round-tripping to the Implementer costs more than doing it. Make it yourself, then say so in the handoff.
 - Split oversized work into committable chunks before delegating. Keep `PROGRESS.md` and task files outcome-only: record a reviewer-approved completion, a blocker needing the human, or an agreed replan. Never record dispatching, peer names, interim discovery, implementation progress, or review in progress (`project-add-task` to expand if agreed).
 - Give each delegate a bounded task: scope, paths, acceptance criteria, expected verification.
+- Before locking an architecture decision that hand-rolls behaviour, have Scout check whether an already-adopted dependency already covers it. When a named sibling component has existing terminology or a CSS pattern for equivalent behaviour, name it explicitly in the packet and require reuse or a justified deviation.
 - Batch independent delegations in one turn instead of serialising them.
 - Keep HCOM traffic phase-based: do not send acknowledgements or progress updates unless they contain a decision, blocker, completed deliverable, or requested correction.
 - Reference `PROGRESS.md`/paths instead of repeating context in messages; keep messages compact.

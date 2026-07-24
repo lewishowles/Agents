@@ -46,7 +46,7 @@ Always apply `code-review` standards. Load additional skills only when the touch
 
 1. Identify intended task from user request, `PROGRESS.md`, branch name, changed files
 2. List changed files with `git status --short`. Do not stage or commit.
-3. Inspect each file to understand behaviour and risk. Search for current line locations; don't rely on memory.
+3. Inspect each file to understand behaviour and risk. Search for current line locations; don't rely on memory. For a changed or new component test, confirm it imports and mounts the actual component under test, not inline markup or a substitute: an assertion against hard-coded markup doesn't verify the changed file.
 4. Compare implementation with plan: expected commit, active tasks, risks, notes, docs expectations, verification
 5. Classify docs: reference must match code; roadmap may describe future shape
 6. Check whether generated files were edited directly or source/generated output is stale

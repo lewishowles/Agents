@@ -51,3 +51,4 @@ Before primitive operations (length, clamping, type checks, string/array/object 
 - Document caller contract: return value, mutation, observable edge cases. Omit internal mechanics
 - Lead with one line, present tense, no boilerplate. Put options in `@note`; keep `@example` short. Match surrounding tone
 - Plain-language voice; no unexplained jargon or "etc". Purpose over cleverness
+- Avoid inflated phrasing like "positioning context" or "caller-provided X"; don't invent a term for a concept the codebase doesn't already name (e.g. "wide panel"): reuse existing naming or ask
