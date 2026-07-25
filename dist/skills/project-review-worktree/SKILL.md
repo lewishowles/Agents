@@ -40,7 +40,7 @@ Apply the `code-lookup` routing skill for structural questions. Use targeted rea
 
 ## Skill routing
 
-Always apply `code-review` standards. Load additional skills only when the touched files or diff contents make them relevant.
+Always apply `code-review` and `code-style`. Load the relevant language and framework skills for every changed code path. These skills own review standards; do not treat their presence in the session as proof that the review checked them.
 
 ## Review method
 
@@ -82,6 +82,10 @@ Check each of these against the changed files and say in the verdict which were 
 - **Comment, JSDoc, prop and test wording** — reads as a person wrote it. Rewrite robotic or jargon phrasing rather than flagging it
 - **No out-of-contract changes** — every changed line traces to the stated task. Adjacent improvements are findings, not edits
 
+## Craftsmanship result
+
+Before approving, report a separate craftsmanship result. State which review, style, language, and framework skills were applied, then say whether the changed code meets their standards. Refer to concrete findings instead of restating those standards here.
+
 ## Evidence status
 
 Confidence must match what was observed. Classify each load-bearing acceptance criterion:
@@ -109,6 +113,10 @@ Use this shape:
 ## Conventions checked
 
 - <convention> — <pass, or the finding it produced>.
+
+## Craftsmanship
+
+- <ready or changes requested>. Skills applied: <skills>. <Reference concrete findings, if any.>
 
 ## Must-fix issues before commit
 
