@@ -72,6 +72,27 @@ Each finding should include:
 
 Mark speculative ideas as conditional. Do not invent project requirements or recommend complexity for its own sake.
 
+## Conventions
+
+Check each of these against the changed files and say in the verdict which were checked. These are the issues most often approved here and rejected later by the user:
+
+- **Helper reuse** — an existing project helper, component, or command already covers this
+- **No single-use abstractions** — a composable, helper, or test utility with one caller. Three similar lines beat a helper
+- **Naming and sibling consistency** — matches the conventions of neighbouring files, not only its own internal logic
+- **Comment, JSDoc, prop and test wording** — reads as a person wrote it. Rewrite robotic or jargon phrasing rather than flagging it
+- **No out-of-contract changes** — every changed line traces to the stated task. Adjacent improvements are findings, not edits
+
+## Evidence status
+
+Confidence must match what was observed. Classify each load-bearing acceptance criterion:
+
+- **Observed** — seen in a rendered browser page or the running app
+- **Executed** — a test or repro ran and passed against the changed production code
+- **Static** — read the code and reasoned about it
+- **Blocked** — could not be checked here, with the reason
+
+Rendered layout, visibility, overflow, and responsive behaviour cannot rise above **Static** from jsdom or code reading alone. Do not give an unqualified approval when any load-bearing criterion is Static or Blocked: name the criterion and say what would settle it. Where that evidence cannot be obtained here, hand back and say so. Repeating the fix is not a substitute for observing it.
+
 ## Output
 
 Use this shape:
@@ -79,7 +100,15 @@ Use this shape:
 ```markdown
 ## Overall assessment
 
-<Is the work broadly commit-ready? Name the main reason.>
+<Is the work broadly commit-ready? Name the main reason. Qualify the verdict when any load-bearing criterion below is Static or Blocked.>
+
+## Evidence status
+
+- <criterion> — <Observed|Executed|Static|Blocked>. <What would settle it, when not Observed or Executed.>
+
+## Conventions checked
+
+- <convention> — <pass, or the finding it produced>.
 
 ## Must-fix issues before commit
 

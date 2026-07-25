@@ -76,6 +76,8 @@ When the request is for analysis, review, planning, recommendations, or roadmap 
 
 For analysis-only requests, do not load implementation skills or begin coding. Updating a `PROGRESS.md` section is not a signal to start the next implementation chunk. If the scope is ambiguous, state what you intend to do and wait for confirmation rather than proceeding.
 
+A confident conclusion is not authorisation to implement. If the last user message was a question, the turn ends with the answer and a proposal, however obvious the fix has become while answering.
+
 ### Think before coding
 
 **Surface confusion. State tradeoffs. Don't assume.**
@@ -100,7 +102,8 @@ For analysis-only requests, do not load implementation skills or begin coding. U
 - File missing? Symlink broken? Output unexpected? Stop. If a user says a missing file exists, state whether gitignored files were included before concluding it is missing.
 - At session start, check `git status --short` before editing so existing work is not overwritten. Git state is a safety signal, not progress state: do not use it to infer, report, or reconcile task status, and never record commit hashes, branch state, or clean/dirty-tree claims in `PROGRESS.md`.
 - Don't workaround, retry, or dig deeper — state what you expected vs. what you found
-- After a command fails, do not retry equivalent variants when success depends on user-owned environment, credentials, permissions, external state, or a broad or expensive operation. Give the user the exact command to run and request the smallest useful result; resume from that evidence.
+- Two failed attempts at the same symptom is the limit. The second attempt must rest on new evidence rather than a new guess, and if it also fails, stop and hand back: state the symptom, what each attempt changed, and what evidence would separate the remaining explanations. A third attempt needs the user's go-ahead.
+- After a command fails, do not retry equivalent variants when success depends on user-owned environment, credentials, permissions, external state, resource pressure, or a broad or expensive operation. Give the user the exact command to run and request the smallest useful result; resume from that evidence.
 - Recovers faster than chasing wrong paths. You know the system; I don't.
 
 ### Staleness and recall
@@ -195,7 +198,7 @@ Delegation is opt-in, not default. Consider it when a plan has 3+ independent ta
 
 **Review gate.** When reviewing subagent output, use a fresh agent with no intent framing — describe the current behaviour and what to verify, not what you hoped it would do. For security-sensitive or high-stakes work, require two independent runs to agree before committing. For load-bearing changes, run one pass that checks whether the test or verification would have failed under the old broken behaviour, separate from the general code/architecture pass.
 
-**Delegation packet.** Before launching a subagent, state its scope, explicit non-scope, and the evidence or gate that proves the work is done — not just what to build. When the task includes a cohesive subsystem whose ownership is not obvious from its caller, name the owning unit and its public contract. State which state, lifecycle, accessibility, and responsive behaviours it owns, and which remain with the caller. Leave internal implementation choices to the implementer. Known future consumers make this especially important.
+**Delegation packet.** Before launching a subagent, state its scope, explicit non-scope, and the evidence or gate that proves the work is done — not just what to build. When the task includes a cohesive subsystem whose ownership is not obvious from its caller, name the owning unit and its public contract. State which state, lifecycle, accessibility, and responsive behaviours it owns, and which remain with the caller. Leave internal implementation choices to the implementer. Known future consumers make this especially important. State the abstraction budget as part of the packet: name any composable, helper, or shared file the implementer may create. Absent that, the answer is none.
 
 **Receipt contract.** Delegated agents must return: files touched, tests run, exact blocker encountered, or "no change" if nothing was modified, plus a stopping reason (done, blocked, needs approval, or no further progress possible). Reject any result that omits this.
 
