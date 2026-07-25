@@ -10,7 +10,17 @@
 					},
 					{
 						"type": "command",
-						"command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-pretooluse"
+						"command": "if [ -n \"${HCOM_DIR:-}\" ]; then\n\texport PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"\n\thcom codex-pretooluse\nfi"
+					}
+				]
+			}
+		],
+		"PreCompact": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "if [ -n \"${HCOM_DIR:-}\" ]; then\n\tprintf '%s\\n' '{\"hookSpecificOutput\":{\"hookEventName\":\"PreCompact\",\"additionalContext\":\"HCOM checkpoint: before compacting, send a compact checkpoint to the exact requester if work is outstanding. Do not continue after a manual reset until the Orchestrator sends a new packet.\"}}'\nfi"
 					}
 				]
 			}
@@ -20,7 +30,7 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-posttooluse"
+						"command": "if [ -n \"${HCOM_DIR:-}\" ]; then\n\texport PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"\n\thcom codex-posttooluse\nfi"
 					}
 				]
 			}
@@ -30,7 +40,7 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-userpromptsubmit"
+						"command": "if [ -n \"${HCOM_DIR:-}\" ]; then\n\texport PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"\n\thcom codex-userpromptsubmit\nfi"
 					}
 				]
 			}
@@ -50,7 +60,7 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-sessionstart"
+						"command": "if [ -n \"${HCOM_DIR:-}\" ]; then\n\texport PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"\n\thcom codex-sessionstart\nfi"
 					}
 				]
 			}
@@ -72,7 +82,7 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-stop"
+						"command": "if [ -n \"${HCOM_DIR:-}\" ]; then\n\texport PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"\n\thcom codex-stop\nfi"
 					}
 				]
 			}
