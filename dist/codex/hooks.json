@@ -10,17 +10,7 @@
 					},
 					{
 						"type": "command",
-						"command": "if [ -n \"${HCOM_DIR:-}\" ]; then\n\texport PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"\n\thcom codex-pretooluse\nfi"
-					}
-				]
-			}
-		],
-		"PreCompact": [
-			{
-				"hooks": [
-					{
-						"type": "command",
-						"command": "if [ -n \"${HCOM_DIR:-}\" ]; then\n\tprintf '%s\\n' '{\"hookSpecificOutput\":{\"hookEventName\":\"PreCompact\",\"additionalContext\":\"HCOM checkpoint: before compacting, send a compact checkpoint to the exact requester if work is outstanding. Do not continue after a manual reset until the Orchestrator sends a new packet.\"}}'\nfi"
+						"command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-pretooluse"
 					}
 				]
 			}
@@ -30,7 +20,7 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "if [ -n \"${HCOM_DIR:-}\" ]; then\n\texport PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"\n\thcom codex-posttooluse\nfi"
+						"command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-posttooluse"
 					}
 				]
 			}
@@ -40,7 +30,7 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "if [ -n \"${HCOM_DIR:-}\" ]; then\n\texport PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"\n\thcom codex-userpromptsubmit\nfi"
+						"command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-userpromptsubmit"
 					}
 				]
 			}
@@ -60,7 +50,7 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "if [ -n \"${HCOM_DIR:-}\" ]; then\n\texport PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"\n\thcom codex-sessionstart\nfi"
+						"command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-sessionstart"
 					}
 				]
 			}
@@ -82,7 +72,7 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "if [ -n \"${HCOM_DIR:-}\" ]; then\n\texport PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"\n\thcom codex-stop\nfi"
+						"command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-stop"
 					}
 				]
 			}

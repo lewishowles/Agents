@@ -376,26 +376,10 @@ test_codex_hcom_hooks_bootstrap_homebrew_path() {
 	local hooks_file="$REPO_DIR/dist/codex/hooks.json"
 
 	hcom_command_count=$(jq '[.hooks | to_entries[] | .value[] | .hooks[] | select(.command | contains("hcom "))] | length' "$hooks_file")
-	bootstrapped_command_count=$(jq '[.hooks | to_entries[] | .value[] | .hooks[] | select(.command | contains("hcom ")) | select(.command | startswith("if [ -n \"${HCOM_DIR:-}\" ]; then\n\texport PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"\n\thcom "))] | length' "$hooks_file")
+	bootstrapped_command_count=$(jq '[.hooks | to_entries[] | .value[] | .hooks[] | select(.command | contains("hcom ")) | select(.command | startswith("export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom "))] | length' "$hooks_file")
 
 	[ "$hcom_command_count" -eq 5 ] || fail "Expected five HCOM Codex hooks, found $hcom_command_count"
-	[ "$bootstrapped_command_count" -eq "$hcom_command_count" ] || fail "HCOM Codex hooks do not require workspace state and bootstrap Homebrew PATH"
-}
-
-test_codex_precompact_hook_is_advisory() {
-	local command output
-	local hooks_file="$REPO_DIR/dist/codex/hooks.json"
-
-	command=$(jq -r '.hooks.PreCompact[0].hooks[0].command' "$hooks_file")
-	output=$(HCOM_DIR= sh -c "$command")
-	[ -z "$output" ] || fail "PreCompact hook emits guidance outside an HCOM role"
-
-	output=$(HCOM_DIR="$TEST_ROOT/hcom" sh -c "$command")
-	printf '%s' "$output" | jq -e '
-		.hookSpecificOutput.hookEventName == "PreCompact"
-		and (.hookSpecificOutput.additionalContext | contains("HCOM checkpoint"))
-		and (.hookSpecificOutput.additionalContext | contains("exact requester"))
-	' >/dev/null || fail "PreCompact hook does not return advisory HCOM checkpoint context"
+	[ "$bootstrapped_command_count" -eq "$hcom_command_count" ] || fail "HCOM Codex hooks do not all bootstrap Homebrew PATH"
 }
 
 test_codex_hook_logs_check_failure() {
@@ -474,7 +458,6 @@ test_manual_writer_logs_entry
 test_manual_writer_falls_back_to_project_log
 test_analyser_discovers_project_fallback_logs
 test_codex_hcom_hooks_bootstrap_homebrew_path
-test_codex_precompact_hook_is_advisory
 test_codex_hook_logs_check_failure
 test_codex_hook_does_not_log_on_pass
 test_codex_hook_falls_back_to_project_log
