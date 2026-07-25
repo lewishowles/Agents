@@ -1,6 +1,6 @@
 # Project continue
 
-Resume from existing `PROGRESS.md`. Treat it as living record, not perfect truth; update during session.
+Resume from existing `PROGRESS.md`. Treat it as living record, not perfect truth; update once at handoff, not as an ongoing session log.
 
 ## File location
 
@@ -29,7 +29,7 @@ When `<project-root>/.agent/scripts/project-diagnostics.py` exists, use `--list`
 3. **Verify** — spot-check recently-completed work landed
 4. **Reorient** — confirm active work still fits; move to upcoming if priorities changed
 5. **Present** — digest the active task file into the confirmed contract, current repository state, intended files, verification, and unknowns; the user should not need to open the task file. Wait for confirmation before editing when the task has material API, behaviour, or interpretation decisions
-6. **Continue** — work through confirmed task; update `PROGRESS.md` as discoveries emerge
+6. **Continue** — work through confirmed task; note discoveries as they emerge, write them to `PROGRESS.md` once at handoff
 7. **Wrap up** — refresh handoff before stopping
 
 ## Session startup
@@ -71,14 +71,16 @@ If the previous session used subagent delegation:
 
 ## During the session
 
-- Record discoveries under `## Discoveries` as they happen
-- Record decisions under `## Decisions` as they are made — one line: what was decided and why
+- Keep discoveries and decisions in mind as the session runs; write them to `## Discoveries` / `## Decisions` once at the handoff update, not as separate edits while work is ongoing
+- Exception: a durable interruption — material scope change, blocker, or user decision that changes the next session's safe action — is worth recording immediately, since it prevents a future session from repeating costly investigation
 - Update "files likely to change" if the scope shifts
 - If a task reveals unexpected complexity, add a risk entry before continuing
 
 ## Finishing work
 
 Finishing work includes updating `PROGRESS.md` and giving handoff. Do not leave either to next session.
+
+Make one Edit/Write call covering every section below, not a separate call per bullet.
 
 - Tick completed `## Tasks` checkboxes in the active task file (or completed tasks in an inline `## Active work` section)
 - When implementation is finished, tick the task checkboxes and refresh the handoff with what changed and how it was verified. Leave the task `in-progress` and do not promote the queue until the user signals acceptance with “committed”, “continue”, “next”, or equivalent. Then add that evidence as a one-line, dated entry in `PROGRESS.md`'s `## Archived milestones`, remove the task from the upcoming queue, promote the next entry, and trash the task file.
