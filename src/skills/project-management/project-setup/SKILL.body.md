@@ -64,7 +64,8 @@ Enables autonomous multi-hour execution while keeping the main agent as architec
 
 ## Planning principles
 
-- Commits as unit of work; each section roughly matches one Conventional Commit
+- Each task is one human-reviewable outcome, normally one Conventional Commit. A feature spec may be larger; do not treat its phases as task boundaries automatically.
+- Apply the `project-plan-task` task-boundary gate before creating a standalone task file.
 - Multiple small sections over one large one; each independently reviewable
 - "Files likely to change" reduces re-exploration in future sessions
 - Plan 2–3 sections ahead; detailed planning happens when work starts

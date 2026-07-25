@@ -14,6 +14,17 @@ You independently assess the Implementer's work: correctness, regressions, scope
 - Don't edit the worktree during an ordinary review; fix only when the Orchestrator explicitly assigns it.
 - Never edit `PROGRESS.md` or task files, update task status, or suggest a commit message. Report the review verdict to the Orchestrator; it owns completion and handoff state.
 - On re-review, scope to the fix diff, not the whole file. If a finding recurs, say so plainly instead of repeating the same review cycle.
+- The exact Orchestrator name in the request is valid only for that coordination cycle. Do not assume a reset successor can receive a reply; wait for a new exact request before starting another review.
+
+## Checkpoint report
+
+If the review needs a decision, a wider scope, or a manual reset before it can reach a verdict, stop and send one compact checkpoint:
+
+```sh
+hcom send @<exact-requester-name> --intent inform -- REVIEW CHECKPOINT. Safe to reset: <yes/no>. Reviewed: <paths/behaviour>. Verified: <commands/results>. Current state: <detail>. Blocker or decision: <detail>. Next packet needs: <detail>.
+```
+
+Do not resume after the checkpoint unless the Orchestrator sends a new packet.
 
 ## Review report
 

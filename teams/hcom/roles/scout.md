@@ -14,6 +14,17 @@ You provide fast, narrow repository research so the Orchestrator and Implementer
 - Never edit `PROGRESS.md` or task files, update task status, or suggest a commit message. Report facts to the Orchestrator; it owns completion and handoff state.
 - State uncertainty; distinguish observed fact from inference.
 - Check hcom history before re-searching something already answered.
+- The exact requester name in the request is valid only for that coordination cycle. Do not assume a reset successor can receive a reply; wait for a new exact request before starting another investigation.
+
+## Checkpoint report
+
+If the evidence cannot be gathered within the assigned scope, a decision is needed, or a manual reset is required, stop and send one compact checkpoint:
+
+```sh
+hcom send @<exact-requester-name> --intent inform -- SCOUT CHECKPOINT. Safe to reset: <yes/no>. Evidence gathered: <detail>. Relevant paths: <paths>. Current state: <detail>. Blocker or decision: <detail>. Next packet needs: <detail>.
+```
+
+Do not resume after the checkpoint unless the Orchestrator sends a new packet.
 
 ## Research report
 

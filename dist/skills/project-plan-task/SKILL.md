@@ -77,6 +77,14 @@ For broad dependency questions, start with local evidence and apply the `code-lo
 - After one section, stop for review: changed files, verification, commit message
 - Do not combine release, policy, tooling, docs, roadmap into one working-tree change unless explicitly one commit
 
+### Task-boundary gate
+
+Before creating or delegating a task, confirm it has one human-reviewable outcome, one coherent change surface, and one verification bundle. Several files are fine when they jointly deliver that outcome.
+
+Split the task when it would need separate review decisions for public behaviour, packaging or release work, documentation unrelated to the changed interface, or another independently verifiable outcome. Keep documentation with the interface it explains, rather than as a final sweep.
+
+A feature spec can cover a larger goal or implementation phase. Do not copy its phase boundaries into task files automatically: create the next task only when its scope, acceptance criteria, and verification can stand alone.
+
 ## Feature specs
 
 For larger spikes or ambiguous features, create/reference a per-feature spec under `.agent/specs/` instead of expanding `PROGRESS.md` with design history. Keep `PROGRESS.md` focused on execution state and add `### Spec` link in relevant section. Do not create specs for small changes, direct bug fixes, routine docs edits, or work fitting one progress section.

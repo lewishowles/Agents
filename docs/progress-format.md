@@ -39,6 +39,14 @@ release: phase-5
 
 Front matter is the source of truth for status. An agent leaves a verified implementation `in-progress` until the user signals acceptance with “committed”, “continue”, “next”, or equivalent; it must not infer completion from Git state. Inline annotations elsewhere (the upcoming queue) are convenience and may lag.
 
+### Execution boundary
+
+A task file is one human-reviewable outcome, normally one commit. Several files may belong in the same task only when they jointly deliver that outcome and share its verification.
+
+Before marking a task `ready` or delegating it, name its one outcome and verification bundle. Split it when it combines independent public behaviours, packaging or release work, unrelated documentation, or separate review decisions. Keep documentation with the interface it explains rather than collecting it in a final sweep.
+
+A feature spec may describe a larger goal, investigation, or phase sequence. Its phases are not task boundaries by default: create the next concrete task only when its scope, acceptance criteria, and verification are independently reviewable.
+
 ### Body
 
 No `# Title` heading; front matter `title` is the single source. Sections, in order, optional ones marked:
