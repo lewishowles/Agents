@@ -6,7 +6,7 @@ timestamp() {
 	date '+%Y%m%d-%H%M%S'
 }
 
-# Moves a file to its backup location and prints the backup path.
+# Moves a file to a timestamped backup location and prints the backup path.
 # Backup paths are routed by prefix so each agent's backups stay separate.
 # If a backup already exists, a timestamp suffix is added to avoid collision.
 #
@@ -14,13 +14,13 @@ timestamp() {
 #     The file or symlink to back up.
 backup_path() {
 	local path="$1"
-	local backup="${path}.bak"
+	local backup="${path}.bak.$(timestamp)"
 
 	case "$path" in
-		"$HOME/.claude/skills/"*)   backup="$HOME/.claude/backups/skills/$(basename "$path").bak" ;;
-		"$HOME/.claude/hooks/"*)    backup="$HOME/.claude/backups/hooks/$(basename "$path").bak" ;;
-		"$HOME/.claude/commands/"*) backup="$HOME/.claude/backups/commands/$(basename "$path").bak" ;;
-		"$HOME/.agents/skills/"*)   backup="$HOME/.agents/backups/skills/$(basename "$path").bak" ;;
+		"$HOME/.claude/skills/"*)   backup="$HOME/.claude/backups/skills/$(basename "$path").bak.$(timestamp)" ;;
+		"$HOME/.claude/hooks/"*)    backup="$HOME/.claude/backups/hooks/$(basename "$path").bak.$(timestamp)" ;;
+		"$HOME/.claude/commands/"*) backup="$HOME/.claude/backups/commands/$(basename "$path").bak.$(timestamp)" ;;
+		"$HOME/.agents/skills/"*)   backup="$HOME/.agents/backups/skills/$(basename "$path").bak.$(timestamp)" ;;
 	esac
 
 	if [ -e "$backup" ] || [ -L "$backup" ]; then
@@ -57,16 +57,10 @@ ensure_container_dir() {
 	local label="$2"
 
 	if [ -L "$path" ] || { [ -e "$path" ] && [ ! -d "$path" ]; }; then
-		if [ "${SKIP_BACKUP:-0}" = "1" ]; then
-			rm -rf "$path"
-			mkdir -p "$path"
-			cli_group_status warning "replaced" "$label"
-		else
-			local backup
-			backup=$(backup_path "$path")
-			mkdir -p "$path"
-			cli_group_status warning "replaced $label" "backup at $(display_path "$backup")"
-		fi
+		local backup
+		backup=$(backup_path "$path")
+		mkdir -p "$path"
+		cli_group_status warning "replaced $label" "backup at $(display_path "$backup")"
 	else
 		mkdir -p "$path"
 	fi
@@ -130,27 +124,15 @@ link_path() {
 			return
 		fi
 
-		if [ "${SKIP_BACKUP:-0}" = "1" ]; then
-			rm "$target"
-			ln -s "$source" "$target"
-			cli_group_status warning "relinked" "$label"
-		else
-			local backup
-			backup=$(backup_path "$target")
-			ln -s "$source" "$target"
-			cli_group_status warning "relinked $label" "backup at $(display_path "$backup")"
-		fi
+		local backup
+		backup=$(backup_path "$target")
+		ln -s "$source" "$target"
+		cli_group_status warning "relinked $label" "backup at $(display_path "$backup")"
 	elif [ -e "$target" ]; then
-		if [ "${SKIP_BACKUP:-0}" = "1" ]; then
-			rm -rf "$target"
-			ln -s "$source" "$target"
-			cli_group_status warning "replaced" "$label"
-		else
-			local backup
-			backup=$(backup_path "$target")
-			ln -s "$source" "$target"
-			cli_group_status warning "replaced $label" "backup at $(display_path "$backup")"
-		fi
+		local backup
+		backup=$(backup_path "$target")
+		ln -s "$source" "$target"
+		cli_group_status warning "replaced $label" "backup at $(display_path "$backup")"
 	else
 		ln -s "$source" "$target"
 		cli_group_status success "linked" "$label"
