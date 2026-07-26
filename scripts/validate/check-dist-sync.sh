@@ -22,7 +22,6 @@ cp "$REAL_REPO_DIR/src/rules/"*.md "$TMP_DIR/src/rules/"
 cp "$REAL_REPO_DIR/src/fragments/claude/header.md" "$REAL_REPO_DIR/src/fragments/claude/subagent-delegation.md" "$TMP_DIR/src/fragments/claude/"
 cp "$REAL_REPO_DIR/src/fragments/codex/header.md" "$TMP_DIR/src/fragments/codex/"
 cp "$REAL_REPO_DIR/src/adapters/codex/hooks.json" "$TMP_DIR/src/adapters/codex/"
-cp "$REAL_REPO_DIR/scripts/build/build-codex-hooks.py" "$TMP_DIR/scripts/build/"
 cp "$REAL_REPO_DIR/scripts/build/build-skill-mds.py" "$TMP_DIR/scripts/build/"
 cp "$REAL_REPO_DIR/scripts/lib/dist-targets.sh" "$TMP_DIR/scripts/lib/"
 
@@ -46,10 +45,11 @@ if ! diff -q "$TMP_DIR/dist/codex/AGENTS.md" "$REAL_REPO_DIR/dist/codex/AGENTS.m
 	validate_fail "dist/codex/AGENTS.md out of sync with source (run scripts/sync.sh)"
 fi
 
-python3 "$TMP_DIR/scripts/build/build-codex-hooks.py" "$TMP_DIR/src/adapters/codex/hooks.json" "$TMP_DIR/dist/codex/hooks.toml"
+python3 -m json.tool "$TMP_DIR/src/adapters/codex/hooks.json" >/dev/null
+cp "$TMP_DIR/src/adapters/codex/hooks.json" "$TMP_DIR/dist/codex/hooks.json"
 
-if ! diff -q "$TMP_DIR/dist/codex/hooks.toml" "$REAL_REPO_DIR/dist/codex/hooks.toml" >/dev/null 2>&1; then
-	validate_fail "dist/codex/hooks.toml out of sync with source (run scripts/sync.sh)"
+if ! diff -q "$TMP_DIR/dist/codex/hooks.json" "$REAL_REPO_DIR/dist/codex/hooks.json" >/dev/null 2>&1; then
+	validate_fail "dist/codex/hooks.json out of sync with source (run scripts/sync.sh)"
 fi
 
 if ! diff -rq "$TMP_DIR/dist/skills" "$REAL_REPO_DIR/dist/skills" >/dev/null 2>&1; then
