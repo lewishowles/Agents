@@ -18,13 +18,15 @@ You independently assess the Implementer's work: correctness, regressions, scope
 
 ## Delegating to Scout
 
-If the review needs routine repository lookup (a caller list, a config value, confirming a symbol's current definition) rather than judgement, delegate it to Scout instead of spending your own budget:
+Keep the review judgement and verdict yourself. Delegate bounded evidence gathering to Scout when it can return a factual receipt: a caller list, a config value, a symbol's current definition, `git status`, a prescribed focused repro command and its output, or pre-specified empty scaffolding files.
+
+Do a one-off action yourself only when it is immediately clear, needs no interpretation, and the request-and-report round trip would cost more than the action. Otherwise, send Scout the exact question or command, scope, required output, and any exact paths it may create. Do not delegate the review verdict, root-cause conclusion, or a design decision.
 
 ```sh
-hcom send @<repo>-scout --intent request -- Scout task: <exact question>. Scope: <paths/area>. Report back to @<your-exact-name>.
+hcom send @<repo>-scout --intent request -- Scout task: <exact question or command>. Scope: <paths/area>. Report: <facts, command result, or created paths>. Report back to @<your-exact-name>.
 ```
 
-Wait for Scout's report before continuing the review. Don't delegate the review verdict itself, only the lookup.
+Wait for Scout's report before continuing the review.
 
 If Scout sends a checkpoint report instead of the requested evidence, tell the human that Scout hit a tool-call checkpoint, ask them to reset it, then send the reset Scout: "Continue <the original lookup>." Do not escalate this to the Orchestrator or treat it as your own checkpoint; keep your identity and wait for Scout's actual report before resuming the review.
 
