@@ -92,6 +92,24 @@ assert_contains() {
 	esac
 }
 
+# Fails the self-test when output contains an unexpected fragment.
+#
+# @param  {string}  fragment
+#     Text that must not appear in the test output.
+# @param  {string}  message
+#     Failure description shown when the fragment appears.
+assert_not_contains() {
+	local fragment="$1"
+	local message="$2"
+
+	case "$TEST_OUTPUT" in
+		*"$fragment"*)
+			printf 'FAIL %s: found %s\n%s\n' "$message" "$fragment" "$TEST_OUTPUT" >&2
+			exit 1
+			;;
+		esac
+}
+
 claude_bytes=$(byte_count "$FIXTURE_REPO/dist/claude/CLAUDE.md")
 codex_bytes=$(byte_count "$FIXTURE_REPO/dist/codex/AGENTS.md")
 skill_bytes=$(byte_count "$FIXTURE_REPO/dist/skills/demo/SKILL.md")
@@ -103,7 +121,15 @@ assert_equal 0 "$TEST_STATUS" "pass case status"
 assert_equal '' "$TEST_OUTPUT" "pass case output"
 printf 'PASS pass case\n'
 
-write_baseline 1 1 1
+printf '12345678901' > "$FIXTURE_REPO/dist/codex/AGENTS.md"
+write_baseline 10 "$skill_bytes" "$metadata_bytes"
+run_validator
+assert_equal 0 "$TEST_STATUS" "within-headroom case status"
+assert_equal '' "$TEST_OUTPUT" "within-headroom case output"
+printf 'PASS within-headroom case\n'
+
+printf '123456789012' > "$FIXTURE_REPO/dist/codex/AGENTS.md"
+write_baseline 10 1 1
 NO_COLOR= run_validator
 assert_equal 0 "$TEST_STATUS" "warning case status"
 assert_contains 'dist/codex/AGENTS.md:' 'always-loaded warning'
@@ -112,9 +138,10 @@ assert_contains $'\n↳ edit:' 'muted source hint'
 assert_contains 'src/fragments/codex or src/rules/ inputs' 'always-loaded source hint'
 assert_contains 'src/skills/demo/SKILL.body.md' 'skill-body source hint'
 assert_contains 'src/skills/demo/skill.json' 'eager-metadata source hint'
-assert_contains 'bytes' 'warning byte details'
-assert_contains 'soft budget' 'soft-budget details'
-assert_contains 'Remove duplicate, misplaced, or stale guidance' 'slimming review prompt'
+assert_contains 'current 12 bytes is 1 byte over soft budget 11 bytes' 'accurate soft-budget details'
+assert_contains 'Remove duplication, stale guidance, excess detail, or wasteful formatting' 'review decision'
+assert_contains "update this artefact's baseline in scripts/validate/instruction-budgets.json" 'baseline update option'
+assert_not_contains "$FIXTURE_REPO" 'repo-relative source hints'
 printf 'PASS warning case\n'
 
 NO_COLOR=1 run_validator

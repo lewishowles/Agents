@@ -137,7 +137,23 @@ test_config_replacement_creates_timestamped_backup() {
 
 	assert_timestamped_backup "$home_dir"
 	assert_contains "$home_dir/.codex/config.toml" 'approval_policy = "never"'
+	assert_contains "$home_dir/.codex/config.toml" '[[hooks.SessionStart]]'
 	assert_link "$home_dir/.codex/hooks/tool-call-checkpoint.sh"
+}
+
+test_legacy_hook_file_is_retired() {
+	local home_dir="$TEST_ROOT/legacy-hooks"
+	local backups
+
+	create_existing_config "$home_dir"
+	printf '{"hooks": {}}\n' > "$home_dir/.codex/hooks.json"
+	run_setup "$home_dir" > /dev/null
+
+	backups=("$home_dir/.codex/hooks.json.bak."*)
+	assert_not_file "$home_dir/.codex/hooks.json"
+	assert_file "${backups[0]}"
+	assert_contains "$home_dir/.codex/config.toml" '# BEGIN managed Codex hooks'
+	assert_contains "$home_dir/.codex/config.toml" '# END managed Codex hooks'
 }
 
 test_skip_backup_environment_does_not_bypass_backup() {
@@ -167,6 +183,7 @@ create_command_stubs "$TEST_ROOT/bin"
 test_help_hides_backup_bypass
 test_public_backup_bypass_is_rejected
 test_config_replacement_creates_timestamped_backup
+test_legacy_hook_file_is_retired
 test_skip_backup_environment_does_not_bypass_backup
 test_failed_backup_preserves_existing_config
 

@@ -67,8 +67,8 @@ setup_codex() {
 	cli_group_begin "Codex files"
 	link_path "$REPO_DIR/dist/codex/AGENTS.md" "$HOME/.agents/AGENTS.md" "AGENTS.md"
 	link_path "$REPO_DIR/dist/codex/AGENTS.md" "$HOME/.codex/AGENTS.md" "Codex AGENTS.md"
-	link_path "$REPO_DIR/dist/codex/hooks.json" "$HOME/.codex/hooks.json" "Codex hooks"
 	link_path "$REPO_DIR/dist/codex/hooks/tool-call-checkpoint.sh" "$HOME/.codex/hooks/tool-call-checkpoint.sh" "Codex tool-call checkpoint"
+	retire_legacy_codex_hooks
 	ensure_codex_config
 	cli_group_end
 
@@ -77,6 +77,20 @@ setup_codex() {
 	prune_stale_repo_links "$HOME/.codex/skills" "$REPO_DIR" "legacy skills" "1"
 	link_skills "$HOME/.agents/skills"
 	cli_group_end
+}
+
+# Moves the legacy JSON hook file aside so Codex reads one hook
+# representation from the user configuration layer.
+retire_legacy_codex_hooks() {
+	local hooks_file="$HOME/.codex/hooks.json"
+
+	if [[ ! -e "$hooks_file" && ! -L "$hooks_file" ]]; then
+		return
+	fi
+
+	local backup
+	backup=$(backup_path "$hooks_file")
+	cli_group_status warning "retired legacy Codex hooks" "backup at $(display_path "$backup")"
 }
 
 # Replaces Stagewise skills with a fresh copy from this repository.
@@ -175,6 +189,23 @@ ensure_codex_defaults() {
 	' "$source" > "$destination"
 }
 
+# Removes the previously generated inline Codex hook block while preserving
+# user configuration and Codex-managed hook trust state.
+#
+# @param  {string}  source
+#     Existing Codex config file to read.
+# @param  {string}  destination
+#     Temporary file that receives the configuration without managed hooks.
+remove_managed_codex_hooks() {
+	local source="$1" destination="$2"
+
+	awk '
+		/^# BEGIN managed Codex hooks$/ { skip = 1; next }
+		/^# END managed Codex hooks$/ { skip = 0; next }
+		!skip { print }
+	' "$source" > "$destination"
+}
+
 # Ensures ~/.codex/config.toml contains the managed defaults, MCP server
 # entries, hooks feature flag, and TUI status line. Existing managed settings
 # are replaced rather than duplicated, so this function is safe to run on
@@ -207,6 +238,14 @@ ensure_codex_config() {
 	# when a browser-support or Baseline fact needs a live source.
 	printf '\n[mcp_servers.mdn]\nurl = "https://mcp.mdn.mozilla.net/"\nenabled = false\n' >> "$temp"
 	ensure_codex_status_line "$temp"
+
+	local hooks_temp
+	hooks_temp=$(mktemp)
+	remove_managed_codex_hooks "$temp" "$hooks_temp"
+	mv "$hooks_temp" "$temp"
+	printf '\n# BEGIN managed Codex hooks\n' >> "$temp"
+	cat "$REPO_DIR/dist/codex/hooks.toml" >> "$temp"
+	printf '# END managed Codex hooks\n' >> "$temp"
 
 	# Migrate the deprecated codex_hooks key to hooks, and ensure the hooks
 	# feature flag is present in [features].

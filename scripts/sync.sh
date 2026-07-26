@@ -71,13 +71,16 @@ python3 "$REPO_DIR/scripts/build/build-settings.py" >/dev/null
 cp "$REPO_DIR/src/adapters/claude/mcp.json" "$REPO_DIR/dist/claude/.mcp.json"
 cp "$REPO_DIR/src/adapters/claude/statusline.sh" "$REPO_DIR/dist/claude/statusline.sh"
 chmod +x "$REPO_DIR/dist/claude/statusline.sh"
-cp "$REPO_DIR/src/adapters/codex/hooks.json" "$REPO_DIR/dist/codex/hooks.json"
+if [[ -e "$REPO_DIR/dist/codex/hooks.json" ]] || [[ -L "$REPO_DIR/dist/codex/hooks.json" ]]; then
+	trash "$REPO_DIR/dist/codex/hooks.json"
+fi
+python3 "$REPO_DIR/scripts/build/build-codex-hooks.py" "$REPO_DIR/src/adapters/codex/hooks.json" "$REPO_DIR/dist/codex/hooks.toml"
 
 cli_status success "synced" "dist/claude/CLAUDE.md"
 cli_status success "synced" "dist/codex/AGENTS.md"
 cli_status success "synced" "dist/chatgpt/"
 cli_status success "synced" "manifest-backed docs tables"
 cli_status success "synced" "dist/claude/settings.json"
-cli_status success "synced" "dist/codex/hooks.json"
+cli_status success "synced" "dist/codex/hooks.toml"
 
 bash "$REPO_DIR/scripts/validate.sh"

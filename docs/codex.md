@@ -74,7 +74,7 @@ The `code-lookup` skill routes code discovery between Serena, Fallow, codebase-m
 
 ## Hooks
 
-Codex hooks are configured through `~/.codex/hooks.json` (symlinked from `dist/codex/hooks.json`) and require the `codex_hooks` feature flag in `~/.codex/config.toml`. The official Codex hook events include `SessionStart`, `PreToolUse`, `PermissionRequest`, `PostToolUse`, `UserPromptSubmit`, and `Stop`.
+Codex hooks are configured inline in `~/.codex/config.toml` from the generated `dist/codex/hooks.toml` fragment. Keeping hook definitions in one representation avoids Codex's startup warning about merging `hooks.json` with inline hook tables. The official Codex hook events include `SessionStart`, `PreToolUse`, `PermissionRequest`, `PostToolUse`, `UserPromptSubmit`, and `Stop`.
 
 This repo installs Serena MCP hooks for Codex:
 
@@ -85,10 +85,10 @@ This repo installs Serena MCP hooks for Codex:
 The managed Codex adapter also preserves HCOM's hook events. Each HCOM command
 adds Homebrew's standard executable locations to `PATH` before invoking `hcom`,
 because Codex hook processes may not inherit the interactive shell's `PATH`.
-If `hcom hooks add codex` rewrites `~/.codex/hooks.json`, rerun
-`scripts/sync.sh` and `scripts/setup-global.sh --codex` to restore the managed
-configuration.
+If `hcom hooks add codex` creates `~/.codex/hooks.json`, rerun
+`scripts/sync.sh` and `scripts/setup-global.sh --codex`. Setup moves the legacy
+file to a timestamped backup and restores the managed inline configuration.
 
 The `PreToolUse` matcher is intentionally restricted to `Bash` because the Serena reminder hook for Codex tracks shell-based grep and code-file reads, so running it for every tool call is unnecessary.
 
-`scripts/setup-global.sh --codex` links `~/.codex/hooks.json` to `dist/codex/hooks.json` and ensures `codex_hooks = true` is present in the `[features]` section of `~/.codex/config.toml`.
+`scripts/setup-global.sh --codex` merges `dist/codex/hooks.toml` into `~/.codex/config.toml`, preserves Codex's hook trust state, and ensures `hooks = true` is present in the `[features]` section.

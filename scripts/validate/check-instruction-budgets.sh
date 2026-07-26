@@ -12,6 +12,16 @@ BASELINE_FILE="${INSTRUCTION_BUDGET_BASELINE:-$REPO_DIR/scripts/validate/instruc
 CLASSES=(always_loaded skill_bodies eager_metadata)
 HEADROOM_PERCENT=10
 
+# Calculates the soft budget from a checked-in baseline.
+#
+# @param  {integer}  baseline_bytes
+#     Checked-in byte measurement used to derive the soft budget.
+soft_budget_bytes() {
+	local baseline_bytes="$1"
+
+	printf '%s' "$((baseline_bytes * (100 + HEADROOM_PERCENT) / 100))"
+}
+
 # Returns the source path associated with a measured artefact.
 #
 # @param  {string}  class
@@ -42,6 +52,7 @@ source_hint() {
 			while IFS= read -r -d '' manifest; do
 				manifest_name=$(jq -r '.name // empty' "$manifest")
 				if [ "$manifest_name" = "$skill_name" ]; then
+					manifest="${manifest#"$TARGET_REPO_DIR"/}"
 					printf '%s/SKILL.body.md' "${manifest%/skill.json}"
 					return
 				fi
@@ -73,13 +84,18 @@ report_growth() {
 	local relative_file="$2"
 	local current_bytes="$3"
 	local baseline_bytes="$4"
-	local warning_bytes
+	local warning_bytes overage_bytes overage_unit
 
-	warning_bytes=$((baseline_bytes * (100 + HEADROOM_PERCENT) / 100))
+	warning_bytes=$(soft_budget_bytes "$baseline_bytes")
+	overage_bytes=$((current_bytes - warning_bytes))
+	overage_unit='bytes'
+	if [ "$overage_bytes" -eq 1 ]; then
+		overage_unit='byte'
+	fi
 
 	cli_style_row \
 		'⚠' \
-		"$relative_file: current $current_bytes bytes exceeds soft budget $warning_bytes bytes" \
+		"$relative_file: current $current_bytes bytes is $overage_bytes $overage_unit over soft budget $warning_bytes bytes" \
 		--label-colour warning \
 		--label-width 1 >&2
 	cli_style_row \
@@ -90,7 +106,7 @@ report_growth() {
 		--label-width 6 >&2
 	cli_style_row \
 		'↳ review:' \
-		'Remove duplicate, misplaced, or stale guidance before raising the baseline and its headroom.' \
+		"Remove duplication, stale guidance, excess detail, or wasteful formatting. If it is already lean, update this artefact's baseline in scripts/validate/instruction-budgets.json." \
 		--label-colour muted \
 		--value-colour muted \
 		--label-width 8 >&2
@@ -131,7 +147,8 @@ for class in "${CLASSES[@]}"; do
 		fi
 
 		current_bytes=$(wc -c < "$artefact" | tr -d '[:space:]')
-		if [ "$current_bytes" -gt "$baseline_bytes" ]; then
+		warning_bytes=$(soft_budget_bytes "$baseline_bytes")
+		if [ "$current_bytes" -gt "$warning_bytes" ]; then
 			report_growth "$class" "$relative_file" "$current_bytes" "$baseline_bytes"
 		fi
 	done < <(jq -r --arg class "$class" '.[$class] | keys[]' "$BASELINE_FILE")

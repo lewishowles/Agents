@@ -25,7 +25,7 @@ LSP-backed MCP server providing atomic semantic refactoring operations: cross-fi
 **Installation:** MCP server, requires a language server for the target language. This repo manages the server registration and lifecycle hooks for both Claude Code and Codex:
 
 - **Claude Code:** server registered in `dist/claude/.mcp.json`; hooks for activate, remind, auto-approve, and cleanup live in `src/hooks/claude/serena-activate/`, `src/hooks/claude/serena-remind/`, `src/hooks/claude/serena-auto-approve/`, and `src/hooks/claude/serena-cleanup/`
-- **Codex:** server managed in `~/.codex/config.toml` via `ensure_codex_config`; hooks in `dist/codex/hooks.json`
+- **Codex:** server and inline hooks managed in `~/.codex/config.toml` via `ensure_codex_config`; hook source generated to `dist/codex/hooks.toml`
 
 Run `scripts/setup-global.sh --both` after cloning or pulling changes to Serena hook configuration.
 

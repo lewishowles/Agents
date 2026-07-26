@@ -78,7 +78,6 @@ Root holds human-facing contracts that tools auto-discover and the user reads ea
 ~/.claude/skills/<name>     → repo/dist/skills/<name>      (per-skill, excludes stagewise-only)
 ~/.claude/hooks/<file>      → repo/dist/claude/hooks/<file>  (per-hook)
 ~/.agents/AGENTS.md          → repo/dist/codex/AGENTS.md
-~/.codex/hooks.json          → repo/dist/codex/hooks.json
 ~/.agents/skills/<name>      → repo/dist/skills/<name>      (per-skill, excludes stagewise-only)
 repo/.agents/skills/agent-config → repo/.claude/skills/agent-config (repo-local)
 ~/.stagewise/skills/<name>   = copy of dist/skills/<name>   (all skills, including stagewise-only)
