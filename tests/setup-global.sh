@@ -137,11 +137,14 @@ test_config_replacement_creates_timestamped_backup() {
 
 	assert_timestamped_backup "$home_dir"
 	assert_contains "$home_dir/.codex/config.toml" 'approval_policy = "never"'
-	assert_contains "$home_dir/.codex/config.toml" '[[hooks.SessionStart]]'
+	assert_contains "$home_dir/.codex/config.toml" '[features]'
+	assert_contains "$home_dir/.codex/config.toml" 'hooks = true'
+	assert_not_contains "$home_dir/.codex/config.toml" '[[hooks.'
+	assert_link "$home_dir/.codex/hooks.json"
 	assert_link "$home_dir/.codex/hooks/tool-call-checkpoint.sh"
 }
 
-test_legacy_hook_file_is_retired() {
+test_hook_file_is_replaced_with_managed_link() {
 	local home_dir="$TEST_ROOT/legacy-hooks"
 	local backups
 
@@ -150,10 +153,10 @@ test_legacy_hook_file_is_retired() {
 	run_setup "$home_dir" > /dev/null
 
 	backups=("$home_dir/.codex/hooks.json.bak."*)
-	assert_not_file "$home_dir/.codex/hooks.json"
 	assert_file "${backups[0]}"
-	assert_contains "$home_dir/.codex/config.toml" '# BEGIN managed Codex hooks'
-	assert_contains "$home_dir/.codex/config.toml" '# END managed Codex hooks'
+	assert_link "$home_dir/.codex/hooks.json"
+	assert_equals "$(readlink "$home_dir/.codex/hooks.json")" "$REPO_DIR/dist/codex/hooks.json"
+	assert_not_contains "$home_dir/.codex/config.toml" '[[hooks.'
 }
 
 test_skip_backup_environment_does_not_bypass_backup() {
@@ -183,7 +186,7 @@ create_command_stubs "$TEST_ROOT/bin"
 test_help_hides_backup_bypass
 test_public_backup_bypass_is_rejected
 test_config_replacement_creates_timestamped_backup
-test_legacy_hook_file_is_retired
+test_hook_file_is_replaced_with_managed_link
 test_skip_backup_environment_does_not_bypass_backup
 test_failed_backup_preserves_existing_config
 
