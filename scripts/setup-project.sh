@@ -49,6 +49,7 @@ setup_claude() {
 
 	cli_group_begin "Project files"
 	copy_file "$REPO_DIR/templates/claude/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
+	copy_file "$REPO_DIR/templates/claude/CLAUDE.md.template" "$PROJECT_DIR/CLAUDE.md" "CLAUDE.md"
 	cli_group_end
 
 	copy_shared_agent_tools
@@ -80,6 +81,7 @@ setup_both() {
 
 	cli_group_begin "Project files"
 	copy_file "$REPO_DIR/templates/shared/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md" "AGENTS.md"
+	copy_file "$REPO_DIR/templates/claude/CLAUDE.md.template" "$PROJECT_DIR/CLAUDE.md" "CLAUDE.md"
 	cli_group_end
 
 	copy_shared_agent_tools

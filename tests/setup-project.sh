@@ -45,6 +45,8 @@ test_claude_setup() {
 	run_setup "$target_dir" --claude
 
 	assert_file "$target_dir/AGENTS.md"
+	assert_file "$target_dir/CLAUDE.md"
+	assert_contains "$target_dir/CLAUDE.md" "@AGENTS.md"
 	assert_file "$target_dir/WORKSPACE.md"
 	assert_contains "$target_dir/WORKSPACE.md" "Main source directories: \`src\`"
 	assert_link "$target_dir/.agent/scripts/project-diagnostics.py"
@@ -68,6 +70,7 @@ test_codex_setup() {
 	run_setup "$target_dir" --codex
 
 	assert_file "$target_dir/AGENTS.md"
+	assert_not_exists "$target_dir/CLAUDE.md"
 	assert_file "$target_dir/WORKSPACE.md"
 	assert_contains "$target_dir/WORKSPACE.md" "Main source directories: \`src\`"
 	assert_file "$target_dir/.agent/scripts/project-diagnostics.py"
@@ -89,6 +92,8 @@ test_both_setup() {
 	run_setup "$target_dir" --both
 
 	assert_file "$target_dir/AGENTS.md"
+	assert_file "$target_dir/CLAUDE.md"
+	assert_contains "$target_dir/CLAUDE.md" "@AGENTS.md"
 	assert_file "$target_dir/WORKSPACE.md"
 	assert_contains "$target_dir/WORKSPACE.md" "Main source directories: \`src\`"
 	assert_file "$target_dir/.agent/scripts/project-diagnostics.py"
@@ -112,9 +117,11 @@ test_existing_files_are_skipped() {
 	printf 'custom rules\n' > "$target_dir/AGENTS.md"
 
 	run_setup "$target_dir" --both
+	printf 'custom Claude rules\n' > "$target_dir/CLAUDE.md"
 	run_setup_output "$target_dir" --both > "$output"
 
 	assert_equals "$(cat "$target_dir/AGENTS.md")" "custom rules"
+	assert_equals "$(cat "$target_dir/CLAUDE.md")" "custom Claude rules"
 	assert_file "$target_dir/.claude/.claudeignore"
 	assert_contains "$output" "Shared agent tools"
 	assert_contains "$output" "8 unchanged"

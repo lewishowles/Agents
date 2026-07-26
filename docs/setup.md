@@ -129,7 +129,7 @@ cd /path/to/project
 /path/to/repository/scripts/setup-project.sh --both
 ```
 
-Each flag copies the matching `AGENTS.md` template, links `.agent/scripts/`, writes `WORKSPACE.md`, and (for Claude targets) copies `.claudeignore`. After setup, replace the placeholders in `AGENTS.md` with project-specific rules and review the generated `WORKSPACE.md`.
+Each flag copies the matching `AGENTS.md` template, links `.agent/scripts/`, and writes `WORKSPACE.md`. Claude targets also create a root `CLAUDE.md` containing `@AGENTS.md`, so Claude Code loads the same project rules without a second copy, and copy `.claudeignore`. After setup, replace the placeholders in `AGENTS.md` with project-specific rules and review the generated `WORKSPACE.md`.
 
 For project types with useful local skills, setup can install centrally managed project skill packs as symlinks into both `.agents/skills/` and `.claude/skills/`:
 

@@ -89,9 +89,9 @@ From a project root:
 
 Use `--claude`, `--codex`, or `--both`:
 
-- `--claude` creates `AGENTS.md`, `.claude/settings.json`, and `.claude/.claudeignore`
+- `--claude` creates `AGENTS.md`, a root `CLAUDE.md` import, `.claude/settings.json`, and `.claude/.claudeignore`
 - `--codex` creates `AGENTS.md`
-- `--both` creates shared `AGENTS.md` and the Claude `.claude/` files
+- `--both` creates shared `AGENTS.md`, a root `CLAUDE.md` import, and the Claude `.claude/` files
 
 Project setup skips existing files. It does not overwrite or back up project files because those are likely hand-edited.
 
