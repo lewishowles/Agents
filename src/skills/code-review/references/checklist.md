@@ -27,6 +27,9 @@ Paste into a PR description or use as a review gate. For severity levels and giv
 - [ ] Matches naming and comment conventions (see code-style skill)
 - [ ] Surgical — only touches what the task requires
 - [ ] No speculative abstractions, unused imports, or commented-out code
+- [ ] Each function/visitor owns one concern; no boolean flags that switch the whole algorithm
+- [ ] No "switchboard" helpers accumulating one option per caller; no structural logic duplicated across sibling files
+- [ ] Clear, obviously-correct control flow preferred over clever tricks
 
 ## Performance — required for UI, list rendering, or asset changes
 

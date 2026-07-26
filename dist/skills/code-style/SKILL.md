@@ -45,6 +45,14 @@ Before primitive operations (length, clamping, type checks, string/array/object 
 - **Common focusable selector**: `:is(button, input, select, textarea):not([disabled]), a[href], [tabindex]:not([tabindex='-1'])`
 - **Readability**: for complex selectors, use named constant with JSDoc purpose
 
+## Organisation & abstraction
+
+- A function or visitor owns one concern; split grouping, selection, transformation, and reporting into named steps rather than one dense block
+- Avoid boolean parameters that switch the algorithm entirely; split into named functions instead of one function with divergent branches
+- Avoid shared "switchboard" helpers that accumulate one option per caller; let each caller own its formatting/behaviour, or name distinct modes explicitly
+- Prefer explicit, obviously-correct control flow over clever tricks (sentinel loops, index arithmetic) even when the clever version is correct
+- Repeated structural logic across sibling files, not just repeated lines, is a duplication smell — extract a named shared helper
+
 ## Comments & documentation
 
 - Top-level variable: single-line purpose comment (all languages)

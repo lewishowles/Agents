@@ -69,6 +69,7 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 
 - Matches `code-style`: naming, comments, no speculative abstractions?
 - Surgical: only needed changes?
+- Organisation: each function/visitor owns one concern, no boolean flags swapping the algorithm, no switchboard helpers or logic duplicated across sibling files, clear control flow over clever tricks?
 
 **Performance** (UI, list rendering, assets)
 

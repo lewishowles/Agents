@@ -30,8 +30,9 @@ Apply `code-review`, `code-style`, and relevant language or framework skills. Lo
 1. Identify the task from the request, handoff, and changed files. List them with `git status --short`; do not stage or commit.
 2. Inspect changed files in context and find current lines. Component tests must mount the component under test, not substitute markup.
 3. Compare implementation and documentation with the plan, risks, verification, and generated-source boundary. Reference documentation must match code; roadmaps may describe future work.
-4. Run only cheap, justified checks, using `.agent/scripts/project-diagnostics.py --check <name>` when available.
-5. Lead with findings and evidence gaps. State when no must-fix issue exists.
+4. Re-check PROGRESS.md's deferred or forward-looking notes (e.g. "optional hardening", "if a third caller ever needs this") against this diff. If the stated trigger condition is now met, treat it as a finding, not a resolved deferral.
+5. Run only cheap, justified checks, using `.agent/scripts/project-diagnostics.py --check <name>` when available.
+6. Lead with findings and evidence gaps. State when no must-fix issue exists.
 
 Don't use `git diff` for routine self-review. For independent review, use targeted diffs or file reads when clearest, keeping output narrow.
 
@@ -46,6 +47,7 @@ Give each finding a file and line where possible, problem, effect, and fix or de
 Check these against changed files and state which were checked:
 
 - **Helper reuse** — reuse an existing helper, component, or command where it covers this
+- **No switchboard drift** — a reused helper hasn't accumulated a boolean/option flag per new caller; that's a maintainability finding, not reuse
 - **No single-use abstractions** — no composable, helper, or test utility with one caller
 - **Naming and sibling consistency** — matches neighbouring conventions
 - **Comment, JSDoc, prop and test wording** — reads as a person wrote it; rewrite robotic or jargon wording
