@@ -175,19 +175,20 @@ ensure_codex_defaults() {
 	' "$source" > "$destination"
 }
 
-# Removes the previously generated inline Codex hook block while preserving
-# user configuration and Codex-managed hook trust state.
+# Removes inline Codex hook definitions while preserving user configuration
+# and Codex-managed hook trust state. Hooks are defined in hooks.json.
 #
 # @param  {string}  source
 #     Existing Codex config file to read.
 # @param  {string}  destination
-#     Temporary file that receives the configuration without managed hooks.
-remove_managed_codex_hooks() {
+#     Temporary file that receives the configuration without inline hooks.
+remove_inline_codex_hooks() {
 	local source="$1" destination="$2"
 
 	awk '
-		/^# BEGIN managed Codex hooks$/ { skip = 1; next }
-		/^# END managed Codex hooks$/ { skip = 0; next }
+		/^\[\[hooks\./ { skip = 1; next }
+		/^\[hooks\.state/ { skip = 0 }
+		/^\[/ && skip { skip = 0 }
 		!skip { print }
 	' "$source" > "$destination"
 }
@@ -226,7 +227,7 @@ ensure_codex_config() {
 
 	local hooks_temp
 	hooks_temp=$(mktemp)
-	remove_managed_codex_hooks "$temp" "$hooks_temp"
+	remove_inline_codex_hooks "$temp" "$hooks_temp"
 	mv "$hooks_temp" "$temp"
 
 	# Migrate the deprecated codex_hooks key to hooks, and ensure the hooks
