@@ -4,89 +4,58 @@ Review uncommitted repository changes before commit. Default to review and recom
 
 ## Scope
 
-Assess whether the current working tree is:
-
-- correct and complete for the stated task
-- consistent with `PROGRESS.md` and any active handoff
-- safe to commit as one coherent change
-- covered by appropriate tests or verification
-- aligned with project instructions, workspace facts, generated-file boundaries, and existing patterns
-
-Look for bugs, regressions, incomplete work, weak tests, missing docs or plan updates, maintainability issues, accessibility or UX problems, performance risks, security concerns, and small polish items. Include broader ideas that could materially improve the project, labelled optional/exploratory unless necessary.
+Assess task correctness, plan alignment, scope, instructions, generated boundaries, patterns, and justified verification. Look for regressions, missing work, weak tests or documentation, maintainability, accessibility, UX, performance, and security. Label non-essential ideas optional.
 
 ## Startup
 
-Read in order:
+Read `AGENTS.md`, `WORKSPACE.md`, diagnostics, `PROGRESS.md`, `git status --short`, and relevant changed files. If no workspace file exists, use `AGENTS.md`, package scripts, and nearby docs.
 
-1. `<project-root>/AGENTS.md`
-2. `<project-root>/WORKSPACE.md`, when present
-3. `.agent/scripts/project-diagnostics.py --list`, when present
-4. `PROGRESS.md` — session handoff, active work, relevant risks, expected commit
-5. `git status --short`
-6. Changed files and relevant nearby context
-
-Skip `WORKSPACE.md` if missing. Use `AGENTS.md`, package scripts, nearby docs as needed.
-
-Apply the `code-lookup` routing skill for structural questions. Use targeted reads; avoid generated, vendored, cached, build, dependency, coverage, or binary output.
+Use `code-lookup` for structural questions. Use targeted reads; avoid generated, vendored, cached, build, dependency, coverage, and binary output.
 
 ## Skill routing
 
-Always apply `code-review` and `code-style`. Load the relevant language and framework skills for every changed code path. These skills own review standards; do not treat their presence in the session as proof that the review checked them.
+Apply `code-review`, `code-style`, and relevant language or framework skills. Loading them does not prove their standards were checked.
 
 ## Review method
 
-1. Identify intended task from user request, `PROGRESS.md`, branch name, changed files
-2. List changed files with `git status --short`. Do not stage or commit.
-3. Inspect each file to understand behaviour and risk. Search for current line locations; don't rely on memory. For a changed or new component test, confirm it imports and mounts the actual component under test, not inline markup or a substitute: an assertion against hard-coded markup doesn't verify the changed file.
-4. Compare implementation with plan: expected commit, active tasks, risks, notes, docs expectations, verification
-5. Classify docs: reference must match code; roadmap may describe future shape
-6. Check whether generated files were edited directly or source/generated output is stale
-7. Run only cheap, justified verification. Use `.agent/scripts/project-diagnostics.py --check <name>` when available
-8. Lead with findings. State clearly if no must-fix issues; note remaining verification gaps.
+1. Identify the task from the request, handoff, and changed files. List them with `git status --short`; do not stage or commit.
+2. Inspect changed files in context and find current lines. Component tests must mount the component under test, not substitute markup.
+3. Compare implementation and documentation with the plan, risks, verification, and generated-source boundary. Reference documentation must match code; roadmaps may describe future work.
+4. Run only cheap, justified checks, using `.agent/scripts/project-diagnostics.py --check <name>` when available.
+5. Lead with findings and evidence gaps. State when no must-fix issue exists.
 
 Don't use `git diff` for routine self-review. For independent review, use targeted diffs or file reads when clearest, keeping output narrow.
 
 ## Finding standards
 
-Prioritise concrete issues over preferences:
+Use **Must-fix** for correctness, regression, generated-boundary, required-verification, misleading-plan, security, or data-loss issues; **Recommended** for material maintainability, tests, documentation, accessibility, UX, performance, or developer experience; **Nice-to-have** for non-blocking polish.
 
-- **Must-fix** — correctness bugs, regressions, broken generated/source boundaries, missing required verification, plan mismatch that would make the commit misleading, security or data-loss risk
-- **Recommended** — maintainability, test, documentation, accessibility, UX, performance, or developer-experience improvements that materially improve the change
-- **Nice-to-have** — optional polish, simplification, or broader ideas with clear value but no commit-blocking need
-
-Each finding should include:
-
-- file and line reference when possible
-- what is wrong
-- why it matters
-- concrete fix or decision needed
-
-Mark speculative ideas as conditional. Do not invent project requirements or recommend complexity for its own sake.
+Give each finding a file and line where possible, problem, effect, and fix or decision. Mark speculation as conditional; do not invent requirements.
 
 ## Conventions
 
-Check each of these against the changed files and say in the verdict which were checked. These are the issues most often approved here and rejected later by the user:
+Check these against changed files and state which were checked:
 
-- **Helper reuse** — an existing project helper, component, or command already covers this
-- **No single-use abstractions** — a composable, helper, or test utility with one caller. Three similar lines beat a helper
-- **Naming and sibling consistency** — matches the conventions of neighbouring files, not only its own internal logic
-- **Comment, JSDoc, prop and test wording** — reads as a person wrote it. Rewrite robotic or jargon phrasing rather than flagging it
-- **No out-of-contract changes** — every changed line traces to the stated task. Adjacent improvements are findings, not edits
+- **Helper reuse** — reuse an existing helper, component, or command where it covers this
+- **No single-use abstractions** — no composable, helper, or test utility with one caller
+- **Naming and sibling consistency** — matches neighbouring conventions
+- **Comment, JSDoc, prop and test wording** — reads as a person wrote it; rewrite robotic or jargon wording
+- **No out-of-contract changes** — every line traces to the task; adjacent improvements are findings, not edits
 
 ## Craftsmanship result
 
-Before approving, report a separate craftsmanship result. State which review, style, language, and framework skills were applied, then say whether the changed code meets their standards. Refer to concrete findings instead of restating those standards here.
+Before approval, report skills applied, ready or changes requested, and concrete findings.
 
 ## Evidence status
 
-Confidence must match what was observed. Classify each load-bearing acceptance criterion:
+Classify each load-bearing acceptance criterion:
 
 - **Observed** — seen in a rendered browser page or the running app
 - **Executed** — a test or repro ran and passed against the changed production code
 - **Static** — read the code and reasoned about it
 - **Blocked** — could not be checked here, with the reason
 
-Rendered layout, visibility, overflow, and responsive behaviour cannot rise above **Static** from jsdom or code reading alone. Do not give an unqualified approval when any load-bearing criterion is Static or Blocked: name the criterion and say what would settle it. Where that evidence cannot be obtained here, hand back and say so. Repeating the fix is not a substitute for observing it.
+Rendered layout, visibility, overflow, and responsiveness are **Static** from jsdom or code reading. Do not approve unconditionally with a load-bearing Static or Blocked criterion: say what would settle it.
 
 ## Output
 
@@ -95,39 +64,39 @@ Use this shape:
 ```markdown
 ## Overall assessment
 
-<Is the work broadly commit-ready? Name the main reason. Qualify the verdict when any load-bearing criterion below is Static or Blocked.>
+<Verdict, qualified when any load-bearing criterion is Static or Blocked.>
 
 ## Evidence status
 
-- <criterion> — <Observed|Executed|Static|Blocked>. <What would settle it, when not Observed or Executed.>
+- <criterion> — <Observed|Executed|Static|Blocked>. <Settling evidence, when needed.>
 
 ## Conventions checked
 
-- <convention> — <pass, or the finding it produced>.
+- <convention> — <pass or finding>.
 
 ## Craftsmanship
 
-- <ready or changes requested>. Skills applied: <skills>. <Reference concrete findings, if any.>
+- <ready or changes requested>. Skills applied: <skills>. <Findings, if any.>
 
 ## Must-fix issues before commit
 
-- [Severity] `<file>:<line>` — <issue>. Fix: <specific action>.
+- [Severity] `<file>:<line>` — <issue>. Fix: <action>.
 
 ## Recommended improvements
 
-- `<file>:<line>` — <improvement and reason>.
+- `<file>:<line>` — <improvement>.
 
 ## Nice-to-have ideas
 
-- <optional idea, labelled if exploratory>.
+- <optional idea>.
 
 ## Suggested updates to PROGRESS.md
 
-- <specific plan, handoff, task, risk, or verification update>.
+- <specific update>.
 
 ## Questions or assumptions
 
-- <unknown that affects confidence>.
+- <unknown>.
 
 ## Checks run
 
@@ -135,7 +104,7 @@ Use this shape:
 
 ## Next step
 
-<One concrete action: fix a must-fix item, approve commit prep, or decide an open question.>
+<One concrete action.>
 ```
 
-If a section has no items, say `None found.` or `None.` Do not omit sections unless the user's requested format differs.
+Use `None found.` or `None.` for empty sections, unless the user asks for another format.

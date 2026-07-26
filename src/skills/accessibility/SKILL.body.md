@@ -25,19 +25,7 @@ Never assert a feature's browser or assistive-tech support from training memory;
 ## Documentation
 
 - Treat accessibility fixes as bug fixes, not features
-- Don't update docs or README just to say something is now accessible
-- Update documentation only when user-facing workflow, API, configuration, or support guidance changed
-
-Test: if a sighted developer needs to know it, document it. If it only explains a11y mechanics, omit it.
-
-```
-❌ "Each option is labelled with a unit-aware string so screen readers announce meaningful names."
-✅ No change — internal behaviour; only document props, slots, or emits that changed.
-
-❌ "A visually-hidden data table is always rendered alongside the SVG for screen reader users."
-✅ Omit entirely, or if the consumer needs to know it exists (e.g. to style around it):
-   "A data table of segment values is rendered alongside the chart."
-```
+- Document accessibility only when a user-facing workflow, API, configuration, or support need changes. Internal accessibility mechanics need no README note.
 
 ## Structure & semantics
 
@@ -65,13 +53,6 @@ Test: if a sighted developer needs to know it, document it. If it only explains 
 - **Modal pattern**: modal dialogs contain their tab sequence. On open, save `document.activeElement` and move focus into the dialog; on close, restore focus to the trigger or the next logical element. Follow the APG modal dialog pattern
 - **Keyboard contract for interactive widgets** (dropdowns, menus, tabs, comboboxes): Arrow keys navigate; Enter or Space activates; Escape cancels/closes. Match [ARIA authoring practices](https://www.w3.org/WAI/ARIA/apg/patterns/)
 - **Dialog ARIA**: `role="dialog"` + `aria-modal="true"` + `aria-labelledby` pointing at dialog heading
-
-## Touch & mobile
-
-- **Platform guidance — touch targets**: iOS 44×44pt min; Android 48×48dp min. 56–60px is better
-- **Spacing between targets**: leave room between controls
-- **Viewport meta tag**: `<meta name="viewport" content="width=device-width, initial-scale=1">` — enables zoom (never `user-scalable=no`)
-- **No horizontal scroll at 400% zoom**: test reflow, not overflow
 
 ## Forms & inputs
 
@@ -110,7 +91,6 @@ Test: if a sighted developer needs to know it, document it. If it only explains 
 
 - **Status messages (WCAG 4.1.3)**: make outcomes, application state, progress, and errors programmatically determinable without moving focus. Use the semantic element or role that matches the message, such as `<output>`, `role="status"`, `role="alert"`, `role="log"`, or `aria-live`
 - **Preferred technique — live regions**: use `aria-live="polite"` for non-urgent messages and `assertive` only when interruption is necessary. Add a label only when it gives the region useful context
-- **Project default — no auto-dismiss**: messages stay until the user closes them
 - **Screenreader-only content**: `.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); }` — hidden visually, announced to assistive tech
 
 ## Controls
@@ -142,7 +122,6 @@ Review changed UI against [`references/checklist.md`](references/checklist.md), 
 
 - **Flashing & strobing**: max 3 flashes/second in any 1-second window. Test GIFs, videos, carousels
 - **Content warnings**: flag violence, self-harm, abuse, graphic medical, trauma triggers before user encounters. Give visibility control
-- **Project default — reduced motion**: respect `prefers-reduced-motion: reduce`. Disable autoplay animations, carousels, parallax. Keep interactions responsive, not flashy
 
 ## Attribution
 
