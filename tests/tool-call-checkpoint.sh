@@ -136,6 +136,22 @@ test_warns_before_compaction_without_changing_the_counter() {
 	assert_checkpoint "$output"
 }
 
+test_traces_event_structure_without_tool_arguments() {
+	local output
+	local trace_file="$TEST_ROOT/state/agent-tool-call-checkpoints/codex-trace-session.trace.jsonl"
+
+	output="$(printf '%s' '{"session_id":"trace-session","hook_event_name":"PreToolUse","tool_name":"functions.exec","tool_input":{"cmd":"secret command"}}' | AGENT_TOOL_CALL_CHECKPOINT_TRACE=1 TMPDIR="$TEST_ROOT/state" bash "$HOOK" codex)"
+	assert_empty "$output"
+
+	jq -e '
+		.eventName == "PreToolUse"
+		and .toolName == "functions.exec"
+		and .toolInputKeys == ["cmd"]
+		and (has("toolInput") | not)
+		and (has("session_id") | not)
+	' "$trace_file" >/dev/null || fail "Expected a non-sensitive event trace"
+}
+
 test_ignores_unsafe_session_identifiers() {
 	local output
 
@@ -147,6 +163,7 @@ test_warns_once_at_twenty_calls
 test_separates_runtime_and_session_state
 test_clear_resets_the_counter
 test_warns_before_compaction_without_changing_the_counter
+test_traces_event_structure_without_tool_arguments
 test_ignores_unsafe_session_identifiers
 
 printf '✓ tool-call checkpoint tests passed\n'
