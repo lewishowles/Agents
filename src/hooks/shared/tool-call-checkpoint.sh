@@ -11,6 +11,7 @@ set -euo pipefail
 
 readonly TOOL_CALL_LIMIT=20
 readonly COMPACTION_CONTEXT="CONTEXT CHECKPOINT: This session is about to compact. Before continuing, hand off or record the current scope, changed paths, verification, blockers and next decision. Do not expand scope or reset peers."
+readonly TOOL_CALL_CONTEXT='TOOL-CALL CHECKPOINT (20/20): Stop expanding this work cycle. Hand off current state, changed paths, verification and the next decision to your requester or the human. Outside HCOM, tell the user exactly: "To continue, send: Continue <current task or next scoped action>." If working in HCOM, send the required compact checkpoint to the exact requester. Do not continue until you receive a new scoped packet.'
 
 runtime="${1:-}"
 case "$runtime" in
@@ -79,5 +80,5 @@ printf '%s\n' "$count" > "$state_file"
 (( count == TOOL_CALL_LIMIT )) || exit 0
 
 jq -n \
-	--arg context "TOOL-CALL CHECKPOINT (20/20): Stop expanding this work cycle. Hand off current state, changed paths, verification and the next decision to your requester or the human. Do not continue until you receive a new scoped packet." \
+	--arg context "$TOOL_CALL_CONTEXT" \
 	'{hookSpecificOutput: {hookEventName: "PreToolUse", additionalContext: $context}}'

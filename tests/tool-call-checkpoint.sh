@@ -27,6 +27,7 @@ assert_checkpoint() {
 	printf '%s' "$output" | jq -e '
 		.hookSpecificOutput.hookEventName == "PreToolUse"
 		and (.hookSpecificOutput.additionalContext | contains("TOOL-CALL CHECKPOINT (20/20)"))
+		and (.hookSpecificOutput.additionalContext | contains("To continue, send: Continue <current task or next scoped action>."))
 		and (.hookSpecificOutput.additionalContext | contains("new scoped packet"))
 	' >/dev/null || fail "Expected the 20-call advisory checkpoint"
 }

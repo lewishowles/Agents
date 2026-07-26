@@ -29,5 +29,5 @@ Do not resume after the checkpoint unless the Orchestrator sends a new packet.
 ## Research report
 
 ```sh
-hcom send @<exact-requester-name> --intent inform -- Scout report: <answer>. Relevant paths: <paths/symbols>. Evidence: <brief detail>. Next action: <suggestion or none>.
+hcom send @<exact-requester-name> --intent inform -- Scout report: <answer>. Relevant paths: <paths/symbols>. Evidence: <brief detail>. Uncertainty: <none or detail>.
 ```
