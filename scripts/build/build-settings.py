@@ -6,8 +6,8 @@
 # entry (the .env read-guard) that cannot be expressed as a named hook script.
 # All other hooks are derived from src/hooks/claude/*/hook.json.
 #
-# Hooks without a .sh extension use a top-level 'command' field in hook.json
-# to override the default bash-wrapper command.
+# Hooks without a .sh extension use a top-level or event-level 'command' field
+# in hook.json to override the default bash-wrapper command.
 
 import json
 from pathlib import Path
@@ -59,9 +59,11 @@ def main() -> None:
 		if not manifest_file.exists():
 			continue
 		manifest = json.loads(manifest_file.read_text())
-		command = hook_command(manifest)
 
 		for ev in manifest.get("events", []):
+			command = ev.get("command")
+			if command is None:
+				command = hook_command(manifest)
 			key = (ev["event"], ev.get("matcher"))
 			groups.setdefault(key, []).append((manifest["name"], command, ev))
 

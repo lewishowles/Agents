@@ -11,6 +11,7 @@ Hooks are shell scripts that Claude Code runs automatically at specific points i
 | Hook | Purpose | Event | Behaviour on failure |
 | ---- | ------- | ----- | -------------------- |
 | `auto-format` | Runs oxfmt after supported file writes when available. | PostToolUse (`Edit\|Write`) | `silent` |
+| `hcom` | Routes verified Claude lifecycle events to HCOM without managing other Claude settings. | Notification, PermissionRequest, PostToolUse, PreToolUse (`Bash\|Task\|Write\|Edit`), SessionEnd, SessionStart, Stop, SubagentStart, SubagentStop, UserPromptSubmit | `silent`; requires hcom |
 | `plan-verify` | Warns when an exited plan is missing a validation section. | PostToolUse (`ExitPlanMode`) | `silent` |
 | `pre-stop-checks` | Runs configured lint and unit checks before Claude stops. | Stop | `silent` |
 | `progress-resume` | Injects project progress context when the prompt asks to resume work. | UserPromptSubmit | `silent` |
@@ -22,6 +23,10 @@ Hooks are shell scripts that Claude Code runs automatically at specific points i
 | `test-skeleton-reminder` | Suggests matching tests when implementation files change. | PreToolUse (`Write\|Edit`) | `silent`; requires jq |
 | `tool-call-checkpoint` | Adds advisory checkpoints after 20 tool calls and before context compaction in a Claude worker session. | PreToolUse, PreCompact, SessionStart (`clear`) | `silent`; requires jq |
 <!-- END GENERATED: registered-hooks -->
+
+## HCOM ownership
+
+The repository manages only the verified HCOM commands in `src/hooks/claude/hcom/hook.json`. Global setup links the generated `settings.json` and does not import existing Claude preferences, so unrelated local settings stay outside this source tree.
 
 ### skill-file-trigger.sh
 

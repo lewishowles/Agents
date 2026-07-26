@@ -56,8 +56,15 @@ while IFS= read -r -d '' manifest; do
 		hook_script="$REPO_DIR/src/hooks/shared/${name}.sh"
 	fi
 
+	command_configured=$(jq -r '
+		(.command | (type == "string" and length > 0))
+		or (([.events[]? | (.command | (type == "string" and length > 0))]) | length > 0 and all)
+	' "$manifest")
+
 	if [ -z "$hook_script" ]; then
-		validate_fail "No hook script found for $name (expected ${name}.sh or $name)"
+		if [ "$command_configured" != "true" ]; then
+			validate_fail "No hook script or command found for $name"
+		fi
 	elif [ ! -x "$hook_script" ]; then
 		validate_fail "Hook script not executable: $hook_script"
 	fi
