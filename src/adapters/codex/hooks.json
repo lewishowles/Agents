@@ -2,6 +2,14 @@
 	"hooks": {
 		"PreToolUse": [
 			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash \"$HOME/.codex/hooks/tool-call-checkpoint.sh\" codex"
+					}
+				]
+			},
+			{
 				"matcher": "Bash",
 				"hooks": [
 					{
@@ -11,6 +19,16 @@
 					{
 						"type": "command",
 						"command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-pretooluse"
+					}
+				]
+			}
+		],
+		"PreCompact": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash \"$HOME/.codex/hooks/tool-call-checkpoint.sh\" codex"
 					}
 				]
 			}
@@ -51,6 +69,15 @@
 					{
 						"type": "command",
 						"command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-sessionstart"
+					}
+				]
+			},
+			{
+				"matcher": "clear",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash \"$HOME/.codex/hooks/tool-call-checkpoint.sh\" codex"
 					}
 				]
 			}

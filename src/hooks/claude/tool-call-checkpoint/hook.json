@@ -1,0 +1,20 @@
+{
+	"name": "tool-call-checkpoint",
+	"description": "Adds advisory checkpoints after 20 tool calls and before context compaction in a Claude worker session.",
+	"command": "bash \"$HOME/.claude/hooks/tool-call-checkpoint.sh\" claude",
+	"runtime": "claude",
+	"events": [
+		{
+			"event": "PreToolUse"
+		},
+		{
+			"event": "PreCompact"
+		},
+		{
+			"event": "SessionStart",
+			"matcher": "clear"
+		}
+	],
+	"dependencies": ["jq"],
+	"failureMode": "silent"
+}

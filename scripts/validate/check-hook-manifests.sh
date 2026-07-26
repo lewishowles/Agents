@@ -52,6 +52,9 @@ while IFS= read -r -d '' manifest; do
 	if [ -f "$dir/${name}" ]; then
 		hook_script="$dir/${name}"
 	fi
+	if [ -z "$hook_script" ] && [ -f "$REPO_DIR/src/hooks/shared/${name}.sh" ]; then
+		hook_script="$REPO_DIR/src/hooks/shared/${name}.sh"
+	fi
 
 	if [ -z "$hook_script" ]; then
 		validate_fail "No hook script found for $name (expected ${name}.sh or $name)"

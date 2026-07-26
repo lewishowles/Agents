@@ -35,6 +35,8 @@ source "$REPO_DIR/scripts/lib/dist-targets.sh"
 copy_hooks() {
 	mkdir -p "$REPO_DIR/dist/claude/hooks"
 	find "$REPO_DIR/dist/claude/hooks" -maxdepth 1 -type f -delete
+	mkdir -p "$REPO_DIR/dist/codex/hooks"
+	find "$REPO_DIR/dist/codex/hooks" -maxdepth 1 -type f -delete
 
 	local hook_dir script
 	for hook_dir in "$REPO_DIR/src/hooks/claude/"/*/; do
@@ -45,6 +47,12 @@ copy_hooks() {
 			cp "$script" "$REPO_DIR/dist/claude/hooks/$(basename "$script")"
 		done
 	done
+
+	local shared_hook="$REPO_DIR/src/hooks/shared/tool-call-checkpoint.sh"
+	if [[ -f "$shared_hook" ]]; then
+		cp "$shared_hook" "$REPO_DIR/dist/claude/hooks/tool-call-checkpoint.sh"
+		cp "$shared_hook" "$REPO_DIR/dist/codex/hooks/tool-call-checkpoint.sh"
+	fi
 }
 
 mkdir -p "$REPO_DIR/dist/claude" "$REPO_DIR/dist/codex"

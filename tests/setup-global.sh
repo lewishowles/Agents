@@ -137,6 +137,7 @@ test_config_replacement_creates_timestamped_backup() {
 
 	assert_timestamped_backup "$home_dir"
 	assert_contains "$home_dir/.codex/config.toml" 'approval_policy = "never"'
+	assert_link "$home_dir/.codex/hooks/tool-call-checkpoint.sh"
 }
 
 test_skip_backup_environment_does_not_bypass_backup() {

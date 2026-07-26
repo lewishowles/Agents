@@ -30,4 +30,17 @@ while IFS= read -r -d '' manifest; do
 	done
 done < <(find "$REPO_DIR/src/hooks/claude" -name "hook.json" -print0 | sort -z)
 
+shared_hook="$REPO_DIR/src/hooks/shared/tool-call-checkpoint.sh"
+if [ -f "$shared_hook" ]; then
+	for destination in "$REPO_DIR/dist/claude/hooks/tool-call-checkpoint.sh" "$REPO_DIR/dist/codex/hooks/tool-call-checkpoint.sh"; do
+		if [ ! -f "$destination" ]; then
+			validate_fail "${destination#"$REPO_DIR/"} missing (run scripts/sync.sh)"
+			STALE=$((STALE + 1))
+		elif ! diff -q "$shared_hook" "$destination" >/dev/null 2>&1; then
+			validate_fail "${destination#"$REPO_DIR/"} out of sync with source (run scripts/sync.sh)"
+			STALE=$((STALE + 1))
+		fi
+	done
+fi
+
 validate_finish

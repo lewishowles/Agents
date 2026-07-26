@@ -72,6 +72,7 @@ run_check "docs tables"           python3 "$REPO_DIR/scripts/build/build-docs.py
 run_check "cli-style installer"   bash "$REPO_DIR/tests/install-cli-style.sh"
 run_check "global setup backup"   bash "$REPO_DIR/tests/setup-global.sh"
 run_check "skill triggers"        bash "$REPO_DIR/tests/skill-triggers.sh"
+run_check "tool-call checkpoint"  bash "$REPO_DIR/tests/tool-call-checkpoint.sh"
 run_check "project diagnostics"   bash "$REPO_DIR/tests/project-diagnostics.sh"
 run_check "workspace generator"   bash "$REPO_DIR/tests/init-workspace.sh"
 run_check "project setup"         bash "$REPO_DIR/tests/setup-project.sh"

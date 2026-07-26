@@ -61,12 +61,14 @@ setup_codex() {
 	ensure_container_dir "$HOME/.agents" "~/.agents"
 	ensure_container_dir "$HOME/.agents/skills" "~/.agents/skills"
 	ensure_container_dir "$HOME/.codex" "~/.codex"
+	ensure_container_dir "$HOME/.codex/hooks" "~/.codex/hooks"
 	cli_group_end
 
 	cli_group_begin "Codex files"
 	link_path "$REPO_DIR/dist/codex/AGENTS.md" "$HOME/.agents/AGENTS.md" "AGENTS.md"
 	link_path "$REPO_DIR/dist/codex/AGENTS.md" "$HOME/.codex/AGENTS.md" "Codex AGENTS.md"
 	link_path "$REPO_DIR/dist/codex/hooks.json" "$HOME/.codex/hooks.json" "Codex hooks"
+	link_path "$REPO_DIR/dist/codex/hooks/tool-call-checkpoint.sh" "$HOME/.codex/hooks/tool-call-checkpoint.sh" "Codex tool-call checkpoint"
 	ensure_codex_config
 	cli_group_end
 
