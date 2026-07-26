@@ -27,11 +27,18 @@ assert_checkpoint() {
 	printf '%s' "$output" | jq -e '
 		.hookSpecificOutput.hookEventName == "PreToolUse"
 		and (.hookSpecificOutput.additionalContext | contains("TOOL-CALL CHECKPOINT (20/20)"))
-		and (.hookSpecificOutput.additionalContext | contains("HCOM Orchestrator with an outstanding Scout, Implementer, or Reviewer report"))
-		and (.hookSpecificOutput.additionalContext | contains("keep your exact identity and wait for that report"))
-		and (.hookSpecificOutput.additionalContext | contains("Do not create a checkpoint, reset yourself, or start a successor"))
+		and (.hookSpecificOutput.additionalContext | contains("HCOM Scout, Implementer, and Reviewer: send this checkpoint only to your direct sender, the Orchestrator:"))
+		and (.hookSpecificOutput.additionalContext | contains("Please ask the human to reset me, then tell me to continue the current scoped task"))
+		and (.hookSpecificOutput.additionalContext | contains("Do not continue, create a successor, or ask another team member for a packet"))
+		and (.hookSpecificOutput.additionalContext | contains("HCOM Orchestrator receiving that report: tell the human that the worker hit a tool-call checkpoint"))
+		and (.hookSpecificOutput.additionalContext | contains("ask them to reset that worker and let you know"))
+		and (.hookSpecificOutput.additionalContext | contains("HCOM Orchestrator awaiting a Scout, Implementer, or Reviewer report"))
+		and (.hookSpecificOutput.additionalContext | contains("report: keep your exact identity and wait"))
+		and (.hookSpecificOutput.additionalContext | contains("HCOM Orchestrator with no outstanding team-member report"))
+		and (.hookSpecificOutput.additionalContext | contains("Ask the human to reset this Orchestrator"))
+		and (.hookSpecificOutput.additionalContext | contains("paste-ready replacement-Orchestrator packet"))
+		and (.hookSpecificOutput.additionalContext | contains("The replacement Orchestrator must inspect team status first"))
 		and (.hookSpecificOutput.additionalContext | contains("To continue, send: Continue <current task or next scoped action>."))
-		and (.hookSpecificOutput.additionalContext | contains("new scoped packet"))
 	' >/dev/null || fail "Expected the 20-call advisory checkpoint"
 }
 
