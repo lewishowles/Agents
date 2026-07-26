@@ -82,6 +82,8 @@ If the previous session used subagent delegation:
 
 - Keep discoveries and decisions in mind as the session runs; write them to `## Discoveries` / `## Decisions` once at the handoff update, not as separate edits while work is ongoing
 - Exception: a durable interruption — material scope change, blocker, or user decision that changes the next session's safe action — is worth recording immediately, since it prevents a future session from repeating costly investigation
+- Treat the active task file as a prospective execution contract, not a session log. Update it only when a material decision changes its outcome, affected files, verification, status, or risk. Replace the affected bullet instead of appending history.
+- Keep investigation notes, failed attempts, command output, reviewer receipts, and completion recaps out of the task file. Record final evidence once in the `PROGRESS.md` handoff; its `## Archived milestones` entry is the task's historical record.
 - Update "files likely to change" if the scope shifts
 - If a task reveals unexpected complexity, add a risk entry before continuing
 

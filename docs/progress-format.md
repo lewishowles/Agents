@@ -60,7 +60,7 @@ State the user, business, or operational problem being solved, who experiences i
 
 Public behaviour, data shape, UI states, or API surface affected.
 
-The Contract is the stable “what”: observable outcomes, public behaviour, invariants, constraints, and relevant states, independent of tools. `## Tasks` and `## Verification` describe the workflow and evidence used to satisfy it. Skills own reusable task-type mechanics and tool routing; see `src/rules/skills-policy.md` for the skill-versus-rule split. Always-on rules retain only cross-cutting safety, authorisation, scope, and honesty invariants.
+The Contract is the stable “what”: observable outcomes, public behaviour, invariants, constraints, and relevant states, independent of tools. `## Tasks` and `## Verification` describe the workflow and evidence used to satisfy it. The task file remains a prospective execution contract: replace affected bullets only when a material decision changes the outcome, affected files, verification, status, or risk. Do not append a discovery or validation history. Skills own reusable task-type mechanics and tool routing; see `src/rules/skills-policy.md` for the skill-versus-rule split. Always-on rules retain only cross-cutting safety, authorisation, scope, and honesty invariants.
 
 For public, user-visible, or behaviourally significant work, name only applicable failure and recovery states, such as loading, empty, denied, error, partial, stale, interrupted, or recovery. Keep the contract observable and invariant-focused, not implementation or testing steps; route accessibility, security, error-handling, and testing mechanics to specialist skills. Example: a UI flow might define loading, empty, denied, and error; an API or CLI flow might define partial, stale, interrupted, or recovery.
 
@@ -87,6 +87,8 @@ Focused checks, manual review, or evidence required before handoff.
 ## Risks
 
 ## Notes               (optional)
+
+Durable execution constraints needed to resume the task. Do not use this as a running session log.
 
 ```
 

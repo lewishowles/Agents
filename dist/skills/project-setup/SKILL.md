@@ -283,7 +283,7 @@ Focused checks, manual review, or evidence required before handoff.
 
 ## Notes
 
-Optional.
+Optional. Use only for durable execution constraints; do not use it as a running session log.
 
 ```
 

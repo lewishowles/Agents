@@ -94,7 +94,7 @@ New task filenames use stable, descriptive kebab-case slugs such as `repair-cli-
 
 Reordering work moves only queue entries. Never rename task files because their title, priority, or position changed, and never renumber or bulk-rename legacy numeric files merely to adopt the current convention. New tasks use descriptive slugs even in a folder containing numeric legacy tasks. Refer to tasks by title or path in user-facing prose, not by a positional number or bare filename stem.
 
-Task files are complete agent-facing contracts, not labels such as “implement form file”. For public, user-visible, or behaviourally significant work, fill in the contract, acceptance criteria, and verification sections so an agent can implement and check the task without asking the user to restate it.
+Task files are complete agent-facing contracts, not labels such as “implement form file”. They describe the work still to do and the durable constraints needed to resume it, not a running record of discovery or validation. For public, user-visible, or behaviourally significant work, fill in the contract, acceptance criteria, and verification sections so an agent can implement and check the task without asking the user to restate it.
 
 `PROGRESS.md`'s session handoff then holds only: a link to the active task file, the upcoming queue (a `Task | Release | Status` table, non-done tasks only, rows grouped by Release in roadmap order with priority as the order within each group), and standing context that doesn't change per task (verification commands, recurring gotchas). Backlog items with no concrete task file yet stay as prose bullets elsewhere in `PROGRESS.md` (with a spec link if one exists) — do not create a task file until the item is genuinely next; write it just-in-time.
 
@@ -215,6 +215,6 @@ Focused checks, manual review, or evidence required before handoff.
 
 ## Notes
 
-Optional.
+Optional. Use only for durable execution constraints; do not use it as a running session log.
 
 ```
