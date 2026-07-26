@@ -71,7 +71,7 @@ Enables autonomous multi-hour execution while keeping the main agent as architec
 
 ## Planning principles
 
-- Each task is one human-reviewable outcome, normally one Conventional Commit. A feature spec may be larger; do not treat its phases as task boundaries automatically.
+- A task file owns a coherent feature or outcome and may contain several ordered commit sections. Each commit section has one reviewable outcome, coherent files, and focused verification. Create a separate task file only for independently schedulable feature work, decisions, dependencies, or release boundaries, not merely because the feature needs multiple commits.
 - Apply the `project-plan-task` task-boundary gate before creating a standalone task file.
 - Multiple small sections over one large one; each independently reviewable
 - "Files likely to change" reduces re-exploration in future sessions

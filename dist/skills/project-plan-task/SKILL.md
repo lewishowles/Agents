@@ -70,7 +70,7 @@ For broad dependency questions, start with local evidence and apply the `code-lo
 ## Placement principles
 
 - Insert before upcoming sections if this work is a prerequisite
-- Split into two sections if task spans multiple commits
+- A task file may contain several ordered commit sections; create a separate task file only for independently schedulable feature work, decisions, dependencies, or release boundaries
 - Order by dependency, not arrival
 - Each active section is an execution boundary
 - When asked to implement multi-section plan, do only first incomplete section unless user asks for all
@@ -79,7 +79,9 @@ For broad dependency questions, start with local evidence and apply the `code-lo
 
 ### Task-boundary gate
 
-Before creating or delegating a task, confirm it has one human-reviewable outcome, one coherent change surface, and one verification bundle. Several files are fine when they jointly deliver that outcome.
+A task file owns a coherent feature or outcome and may contain several ordered commit sections. Each commit section has one reviewable outcome, coherent files, and focused verification. Create a separate task file only for independently schedulable feature work, decisions, dependencies, or release boundaries, not merely because the feature needs multiple commits.
+
+Before creating or delegating a task, confirm it has one coherent change surface and one verification bundle. Several files are fine when they jointly deliver that outcome.
 
 Split the task when it would need separate review decisions for public behaviour, packaging or release work, documentation unrelated to the changed interface, or another independently verifiable outcome. Keep documentation with the interface it explains, rather than as a final sweep.
 

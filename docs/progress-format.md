@@ -41,7 +41,7 @@ Front matter is the source of truth for status. An agent leaves a verified imple
 
 ### Execution boundary
 
-A task file is one human-reviewable outcome, normally one commit. Several files may belong in the same task only when they jointly deliver that outcome and share its verification.
+A task file owns a coherent feature or outcome and may contain several ordered commit sections. Each commit section has one reviewable outcome, coherent files, and focused verification. Create a separate task file only for independently schedulable feature work, decisions, dependencies, or release boundaries, not merely because the feature needs multiple commits.
 
 Before marking a task `ready` or delegating it, name its one outcome and verification bundle. Split it when it combines independent public behaviours, packaging or release work, unrelated documentation, or separate review decisions. Keep documentation with the interface it explains rather than collecting it in a final sweep.
 
