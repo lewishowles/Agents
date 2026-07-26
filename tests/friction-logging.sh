@@ -365,18 +365,26 @@ test_analyser_discovers_project_fallback_logs() {
 	assert_contains "$output_file" "1	missing-guidance	/project-b	central log was sandboxed"
 }
 
-# Extracts the Codex Stop hook's check-run command from dist/codex/hooks.json.
+# Extracts the Codex Stop hook's check-run command from dist/codex/hooks.toml.
 codex_stop_command() {
-	jq -r '.hooks.Stop[0].hooks[] | select(.command | startswith("if [ -f package.json")) | .command' "$REPO_DIR/dist/codex/hooks.json"
+	python3 - "$REPO_DIR/dist/codex/hooks.toml" <<'PY'
+import json
+import sys
+
+with open(sys.argv[1], encoding="utf-8") as hooks_file:
+	for line in hooks_file:
+		if line.startswith('command = "if [ -f package.json'):
+			print(json.loads(line.removeprefix("command = ")))
+PY
 }
 
 test_codex_hcom_hooks_bootstrap_homebrew_path() {
 	local hcom_command_count
 	local bootstrapped_command_count
-	local hooks_file="$REPO_DIR/dist/codex/hooks.json"
+	local hooks_file="$REPO_DIR/dist/codex/hooks.toml"
 
-	hcom_command_count=$(jq '[.hooks | to_entries[] | .value[] | .hooks[] | select(.command | contains("hcom "))] | length' "$hooks_file")
-	bootstrapped_command_count=$(jq '[.hooks | to_entries[] | .value[] | .hooks[] | select(.command | contains("hcom ")) | select(.command | startswith("export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom "))] | length' "$hooks_file")
+	hcom_command_count=$(rg -c 'hcom ' "$hooks_file")
+	bootstrapped_command_count=$(rg -c '^command = "export PATH=\\"/opt/homebrew/bin:/usr/local/bin:\$PATH\\"; hcom ' "$hooks_file")
 
 	[ "$hcom_command_count" -eq 5 ] || fail "Expected five HCOM Codex hooks, found $hcom_command_count"
 	[ "$bootstrapped_command_count" -eq "$hcom_command_count" ] || fail "HCOM Codex hooks do not all bootstrap Homebrew PATH"
