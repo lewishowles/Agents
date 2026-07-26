@@ -27,6 +27,9 @@ assert_checkpoint() {
 	printf '%s' "$output" | jq -e '
 		.hookSpecificOutput.hookEventName == "PreToolUse"
 		and (.hookSpecificOutput.additionalContext | contains("TOOL-CALL CHECKPOINT (20/20)"))
+		and (.hookSpecificOutput.additionalContext | contains("HCOM Orchestrator with an outstanding Scout, Implementer, or Reviewer report"))
+		and (.hookSpecificOutput.additionalContext | contains("keep your exact identity and wait for that report"))
+		and (.hookSpecificOutput.additionalContext | contains("Do not create a checkpoint, reset yourself, or start a successor"))
 		and (.hookSpecificOutput.additionalContext | contains("To continue, send: Continue <current task or next scoped action>."))
 		and (.hookSpecificOutput.additionalContext | contains("new scoped packet"))
 	' >/dev/null || fail "Expected the 20-call advisory checkpoint"
