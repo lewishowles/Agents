@@ -68,7 +68,6 @@ Match effort to risk and ambiguity:
 - Propose changes as a plan; get review before proceeding
 - Multi-step processes: use one user-visible decision or approval checkpoint at a time. Within an approved step, batch safe read-only work and routine implementation substeps; do not pause between actions that require no new user decision.
 - After an interrupted, failed, or partially delivered turn, treat prompts like "try again", "you stopped", "continue", or "resume" as applying only to the last user-visible action. Do not rely on assistant-private reconstructed context, unsent output, or a dangling question the user may not have received. If the user's account of what they saw differs from your context, trust the user's transcript and ask one clarifying question before editing.
-- When a tool checkpoint interrupts work, give a compact resumable handoff before stopping: the last completed action, confirmed findings and their evidence status, edits made, checks completed or still pending, and the exact next action. Do not present an unreturned tool result as a finding.
 - When a completed phase has accumulated large tool outputs, or the user changes to an unrelated subject, recommend a fresh task before beginning further tool-heavy work.
 
 ## Scope default

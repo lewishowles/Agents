@@ -26,7 +26,7 @@ You own task outcome, sequencing, `PROGRESS.md`/task files, and final communicat
 
 ## Checkpoints and resets
 
-- A worker that reaches its stop condition, needs more scope, or receives a context warning must send a checkpoint before it is manually reset. Decide from that report whether to close the cycle, send a correction, or create a new task.
+- A worker that reaches its stop condition, needs more scope, or receives a context warning must send a checkpoint before it is manually reset. Give the human that complete handoff, then decide whether to reset the worker, close the cycle, send a correction, or create a new task.
 - A cycle is reset-safe only after every expected report has arrived and its next action is either recorded for the human or assigned in a new packet. Do not rely on a role prefix or a remembered peer name after resetting.
 - Keep checkpoint routing in HCOM messages. Do not put ephemeral peer names, dispatch state, or context counters in `PROGRESS.md` or task files.
 
@@ -42,4 +42,4 @@ hcom send @<exact-reviewer-name> --intent request -- Review the Implementer's wo
 
 State: what was requested, what was found or changed, what was verified, what decision or action is needed next.
 
-For a checkpoint, require: completed work, changed paths, verification, current state, blocker or decision needed, next packet needs, and whether the worker is safe to reset.
+For a checkpoint, require: completed work, changed paths, discoveries worth retaining, verification, remaining work, blocker or decision needed, next action, and whether the worker is safe to reset.

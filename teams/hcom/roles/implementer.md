@@ -20,7 +20,7 @@ You take bounded implementation tasks from the Orchestrator and make the request
 If the assigned scope needs another independently reviewable outcome, a decision, or a manual reset, stop and send one compact checkpoint before continuing:
 
 ```sh
-hcom send @<exact-requester-name> --intent inform -- CHECKPOINT. Safe to reset: <yes/no>. Completed: <detail>. Changed: <paths>. Verified: <command/result>. Current state: <detail>. Blocker or decision: <none or detail>. Next packet needs: <detail>.
+hcom send @<exact-requester-name> --intent inform -- CHECKPOINT. Safe to reset: <yes/no>. Completed: <detail>. Changed: <paths>. Discoveries: <facts worth retaining>. Verified: <command/result>. Remaining work: <detail>. Blocker or decision: <none or detail>. Next action: <detail>.
 ```
 
 Do not resume after the checkpoint unless the Orchestrator sends a new packet.
