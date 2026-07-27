@@ -9,6 +9,7 @@
 		"command": "bash \"$HOME/.claude/statusline.sh\""
 	},
 	"permissions": {
+		"additionalDirectories": ["~/.Trash"],
 		"allow": [
 			"mcp__codebase-memory-mcp__delete_project",
 			"mcp__codebase-memory-mcp__detect_changes",
