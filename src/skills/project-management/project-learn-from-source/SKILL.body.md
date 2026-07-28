@@ -26,9 +26,11 @@ Do not use this skill for:
 
 ## Startup
 
-Read the external source first. Sources may be links, pasted excerpts, or `source-extraction` output — treat pasted content as the source itself. If the source is a URL with no browsing available and nothing pasted, ask for the relevant excerpt.
+Treat the source through `source-extraction`, not by reading raw content directly.
 
-When delegation is available, prefer running `source-extraction` in a delegated or forked discovery context, such as an Agent tool fork or an hcom team member. Return only its condensed extraction output to the main conversation, never raw page or repository content. For several sources, run one parallel extraction fork per source, then synthesise the completed extractions once. This is optional guidance: run the same extraction standalone when delegation is unavailable.
+- If the source is already pasted text or `source-extraction` output, treat it as the extracted material itself — don't re-run extraction on it.
+- Otherwise, run `source-extraction`: prefer a delegated or forked discovery context (an Agent tool fork, an hcom team member) and return only its condensed output to the main conversation, never raw page or repository content. For several sources, run one parallel extraction fork per source, then synthesise the completed extractions once. Run it standalone inline when delegation is unavailable.
+- Only read the raw source directly if `source-extraction` cannot be applied (a URL with no browsing and no delegation, nothing pasted) — in that case, ask for the relevant excerpt rather than reading raw content into the main conversation.
 
 Then gather only local context needed to judge fit:
 
