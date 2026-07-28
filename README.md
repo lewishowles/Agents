@@ -24,12 +24,11 @@ The included scripts generate the target files each tool expects for global and 
 
 ## Runtime target capabilities
 
-| Target      | Global rules                                    | Project rules                                                      | Skills                               | Hooks / tooling                           | Setup                           | Main limitation            |
-| ----------- | ----------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------ | ----------------------------------------- | ------------------------------- | -------------------------- |
-| Claude Code | `dist/claude/CLAUDE.md` → `~/.claude/CLAUDE.md` | `AGENTS.md` at project root                                        | `~/.claude/skills/<name>` symlinks   | [Claude hooks](docs/hooks.md); Serena MCP | `setup-global.sh --claude`      | —                          |
-| Codex CLI   | `dist/codex/AGENTS.md` → `~/.agents/AGENTS.md`  | `AGENTS.md` at project root                                        | `~/.agents/skills/<name>` symlinks   | [Codex hooks](docs/codex.md); Serena MCP  | `setup-global.sh --codex`       | No subagent parity         |
-| Stagewise   | Global-rules skill in `~/.stagewise/skills/`    | Mounted project files                                              | `~/.stagewise/skills/<name>` copies  | None                                      | `setup-global.sh --both`        | No project setup; no hooks |
-| ChatGPT     | `dist/chatgpt/INSTRUCTIONS.md` as system prompt | [Gateway](servers/local-repo-gateway/README.md) `get_instructions` | Gateway `list_skills` / `read_skill` | None                                      | [ChatGPT setup](#chatgpt-setup) | Read-only; no hooks        |
+| Target      | Global rules                                    | Project rules                                                      | Skills                               | Hooks / tooling                           | Setup                           | Main limitation     |
+| ----------- | ----------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------ | ----------------------------------------- | ------------------------------- | ------------------- |
+| Claude Code | `dist/claude/CLAUDE.md` → `~/.claude/CLAUDE.md` | `AGENTS.md` at project root                                        | `~/.claude/skills/<name>` symlinks   | [Claude hooks](docs/hooks.md); Serena MCP | `setup-global.sh --claude`      | —                   |
+| Codex CLI   | `dist/codex/AGENTS.md` → `~/.agents/AGENTS.md`  | `AGENTS.md` at project root                                        | `~/.agents/skills/<name>` symlinks   | [Codex hooks](docs/codex.md); Serena MCP  | `setup-global.sh --codex`       | No subagent parity  |
+| ChatGPT     | `dist/chatgpt/INSTRUCTIONS.md` as system prompt | [Gateway](servers/local-repo-gateway/README.md) `get_instructions` | Gateway `list_skills` / `read_skill` | None                                      | [ChatGPT setup](#chatgpt-setup) | Read-only; no hooks |
 
 See [docs/setup.md](docs/setup.md) for manual wiring, [docs/codex.md](docs/codex.md) for Codex details, and [docs/hooks.md](docs/hooks.md) for the Claude hook reference.
 
@@ -54,7 +53,6 @@ The global setup script syncs official external skills, runs `scripts/sync.sh`, 
 - `~/.agents/AGENTS.md` to `dist/codex/AGENTS.md`
 - `~/.codex/AGENTS.md` to `dist/codex/AGENTS.md`
 - `~/.agents/skills/<name>` to `dist/skills/<name>`
-- `~/.stagewise/skills/<name>` as a copy of `dist/skills/<name>`
 
 It also ensures `~/.codex/config.toml` has the `codebase-memory-mcp` MCP server entry.
 

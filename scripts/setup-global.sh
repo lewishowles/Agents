@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Installs global agent configuration into Claude, Codex, and Stagewise.
-# Claude and Codex use symlinks; Stagewise receives a fresh copy of skills.
+# Installs global agent configuration into Claude and Codex via symlinks.
 
 set -euo pipefail
 
@@ -76,27 +75,6 @@ setup_codex() {
 	prune_stale_repo_links "$HOME/.agents/skills" "$REPO_DIR" "skills"
 	prune_stale_repo_links "$HOME/.codex/skills" "$REPO_DIR" "legacy skills" "1"
 	link_skills "$HOME/.agents/skills"
-	cli_group_end
-}
-
-# Replaces Stagewise skills with a fresh copy from this repository.
-# Global rules are delivered as a Stagewise-only skill (global-rules) rather
-# than via ~/.stagewise/AGENTS.md, which Stagewise does not inject into agent
-# context. Skills are the only user-provided knowledge Stagewise auto-mounts.
-setup_stagewise() {
-	local skills_dir="$HOME/.stagewise/skills"
-
-	cli_section "Stagewise global setup"
-
-	if [ -e "$skills_dir" ] || [ -L "$skills_dir" ]; then
-		local backup
-		backup=$(backup_path "$skills_dir")
-		cli_status warning "replaced Stagewise skills" "backup at $(display_path "$backup")"
-	fi
-
-	mkdir -p "$skills_dir"
-	cli_group_begin "Stagewise skills"
-	copy_skills "$skills_dir"
 	cli_group_end
 }
 
@@ -319,7 +297,6 @@ case "$target" in
 	both)   setup_claude; setup_codex ;;
 esac
 
-setup_stagewise
 configure_git_hooks
 
 printf '\n'

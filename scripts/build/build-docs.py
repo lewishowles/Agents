@@ -18,15 +18,11 @@ def skill_manifests() -> list[dict]:
 			continue
 		if (skill_dir / "skill.json").exists():
 			manifest = json.loads((skill_dir / "skill.json").read_text())
-			if "stagewise" in manifest.get("targets", []):
-				continue
 			manifests.append(manifest)
 		else:
 			for sub in sorted(skill_dir.iterdir()):
 				if sub.is_dir() and (sub / "skill.json").exists():
 					manifest = json.loads((sub / "skill.json").read_text())
-					if "stagewise" in manifest.get("targets", []):
-						continue
 					manifests.append(manifest)
 	return sorted(manifests, key=lambda item: item["name"])
 

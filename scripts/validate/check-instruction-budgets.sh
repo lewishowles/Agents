@@ -44,10 +44,6 @@ source_hint() {
 		skill_bodies)
 			skill_name="${relative_file#dist/skills/}"
 			skill_name="${skill_name%%/*}"
-			if [ "$skill_name" = "global-rules" ]; then
-				printf '%s' 'src/rules/global-rules.md, src/rules/identity.md, src/rules/skills-policy.md, and src/rules/file-discovery.md'
-				return
-			fi
 
 			while IFS= read -r -d '' manifest; do
 				manifest_name=$(jq -r '.name // empty' "$manifest")
@@ -106,7 +102,7 @@ report_growth() {
 		--label-width 6 >&2
 	cli_style_row \
 		'↳ review:' \
-		"Remove duplication, stale guidance, excess detail, or wasteful formatting. If it is already lean, update this artefact's baseline in scripts/validate/instruction-budgets.json." \
+		"Remove duplication, stale guidance, excess detail, or wasteful formatting. Once trimmed as far as reasonable, update this artefact's baseline in scripts/validate/instruction-budgets.json to the resulting size — the post-trim size is the new baseline, not the pre-warning one." \
 		--label-colour muted \
 		--value-colour muted \
 		--label-width 8 >&2
