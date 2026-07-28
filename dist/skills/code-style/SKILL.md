@@ -54,7 +54,7 @@ Before primitive operations (length, clamping, type checks, string/array/object 
 
 ## Comments & documentation
 
-- Top-level variable: single-line purpose comment (all languages)
+- Variable declaration (`const`/`let`, any scope): single-line purpose comment (all languages)
 - Functions: JSDoc/equivalent blocks. Parameters: `@param  {type}  name` format, description indented next line
 - Use simple TypeScript JSDoc types (e.g. `object[]` not `Array<object>`)
 - Add short purpose comment when intentional behaviour may look like bug/workaround
