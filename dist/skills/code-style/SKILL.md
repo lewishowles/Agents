@@ -42,7 +42,6 @@ Before primitive operations (length, clamping, type checks, string/array/object 
 - **Simplicity over repetition**: group similar elements with `:is()` and use single negations
   - ✗ Verbose: `:is(button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex='-1']))`
   - ✓ Simple: `:is(button, input, select, textarea):not([disabled]), a[href], [tabindex]:not([tabindex='-1'])`
-- **Common focusable selector**: `:is(button, input, select, textarea):not([disabled]), a[href], [tabindex]:not([tabindex='-1'])`
 - **Readability**: for complex selectors, use named constant with JSDoc purpose
 
 ## Organisation & abstraction
@@ -60,11 +59,8 @@ Before primitive operations (length, clamping, type checks, string/array/object 
 - Use simple TypeScript JSDoc types (e.g. `object[]` not `Array<object>`)
 - Add short purpose comment when intentional behaviour may look like bug/workaround
 - No banner/divider comments; use JSDoc and blank lines
-- **In-code comments explain purpose, not mechanics** — what is this for, not how it works
-- Avoid comments that repeat syntax, narrate flow, or describe workaround mechanics
-- No em dashes in code comments, JSDoc, inline docs unless preserving quoted text
-- Don't justify fixes by explaining mechanism avoided. State the rule code follows. "Why" only as guardrail (e.g. "declared after initialise() so seeding doesn't emit")
-- Remove stale bug-fix comments once code expresses behaviour
+- Comments explain purpose, not mechanics; remove stale bug-fix comments once code expresses behaviour
+- For fixes, state the rule the code follows, not the avoided mechanism. Use "why" only as a guardrail (e.g. declared after `initialise()` so seeding does not emit)
 - Block comments: purpose and external constraints; skip internal trivia
 - Document caller contract: return value, mutation, observable edge cases. Omit internal mechanics
 - Lead with one line, present tense, no boilerplate. Put options in `@note`; keep `@example` short. Match surrounding tone

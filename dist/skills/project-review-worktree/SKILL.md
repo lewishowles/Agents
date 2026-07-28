@@ -13,7 +13,7 @@ Review uncommitted repository changes before commit. Default to review and recom
 
 ## Scope
 
-Assess task correctness, plan alignment, scope, instructions, generated boundaries, patterns, and justified verification. Look for regressions, missing work, weak tests or documentation, maintainability, accessibility, UX, performance, and security. Label non-essential ideas optional.
+Look for regressions, missing work, weak tests, documentation gaps, and quality issues.
 
 ## Startup
 

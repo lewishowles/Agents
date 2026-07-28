@@ -70,7 +70,6 @@ For broad dependency questions, start with local evidence and apply the `code-lo
 ## Placement principles
 
 - Insert before upcoming sections if this work is a prerequisite
-- A task file may contain several ordered commit sections; create a separate task file only for independently schedulable feature work, decisions, dependencies, or release boundaries
 - Order by dependency, not arrival
 - Each active section is an execution boundary
 - When asked to implement multi-section plan, do only first incomplete section unless user asks for all

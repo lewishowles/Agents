@@ -9,7 +9,7 @@ related-skills:
 ---
 # Project continue
 
-Resume from existing `PROGRESS.md`. Treat it as living record, not perfect truth; update once at handoff, not as an ongoing session log.
+Resume from the existing `PROGRESS.md`.
 
 ## File location
 
