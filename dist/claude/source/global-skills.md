@@ -19,7 +19,6 @@ Apply across all projects. See individual skills for detailed rules. Use project
 - `/bash` — When writing shell scripts, bash config, patterns
 - `/boilersuit` — When using Boilersuit generators for repeatable file generation
 - `/boilersuit-generator-authoring` — When creating or editing a Boilersuit generator definition
-- `/caveman` — When the user requests compressed or terse communication, says "caveman mode", "less tokens", "be brief", or invokes /caveman
 - `/code-lookup` — When choosing a code discovery, tracing, health analysis, or semantic editing tool
 - `/code-review` — When reviewing a PR or diff, or receiving review feedback
 - `/code-style` — When formatting code, covering naming, comments, arrays, objects
