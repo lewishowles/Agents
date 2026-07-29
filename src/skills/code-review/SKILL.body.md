@@ -52,6 +52,12 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 - Surgical: only needed changes?
 - Organisation: each function/visitor owns one concern, no boolean flags swapping the algorithm, no switchboard helpers or logic duplicated across sibling files, clear control flow over clever tricks?
 
+**Simplification** (this diff only)
+
+- Has this change added unnecessary abstraction or machinery?
+- Classify each flagged spot with exactly one tag: `[delete]` remove it; `[stdlib]` use the standard library; `[native]` use a platform feature; `[yagni]` avoid an unneeded addition; `[shrink-style]` use simpler code.
+- For whole-repo debt, use `refactoring`'s **Technical debt triage** categories instead; these tags classify only the reviewed diff.
+
 **Performance** (UI, list rendering, assets)
 
 - Unnecessary re-renders or reactive side effects?

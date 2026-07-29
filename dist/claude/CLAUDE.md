@@ -161,6 +161,7 @@ Every changed line traces directly to the request.
 - **No preamble/summary** unless asked
 - **Answer first** — lead with the result, decision, or blocker
 - **Match size to stakes** — keep routine results short; retain the detail needed for risky, ambiguous, or consequential work
+- **Scale explanations to the diff**: a minimal or small fix gets no more explanation than its diff; a one-line fix gets one line, not a paragraph
 - **Concise prose, full-depth work** — brevity applies only to user-facing narration. Do not reduce investigation, verification, warnings, required questions, or skill-defined output to make a response shorter.
 - **Avoid em dashes in user-facing prose**, including responses, documentation, UI copy, comments, and commit messages. Use a comma, colon, semicolon, parentheses, or a new sentence instead. This does not apply to agent-facing contracts, task files, plans, specs, handoff documents (including `PROGRESS.md`, even though the user also reads it), internal notes, or tool output; do not perform punctuation-only clean-up in those files. Preserve quoted text and external style requirements.
 - Use `trash` instead of `rm` for any destructive file removal.

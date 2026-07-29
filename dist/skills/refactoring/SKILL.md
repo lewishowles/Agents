@@ -80,6 +80,17 @@ For JS/TS project-health triage, route through `code-lookup` and use the narrowe
 - **Documentation debt** — outdated README, missing runbook, hidden setup knowledge
 - **Infrastructure debt** — manual release steps, weak monitoring, missing rollback path
 
+### Deferred simplification marker
+
+When a local simplification is deliberately deferred, use a single-line `// debt(<category>): <purpose and deferral reason>` marker. Use the category name without `debt`, in lowercase (for example, `code` or `architecture`). It is also the required purpose comment when it sits immediately above a `const` or `let` declaration.
+
+```js
+// debt(code): Map legacy API fields until the v2 migration ends, then consolidate.
+const customerName = response.customer_name;
+```
+
+Use it only for a concrete deferred simplification, not as a general `TODO`.
+
 ### Prioritisation
 
 Score each item by impact and effort:
