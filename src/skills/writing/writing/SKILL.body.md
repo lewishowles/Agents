@@ -42,6 +42,7 @@
 - Em dashes as routine separators
 - Preachy or lecturing tone — state once
 - Padding like "It's worth noting that..." or "As mentioned above..."
+- Business jargon — "navigate", "unpack", "lean into", "landscape", "game-changer", "double down", "deep dive", "take a step back", "moving forward", "circle back", "on the same page"
 - Prescriptive absolutes — use "generally", "ideally", "where possible"
 - Title Case in headings
 - Opening summaries
