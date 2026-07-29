@@ -174,6 +174,7 @@ Code must be reviewed before it is committed. For AI-assisted changes, review me
 - If asked to stage or commit, show the files and exact Conventional Commit message first, then wait for confirmation. Without an active `PROGRESS.md` plan, do this before any staging.
 - Update docs when changes require documentation
 - After a coherent step that changes tracked source files, provide a scoped Conventional Commit message as plain text, labelled `Suggested commit message:`. Do not execute it. Skip for PROGRESS.md updates, planning, analysis, or responses with no file changes.
+- Alongside the suggested commit message, name one or two comprehension questions, such as what changed, why, and what could break, so review confirms understanding rather than approval alone.
 - Suggested commit messages should lead with what the commit achieves and why it matters. Mention implementation details only when they explain user-visible behaviour, compatibility, review risk, or a non-obvious tradeoff.
 - Commit subjects should name the behavioural outcome, not the refactor step. Prefer "track dirty state across record loads" over "extract mapFormData".
 - Commit bodies should usually be one or two sentences: outcome first, reason or constraint second.

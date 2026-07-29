@@ -94,6 +94,8 @@ Durable execution constraints needed to resume the task. Do not use this as a ru
 
 Step progress is the `- [ ]` / `- [x]` items under `## Tasks`.
 
+Order steps by how likely they are to change on review: decisions likely to be revisited, such as data model, public interface, or user-facing behaviour, come first; mechanical or plumbing steps (wiring, boilerplate, formatting) come last. This puts what's worth a second look before the routine work in the read order.
+
 ### Completion
 
 After the user signals acceptance:

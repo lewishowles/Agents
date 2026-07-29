@@ -39,7 +39,7 @@ Run only when user asks and it exists in current shell.
 3. **Locate** — identify placement relative to upcoming sections
 4. **Approach exploration** (opt-in) — for complex tasks, surface 2–3 approaches with tradeoffs; wait for user choice before writing. Skip single-file, obvious, or decided work. Present options first, write after confirmation.
 5. **Reorganise** — if new work changes later needs, update upcoming sections
-6. **Insert** — add section: purpose, model tier, files likely to change, tasks, risks, notes
+6. **Insert** — add section: purpose, model tier, files likely to change, tasks, risks, notes. Order Tasks steps decisions-first, mechanical-last (see `docs/progress-format.md`)
 7. **Update parking lot** — move related ideas into new section or leave parked
 
 ## Planning for learning
