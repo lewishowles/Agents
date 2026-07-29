@@ -1,7 +1,7 @@
 {
 	"name": "code-lookup",
 	"title": "Code lookup",
-	"description": "Use this skill when locating code, tracing behaviour, assessing JS/TS code health, or choosing between Serena, Fallow, codebase-memory, and text search.",
+	"description": "Use this skill when locating code, tracing behaviour, or choosing between Serena, codebase-memory, and text search.",
 	"when": "When choosing a code discovery, tracing, health analysis, or semantic editing tool",
 	"triggers": [
 		"where is",

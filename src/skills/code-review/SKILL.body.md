@@ -10,7 +10,6 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 - Understand intent: what problem does this solve?
 - Check scope: one thing or several?
 - Load relevant language/framework skills.
-- For JS/TS structural analysis, route through `code-lookup` and choose the narrowest suitable Fallow command.
 - **Risk-aware focus**: high git churn or high fan-in → scrutinise more. Defects cluster in churn-heavy files; high fan-in = wider blast radius.
 
 ### Severity levels

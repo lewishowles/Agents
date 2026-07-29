@@ -69,8 +69,6 @@ Use this when the user asks where code should live, whether a helper should exis
 
 ## Technical debt triage
 
-For JS/TS project-health triage, route through `code-lookup` and use the narrowest suitable Fallow analysis rather than running a broad report automatically.
-
 ### Categories
 
 - **Code debt** — duplication, large functions, unclear naming, dead code

@@ -70,7 +70,7 @@ Project setup does not create `.agents/skills/` by default. Add that directory o
 
 Skill matching is description-driven. Keep frontmatter descriptions specific, action-led, and prefixed with `Use this skill when...` so Codex has enough signal before loading the full skill body.
 
-The `code-lookup` skill routes code discovery between Serena, Fallow, codebase-memory, and targeted text search. Codebase-memory remains available for broad graph questions but is not a mandatory first step.
+The `code-lookup` skill routes code discovery between Serena, codebase-memory, and targeted text search. Codebase-memory remains available for broad graph questions but is not a mandatory first step.
 
 ## Hooks
 

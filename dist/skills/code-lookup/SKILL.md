@@ -3,7 +3,7 @@
 name: code-lookup
 displayName: Code lookup
 description: >
-  Use this skill when locating code, tracing behaviour, assessing JS/TS code health, or choosing between Serena, Fallow, codebase-memory, and text search.
+  Use this skill when locating code, tracing behaviour, or choosing between Serena, codebase-memory, and text search.
 do-not-use-when:
   - The user supplied the exact file and no discovery or structural analysis is needed
   - Looking up external documentation or live service state
@@ -15,17 +15,15 @@ Choose one primary lookup tool for the question. The failure this prevents is ca
 
 ## Routing
 
-| Question | Start with |
-|---|---|
-| Exact symbol, definition, references, diagnostics, or semantic edit | Serena |
-| JS/TS dead code, duplication, complexity, boundaries, or health audit | Fallow |
-| Broad architecture, multi-hop impact, cross-service, cross-repository, or language-agnostic graph question | codebase-memory |
-| Literal string, configuration value, documentation line, generated asset, or named non-code file | Targeted text or file lookup |
+| Question                                                                                                   | Start with                   |
+| ---------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| Exact symbol, definition, references, diagnostics, or semantic edit                                        | Serena                       |
+| Broad architecture, multi-hop impact, cross-service, cross-repository, or language-agnostic graph question | codebase-memory              |
+| Literal string, configuration value, documentation line, generated asset, or named non-code file           | Targeted text or file lookup |
 
 Read only the reference for the selected tool:
 
 - Serena: [references/serena.md](references/serena.md)
-- Fallow: [references/fallow.md](references/fallow.md)
 - codebase-memory: [references/codebase-memory.md](references/codebase-memory.md)
 
 ## Workflow
@@ -38,10 +36,9 @@ Read only the reference for the selected tool:
 Valid hand-offs include:
 
 - codebase-memory maps a broad impact surface, then Serena performs a reference-aware edit
-- Fallow identifies a concrete JS/TS finding, then Serena inspects or edits the affected symbol
 - A targeted text search identifies a config entry, then no structural tool is needed
 
-Do not call Serena and codebase-memory merely to compare answers. Do not use codebase-memory as a mandatory first step. Do not use Fallow for general source navigation.
+Do not call Serena and codebase-memory merely to compare answers. Do not use codebase-memory as a mandatory first step.
 
 ## Fallbacks
 

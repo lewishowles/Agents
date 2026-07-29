@@ -25,7 +25,7 @@ Run only when user asks and it exists in current shell.
 1. **Discuss** — identify all known decision-blocking questions about requirements, scope, and dependencies, then ask them together before editing `PROGRESS.md`. Do not cap this initial set. Ask further questions only when an answer reveals a material new unknown.
 2. **Risk triage** (opt-in) — identify high-risk files before planning:
    - **Git churn**: `git log --oneline --since="1 month ago" -- <path> | wc -l` — high recent change = defect-prone
-   - **Complexity**: large files or high function counts (use Fallow for JS/TS health analysis, or a targeted symbol/file measure elsewhere)
+   - **Complexity**: large files or high function counts (use a targeted symbol or file measure)
    - **Fan-in**: high caller count = high blast radius (use Serena for an exact symbol, or codebase-memory for a broad multi-hop impact question)
    - Flag files high on two+ signals in **Risks**
    - Skip for routine/single-file/familiar work
@@ -58,7 +58,7 @@ Capture these facts in the section, task file, or linked spec:
 - **Validation owner**: which repo's diagnostics prove the change, including any downstream checks required before release
 - **Handoff references**: PR links, task or session IDs, diagnostic log paths, and repo-specific risks
 
-For broad dependency questions, start with local evidence and apply the `code-lookup` routing skill before choosing Serena, Fallow, codebase-memory, or targeted search. If the affected repo set is still unclear, mark the task `needs-decision` and ask before expanding the working set.
+For broad dependency questions, start with local evidence and apply the `code-lookup` routing skill before choosing Serena, codebase-memory, or targeted search. If the affected repo set is still unclear, mark the task `needs-decision` and ask before expanding the working set.
 
 ## Placement principles
 

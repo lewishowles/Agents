@@ -15,4 +15,4 @@ Use Serena for language-server-backed source understanding and precise edits:
 4. Read only the required body or neighbouring source.
 5. Use Serena's semantic editing operations when the change matches a complete symbol or rename.
 
-Use targeted file patches for small changes inside a larger symbol. Serena is not a code-health auditor and does not replace Fallow's project-wide JS/TS findings. Use codebase-memory first only when the question is genuinely broader than a symbol or language-server relationship.
+Use targeted file patches for small changes inside a larger symbol. Serena is not a code-health auditor. Use codebase-memory first only when the question is genuinely broader than a symbol or language-server relationship.

@@ -31,14 +31,14 @@ Plugins are installed globally (user scope) and registered in `settings.json` un
 
 ## Optional runtime tools
 
-For MCP servers and CLI tools that complement this repo's skills (Serena MCP, repowise, and Fallow), see [docs/tools.md](tools.md). These are runtime dependencies, not plugins or upstream-managed skills in this repo.
+For MCP servers and CLI tools that complement this repo's skills (Serena MCP and repowise), see [docs/tools.md](tools.md). These are runtime dependencies, not plugins or upstream-managed skills in this repo.
 
 ## Plugin vs skill
 
-| | Plugins | Skills |
-|-|---------|--------|
-| Maintained by | Plugin author (versioned releases) | You (files in this repo) |
-| Installed via | `/plugins install` | Already available via symlinked `skills/` |
-| Updated via | `/plugins update` | `git pull` on this repo |
-| Scope | User-global | User-global (via symlink) |
-| Best for | General-purpose tools (memory, compression) | Project conventions, language standards |
+|               | Plugins                                     | Skills                                    |
+| ------------- | ------------------------------------------- | ----------------------------------------- |
+| Maintained by | Plugin author (versioned releases)          | You (files in this repo)                  |
+| Installed via | `/plugins install`                          | Already available via symlinked `skills/` |
+| Updated via   | `/plugins update`                           | `git pull` on this repo                   |
+| Scope         | User-global                                 | User-global (via symlink)                 |
+| Best for      | General-purpose tools (memory, compression) | Project conventions, language standards   |

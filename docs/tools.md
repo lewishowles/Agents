@@ -72,6 +72,12 @@ Syntax-aware search, lint, and rewrite tooling for code patterns. It matches AST
 
 **Installation:** Standalone CLI or MCP server. Treat it as a per-project runtime dependency; do not add it to global rules unless the target project has installed and documented it.
 
+**Gotchas once adopted:**
+
+- Relational rules (`inside`, `has`, `precedes`, `follows`) default to `stopBy: "neighbor"`, which stops at the immediately adjacent node and commonly misses matches silently. Use `stopBy: end` unless neighbor-only matching is actually intended.
+- Test a rule against a representative snippet before running it across a project, matching the match-count-first discipline this repo already applies to broad `replace_all`/cross-file `sed`.
+- Where output format is configurable, prefer text or compact output over JSON for exploratory search: it costs a fraction of the tokens. Use JSON only when metavariable captures or full range metadata are needed programmatically.
+
 ## repowise
 
 Code intelligence tool that combines graph traversal with git history analysis for code health scoring and defect prediction.
@@ -97,16 +103,16 @@ Code intelligence tool that combines graph traversal with git history analysis f
 
 **Installation:** Standalone tool. See the repowise documentation for setup details.
 
-## Comparison: Serena vs codebase-memory vs ast-grep vs repowise vs Fallow
+## Comparison: Serena vs codebase-memory vs ast-grep vs repowise
 
-|                           | Serena                            | codebase-memory                   | ast-grep                          | repowise                                  | Fallow                                      |
-| ------------------------- | --------------------------------- | --------------------------------- | --------------------------------- | ----------------------------------------- | ------------------------------------------- |
-| **Primary job**           | Exact semantic lookup and editing | Broad graph traversal and impact  | Syntax-shaped search and rewrites | Git-informed health and defect prediction | JS/TS health, cleanup, boundaries, and risk |
-| **Languages**             | Language-server dependent         | Language-agnostic                 | Multi-language AST patterns       | Language-agnostic                         | JS/TS                                       |
-| **Graph traversal**       | Exact symbol relationships        | Multi-hop and cross-service paths | No                                | Callers, callees, and dependencies        | Best-effort syntactic tracing               |
-| **Codemods and rewrites** | Semantic renames and symbol edits | No                                | Syntax-pattern rewrites           | No                                        | No                                          |
-| **Project health**        | Diagnostics only                  | Structural graph signals          | Custom rules only                 | Composite scoring and temporal signals    | Dead code, duplication, complexity, audits  |
-| **Literal text/config**   | No                                | No                                | Usually unnecessary               | No                                        | No                                          |
+|                           | Serena                            | codebase-memory                   | ast-grep                          | repowise                                  |
+| ------------------------- | --------------------------------- | --------------------------------- | --------------------------------- | ----------------------------------------- |
+| **Primary job**           | Exact semantic lookup and editing | Broad graph traversal and impact  | Syntax-shaped search and rewrites | Git-informed health and defect prediction |
+| **Languages**             | Language-server dependent         | Language-agnostic                 | Multi-language AST patterns       | Language-agnostic                         |
+| **Graph traversal**       | Exact symbol relationships        | Multi-hop and cross-service paths | No                                | Callers, callees, and dependencies        |
+| **Codemods and rewrites** | Semantic renames and symbol edits | No                                | Syntax-pattern rewrites           | No                                        |
+| **Project health**        | Diagnostics only                  | Structural graph signals          | Custom rules only                 | Composite scoring and temporal signals    |
+| **Literal text/config**   | No                                | No                                | Usually unnecessary               | No                                        |
 
 **Decision guide:**
 
@@ -114,6 +120,5 @@ Code intelligence tool that combines graph traversal with git history analysis f
 - Use **Serena** for exact symbols, references, diagnostics, and semantic edits
 - Use **codebase-memory** for broad multi-hop, cross-service, cross-repository, or language-agnostic graph questions
 - Add **ast-grep** only when syntax-shaped search, custom AST lint rules, or mechanical rewrites would avoid brittle `rg` patterns
-- Use **Fallow** for JS/TS-specific health and cleanup analysis
 - Add **repowise** only for large repos where git-driven defect prediction and health scoring would change prioritisation
 - Use targeted text or file lookup for literals, configuration, documentation, and generated assets

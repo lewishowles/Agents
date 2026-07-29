@@ -30,7 +30,6 @@ ALLOWLIST = {
 	frozenset({"component-api-design", "frontend-design"}),  # known overlap, out of scope: "design" is generic
 	frozenset({"component-api-design", "vue"}),  # known overlap, out of scope: shared Vue API vocabulary
 	frozenset({"component-api-design", "vue-project-stack"}),  # known overlap, out of scope: shared Vue API vocabulary
-	frozenset({"fallow", "frontend-security"}),  # known overlap, out of scope: "security" is generic
 	frozenset({"frontend-design", "skill-craft"}),  # known overlap, out of scope: "design" is generic
 	frozenset({"frontend-design", "swift-ui"}),  # known overlap, out of scope: "composition" is generic
 	frozenset({"frontend-design", "vue"}),  # known overlap, out of scope: "composition" is generic
