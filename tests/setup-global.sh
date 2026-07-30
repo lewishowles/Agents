@@ -142,6 +142,9 @@ test_config_replacement_creates_timestamped_backup() {
 
 	assert_timestamped_backup "$home_dir"
 	assert_contains "$home_dir/.codex/config.toml" 'approval_policy = "never"'
+	assert_contains "$home_dir/.codex/config.toml" '[mcp_servers.codebase-memory-mcp]'
+	assert_contains "$home_dir/.codex/config.toml" '[mcp_servers.serena]'
+	assert_equals "$(grep -c '^default_tools_approval_mode = \"approve\"$' "$home_dir/.codex/config.toml")" "2"
 	assert_contains "$home_dir/.codex/config.toml" '[features]'
 	assert_contains "$home_dir/.codex/config.toml" 'hooks = true'
 	assert_not_contains "$home_dir/.codex/config.toml" '[[hooks.'

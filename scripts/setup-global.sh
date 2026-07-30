@@ -195,8 +195,8 @@ ensure_codex_config() {
 	rm "$defaults_temp"
 
 	# Re-add managed MCP server entries with canonical config.
-	printf '\n[mcp_servers.codebase-memory-mcp]\ncommand = "codebase-memory-mcp"\n' >> "$temp"
-	printf '\n[mcp_servers.serena]\nstartup_timeout_sec = 15\ncommand = "serena"\nargs = ["start-mcp-server", "--project-from-cwd", "--context=codex"]\n' >> "$temp"
+	printf '\n[mcp_servers.codebase-memory-mcp]\ncommand = "codebase-memory-mcp"\ndefault_tools_approval_mode = "approve"\n' >> "$temp"
+	printf '\n[mcp_servers.serena]\nstartup_timeout_sec = 15\ncommand = "serena"\nargs = ["start-mcp-server", "--project-from-cwd", "--context=codex"]\ndefault_tools_approval_mode = "approve"\n' >> "$temp"
 
 	# MDN docs/browser-compat server, shipped disabled: enable on request
 	# when a browser-support or Baseline fact needs a live source.
