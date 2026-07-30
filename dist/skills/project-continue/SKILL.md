@@ -38,7 +38,7 @@ When `<project-root>/.agent/scripts/project-diagnostics.py` exists, use `--list`
 3. **Verify** — spot-check recently-completed work landed
 4. **Reorient** — confirm active work still fits; move to upcoming if priorities changed
 5. **Present** — digest the active task file into the confirmed contract, current repository state, intended files, verification, and unknowns; the user should not need to open the task file. Wait for confirmation before editing when the task has material API, behaviour, or interpretation decisions
-6. **Continue** — work through confirmed task; note discoveries as they emerge, write them to `PROGRESS.md` once at handoff
+6. **Continue** — work through confirmed task; note discoveries as they emerge, write them to `PROGRESS.md` once at handoff. If the task file has a `## Commit plan`, implement only the first incomplete numbered section, then stop for review (changed files, verification, commit message) before starting the next — do not implement multiple sections in one pass without the user asking for all of them
 7. **Wrap up** — refresh handoff before stopping
 
 ## Session startup

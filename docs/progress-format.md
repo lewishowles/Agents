@@ -45,6 +45,8 @@ A task file owns a coherent feature or outcome and may contain several ordered c
 
 Before marking a task `ready` or delegating it, name its one outcome and verification bundle. Split it when it combines independent public behaviours, packaging or release work, unrelated documentation, or separate review decisions. Keep documentation with the interface it explains rather than collecting it in a final sweep.
 
+If a task needs more than one commit, declare it as a `## Commit plan`: a numbered list, one entry per commit, each naming its reviewable outcome and files. Do not leave the split implicit in prose elsewhere in the task, such as the Purpose — an implementer picking up the task only stops between commits when the plan says so explicitly. `project-continue` implements one incomplete numbered section at a time and stops for review before the next.
+
 A feature spec may describe a larger goal, investigation, or phase sequence. Its phases are not task boundaries by default: create the next concrete task only when its scope, acceptance criteria, and verification are independently reviewable.
 
 ### Body
