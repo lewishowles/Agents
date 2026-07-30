@@ -37,15 +37,20 @@ EOF
 
 	cat > "$bin_dir/cp" <<'EOF'
 #!/bin/sh
-if [ "${SETUP_GLOBAL_TEST_FAIL_BACKUP_COPY:-0}" = "1" ]; then
-	printf 'backup copy failed\n' >&2
-	exit 1
-fi
 if [ "$1" = "-R" ]; then
 	mkdir -p "$3"
 	exit 0
 fi
 exec /bin/cp "$@"
+EOF
+
+	cat > "$bin_dir/mv" <<'EOF'
+#!/bin/sh
+if [ "${SETUP_GLOBAL_TEST_FAIL_BACKUP_MOVE:-0}" = "1" ]; then
+	printf 'backup move failed\n' >&2
+	exit 1
+fi
+exec /bin/mv "$@"
 EOF
 
 	cat > "$bin_dir/git" <<'EOF'
@@ -60,7 +65,7 @@ cli_style_render() {
 }
 EOF
 
-	chmod +x "$bin_dir/bash" "$bin_dir/cli-style" "$bin_dir/cp" "$bin_dir/git" "$bin_dir/cli-style-adapter.sh"
+	chmod +x "$bin_dir/bash" "$bin_dir/cli-style" "$bin_dir/cp" "$bin_dir/mv" "$bin_dir/git" "$bin_dir/cli-style-adapter.sh"
 }
 
 # Creates a Codex configuration that setup-global must replace.
@@ -83,7 +88,7 @@ create_existing_config() {
 run_setup() {
 	local home_dir="$1"
 	local bin_dir="$TEST_ROOT/bin"
-	local fail_backup_copy="${SETUP_GLOBAL_TEST_FAIL_BACKUP_COPY:-0}"
+	local fail_backup_move="${SETUP_GLOBAL_TEST_FAIL_BACKUP_MOVE:-0}"
 	shift
 
 	HOME="$home_dir" \
@@ -92,7 +97,7 @@ run_setup() {
 	SETUP_GLOBAL_INSTALLER="$REPO_DIR/scripts/install-cli-style.sh" \
 	SETUP_GLOBAL_SYNC="$REPO_DIR/scripts/sync.sh" \
 	SETUP_GLOBAL_TEST_ADAPTER="$bin_dir/cli-style-adapter.sh" \
-	SETUP_GLOBAL_TEST_FAIL_BACKUP_COPY="$fail_backup_copy" \
+	SETUP_GLOBAL_TEST_FAIL_BACKUP_MOVE="$fail_backup_move" \
 	bash "$REPO_DIR/scripts/setup-global.sh" --codex --skip-external "$@"
 }
 
@@ -173,11 +178,11 @@ test_failed_backup_preserves_existing_config() {
 	local output="$TEST_ROOT/backup-failure.txt"
 
 	create_existing_config "$home_dir"
-	if SETUP_GLOBAL_TEST_FAIL_BACKUP_COPY=1 run_setup "$home_dir" > "$output" 2>&1; then
+	if SETUP_GLOBAL_TEST_FAIL_BACKUP_MOVE=1 run_setup "$home_dir" > "$output" 2>&1; then
 		fail "Expected a failed backup to abort setup"
 	fi
 
-	assert_contains "$output" "backup copy failed"
+	assert_contains "$output" "backup move failed"
 	assert_equals "$(cat "$home_dir/.codex/config.toml")" 'custom_setting = "keep"'
 }
 
