@@ -16,13 +16,9 @@ E2E and component tests verify real-browser user experience. Playwright is stand
 
 ## General
 
-- Avoid browser tests by default; output is token-heavy. Run focused tests only for specific fixes and suggest broader user-run commands.
-- Use diagnostics script: `.agent/scripts/project-diagnostics.py --list` to discover checks, `--check <name>` for specific fixes. Ask before running tests directly if diagnostics script is absent.
-- Never run a full Playwright or Cypress suite or use `--all`, including through diagnostics. Diagnostics controls output volume, not execution time. Run only specific test files, and ask the user to run broad browser suites.
-- Run agent-initiated Playwright checks with one worker, through the diagnostics configuration or `--workers=1`, unless the user explicitly approves more concurrency.
-- Do not assume a scoped component-test file is cheap. Shared Vite configuration may still compile a broad component graph before running the selected tests. Start with the narrowest relevant test case or one representative file and observe its startup cost. If compilation succeeds but dominates, batch the necessary scoped files into one single-worker invocation instead of rebuilding for each file; ask before continuing when the combined check may be slow or resource-intensive.
-- Treat browser-launch or page-creation timeouts, build contention, or system resource pressure as a hard stop. Do not run another browser check in the same turn without user approval.
-- After a failed run, rerun only unresolved tests using a title, line, or equivalent runner filter. Do not rerun an entire browser test file solely to confirm narrower cases.
+- Do not run Playwright or Cypress, directly or through diagnostics. This applies to every agent in an HCOM team.
+- Inspect the project's diagnostics and test setup, then give the user the narrowest exact browser-test command to run manually. Do not claim browser evidence until the user provides the result.
+- Use `.agent/scripts/project-diagnostics.py --list` to discover the command when available. If there is no diagnostics script, derive it from the documented project setup or package scripts.
 
 ## Which tool to use
 
