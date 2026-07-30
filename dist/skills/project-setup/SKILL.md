@@ -73,6 +73,7 @@ Enables autonomous multi-hour execution while keeping the main agent as architec
 
 - A task file owns a coherent feature or outcome and may contain several ordered commit sections. Each commit section has one reviewable outcome, coherent files, and focused verification. Create a separate task file only for independently schedulable feature work, decisions, dependencies, or release boundaries, not merely because the feature needs multiple commits.
 - Apply the `project-plan-task` task-boundary gate before creating a standalone task file.
+- For a multi-commit task, add a `## Commit plan` checklist using `- [ ] Commit N: outcome`; work only on the first unchecked entry unless the user asks for all.
 - Multiple small sections over one large one; each independently reviewable
 - "Files likely to change" reduces re-exploration in future sessions
 - Plan 2–3 sections ahead; detailed planning happens when work starts
@@ -266,6 +267,11 @@ Optional.
 ## Spec
 
 Optional. Link to `.agent/specs/<feature>.md` only when this task needs heavier feature context.
+
+## Commit plan
+
+- [ ] Commit 1: reviewable outcome
+- [ ] Commit 2: follow-up outcome
 
 ## Tasks
 

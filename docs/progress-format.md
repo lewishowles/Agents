@@ -45,7 +45,16 @@ A task file owns a coherent feature or outcome and may contain several ordered c
 
 Before marking a task `ready` or delegating it, name its one outcome and verification bundle. Split it when it combines independent public behaviours, packaging or release work, unrelated documentation, or separate review decisions. Keep documentation with the interface it explains rather than collecting it in a final sweep.
 
-If a task needs more than one commit, declare it as a `## Commit plan`: a numbered list, one entry per commit, each naming its reviewable outcome and files. Do not leave the split implicit in prose elsewhere in the task, such as the Purpose — an implementer picking up the task only stops between commits when the plan says so explicitly. `project-continue` implements one incomplete numbered section at a time and stops for review before the next.
+If a task needs more than one commit, add a `## Commit plan` before `## Tasks`. It is a checklist with one reviewable outcome per commit:
+
+```markdown
+## Commit plan
+
+- [ ] Commit 1: reviewable outcome
+- [ ] Commit 2: follow-up outcome
+```
+
+Do not leave the split implicit in prose elsewhere in the task, such as the Purpose. The commit-plan checklist records interim-commit acceptance, while `## Tasks` holds the detailed implementation steps. Begin with every entry unchecked. When work starts on the first unchecked entry, change the task from `ready` to `in-progress`. Tick an entry only after the user explicitly accepts that commit's handoff. `project-continue` resumes at the first unchecked entry and stops for review before the next.
 
 A feature spec may describe a larger goal, investigation, or phase sequence. Its phases are not task boundaries by default: create the next concrete task only when its scope, acceptance criteria, and verification are independently reviewable.
 
@@ -74,6 +83,11 @@ For public, user-visible, or behaviourally significant work, name only applicabl
 
 ## Spec                (optional; link to .agent/specs/<feature>.md)
 
+## Commit plan         (required for multi-commit tasks)
+
+- [ ] Commit 1: reviewable outcome
+- [ ] Commit 2: follow-up outcome
+
 ## Tasks
 
 - [ ] step
@@ -94,13 +108,13 @@ Durable execution constraints needed to resume the task. Do not use this as a ru
 
 ```
 
-Step progress is the `- [ ]` / `- [x]` items under `## Tasks`.
+Step progress is the `- [ ]` / `- [x]` items under `## Tasks`. For multi-commit tasks, these are distinct from the `## Commit plan` checklist: task checkboxes track implementation detail, while commit-plan checkboxes track explicit user acceptance of each reviewable commit.
 
 Order steps by how likely they are to change on review: decisions likely to be revisited, such as data model, public interface, or user-facing behaviour, come first; mechanical or plumbing steps (wiring, boilerplate, formatting) come last. This puts what's worth a second look before the routine work in the read order.
 
 ### Completion
 
-After the user signals acceptance:
+After the user explicitly accepts a commit-plan handoff, tick that entry. If another entry remains unchecked, keep the task `in-progress` and resume there next. After the final entry is accepted, or after the user accepts a single-commit task:
 
 1. Add a one-line, dated outcome to `PROGRESS.md`'s `## Archived milestones`: what landed and how it was verified.
 2. Remove the task from the upcoming queue and promote the next entry into the active slot.

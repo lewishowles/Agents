@@ -38,7 +38,7 @@ When `<project-root>/.agent/scripts/project-diagnostics.py` exists, use `--list`
 3. **Verify** — spot-check recently-completed work landed
 4. **Reorient** — confirm active work still fits; move to upcoming if priorities changed
 5. **Present** — digest the active task file into the confirmed contract, current repository state, intended files, verification, and unknowns; the user should not need to open the task file. Wait for confirmation before editing when the task has material API, behaviour, or interpretation decisions
-6. **Continue** — work through confirmed task; note discoveries as they emerge, write them to `PROGRESS.md` once at handoff. If the task file has a `## Commit plan`, implement only the first incomplete numbered section, then stop for review (changed files, verification, commit message) before starting the next — do not implement multiple sections in one pass without the user asking for all of them
+6. **Continue** — work through confirmed task; note discoveries as they emerge, write them to `PROGRESS.md` once at handoff. If the task file has a `## Commit plan`, start at the first unchecked entry. Change `ready` to `in-progress` before its first implementation step, then stop for review (changed files, verification, commit message) before the next entry. Tick the commit-plan entry only after the user explicitly accepts that handoff; do not implement multiple entries in one pass without the user asking for all of them
 7. **Wrap up** — refresh handoff before stopping
 
 ## Session startup
@@ -93,8 +93,8 @@ Finishing work includes updating `PROGRESS.md` and giving handoff. Do not leave 
 
 Make one Edit/Write call covering every section below, not a separate call per bullet.
 
-- Tick completed `## Tasks` checkboxes in the active task file (or completed tasks in an inline `## Active work` section)
-- When implementation is finished, tick the task checkboxes and refresh the handoff with what changed and how it was verified. Leave the task `in-progress` and do not promote the queue until the user signals acceptance with “committed”, “continue”, “next”, or equivalent. Then add that evidence as a one-line, dated entry in `PROGRESS.md`'s `## Archived milestones`, remove the task from the upcoming queue, promote the next entry, and trash the task file.
+- Tick completed `## Tasks` checkboxes in the active task file (or completed tasks in an inline `## Active work` section). These record implementation detail, not interim-commit acceptance.
+- When implementation for a commit-plan entry is finished, refresh the handoff with what changed and how it was verified. Leave the entry unchecked and the task `in-progress` until the user explicitly accepts it with “committed”, “continue”, “next”, or equivalent. Then tick that entry. If another entry is unchecked, resume from it later. Only after the final entry is accepted, or after a single-commit task is accepted, add that evidence as a one-line, dated entry in `PROGRESS.md`'s `## Archived milestones`, remove the task from the upcoming queue, promote the next entry, and trash the task file.
 - Update `### Previous step` with what just changed and any verification performed
 - Update `### Next step` with the first concrete follow-up action
 - Update the `## Roadmap` row Status when a release becomes active or its last task lands as done

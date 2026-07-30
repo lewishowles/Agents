@@ -65,7 +65,7 @@ For broad dependency questions, start with local evidence and apply the `code-lo
 - Insert before upcoming sections if this work is a prerequisite
 - Order by dependency, not arrival
 - Each active section is an execution boundary
-- When asked to implement multi-section plan, do only first incomplete section unless user asks for all
+- For a multi-commit task, add a `## Commit plan` checklist using `- [ ] Commit N: outcome`; do only the first unchecked entry unless the user asks for all
 - After one section, stop for review: changed files, verification, commit message
 - Do not combine release, policy, tooling, docs, roadmap into one working-tree change unless explicitly one commit
 
@@ -78,6 +78,8 @@ Before creating or delegating a task, confirm it has one coherent change surface
 Split the task when it would need separate review decisions for public behaviour, packaging or release work, documentation unrelated to the changed interface, or another independently verifiable outcome. Keep documentation with the interface it explains, rather than as a final sweep.
 
 A feature spec can cover a larger goal or implementation phase. Do not copy its phase boundaries into task files automatically: create the next task only when its scope, acceptance criteria, and verification can stand alone.
+
+For a multi-commit task, add `## Commit plan` before `## Tasks`. Each entry has the exact form `- [ ] Commit N: reviewable outcome`. It tracks interim-commit acceptance, not implementation work: keep detailed steps under `## Tasks`. When implementation starts, change the task from `ready` to `in-progress`. Tick a commit-plan entry only after the user explicitly accepts that commit's handoff; the next pickup starts at the first unchecked entry.
 
 ## Feature specs
 
@@ -197,6 +199,11 @@ Optional.
 ## Spec
 
 Optional. Link to `.agent/specs/<feature>.md` only when this task needs heavier feature context.
+
+## Commit plan
+
+- [ ] Commit 1: reviewable outcome
+- [ ] Commit 2: follow-up outcome
 
 ## Tasks
 
