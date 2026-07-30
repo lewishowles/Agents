@@ -167,6 +167,19 @@ test_hook_file_is_replaced_with_managed_link() {
 	assert_not_contains "$home_dir/.codex/config.toml" '[[hooks.'
 }
 
+test_workspace_network_access_is_enabled() {
+	local home_dir="$TEST_ROOT/workspace-network"
+
+	create_existing_config "$home_dir"
+	printf '\n[sandbox_workspace_write]\nnetwork_access = false\nexclude_slash_tmp = true\n' >> "$home_dir/.codex/config.toml"
+	run_setup "$home_dir" > /dev/null
+
+	assert_contains "$home_dir/.codex/config.toml" '[sandbox_workspace_write]'
+	assert_contains "$home_dir/.codex/config.toml" 'network_access = true'
+	assert_not_contains "$home_dir/.codex/config.toml" 'network_access = false'
+	assert_contains "$home_dir/.codex/config.toml" 'exclude_slash_tmp = true'
+}
+
 test_skip_backup_environment_does_not_bypass_backup() {
 	local home_dir="$TEST_ROOT/skip-backup-environment"
 
@@ -195,6 +208,7 @@ test_help_hides_backup_bypass
 test_public_backup_bypass_is_rejected
 test_config_replacement_creates_timestamped_backup
 test_hook_file_is_replaced_with_managed_link
+test_workspace_network_access_is_enabled
 test_skip_backup_environment_does_not_bypass_backup
 test_failed_backup_preserves_existing_config
 

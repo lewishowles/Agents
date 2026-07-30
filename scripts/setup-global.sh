@@ -153,6 +153,42 @@ ensure_codex_defaults() {
 	' "$source" > "$destination"
 }
 
+# Ensures the workspace-write sandbox allows outbound network access while
+# preserving its other settings.
+#
+# @param  {string}  config
+#     Codex configuration file to update.
+ensure_codex_workspace_network() {
+	local config="$1"
+	local temp
+
+	temp=$(mktemp)
+	awk '
+		BEGIN {
+			in_workspace_write = 0
+			workspace_write_found = 0
+		}
+		/^\[sandbox_workspace_write\]$/ {
+			print
+			print "network_access = true"
+			in_workspace_write = 1
+			workspace_write_found = 1
+			next
+		}
+		/^\[/ { in_workspace_write = 0 }
+		in_workspace_write && /^network_access[[:space:]]*=/ { next }
+		{ print }
+		END {
+			if (!workspace_write_found) {
+				print ""
+				print "[sandbox_workspace_write]"
+				print "network_access = true"
+			}
+		}
+	' "$config" > "$temp"
+	mv "$temp" "$config"
+}
+
 # Removes inline Codex hook definitions while preserving user configuration
 # and Codex-managed hook trust state. Hooks are defined in hooks.json.
 #
@@ -201,6 +237,7 @@ ensure_codex_config() {
 	# MDN docs/browser-compat server, shipped disabled: enable on request
 	# when a browser-support or Baseline fact needs a live source.
 	printf '\n[mcp_servers.mdn]\nurl = "https://mcp.mdn.mozilla.net/"\nenabled = false\n' >> "$temp"
+	ensure_codex_workspace_network "$temp"
 	ensure_codex_status_line "$temp"
 
 	local hooks_temp
