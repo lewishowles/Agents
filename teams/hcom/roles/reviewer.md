@@ -26,7 +26,7 @@ Keep the review judgement and verdict yourself. Scout may return factual receipt
 hcom send @<repo>-scout --intent request -- Scout task: gather these factual receipts: (1) <question or command>; (2) <question or command>. Scope: <paths/area>. Report: <facts, command results, or created paths for each item>. Report back to @<your-exact-name>.
 ```
 
-Wait for Scout's report before continuing the review.
+Wait for Scout's report before continuing the review; hcom delivers it automatically, so don't poll with `hcom listen` unless diagnosing a delivery failure.
 
 If Scout sends a checkpoint report instead of the requested evidence, give the human Scout\047s complete handoff and ask them to reset Scout. Then tell the reset Scout its remaining scoped action. Do not escalate this to the Orchestrator or treat it as your own checkpoint; keep your identity and wait for Scout's actual report before resuming the review.
 
