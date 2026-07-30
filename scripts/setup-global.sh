@@ -230,8 +230,8 @@ ensure_codex_config() {
 		return
 	fi
 
-	local backup="$config.bak.$(timestamp)"
-	cp "$config" "$backup"
+	local backup
+	backup=$(backup_path "$config")
 	mv "$temp" "$config"
 	cli_group_status success "configured Codex MCP servers and hooks" "backup at $(display_path "$backup")"
 }

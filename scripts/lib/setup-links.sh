@@ -8,26 +8,33 @@ timestamp() {
 
 # Moves a file to a timestamped backup location and prints the backup path.
 # Backup paths are routed by prefix so each agent's backups stay separate.
-# If a backup already exists, a timestamp suffix is added to avoid collision.
+# Only one backup is kept per source path; older ones are removed first so
+# setup runs don't leave a growing pile of stale backups behind.
 #
 # @param  {string}  path
 #     The file or symlink to back up.
 backup_path() {
 	local path="$1"
-	local backup="${path}.bak.$(timestamp)"
+	local backup_dir
 
 	case "$path" in
-		"$HOME/.claude/skills/"*)   backup="$HOME/.claude/backups/skills/$(basename "$path").bak.$(timestamp)" ;;
-		"$HOME/.claude/hooks/"*)    backup="$HOME/.claude/backups/hooks/$(basename "$path").bak.$(timestamp)" ;;
-		"$HOME/.claude/commands/"*) backup="$HOME/.claude/backups/commands/$(basename "$path").bak.$(timestamp)" ;;
-		"$HOME/.agents/skills/"*)   backup="$HOME/.agents/backups/skills/$(basename "$path").bak.$(timestamp)" ;;
+		"$HOME/.claude/skills/"*)   backup_dir="$HOME/.claude/backups/skills" ;;
+		"$HOME/.claude/hooks/"*)    backup_dir="$HOME/.claude/backups/hooks" ;;
+		"$HOME/.claude/commands/"*) backup_dir="$HOME/.claude/backups/commands" ;;
+		"$HOME/.agents/skills/"*)   backup_dir="$HOME/.agents/backups/skills" ;;
+		*)                          backup_dir="$(dirname "$path")" ;;
 	esac
 
-	if [ -e "$backup" ] || [ -L "$backup" ]; then
-		backup="${backup}.$(timestamp)"
-	fi
+	local backup_base
+	backup_base="$(basename "$path")"
+	mkdir -p "$backup_dir"
 
-	mkdir -p "$(dirname "$backup")"
+	local old
+	while IFS= read -r old; do
+		trash "$old"
+	done < <(find "$backup_dir" -maxdepth 1 -name "${backup_base}.bak.*" 2>/dev/null)
+
+	local backup="$backup_dir/${backup_base}.bak.$(timestamp)"
 	mv "$path" "$backup"
 	printf '%s' "$backup"
 }
