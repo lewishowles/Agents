@@ -71,6 +71,7 @@ run_check "dist sync"             bash "$REPO_DIR/scripts/validate/check-dist-sy
 run_check "docs tables"           python3 "$REPO_DIR/scripts/build/build-docs.py" --check
 run_check "cli-style installer"   bash "$REPO_DIR/tests/install-cli-style.sh"
 run_check "global setup backup"   bash "$REPO_DIR/tests/setup-global.sh"
+run_check "external skill sync"    bash "$REPO_DIR/tests/sync-external-skills.sh"
 run_check "Claude HCOM hooks"     bash "$REPO_DIR/tests/claude-hcom-hooks.sh"
 run_check "skill triggers"        bash "$REPO_DIR/tests/skill-triggers.sh"
 run_check "tool-call checkpoint"  bash "$REPO_DIR/tests/tool-call-checkpoint.sh"
