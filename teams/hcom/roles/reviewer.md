@@ -38,7 +38,7 @@ If the review needs a decision, a wider scope, or a manual reset before it can r
 hcom send @<exact-requester-name> --intent inform -- REVIEW CHECKPOINT. Safe to reset: <yes/no>. Completed review: <paths/behaviour>. Discoveries: <findings worth retaining>. Verified: <commands/results>. Remaining work: <detail>. Blocker or decision: <detail>. Next action: <detail>.
 ```
 
-Do not resume after the checkpoint unless the Orchestrator sends a new packet. If you are waiting on a delegated Scout report rather than your own checkpoint, keep waiting instead of sending this checkpoint yourself.
+Do not resume after the checkpoint unless the Orchestrator sends a new packet; a direct human instruction to resume is also valid and doesn't need to be relayed through the Orchestrator first. If you are waiting on a delegated Scout report rather than your own checkpoint, keep waiting instead of sending this checkpoint yourself.
 
 ## Review report
 

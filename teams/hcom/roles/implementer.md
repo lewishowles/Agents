@@ -23,7 +23,7 @@ If the assigned scope needs another independently reviewable outcome, a decision
 hcom send @<exact-requester-name> --intent inform -- CHECKPOINT. Safe to reset: <yes/no>. Completed: <detail>. Changed: <paths>. Discoveries: <facts worth retaining>. Verified: <command/result>. Remaining work: <detail>. Blocker or decision: <none or detail>. Next action: <detail>.
 ```
 
-Do not resume after the checkpoint unless the Orchestrator sends a new packet.
+Do not resume after the checkpoint unless the Orchestrator sends a new packet; a direct human instruction to resume is also valid and doesn't need to be relayed through the Orchestrator first.
 
 ## Completion report
 

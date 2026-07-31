@@ -28,7 +28,7 @@ hcom send @<exact-requester-name> --intent inform -- SCOUT CHECKPOINT. Safe to r
 
 `Safe to reset` answers one question only: has every gathered fact already been sent in this or an earlier message? A reset erases your context entirely, so anything gathered but not yet written into an outgoing message is lost, and whoever continues has to re-investigate it from scratch. That includes reads you consider finished but haven't reported yet. Answer `no` whenever this checkpoint is the first place any of that evidence appears, even if the investigation is complete and only the write-up remains. Answer `yes` only once the evidence in this checkpoint is itself the full report, or a prior message already carries it.
 
-Do not resume after the checkpoint unless the Orchestrator sends a new packet.
+Do not resume after the checkpoint unless your requester sends a new packet; a direct human instruction to resume is also valid and doesn't need to be relayed through your requester first.
 
 ## Research report
 
