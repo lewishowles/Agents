@@ -19,6 +19,7 @@ E2E and component tests verify real-browser user experience. Playwright is stand
 - Do not run Playwright or Cypress, directly or through diagnostics. This applies to every agent in an HCOM team.
 - Inspect the project's diagnostics and test setup, then give the user the narrowest exact browser-test command to run manually. Do not claim browser evidence until the user provides the result.
 - Use `.agent/scripts/project-diagnostics.py --list` to discover the command when available. If there is no diagnostics script, derive it from the documented project setup or package scripts.
+- Name tests in plain active voice ("keeps a long chain on one line and scrolls to its end"), not a passive or clever restatement of the mechanism.
 
 ## Which tool to use
 

@@ -56,3 +56,4 @@ Before primitive operations (length, clamping, type checks, string/array/object 
 - Lead with one line, present tense, no boilerplate. Put options in `@note`; keep `@example` short. Match surrounding tone
 - Plain-language voice; no unexplained jargon or "etc". Purpose over cleverness
 - Avoid inflated phrasing like "positioning context" or "caller-provided X"; don't invent a term for a concept the codebase doesn't already name (e.g. "wide panel"): reuse existing naming or ask
+- This also covers swapping an existing name for a more formal-sounding synonym, not just novel terms: if the code calls `useStorage`, describe it as storing/stored, not "persist"/"persistence"/"reactive". Match the API's own verb.

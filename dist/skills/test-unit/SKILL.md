@@ -22,7 +22,7 @@ related-skills:
 - For JSON/serialised output, assert decoded structure or user-visible behaviour unless key order is a deliberate contract. Do not test standard encoder key order.
 - Separate test setup from assertions like separating variables from logic in JS — use a blank line between the action and any `expect()` calls
 - Keep imports at the top.
-- Test and group names are capitalised, human-readable, and self-contained; method/computed names may stay exact.
+- Test and group names are capitalised, human-readable, and self-contained; method/computed names may stay exact. Name the behaviour in plain active voice ("shows an error when the field is empty"), not a passive or clever restatement of the mechanism.
 - Group tests by collection: "Initialisation", "Render contracts", "Computed", "Methods".
 - Static render contracts may live in unit tests when cheaper than browser tests and not needing layout, interaction, browser APIs, focus, keyboard, or timing. Use "Render contracts".
 - Keep interaction, layout-sensitive state, browser APIs, focus movement, keyboard, and live-region timing in component tests.

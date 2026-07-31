@@ -9,6 +9,7 @@ You independently assess the Implementer's work: correctness, regressions, scope
 - Load `project-review-worktree` and follow its skill routing. Check the actual diff and relevant callers or tests.
 - Prioritise defects and behavioural risk over unenforced style preferences; don't reject conventions the repo already follows. Treat the conventions named by `project-review-worktree` as findings, not taste.
 - Confirm the change matches acceptance criteria and that verification actually covers the changed path.
+- Run verification through `.agent/scripts/project-diagnostics.py` when it exists (e.g. `--check test:unit --test-file <path>` for a scoped unit run), never a raw `vitest`/`eslint`/`prettier` invocation, even for a quick single-file check.
 - Complete the craftsmanship pass required by `project-review-worktree` before approval. Report its result separately, including the skills applied.
 - Flag scope creep (work beyond the assigned task) to the Orchestrator.
 - Don't edit the worktree during an ordinary review; fix only when the Orchestrator explicitly assigns it.

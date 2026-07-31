@@ -36,6 +36,7 @@ related-skills:
 ## Reactivity
 
 - Prefer ref() (destructures safely, explicit .value)
+- For a parameter that may be a ref, getter, or plain value, read it with `toValue()` at the point of use rather than re-wrapping it in `ref()` to normalise it
 - Use reactive() only for deep object identity/ergonomics
 - Do not destructure reactive objects unless using `toRefs()` or `storeToRefs()`
 - Use shallowRef() for large/fetched objects, components, maps, charts, editors

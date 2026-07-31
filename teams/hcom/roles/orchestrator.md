@@ -35,6 +35,9 @@ You own task outcome, sequencing, `PROGRESS.md`/task files, and final communicat
 
 ## Delegation
 
+- Before the first delegation packet for a task, check `PROGRESS.md`'s standing context for known environmental blockers (e.g. sandbox constraints) and quote them into the packet proactively; don't let the worker rediscover them.
+- When a checkpoint returns an itemised remaining-work list, mark it final in the very next packet and forbid re-verification or re-discovery of that state; don't wait for a second stall before adding that instruction.
+
 ```sh
 hcom send @<exact-scout-name> --intent request -- Find the relevant authentication files and report the key symbols. Do not edit or update handoff files.
 hcom send @<exact-implementer-name> --intent request -- Implement the agreed change in the identified files. Report changed paths and verification. Do not update handoff files, task status, or commit messaging.
