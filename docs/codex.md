@@ -38,7 +38,9 @@ project_doc_max_bytes = 65536
 
 The official reference also documents `skills.config` for per-skill path and enablement overrides.
 
-Global setup preserves unrelated settings in `~/.codex/config.toml` and sets these defaults alongside the managed MCP server:
+[`src/adapters/codex/config.base.toml`](../src/adapters/codex/config.base.toml) is the source for the global Codex defaults. Setup merges it into `~/.codex/config.toml`, preserving desktop preferences, trusted projects, hook trust state, user-installed plugins and unrelated servers.
+
+The managed base includes the default sandbox policy and permits the macOS Trash so agents can use `trash`:
 
 ```toml
 approval_policy = "never"
