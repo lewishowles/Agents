@@ -75,12 +75,19 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 - Has this change added unnecessary abstraction or machinery?
 - Classify each flagged spot with exactly one tag: `[delete]` remove it; `[stdlib]` use the standard library; `[native]` use a platform feature; `[yagni]` avoid an unneeded addition; `[shrink-style]` use simpler code.
 - For whole-repo debt, use `refactoring`'s **Technical debt triage** categories instead; these tags classify only the reviewed diff.
+- For a fuller reuse/simplification/efficiency/altitude pass over a diff with dedicated review agents, use the built-in `/simplify` command instead of hand-rolling that pass here.
+
+**Altitude**
+
+- Is each change implemented at the right depth, or is it a fragile bandaid: a special case layered on shared infrastructure because the underlying mechanism wasn't generalised?
+- Prefer generalising the shared mechanism over stacking another special case on top of it.
 
 **Performance** (UI, list rendering, assets)
 
 - Unnecessary re-renders or reactive side effects?
 - Images sized and lazy-loaded?
 - N+1 queries, missing indexes, unbounded queries, hot-path complexity?
+- Long-lived objects built from closures or captured environments? They keep the entire enclosing scope alive for the object's lifetime, a memory leak when that scope holds large values. Prefer a class/struct that copies only the fields it needs.
 - If claiming improvement, were before/after taken under same conditions (state, cache, throttling)? Warmed cache or narrow tests aren't real.
 
 **Tests**
