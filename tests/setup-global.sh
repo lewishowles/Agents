@@ -147,6 +147,7 @@ test_config_replacement_creates_timestamped_backup() {
 	assert_equals "$(grep -c '^default_tools_approval_mode = \"approve\"$' "$home_dir/.codex/config.toml")" "2"
 	assert_contains "$home_dir/.codex/config.toml" '[features]'
 	assert_contains "$home_dir/.codex/config.toml" 'hooks = true'
+	assert_contains "$home_dir/.codex/config.toml" 'writable_roots = ["'"$home_dir"'/.Trash"]'
 	assert_not_contains "$home_dir/.codex/config.toml" '[[hooks.'
 	assert_link "$home_dir/.codex/hooks.json"
 	assert_link "$home_dir/.codex/hooks/tool-call-checkpoint.sh"
@@ -171,13 +172,14 @@ test_workspace_network_access_is_enabled() {
 	local home_dir="$TEST_ROOT/workspace-network"
 
 	create_existing_config "$home_dir"
-	printf '\n[sandbox_workspace_write]\nnetwork_access = false\nexclude_slash_tmp = true\n' >> "$home_dir/.codex/config.toml"
+	printf '\n[sandbox_workspace_write]\nnetwork_access = false\nexclude_slash_tmp = true\nwritable_roots = ["/tmp/keep"]\n' >> "$home_dir/.codex/config.toml"
 	run_setup "$home_dir" > /dev/null
 
 	assert_contains "$home_dir/.codex/config.toml" '[sandbox_workspace_write]'
 	assert_contains "$home_dir/.codex/config.toml" 'network_access = true'
 	assert_not_contains "$home_dir/.codex/config.toml" 'network_access = false'
 	assert_contains "$home_dir/.codex/config.toml" 'exclude_slash_tmp = true'
+	assert_contains "$home_dir/.codex/config.toml" 'writable_roots = ["/tmp/keep", "'"$home_dir"'/.Trash"]'
 }
 
 test_skip_backup_environment_does_not_bypass_backup() {

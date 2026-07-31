@@ -46,6 +46,10 @@ The managed base includes the default sandbox policy and permits the macOS Trash
 approval_policy = "never"
 sandbox_mode = "workspace-write"
 
+[sandbox_workspace_write]
+network_access = true
+writable_roots = ["~/.Trash"]
+
 [mcp_servers.codebase-memory-mcp]
 command = "codebase-memory-mcp"
 ```

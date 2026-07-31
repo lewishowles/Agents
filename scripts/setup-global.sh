@@ -78,6 +78,47 @@ setup_codex() {
 	cli_group_end
 }
 
+# Prints one repository-managed Codex configuration value.
+#
+# @param  {string}  section
+#     TOML section name, or root for a root-level setting.
+# @param  {string}  key
+#     Setting name to read.
+codex_config_value() {
+	local section="$1" key="$2"
+
+	awk -v section="$section" -v key="$key" '
+		BEGIN { in_section = section == "root" }
+		/^\[/ {
+			if (section == "root") {
+				exit
+			}
+
+			in_section = $0 == "[" section "]"
+			next
+		}
+		in_section && $0 ~ "^" key "[[:space:]]*=" {
+			sub("^[^=]*=[[:space:]]*", "")
+			print
+			exit
+		}
+	' "$REPO_DIR/src/adapters/codex/config.base.toml"
+}
+
+# Prints one repository-managed Codex TOML section.
+#
+# @param  {string}  section
+#     TOML section name to read.
+codex_config_section() {
+	local section="$1"
+
+	sed "s|{{HOME}}|$HOME|g" "$REPO_DIR/src/adapters/codex/config.base.toml" | awk -v section="$section" '
+		$0 == "[" section "]" { in_section = 1 }
+		/^\[/ && in_section && $0 != "[" section "]" { exit }
+		in_section { print }
+	'
+}
+
 # Ensures the Codex TUI uses the managed status line while preserving all
 # unrelated TUI preferences.
 #
@@ -85,7 +126,10 @@ setup_codex() {
 #     Codex config file to update.
 ensure_codex_status_line() {
 	local config="$1"
-	local temp
+	local status_line status_line_use_colors temp
+
+	status_line=$(codex_config_value "tui" "status_line")
+	status_line_use_colors=$(codex_config_value "tui" "status_line_use_colors")
 
 	temp=$(mktemp)
 	awk '
@@ -95,8 +139,8 @@ ensure_codex_status_line() {
 		}
 		/^\[tui\]$/ {
 			print
-			print "status_line = [\"run-state\", \"project-name\", \"used-tokens\", \"context-used\", \"five-hour-limit\", \"weekly-limit\", \"model-with-reasoning\"]"
-			print "status_line_use_colors = true"
+			print "status_line = " status_line
+			print "status_line_use_colors = " status_line_use_colors
 			in_tui = 1
 			tui_found = 1
 			next
@@ -108,11 +152,11 @@ ensure_codex_status_line() {
 			if (!tui_found) {
 				print ""
 				print "[tui]"
-				print "status_line = [\"run-state\", \"project-name\", \"used-tokens\", \"context-used\", \"five-hour-limit\", \"weekly-limit\", \"model-with-reasoning\"]"
-				print "status_line_use_colors = true"
+				print "status_line = " status_line
+				print "status_line_use_colors = " status_line_use_colors
 			}
 		}
-	' "$config" > "$temp"
+	' status_line="$status_line" status_line_use_colors="$status_line_use_colors" "$config" > "$temp"
 	mv "$temp" "$config"
 }
 
@@ -124,11 +168,15 @@ ensure_codex_status_line() {
 #     Temporary file that receives the updated configuration.
 ensure_codex_defaults() {
 	local source="$1" destination="$2"
+	local approval_policy sandbox_mode
 
-	awk '
+	approval_policy=$(codex_config_value "root" "approval_policy")
+	sandbox_mode=$(codex_config_value "root" "sandbox_mode")
+
+	awk -v approval_policy="$approval_policy" -v sandbox_mode="$sandbox_mode" '
 		function print_defaults() {
-			print "approval_policy = \"never\""
-			print "sandbox_mode = \"workspace-write\""
+			print "approval_policy = " approval_policy
+			print "sandbox_mode = " sandbox_mode
 		}
 		BEGIN {
 			in_root = 1
@@ -153,36 +201,62 @@ ensure_codex_defaults() {
 	' "$source" > "$destination"
 }
 
-# Ensures the workspace-write sandbox allows outbound network access while
-# preserving its other settings.
+# Ensures the workspace-write sandbox has the managed settings while preserving
+# user-owned settings and writable roots.
 #
 # @param  {string}  config
 #     Codex configuration file to update.
-ensure_codex_workspace_network() {
+ensure_codex_workspace_settings() {
 	local config="$1"
-	local temp
+	local network_access writable_roots writable_root temp
+
+	network_access=$(codex_config_value "sandbox_workspace_write" "network_access")
+	writable_roots=$(codex_config_value "sandbox_workspace_write" "writable_roots")
+	writable_roots=${writable_roots//\{\{HOME\}\}/$HOME}
+	writable_root=${writable_roots#*[\"]}
+	writable_root=${writable_root%%[\"]*}
 
 	temp=$(mktemp)
-	awk '
+	awk -v network_access="$network_access" -v writable_roots="$writable_roots" -v writable_root="$writable_root" '
+		function finish_workspace_write() {
+			if (in_workspace_write && !writable_roots_found) {
+				print "writable_roots = " writable_roots
+			}
+		}
 		BEGIN {
 			in_workspace_write = 0
 			workspace_write_found = 0
+			writable_roots_found = 0
 		}
 		/^\[sandbox_workspace_write\]$/ {
+			finish_workspace_write()
 			print
-			print "network_access = true"
+			print "network_access = " network_access
 			in_workspace_write = 1
 			workspace_write_found = 1
 			next
 		}
-		/^\[/ { in_workspace_write = 0 }
+		/^\[/ {
+			finish_workspace_write()
+			in_workspace_write = 0
+		}
 		in_workspace_write && /^network_access[[:space:]]*=/ { next }
+		in_workspace_write && /^writable_roots[[:space:]]*=/ {
+			writable_roots_found = 1
+			if (index($0, "\"" writable_root "\"") == 0) {
+				sub(/\][[:space:]]*$/, ", \"" writable_root "\"]")
+			}
+			print
+			next
+		}
 		{ print }
 		END {
+			finish_workspace_write()
 			if (!workspace_write_found) {
 				print ""
 				print "[sandbox_workspace_write]"
-				print "network_access = true"
+				print "network_access = " network_access
+				print "writable_roots = " writable_roots
 			}
 		}
 	' "$config" > "$temp"
@@ -230,14 +304,12 @@ ensure_codex_config() {
 	' "$defaults_temp" > "$temp"
 	rm "$defaults_temp"
 
-	# Re-add managed MCP server entries with canonical config.
-	printf '\n[mcp_servers.codebase-memory-mcp]\ncommand = "codebase-memory-mcp"\ndefault_tools_approval_mode = "approve"\n' >> "$temp"
-	printf '\n[mcp_servers.serena]\nstartup_timeout_sec = 15\ncommand = "serena"\nargs = ["start-mcp-server", "--project-from-cwd", "--context=codex"]\ndefault_tools_approval_mode = "approve"\n' >> "$temp"
-
-	# MDN docs/browser-compat server, shipped disabled: enable on request
-	# when a browser-support or Baseline fact needs a live source.
-	printf '\n[mcp_servers.mdn]\nurl = "https://mcp.mdn.mozilla.net/"\nenabled = false\n' >> "$temp"
-	ensure_codex_workspace_network "$temp"
+	# Re-add repository-managed MCP server configuration.
+	for section in "mcp_servers.codebase-memory-mcp" "mcp_servers.serena" "mcp_servers.mdn"; do
+		printf '\n' >> "$temp"
+		codex_config_section "$section" >> "$temp"
+	done
+	ensure_codex_workspace_settings "$temp"
 	ensure_codex_status_line "$temp"
 
 	local hooks_temp
@@ -245,19 +317,22 @@ ensure_codex_config() {
 	remove_inline_codex_hooks "$temp" "$hooks_temp"
 	mv "$hooks_temp" "$temp"
 
+	local hooks_enabled
+	hooks_enabled=$(codex_config_value "features" "hooks")
+
 	# Migrate the deprecated codex_hooks key to hooks, and ensure the hooks
 	# feature flag is present in [features].
 	if grep -q '^codex_hooks' "$temp"; then
 		local temp2
 		temp2=$(mktemp)
-		sed 's/^codex_hooks = /hooks = /' "$temp" > "$temp2"
+		sed "s/^codex_hooks = /hooks = $hooks_enabled/" "$temp" > "$temp2"
 		mv "$temp2" "$temp"
 	elif ! grep -q '^\[features\]' "$temp"; then
-		printf '\n[features]\nhooks = true\n' >> "$temp"
+		printf '\n[features]\nhooks = %s\n' "$hooks_enabled" >> "$temp"
 	elif ! grep -q '^hooks' "$temp"; then
 		local temp2
 		temp2=$(mktemp)
-		awk '/^\[features\]/{print; print "hooks = true"; next} 1' "$temp" > "$temp2"
+		awk -v hooks_enabled="$hooks_enabled" '/^\[features\]/{print; print "hooks = " hooks_enabled; next} 1' "$temp" > "$temp2"
 		mv "$temp2" "$temp"
 	fi
 

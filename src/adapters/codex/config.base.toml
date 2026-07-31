@@ -1,0 +1,27 @@
+approval_policy = "never"
+sandbox_mode = "workspace-write"
+
+[features]
+hooks = true
+
+[sandbox_workspace_write]
+network_access = true
+writable_roots = ["{{HOME}}/.Trash"]
+
+[tui]
+status_line = ["run-state", "project-name", "used-tokens", "context-used", "five-hour-limit", "weekly-limit", "model-with-reasoning"]
+status_line_use_colors = true
+
+[mcp_servers.codebase-memory-mcp]
+command = "codebase-memory-mcp"
+default_tools_approval_mode = "approve"
+
+[mcp_servers.serena]
+startup_timeout_sec = 15
+command = "serena"
+args = ["start-mcp-server", "--project-from-cwd", "--context=codex"]
+default_tools_approval_mode = "approve"
+
+[mcp_servers.mdn]
+url = "https://mcp.mdn.mozilla.net/"
+enabled = false
