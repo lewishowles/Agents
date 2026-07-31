@@ -50,6 +50,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/library-release` | `library-release` | When releasing @lewishowles/components, @lewishowles/helpers, @lewishowles/testing, or @lewishowles/cli-style |
 | `/library-update` | `library-update` | When checking for updates to @lewishowles/components, @lewishowles/helpers, @lewishowles/testing, or @lewishowles/cli-style after a new release |
 | `/project-audit` | `project-audit` | When auditing a project for setup drift, stale generated output, missing diagnostics, command-safety gaps, or agent-readiness issues |
+| `/project-backport-review` | `project-backport-review` | When comparing a consumer project against the boilerplate template for backport candidates and boilerplate improvements |
 | `/project-compact-progress` | `project-compact-progress` | When PROGRESS.md has grown noisy or hard to scan; reduces word count while preserving context and meaning |
 | `/project-continue` | `project-continue` | When resuming work from an existing PROGRESS.md |
 | `/project-learn-from-source` | `project-learn-from-source` | When extracting repo-specific lessons from an external artefact |
