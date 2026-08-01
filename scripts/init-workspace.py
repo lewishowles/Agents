@@ -129,6 +129,9 @@ DEFAULT_TREE_EXCLUDES = [
 	".turbo",
 	".cache",
 	"vendor",
+	".venv",
+	"venv",
+	"__pycache__",
 ]
 
 BOILERSUIT_DIR_NAME = ".boilersuit"
@@ -375,7 +378,7 @@ def detect_source_dirs(project_dir: Path) -> List[str]:
 def summarise_test_file_paths(project_dir: Path) -> List[str]:
 	patterns = []
 
-	for suffix_pattern in ["*.test.*", "*.spec.*"]:
+	for suffix_pattern in ["*.test.*", "*.spec.*", "test_*.py", "*_test.py"]:
 		for candidate in project_dir.glob(f"**/{suffix_pattern}"):
 			if not candidate.is_file():
 				continue
