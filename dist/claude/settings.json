@@ -77,6 +77,15 @@
         ]
       },
       {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'bash \"$HOME/.claude/hooks/guard-destructive.sh\"'"
+          }
+        ]
+      },
+      {
         "matcher": "Bash|Task|Write|Edit",
         "hooks": [
           {

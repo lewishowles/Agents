@@ -48,11 +48,12 @@ copy_hooks() {
 		done
 	done
 
-	local shared_hook="$REPO_DIR/src/hooks/shared/tool-call-checkpoint.sh"
-	if [[ -f "$shared_hook" ]]; then
-		cp "$shared_hook" "$REPO_DIR/dist/claude/hooks/tool-call-checkpoint.sh"
-		cp "$shared_hook" "$REPO_DIR/dist/codex/hooks/tool-call-checkpoint.sh"
-	fi
+	local shared_hook
+	for shared_hook in "$REPO_DIR/src/hooks/shared/"*.sh; do
+		[ -f "$shared_hook" ] || continue
+		cp "$shared_hook" "$REPO_DIR/dist/claude/hooks/$(basename "$shared_hook")"
+		cp "$shared_hook" "$REPO_DIR/dist/codex/hooks/$(basename "$shared_hook")"
+	done
 }
 
 mkdir -p "$REPO_DIR/dist/claude" "$REPO_DIR/dist/codex"

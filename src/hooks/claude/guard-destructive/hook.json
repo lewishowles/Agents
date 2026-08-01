@@ -1,0 +1,13 @@
+{
+	"name": "guard-destructive",
+	"description": "Blocks sudo, filesystem wipes, git config mutation, and rm — the unconditional-never commands in this repo's Git Safety Protocol and Communication rules.",
+	"runtime": "claude",
+	"events": [
+		{
+			"event": "PreToolUse",
+			"matcher": "Bash"
+		}
+	],
+	"dependencies": ["jq"],
+	"failureMode": "silent"
+}
