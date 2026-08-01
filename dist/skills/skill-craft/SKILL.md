@@ -38,6 +38,7 @@ If any of the three fails, extend an existing skill or discard the idea.
 5. **Avoid trigger competition:** reserve broad phrases for router or coordinator skills. Technique or task skills should use specific triggers that do not compete with their router.
 6. **Add support material only when it earns its cost:** keep the operational procedure in `SKILL.body.md`; put optional depth in `references/`, a reusable output shape or edge case in `examples/`, and deterministic checks in `scripts/`. A script must test a concrete mechanical contract, run without new dependencies where possible, and include `--selftest` when it has meaningful internal behaviour. Do not add empty directories or boilerplate examples.
 7. **Extract mechanical workflow:** when a skill repeatedly dispatches agents, re-evaluates their output, carries intermediate state, or mechanically adjudicates results, move those parts into a deterministic helper, hook, or validation. Keep model calls for judgement. Confirm equivalent black-box behaviour and report unresolved findings rather than treating a budget limit as success.
+8. **For conduct-style skills, consider the Intent/Evidence/Decision/Execution/Recovery lens:** what failure this prevents, what evidence triggers it, what's being decided, what the agent should do, and what to do when evidence is missing. Skip for mechanical, step-by-step skills where the lens adds no clarity.
 
 ## Build
 
@@ -73,3 +74,5 @@ If guidance should apply on every turn regardless of task type, it belongs in `r
 ## Attribution
 
 The trigger-competition and honesty-test guidance adapts ideas from `danium/lateral-thinking`, MIT licensed.
+
+The Intent/Evidence/Decision/Execution/Recovery lens adapts the behaviour-spec structure from `braintrustdata/agentbehavior` (agentbehavior.dev), Apache 2.0 licensed.
