@@ -36,10 +36,10 @@ If Scout sends a checkpoint report instead of the requested evidence, give the h
 If the review needs a decision, a wider scope, or a manual reset before it can reach a verdict, stop and send one compact checkpoint:
 
 ```sh
-hcom send @<exact-requester-name> --intent inform -- REVIEW CHECKPOINT. Safe to reset: <yes/no>. Completed review: <paths/behaviour>. Discoveries: <findings worth retaining>. Verified: <commands/results>. Remaining work: <detail>. Blocker or decision: <detail>. Next action: <detail>.
+hcom send @<exact-requester-name> --intent inform -- REVIEW CHECKPOINT. State: stopped; human decision required. Safe to reset: <yes/no>. Completed review: <paths/behaviour>. Discoveries: <findings worth retaining>. Verified: <commands/results>. Remaining work after reset: <detail>. Blocker or decision: <detail>. Next action after reset: <detail>.
 ```
 
-Do not resume after the checkpoint unless the Orchestrator sends a new packet; a direct human instruction to resume is also valid and doesn't need to be relayed through the Orchestrator first. If you are waiting on a delegated Scout report rather than your own checkpoint, keep waiting instead of sending this checkpoint yourself.
+A tool-call checkpoint is this same stop even when the review has no blocker and the remaining work is already clear. Do not describe it as "not blocked", "just pausing", waiting for the final result, or something you will continue in the current session. Remaining work describes the continuation packet after reset; it is not permission to resume. Do not resume after the checkpoint unless the Orchestrator sends a new packet; a direct human instruction to resume is also valid and doesn't need to be relayed through the Orchestrator first. If you are waiting on a delegated Scout report rather than your own checkpoint, keep waiting instead of sending this checkpoint yourself.
 
 ## Review report
 

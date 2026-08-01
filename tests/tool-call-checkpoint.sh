@@ -28,9 +28,12 @@ assert_checkpoint() {
 		.hookSpecificOutput.hookEventName == "PreToolUse"
 		and (.hookSpecificOutput.additionalContext | contains("TOOL-CALL CHECKPOINT (20/20)"))
 		and (.hookSpecificOutput.additionalContext | contains("send one --intent inform checkpoint only to your direct sender"))
-		and (.hookSpecificOutput.additionalContext | contains("completed work and changed paths; discoveries worth retaining; verification completed or pending; remaining work; and the exact next action"))
+		and (.hookSpecificOutput.additionalContext | contains("State: stopped; human decision required."))
+		and (.hookSpecificOutput.additionalContext | contains("remaining work after reset; and the exact next action after reset"))
+		and (.hookSpecificOutput.additionalContext | contains("Do not describe the checkpoint as \"not blocked\", \"just pausing\", waiting for the final result"))
 		and (.hookSpecificOutput.additionalContext | contains("Do not send it to the human or another team member, continue, create a successor, or ask for another packet"))
 		and (.hookSpecificOutput.additionalContext | contains("HCOM Orchestrator receiving that report: it is always a mandatory stop"))
+		and (.hookSpecificOutput.additionalContext | contains("Remaining work is the continuation scope after reset, never permission to wait for a final result from the current worker"))
 		and (.hookSpecificOutput.additionalContext | contains("Assess whether the worker is safe to reset"))
 		and (.hookSpecificOutput.additionalContext | contains("Present the human the completed work, changed paths, discoveries, remaining work, and your safe-to-reset assessment"))
 		and (.hookSpecificOutput.additionalContext | contains("do not reset it yourself or resume waiting on your own judgement"))
