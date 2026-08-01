@@ -3,15 +3,20 @@
 name: project-review-task
 displayName: Project review task
 description: >
-  Use this skill when assessing a task file or implementation plan before coding, checking repository truth, scope, evidence, and readiness without editing the task.
+  Use this skill when assessing a task file or implementation plan before coding, or consolidating independent peer review packets, checking repository truth, scope, evidence, and readiness.
 ---
 # Project review task
 
-Assess a task file or implementation plan before coding so stale repository facts, vague contracts, wrong scope, untestable acceptance criteria, and over-prescriptive recipes are caught while they are cheap to change. Give an evidence-backed `Ready as written` verdict when the task is clear, proportionate, and verifiable; otherwise request only changes that improve evidence, reduce ambiguity or risk, improve maintainability, or make completion more verifiable. An independent review does not edit the task or begin implementation.
+Assess a task file or implementation plan before coding so stale repository facts, vague contracts, wrong scope, untestable acceptance criteria, and over-prescriptive recipes are caught while they are cheap to change. Give an evidence-backed `Ready as written` verdict when the task is clear, proportionate, and verifiable; otherwise request only changes that improve evidence, reduce ambiguity or risk, improve maintainability, or make completion more verifiable. Independent review is the default and does not edit the task or begin implementation.
 
 ## Scope
 
 Review planning quality, not an implementation diff, commit range, existing `PROGRESS.md` roadmap, or another agent's feedback. Keep the task's contract separate from implementation mechanics, specialist skill guidance, and delivery coordination.
+
+## Modes
+
+- **Independent review** is the default. Review the task without contacting a planning peer, keep one complete review packet in the live session, and report its resolved path, content hash, verdict, findings, and `Safe to reset: no` while the packet is pending.
+- **Consolidation** is available only when the agent already holds its own completed independent-review packet. Retrieve and reconcile the opposite model's packet through `teams/hcom/roles/planning-peer.md`; do not begin a second independent review or implement the task.
 
 ## Resolve the task
 
@@ -32,6 +37,15 @@ Include ignored task files in each candidate lookup. If the supplied path is mis
 4. Assess the quality rubric below. Mark an item as a finding only when the evidence supports a concrete planning change.
 5. Stress the task's boundary and altitude. It must be detailed enough for implementation and verification without prescribing incidental code structure, inventing architecture, or hiding independently reviewable work.
 6. Report one verdict. Use `Ready as written` only when no **Must-fix** or **Recommended** finding remains; non-blocking **Nice-to-have** ideas do not prevent readiness.
+
+## Consolidate reviews
+
+1. Re-read, re-resolve, and re-hash the current task before consolidating. Do not consolidate against the task read used for the original packet. Stop with a stale-state report if the current path or hash differs from the packet.
+2. Discover exactly one opposite-model planning peer in the same repository directory with `hcom list -v`, then request its matching packet with the resolved task path and content hash. Follow `teams/hcom/roles/planning-peer.md`; wait for automatic delivery and do not poll.
+3. Verify the delivered packet is complete, its stated hash matches the task at its stated path, and both packets resolve the same current task content. Stop without editing on a missing peer, multiple peers, missing or undelivered packet, or any hash or path drift.
+4. For every finding in both packets, choose `accept`, `combine`, `refine`, or `reject` and state the evidence-based reason and source packet. Preserve a strong task unchanged when no finding justifies an edit.
+5. Edit only the resolved task file. Do not edit review packets, planning roles, handoff files, `PROGRESS.md`, or implementation files, and never implement the task during consolidation.
+6. Report every decision and task edit, then explicitly close the peer exchange so the peer can report `Safe to reset: yes`.
 
 ## Quality rubric
 
@@ -89,4 +103,37 @@ Use this shape and keep empty sections explicit with `None.` or `None found.`:
 ## Next step
 
 <If ready, accept the task and begin its approved implementation boundary. If changes are requested, update the task and repeat this review.>
+```
+
+Use this shape for consolidation. Keep empty sections explicit with `None.` or `None found.`:
+
+```markdown
+## Task consolidation
+
+- Resolved task: `<path>`
+- Content hash at consolidation start: `<sha256>`
+- Own packet hash: `<sha256>`
+- Peer packet task: `<path>`
+- Peer packet hash: `<sha256>`
+- Verdict: `Ready as written` | `Changes requested` | `Stopped: stale state`
+
+## Finding decisions
+
+- **[M1]** Source: `own packet` | `peer packet`. Decision: `accept` | `combine` | `refine` | `reject`. Reason: <evidence and effect>.
+- **[R1]** Source: `own packet` | `peer packet`. Decision: `accept` | `combine` | `refine` | `reject`. Reason: <evidence and effect>.
+- None found.
+
+## Task edits
+
+- `<path>:<line>` — <edit made and why>.
+- None.
+
+## Peer exchange
+
+- Peer: `<exact name>`.
+- Closure: `sent` | `not sent because packet was not delivered`.
+
+## Next step
+
+<If consolidated, accept the edited task and begin its approved implementation boundary. If stale state stopped consolidation, refresh both reviews after resolving the reported condition.>
 ```

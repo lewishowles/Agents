@@ -11,4 +11,12 @@ These tiny task files are manual behaviour traps for the prompt-driven `project-
 - `altitude-failure.md`: review the deliberately vague contract. The expected result is a change request for insufficient altitude and acceptance detail.
 - `task-mutation.md`: read and hash the task, change its contract before the verdict, then re-read it. The expected result is a stale-review result because the task changed during review.
 
-The peer, reset, packet-loss, and cross-peer hash cases belong to the later HCOM planning-peer protocol and are intentionally not represented here.
+## Peer-scenario behaviour traps
+
+Use `exact-task.md` as the underlying task for each scenario unless the setup says otherwise. These are prompt-driven checks, not an automated harness.
+
+- Absent peer: hold a completed packet, then run the consolidator in a repository directory with no opposite-model planning peer. The consolidator must stop after `hcom list -v` with an exact missing-peer report and must not request, edit, or consolidate.
+- Multiple peers: hold a completed packet, then expose two opposite-model planning peers in the same repository directory. The consolidator must stop with both candidate names and directories, without choosing one or requesting a packet.
+- Reset packet loss: let the peer reset before delivering its packet or sending closure. The consolidator must wait for automatic delivery, then stop with a missing or undelivered-packet report rather than polling, reconstructing the packet, or editing the task.
+- Cross-peer hash mismatch: give the two completed packets different content hashes for their resolved task. The consolidator must stop with the two paths and hashes, identify the stale-state condition, and leave the task unchanged.
+- Task mutation after review across peers: complete both reviews, mutate `exact-task.md`, then begin consolidation. Re-resolution and re-hashing must detect the current hash drift and stop before combining findings or editing the task.
