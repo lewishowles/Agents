@@ -79,6 +79,10 @@ Enables autonomous multi-hour execution while keeping the main agent as architec
 - Plan 2–3 sections ahead; detailed planning happens when work starts
 - Keep session handoff at top. Agents read from top and stop after handoff when adequate.
 
+### Planning-quality gate
+
+Before asking for approval on any substantive task or feature contract, self-check it against: repository truth, contract, boundary, altitude, failure and recovery states, acceptance evidence, and verification. Leave a strong contract unchanged. Invoke `project-review-task` explicitly when a high-risk or high-ambiguity contract warrants an independent pass, or once a genuine second reviewer is available — a solo self-check by the authoring model is not a substitute.
+
 ## Feature specs
 
 Use linked specs only for larger spikes or ambiguous features. Skip small changes, bug fixes, routine docs, or single-section work.

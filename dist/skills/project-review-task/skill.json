@@ -1,0 +1,22 @@
+{
+	"name": "project-review-task",
+	"title": "Project review task",
+	"description": "Use this skill when assessing a task file or implementation plan before coding, checking repository truth, scope, evidence, and readiness without editing the task.",
+	"when": "When assessing a task contract before implementation",
+	"triggers": [
+		"review task contract",
+		"review task file",
+		"review implementation task",
+		"assess task readiness",
+		"check task before implementation",
+		"planning quality review"
+	],
+	"filePatterns": [],
+	"pathPatterns": [],
+	"dependencies": [],
+	"capabilities": {
+		"promptTriggering": true,
+		"fileTriggering": false
+	},
+	"targets": ["claude", "codex"]
+}
