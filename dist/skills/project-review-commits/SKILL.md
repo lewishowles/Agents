@@ -42,6 +42,8 @@ Read in order:
 
 Skip `WORKSPACE.md` if missing. Use `AGENTS.md`, package scripts, nearby docs as needed.
 
+Gather routine orientation in one bounded call where possible. A supplied review packet may provide paths, prior results, exact commands, and unresolved risks; independently verify load-bearing claims instead of rediscovering unchanged facts.
+
 Apply the `code-lookup` routing skill for structural questions. Use targeted reads; avoid generated, vendored, cached, build, dependency, coverage, or binary output.
 
 ## Range selection
@@ -74,13 +76,15 @@ If a relevant skill is unavailable, state that once and continue with the closes
 
 1. Identify the intended goal from the user request, branch name, `PROGRESS.md`, release notes, commit messages, and changed files.
 2. List the reviewed range and commits oldest to newest. Do not stage or commit.
-3. Inspect each commit enough to understand its behaviour, risk, and relationship to surrounding commits.
-4. Compare implementation with the stated goal, expected commits, docs expectations, generated output, risks, and verification guidance.
-5. Check whether each commit is internally coherent and whether the series tells a truthful story.
-6. Check for follow-up commits that fix earlier mistakes; report the final risk, not just the intermediate state.
-7. Check generated/source boundaries and stale generated output.
-8. Run only focused verification that is cheap and justified. When diagnostics exist, use `.agent/scripts/project-diagnostics.py --check <name>` rather than raw package commands.
-9. Lead with findings. If there are no must-fix issues, say so clearly and note any remaining verification gaps.
+3. List the load-bearing review claims and the cheapest evidence that could settle each one.
+4. When a safe, focused diagnostic or repro is already known, run it early and use its result to direct later reads. If command discovery is needed, inspect only enough context to identify it. Use `.agent/scripts/project-diagnostics.py --check <name>` when available.
+5. Inspect each commit enough to understand its behaviour, risk, and relationship to surrounding commits, prioritising paths connected to failed, blocked, or uncovered claims.
+6. Compare implementation with the stated goal, expected commits, docs expectations, generated output, risks, and verification guidance.
+7. Check whether each commit is internally coherent and whether the series tells a truthful story.
+8. Check for follow-up commits that fix earlier mistakes; report the final risk, not just the intermediate state.
+9. Check generated/source boundaries and stale generated output.
+10. Run any remaining cheap, justified checks raised by source inspection.
+11. Lead with findings. If there are no must-fix issues, say so clearly and note any remaining verification gaps.
 
 Use `git show --stat --oneline --no-renames <commit>` or targeted `git show -- <path>` reads when they answer the review question. Avoid printing full diffs for large commits; narrow by path or pattern.
 

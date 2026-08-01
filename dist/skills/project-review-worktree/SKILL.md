@@ -19,6 +19,8 @@ Look for regressions, missing work, weak tests, documentation gaps, and quality 
 
 Read `AGENTS.md`, `WORKSPACE.md`, diagnostics, `PROGRESS.md`, `git status --short`, and relevant changed files. If no workspace file exists, use `AGENTS.md`, package scripts, and nearby docs.
 
+Gather routine orientation in one bounded call where possible. A supplied review packet may provide paths, prior results, exact commands, and unresolved risks; independently verify load-bearing claims instead of rediscovering unchanged facts.
+
 Use `code-lookup` for structural questions. Use targeted reads; avoid generated, vendored, cached, build, dependency, coverage, and binary output.
 
 ## Skill routing
@@ -28,11 +30,13 @@ Apply `code-review`, `code-style`, and relevant language or framework skills. Lo
 ## Review method
 
 1. Identify the task from the request, handoff, and changed files. List them with `git status --short`; do not stage or commit.
-2. Inspect changed files in context and find current lines. Component tests must mount the component under test, not substitute markup.
-3. Compare implementation and documentation with the plan, risks, verification, and generated-source boundary. Reference documentation must match code; roadmaps may describe future work.
-4. Re-check PROGRESS.md's deferred or forward-looking notes (e.g. "optional hardening", "if a third caller ever needs this") against this diff. If the stated trigger condition is now met, treat it as a finding, not a resolved deferral.
-5. Run only cheap, justified checks, using `.agent/scripts/project-diagnostics.py --check <name>` when available.
-6. Lead with findings and evidence gaps. State when no must-fix issue exists.
+2. List the load-bearing review claims and the cheapest evidence that could settle each one.
+3. When a safe, focused diagnostic or repro is already known, run it early and use its result to direct later reads. If command discovery is needed, inspect only enough context to identify it. Use `.agent/scripts/project-diagnostics.py --check <name>` when available.
+4. Inspect changed files in context and find current lines, prioritising paths connected to failed, blocked, or uncovered claims. Component tests must mount the component under test, not substitute markup.
+5. Compare implementation and documentation with the plan, risks, verification, and generated-source boundary. Reference documentation must match code; roadmaps may describe future work.
+6. Re-check PROGRESS.md's deferred or forward-looking notes (e.g. "optional hardening", "if a third caller ever needs this") against this diff. If the stated trigger condition is now met, treat it as a finding, not a resolved deferral.
+7. Run any remaining cheap, justified checks raised by source inspection.
+8. Lead with findings and evidence gaps. State when no must-fix issue exists.
 
 Don't use `git diff` for routine self-review. For independent review, use targeted diffs or file reads when clearest, keeping output narrow.
 
