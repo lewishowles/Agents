@@ -6,7 +6,7 @@ hooks = true
 
 [sandbox_workspace_write]
 network_access = true
-writable_roots = ["{{HOME}}/.Trash"]
+writable_roots = ["{{HOME}}/Dev/Configuration/Agents", "{{HOME}}/.Trash"]
 
 [tui]
 status_line = ["run-state", "project-name", "used-tokens", "context-used", "five-hour-limit", "weekly-limit", "model-with-reasoning"]

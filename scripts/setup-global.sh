@@ -208,16 +208,24 @@ ensure_codex_defaults() {
 #     Codex configuration file to update.
 ensure_codex_workspace_settings() {
 	local config="$1"
-	local network_access writable_roots writable_root temp
+	local network_access writable_roots temp
+	local -a writable_root_list=()
+	local rest item
 
 	network_access=$(codex_config_value "sandbox_workspace_write" "network_access")
 	writable_roots=$(codex_config_value "sandbox_workspace_write" "writable_roots")
 	writable_roots=${writable_roots//\{\{HOME\}\}/$HOME}
-	writable_root=${writable_roots#*[\"]}
-	writable_root=${writable_root%%[\"]*}
+
+	rest="$writable_roots"
+	while [[ "$rest" == *'"'*'"'* ]]; do
+		rest=${rest#*\"}
+		item=${rest%%\"*}
+		writable_root_list+=("$item")
+		rest=${rest#*\"}
+	done
 
 	temp=$(mktemp)
-	awk -v network_access="$network_access" -v writable_roots="$writable_roots" -v writable_root="$writable_root" '
+	awk -v network_access="$network_access" -v writable_roots="$writable_roots" -v roots_list="$(printf '%s|' "${writable_root_list[@]}")" '
 		function finish_workspace_write() {
 			if (in_workspace_write && !writable_roots_found) {
 				print "writable_roots = " writable_roots
@@ -243,8 +251,12 @@ ensure_codex_workspace_settings() {
 		in_workspace_write && /^network_access[[:space:]]*=/ { next }
 		in_workspace_write && /^writable_roots[[:space:]]*=/ {
 			writable_roots_found = 1
-			if (index($0, "\"" writable_root "\"") == 0) {
-				sub(/\][[:space:]]*$/, ", \"" writable_root "\"]")
+			n = split(roots_list, roots, "|")
+			for (i = 1; i <= n; i++) {
+				root = roots[i]
+				if (root != "" && index($0, "\"" root "\"") == 0) {
+					sub(/\][[:space:]]*$/, ", \"" root "\"]")
+				}
 			}
 			print
 			next
