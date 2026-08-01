@@ -9,7 +9,7 @@ Review planning quality, not an implementation diff, commit range, existing `PRO
 ## Modes
 
 - **Independent review** is the default. Review the task without contacting a planning peer, keep one complete review packet in the live session, and report its resolved path, content hash, verdict, findings, and `Safe to reset: no` while the packet is pending.
-- **Consolidation** is available only when the agent already holds its own completed independent-review packet. Retrieve and reconcile the opposite model's packet through `teams/hcom/roles/planning-peer.md`; do not begin a second independent review or implement the task.
+- **Consolidation** is available only when the agent already holds its own completed independent-review packet. Retrieve and reconcile the opposite model's packet through `teams/hcom/roles/planning-peer.md`; do not begin a second independent review, report the result back to the peer, or implement the task.
 
 ## Resolve the task
 
@@ -33,12 +33,12 @@ Include ignored task files in each candidate lookup. If the supplied path is mis
 
 ## Consolidate reviews
 
-1. Re-read, re-resolve, and re-hash the current task before consolidating. Do not consolidate against the task read used for the original packet. Stop with a stale-state report if the current path or hash differs from the packet.
+1. Confirm the exact task path retained in the independent packet still exists, then calculate a fresh content hash from disk and compare it with the packet hash. Do not repeat task-name resolution or reread the task solely for this check. Stop with a stale-state report if the retained path is missing or its hash differs.
 2. Discover exactly one opposite-model planning peer in the same repository directory with `hcom list -v`, then request its matching packet with the resolved task path and content hash. Follow `teams/hcom/roles/planning-peer.md`; wait for automatic delivery and do not poll.
-3. Verify the delivered packet is complete, its stated hash matches the task at its stated path, and both packets resolve the same current task content. Stop without editing on a missing peer, multiple peers, missing or undelivered packet, or any hash or path drift.
+3. After the peer packet arrives, calculate another fresh hash at the retained task path. Verify that the delivered packet is complete and that its path and hash match the own packet and current hash. Stop without editing on a missing peer, multiple peers, missing or undelivered packet, or any hash or path drift.
 4. For every finding in both packets, choose `accept`, `combine`, `refine`, or `reject` and state the evidence-based reason and source packet. Preserve a strong task unchanged when no finding justifies an edit.
 5. Edit only the resolved task file. Do not edit review packets, planning roles, handoff files, `PROGRESS.md`, or implementation files, and never implement the task during consolidation.
-6. Report every decision and task edit, then explicitly close the peer exchange so the peer can report `Safe to reset: yes`.
+6. Report every decision and task edit. Do not send the consolidation result, final task hash, or a closure acknowledgement to the peer; successful packet delivery already completed the peer's role.
 
 ## Quality rubric
 
@@ -121,10 +121,10 @@ Use this shape for consolidation. Keep empty sections explicit with `None.` or `
 - `<path>:<line>` — <edit made and why>.
 - None.
 
-## Peer exchange
+## Peer packet
 
 - Peer: `<exact name>`.
-- Closure: `sent` | `not sent because packet was not delivered`.
+- Delivery: `received` | `not delivered`.
 
 ## Next step
 
