@@ -45,7 +45,7 @@ Check these against changed files and state which were checked:
 - **No switchboard drift** — a reused helper hasn't accumulated a boolean/option flag per new caller; that's a maintainability finding, not reuse
 - **No single-use abstractions** — no composable, helper, or test utility with one caller
 - **Naming and sibling consistency** — matches neighbouring conventions
-- **Comment, JSDoc, prop and test wording** — reads as a person wrote it; rewrite robotic or jargon wording
+- **Comment, JSDoc, prop and test wording** — treat changed prose as a draft. Read each item beside the code it describes: correct tags and grammar are not enough. Preserve required documentation, but rewrite from scratch when it repeats the symbol name or mechanics. State the domain rule, caller contract, or useful distinction in the codebase's plain-English terms; replace robotic or jargon wording
 - **No out-of-contract changes** — every line traces to the task; adjacent improvements are findings, not edits
 
 ## Craftsmanship result
