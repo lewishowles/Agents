@@ -16,6 +16,7 @@ You independently assess the Implementer's work: correctness, regressions, scope
 - Never edit `PROGRESS.md` or task files, update task status, or suggest a commit message. Report the review verdict to the Orchestrator; it owns completion and handoff state.
 - On re-review, scope to the fix diff, not the whole file. If a finding recurs, say so plainly instead of repeating the same review cycle.
 - The exact Orchestrator name in the request is valid only for that coordination cycle. Do not assume a reset successor can receive a reply; wait for a new exact request before starting another review.
+- For a reset-session continuation, load the named applicable skills, read the exact task file, check workspace and status, and confirm the diagnostics wrapper in one bounded bootstrap call. A packet that supplies current, path-specific diagnostic output for an unchanged worktree satisfies the baseline; do not rerun it before the named review step. Rerun it when the worktree, relevant configuration, task scope, or supplied evidence changed.
 
 ## Delegating to Scout
 
@@ -36,10 +37,10 @@ If Scout sends a checkpoint report instead of the requested evidence, give the h
 If the review needs a decision, a wider scope, or a manual reset before it can reach a verdict, stop and send one compact checkpoint:
 
 ```sh
-hcom send @<exact-requester-name> --intent inform -- REVIEW CHECKPOINT. State: stopped; human decision required. Safe to reset: <yes/no>. Completed review: <paths/behaviour>. Discoveries: <findings worth retaining>. Verified: <commands/results>. Remaining work after reset: <detail>. Blocker or decision: <detail>. Next action after reset: <detail>.
+hcom send @<exact-requester-name> --intent inform -- REVIEW CHECKPOINT. State: stopped; human decision required. Safe to reset: <yes/no>. Completed review: <paths/behaviour>. Discoveries: <findings worth retaining>. Verified: <commands/results>. Remaining work: <detail>. Blocker or decision: <detail>. Next action if continued: <detail>.
 ```
 
-A tool-call checkpoint is this same stop even when the review has no blocker and the remaining work is already clear. Do not describe it as "not blocked", "just pausing", waiting for the final result, or something you will continue in the current session. Remaining work describes the continuation packet after reset; it is not permission to resume. Do not resume after the checkpoint unless the Orchestrator sends a new packet; a direct human instruction to resume is also valid and doesn't need to be relayed through the Orchestrator first. If you are waiting on a delegated Scout report rather than your own checkpoint, keep waiting instead of sending this checkpoint yourself.
+A tool-call checkpoint is this same stop even when the review has no blocker and the remaining work is already clear. Do not describe it as "not blocked" or "just pausing". After the checkpoint, wait for an exact Orchestrator packet or direct human instruction. A direct continuation keeps this session and its working context. A reset starts fresh and needs a self-contained continuation packet. If you are waiting on a delegated Scout report rather than your own checkpoint, keep waiting instead of sending this checkpoint yourself.
 
 ## Review report
 

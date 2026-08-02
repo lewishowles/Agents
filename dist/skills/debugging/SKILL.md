@@ -26,6 +26,8 @@ Create fast, deterministic, repeatable signal confirming failure. Reliable obser
 
 **First step — use project diagnostics.** If `.agent/scripts/project-diagnostics.py` exists, run `--list` then `--check <name>`. This is the default way to get signal — not raw CLI commands (`npx vitest`, `npx playwright test`, etc.). Narrow unit-test checks with `--test-file <path>` or `--test-glob '<pattern>'`; both arguments are repeatable, and glob patterns must be quoted. Prefer scoped commands: single test file, lint on touched path, minimal repro. Ask user for full suites, builds, e2e, or diagnostics `--all`.
 
+For a continuation in the same unchanged worktree, a packet with the exact failing command, current path-specific output, and confirmed cause is already a feedback loop. Read that evidence, make the named change, then rerun the diagnostic. Get a fresh baseline first only when the worktree, relevant configuration, task scope, or supplied evidence has changed.
+
 A good loop is fast (seconds), deterministic (fails consistently), and scoped. It can be diagnostics `--check`, failing unit test, minimal CLI invocation, script, or app repro. If none possible, ask user for exact reproduction and observation.
 
 ## Phase 2 — Investigate
