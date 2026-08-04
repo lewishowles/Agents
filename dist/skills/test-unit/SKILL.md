@@ -23,16 +23,15 @@ related-skills:
 - Separate test setup from assertions like separating variables from logic in JS — use a blank line between the action and any `expect()` calls
 - Keep imports at the top.
 - Test and group names are capitalised, human-readable, and self-contained; method/computed names may stay exact. Name the behaviour in plain active voice ("shows an error when the field is empty"), not a passive or clever restatement of the mechanism.
-- Group tests by collection: "Initialisation", "Render contracts", "Computed", "Methods".
-- Static render contracts may live in unit tests when cheaper than browser tests and not needing layout, interaction, browser APIs, focus, keyboard, or timing. Use "Render contracts".
-- Keep interaction, layout-sensitive state, browser APIs, focus movement, keyboard, and live-region timing in component tests.
+- Group tests by collection: "Initialisation", "Computed", "Methods".
+- Keep interaction, layout-sensitive state, browser APIs, focus movement, keyboard, live-region timing, and render-contract assertions (whether a component renders in a given visual/DOM state) in component tests. Vitest can inspect props directly, but that doesn't verify what actually rendered. Do not add a "Render contracts" group to unit tests.
 - Use diagnostics script: `.agent/scripts/project-diagnostics.py --list` to discover checks, `--check <name>` for the relevant one. For fixes, narrow with `--test-file <path>` or `--test-glob '<pattern>'`. Ask the user for full suites or `--all`.
 
 ## Vue & Vitest
 
 - Vitest; unit-test computed properties and heavily-used methods
 - Skip tests for methods delegating to `@lewishowles/helpers`
-- Component logic in unit tests: computed properties, emitted events, composables, heavily-used methods, cheap static render contracts
+- Component logic in unit tests: computed properties, emitted events, composables, heavily-used methods
 - Composables: test reactive state, side effects, lifecycle hooks
 - For async updates, import `nextTick` from Vue and use `await nextTick()` instead of `await wrapper.vm.$nextTick()`
 - Use `flushPromises()` when waiting for pending promises, API mocks, or async component setup
@@ -86,8 +85,7 @@ For component, composable, helper, and `test.for` examples, see [references/exam
 
 - Top-level group names use `kebab-case` to match the component (`form-input`, not `FormInput`)
 - Only test component logic that cannot reasonably move to composable/helper
-- Put cheap static DOM attributes, slot fallbacks, and prop-driven presence checks in "Render contracts" when no browser needed
-- Do not assert keyboard behaviour, focus movement, browser layout, CSS rendering, or timed live-region behaviour — use Playwright/Cypress for those
+- Do not assert DOM attributes, slot fallbacks, prop-driven element presence, keyboard behaviour, focus movement, browser layout, CSS rendering, or timed live-region behaviour. Even cheap, static render contracts belong in Playwright component tests (`*.ct.js`)
 
 ### File co-location
 

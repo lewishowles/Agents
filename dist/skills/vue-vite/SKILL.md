@@ -128,6 +128,8 @@ vite build doesn't type-check; ship type errors unless CI runs tsc --noEmit.
 
 ## Imports and assets
 
+Cross-directory imports use the `@` alias (`@/layout/...`), not relative `../../../` paths. Relative imports are fine within a directory or one level up.
+
 ```typescript
 // File-system driven imports — no hand-maintained registries
 const modules = import.meta.glob("./pages/**/*.vue");
