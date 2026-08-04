@@ -128,6 +128,17 @@ Managed external skills also live under `src/skills/<name>`, but are listed in `
 3. Check `bash scripts/validate.sh` exits 0
 4. Re-run `setup-global.sh` if this is a new skill directory, to create its symlink
 
-## Current phase
+### Standing context
 
-When present, root `PROGRESS.md` tracks local maintenance session state. It is intentionally ignored because it tracks maintenance work for this checkout, not distributable repo output. Its absence means there is no active maintenance plan, not a setup problem or follow-up item.
+Verification for any change in this repo:
+
+- `bash scripts/sync.sh` — regenerates all `dist/` output; run after editing anything under `src/`
+- `bash scripts/validate.sh` — must exit 0; pipes are misleading, check `$?` directly rather than a `tail`ed exit
+- `bash tests/friction-logging.sh` — covers both Stop hooks, the friction writer, and the analyser
+- `scripts/analyse-friction.sh` — recurring-friction summary; excludes `check-fail` unless `FRICTION_INCLUDE_CHECK_FAILS=1`
+
+Gotchas:
+
+- `.agent/` is ignored by the global gitignore (`~/.config/git/ignore`), so task files, specs, audits and logs are all untracked. `PROGRESS.md` at the root is the only tracked planning record.
+- The Claude and Codex Stop hooks duplicate their check-running logic. `src/hooks/claude/pre-stop-checks/` is a shell script; the Codex copy is an escaped shell string inside `src/adapters/codex/hooks.json`. A fix to one usually needs the other.
+- Editing `src/rules/global-rules.md` grows a file loaded on every turn in every project. `scripts/validate.sh` enforces an instruction budget; check it before adding prose.
