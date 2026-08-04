@@ -1,8 +1,8 @@
 {
 	"name": "library-release",
 	"title": "Library release",
-	"description": "Use this skill when preparing to release a new version of @lewishowles/components, @lewishowles/helpers, @lewishowles/testing, or @lewishowles/cli-style.",
-	"when": "When releasing @lewishowles/components, @lewishowles/helpers, @lewishowles/testing, or @lewishowles/cli-style",
+	"description": "Use this skill when preparing to release a supported @lewishowles library package.",
+	"when": "When preparing a release for a supported @lewishowles library",
 	"triggers": [
 		"library release",
 		"release library",
@@ -11,10 +11,14 @@
 		"release components",
 		"release helpers",
 		"release cli-style",
+		"release lint-config",
+		"release pkg-checks",
 		"@lewishowles/components release",
 		"@lewishowles/helpers release",
 		"@lewishowles/testing release",
 		"@lewishowles/cli-style release",
+		"@lewishowles/lint-config release",
+		"@lewishowles/pkg-checks release",
 		"version bump",
 		"semver",
 		"changelog"

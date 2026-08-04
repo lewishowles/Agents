@@ -11,6 +11,7 @@ Check Lewis shared libraries for new releases, surface changes, and identify upd
 /library-update testing      check @lewishowles/testing only
 /library-update cli-style    check @lewishowles/cli-style only
 /library-update lint-config  check @lewishowles/lint-config only
+/library-update pkg-checks   check @lewishowles/pkg-checks only
 ```
 
 ## Step 1 — determine which libraries to check
@@ -22,6 +23,7 @@ If argument given, use it. Otherwise read `package.json` and check dependencies 
 - `@lewishowles/testing`
 - `@lewishowles/cli-style`
 - `@lewishowles/lint-config`
+- `@lewishowles/pkg-checks`
 
 If a known library is not present, check whether the project or generators contain boilerplate the library replaces. Report missing-library adoption separately from version updates. For example, a project without `@lewishowles/testing` might still need it if test setup or Boilersuit templates duplicate utilities it provides.
 
@@ -46,6 +48,7 @@ npm view @lewishowles/helpers version versions time --json
 npm view @lewishowles/testing version versions time --json
 npm view @lewishowles/cli-style version versions time --json
 npm view @lewishowles/lint-config version versions time --json
+npm view @lewishowles/pkg-checks version versions time --json
 ```
 
 Confirm before running npm registry commands if network access has not already been approved. Identify the latest stable published version from `version` or the `latest` dist-tag. Versions follow the format `X.Y.Z`.
@@ -78,7 +81,7 @@ Scan project source (`src/`) and project-owned Boilersuit generators (`.boilersu
 Focus on:
 
 - Imports from `@lewishowles/components` or `@lewishowles/helpers`
-- Imports from `@lewishowles/testing` or `@lewishowles/cli-style`
+- Imports from `@lewishowles/testing`, `@lewishowles/cli-style`, `@lewishowles/lint-config`, or `@lewishowles/pkg-checks`
 - Component names, prop names, composable names, slot names in release notes
 - Patterns release notes flag as changed or removed
 - Local helpers, repeated boilerplate, custom test setup, CLI styling code, or templates a newer shared library replaces

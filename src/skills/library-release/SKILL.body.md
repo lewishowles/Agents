@@ -1,6 +1,6 @@
 # Library release
 
-Conservative release guardrails for `@lewishowles/components`, `@lewishowles/helpers`, `@lewishowles/testing`, `@lewishowles/cli-style`, and `@lewishowles/lint-config`. Inspect current repo process first; require explicit approval for irreversible steps.
+Conservative release guardrails for `@lewishowles/components`, `@lewishowles/helpers`, `@lewishowles/testing`, `@lewishowles/cli-style`, `@lewishowles/lint-config`, and `@lewishowles/pkg-checks`. Inspect current repo process first; require explicit approval for irreversible steps.
 
 ## Release stance
 
@@ -19,6 +19,7 @@ Confirm which package is being released:
 - `@lewishowles/testing`
 - `@lewishowles/cli-style`
 - `@lewishowles/lint-config`
+- `@lewishowles/pkg-checks`
 
 Read package root instructions, workspace file if present, `package.json`, changelog, and release notes before recommending commands.
 
