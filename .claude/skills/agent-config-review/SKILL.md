@@ -59,9 +59,9 @@ When `check-instruction-budgets.sh` reports growth:
 
 1. Scope the review to the reported artefacts and their source hints. Inspect hand-authored sources; never edit `dist/`.
 2. Record each artefact's current bytes, checked-in baseline, soft budget, and overage. The warning prompts review; it is not a quota that overrides reliability.
-3. Identify the unique behaviour each artefact owns. Classify candidate guidance as keep, condense, remove, or move. Remove only proven duplication, stale guidance, excess detail, or wasteful formatting.
+3. Identify the unique behaviour each artefact owns. Classify candidate guidance as keep, condense, remove, or move. Remove only proven duplication, stale guidance, excess detail, or wasteful formatting: cite the specific text or location each removal duplicates. Discovery candidates flagged as optional, lower-confidence, or "if needed" are excluded by default; include one only after it earns its own proven-duplication citation, never to close a remaining byte gap.
 4. Preserve trigger specificity, failure modes, invariants, exceptions, recovery paths, and verification requirements. Don't move always-required guidance into a triggered skill solely to reduce bytes.
-5. Review shared `src/rules/` and agent fragments before individual skills because one shared edit can affect both always-loaded artefacts. Regenerate before measuring final sizes.
+5. Review shared `src/rules/` and agent fragments before individual skills because one shared edit can affect both always-loaded artefacts. When a batch touches shared or always-loaded files, get those cuts confirmed on their own before extending the same cut logic to the rest of the batch. Regenerate before measuring final sizes.
 6. Present the proposed trims and behavioural effect for approval. A request to review warnings is analysis-only; edit only after explicit implementation approval.
 7. After approved edits, run `bash scripts/sync.sh`, measure the generated artefacts with `wc -c`, and update only the reviewed entries in `scripts/validate/instruction-budgets.json` to their exact post-trim sizes.
 8. Run `bash scripts/validate.sh` directly. Report before and after sizes, baseline changes, checks, and any warning whose remaining content earns its cost.
