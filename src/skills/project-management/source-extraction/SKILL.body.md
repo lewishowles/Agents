@@ -1,6 +1,6 @@
 # Source extraction
 
-Extracting a page for later analysis is not the same task as summarising it for a human. The failure this skill prevents: a "summary" pass quietly drops the caveats, config, and dependent links that a downstream analysis (like `project-learn-from-source`) actually needs, and by the time that's discovered the meaning is already gone.
+Extracting a page for later analysis is not the same task as summarising it for a human. The failure this skill prevents: a "summary" pass quietly drops the caveats, config, and dependent links that a downstream analysis (like `project-learn-from-source`) actually needs, and by the time that's discovered the meaning is already gone. The full extraction stays in a temporary file; the learner receives an index first and requests only the excerpts it needs.
 
 ## Scope
 
@@ -12,21 +12,36 @@ Use when asked to:
 
 Do not use this skill to:
 
-- write a summary meant for a human to read directly — that's lossy by design, which is the opposite goal here
-- perform the actual adopt/adapt/reject analysis — that's `project-learn-from-source`
-- review this repo's own files or commits — see `project-review-worktree` or `project-review-commits`
+- write a summary meant for a human to read directly, which is lossy by design
+- perform the actual repository judgement, which belongs to `project-learn-from-source`
+- review this repo's own files or commits, see `project-review-worktree` or `project-review-commits`
 
 ## Method
 
-Extraction, not summarisation: preserve every claim, constraint, and example fully rather than compressing. Don't expect verbatim reproduction — models resist this — so restate everything fully and precisely in your own words. Quote exact phrases only where wording itself matters (named rules, specific caveats), nothing dropped or compressed.
+Extraction, not summarisation: preserve every claim, constraint, and example fully rather than compressing. Don't expect verbatim reproduction, so restate everything fully and precisely in your own words. Quote exact phrases only where wording itself matters (named rules, specific caveats), nothing dropped or compressed.
 
-Every link needs its actual destination URL, not just anchor text. If destination unresolvable, state that explicitly; a link with no destination is dead weight for the "fetch this?" step later.
+The extraction is a lossless evidence handoff, not an opinion pass. Do not rank, judge, or classify claims, examples, or their local value. You may describe the source's own headings, stated priorities, and explicit caveats, but do not interpret them for the current repository.
 
-Output shape:
+Before acquiring the source, create a scratch directory with `mktemp -d` outside the repository. Write the complete structured extraction to a file in that directory. Keep the file available for excerpt requests for the rest of the handoff.
+
+Return only this receipt to the requester, never the full extraction:
+
+```markdown
+Extraction receipt
+- Scratch path: <absolute path outside the repository>
+- Source identity: <URL or file, title, author or organisation, and date when available>
+- Index:
+  1. <one-line claim or concrete example, with enough wording to identify the full entry>
+  2. <one-line claim or concrete example>
+```
+
+Number every claim and concrete example in the index. Keep identifiers stable, and include any caveat or constraint whose absence could make the learner request the wrong excerpt. The index is a locator, not a summary or judgement.
+
+Write the full extraction to the scratch file using this structure:
 
 ```markdown
 ## Source
-<URL, title, author/org if present, date if present>
+<URL, title, author or organisation if present, date if present>
 
 ## Claims and statements
 - Full, precise restatement of any concrete claim, recommendation, rule, or pattern, with enough surrounding context to stand alone. Quote a short exact phrase only where the wording itself is the point.
@@ -38,19 +53,19 @@ Output shape:
 - Stated conditions, exceptions, prerequisites, versions, or "this only applies when..." qualifiers.
 
 ## Structure and priorities
-- What the page emphasises (headings, repeated points, "most important" framing), stated plainly, not interpreted.
+- What the page explicitly emphasises through headings, repetition, or stated "most important" framing. Describe the source's structure only, without judging its importance for the current repository.
 
 ## Referenced links worth reviewing separately
-- Incidental / further reading: <anchor text, destination URL (or "destination not resolvable"), one-line why>
+- Incidental or further reading: <anchor text, destination URL (or "destination not resolvable"), one-line why>
 
 ## Linked artefacts the article depends on
-- Links where the article is describing, demonstrating, or quoting from the linked repo/download/doc itself — the article doesn't fully make sense without it. <anchor text, destination URL (or "destination not resolvable"), one-line on what it is>
+- Links where the article is describing, demonstrating, or quoting from the linked repo, download, or doc itself. <anchor text, destination URL (or "destination not resolvable"), one-line on what it is>
 
 ## Excluded
 - Boilerplate skipped (nav, ads, cookie banners, unrelated sidebar content), so it's clear nothing substantive was silently dropped.
 ```
 
-Do not shorten, generalise, or rank the claims. Completeness of meaning over concision or exact wording — this output feeds a separate analysis step, not a human reader.
+Do not shorten, generalise, rank, judge, or classify the extracted material. Completeness of meaning over concision or exact wording. This file feeds a separate analysis step, not a human reader.
 
 ## Acquire the source
 
@@ -62,19 +77,19 @@ Choose the acquisition path from the URL before reading the source:
 
 ## Handing this to another agent
 
-If the extraction will run in a tool without repo or conversation context (e.g. pasted into ChatGPT):
+If the extraction will run in a tool without repo or conversation context (for example, pasted into ChatGPT):
 
 1. Give it the method and output shape above as its instructions, then the URL.
-2. It must not fetch or follow links itself — links are noted, not chased. Auto-recursion turns one URL into an unbounded, unpredictable amount of work.
-3. Bring the raw output plus the source URL back here.
+2. It must not fetch or follow links itself. Links are noted, not chased. Auto-recursion turns one URL into an unbounded, unpredictable amount of work.
+3. If the tool has no filesystem access, return the full structured output to the invoking agent. The invoking agent writes it to a `mktemp` scratch directory outside the repository, then sends the learner only the receipt and source URL. A delegated fork or subagent with filesystem access may perform the scratch write itself. The learner can request numbered excerpts from the extraction worker.
 
 ## Multiple sources
 
-Don't paste many URLs into one analysis pass — synthesis over large corpus surfaces only top ideas and drops the rest. Instead:
+Don't paste many URLs into one analysis pass. Synthesis over a large corpus surfaces only top ideas and drops the rest. Instead:
 
 - Extract each source separately
-- Feed into `project-learn-from-source` in small batches, or ask for per-source breakdown before synthesis
+- Feed each receipt into `project-learn-from-source`, then request only the relevant excerpts in small batches
 
 ## After extraction
 
-If "linked artefacts the article depends on" has entries, decide whether to extract those too — the article alone may be incomplete. Once extraction is done, hand result to `project-learn-from-source` for adopt/adapt/reject/defer/investigate assessment.
+If "linked artefacts the article depends on" has entries, record them in the full extraction and let the learner request them if they are load-bearing. Once extraction is done, hand the receipt to `project-learn-from-source`. The learner requests indexed excerpts and owns every repository judgement and trade-off.

@@ -1,7 +1,7 @@
 {
 	"name": "project-learn-from-source",
 	"title": "Project learn from source",
-	"description": "Use this skill when asked to inspect an external artefact, such as a website, AGENTS.md, skill repo, blog post, or docs page, and identify practical lessons for the current repo.",
+	"description": "Use this skill when asked to inspect an external artefact and decide what the current repo should adopt directly, adopt in parts, or leave unchanged based on verified evidence.",
 	"do-not-use-when": [
 		"Reviewing a specific difficult agent session — use session-retrospective instead",
 		"Reviewing a code diff or PR — use code-review instead"
@@ -21,7 +21,7 @@
 	],
 	"filePatterns": [],
 	"pathPatterns": [],
-	"dependencies": [],
+	"dependencies": ["source-extraction"],
 	"capabilities": {
 		"promptTriggering": true,
 		"fileTriggering": false

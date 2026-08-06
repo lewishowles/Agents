@@ -3,14 +3,16 @@
 name: project-learn-from-source
 displayName: Project learn from source
 description: >
-  Use this skill when asked to inspect an external artefact, such as a website, AGENTS.md, skill repo, blog post, or docs page, and identify practical lessons for the current repo.
+  Use this skill when asked to inspect an external artefact and decide what the current repo should adopt directly, adopt in parts, or leave unchanged based on verified evidence.
 do-not-use-when:
   - Reviewing a specific difficult agent session — use session-retrospective instead
   - Reviewing a code diff or PR — use code-review instead
+related-skills:
+  - source-extraction
 ---
 # Project learn from source
 
-Extract practical lessons from an external artefact and ground them in the current repo. The failure this skill prevents is generic summarising or uncritical copying from another project.
+Extract practical lessons from an external artefact and ground them in the current repo. The failure this skill prevents is a speculative idea list that never decides whether the source itself is worth adopting or checks whether each recommendation is ready.
 
 Default to analysis and recommendations only. Do not edit files unless the user explicitly asks after the assessment.
 
@@ -34,13 +36,37 @@ Do not use this skill for:
 - general repo health checks without an external source, use `project-audit`
 - accessibility compliance reviews, use `accessibility-audit`
 
+## Decision contract
+
+Every assessment starts with this exact shape, before any other heading or explanation:
+
+```markdown
+**Bottom line:** <Adopt the source directly / Adopt specific parts / Take no local action>. Ready recommendations: <number>.
+```
+
+Use the plain-language outcome that best fits the evidence. Include the ready-recommendation count even when it is zero.
+
+Before extracting patterns to reproduce locally, decide whether this repository should adopt the source itself. Check the direct route that fits the artefact: depend on a package, use a tool or service, fork a repository, wrap a component, link to a workflow, or adopt another supported integration. If direct adoption does not apply or does not fit, state the reason briefly before considering local pieces.
+
+A recommendation is ready only when all of these are verified:
+
+- Source behaviour: the source's relevant behaviour, claim, or example is identified and checked.
+- Local gap: the repository has a current, evidenced problem or missing capability that this would address. User-profile interests and adjacent domains do not establish a gap.
+- Coverage: existing or planned local coverage is identified, including the relevant source, tests, documentation, configuration, plan, or repeated friction.
+- Adoption route and action: the route into this repository and the smallest concrete local action are clear.
+- Cost or risk: proportionate implementation, maintenance, compatibility, security, accessibility, performance, or operational cost and risk are checked.
+
+If a load-bearing fact cannot be checked, keep the candidate blocked. Name the exact missing evidence, explain how it could change the decision, and state the specific recovery needed. Do not guess, and do not present the candidate as ready while reopening it with an unresolved design question. `Investigate` and `defer` may exist as internal states, or as an explicit blocked-evidence explanation, but they are not routine output choices.
+
+Already-covered principles, confirmations of the current approach, and rejected ideas must be visibly separate from ready recommendations. A zero-recommendation result is successful when the evidence supports it.
+
 ## Startup
 
 Treat the source through `source-extraction`, not by reading raw content directly.
 
-- If the source is already pasted text or `source-extraction` output, treat it as the extracted material itself — don't re-run extraction on it.
-- Otherwise, run `source-extraction`: prefer a delegated or forked discovery context (an Agent tool fork, an hcom team member) and return only its condensed output to the main conversation, never raw page or repository content. For several sources, run one parallel extraction fork per source, then synthesise the completed extractions once. Run it standalone inline when delegation is unavailable.
-- Only read the raw source directly if `source-extraction` cannot be applied (a URL with no browsing and no delegation, nothing pasted) — in that case, ask for the relevant excerpt rather than reading raw content into the main conversation.
+- If the source is already pasted text, use that text as the source evidence. If it is a source-extraction receipt, keep only the receipt in the learner context and request the indexed excerpts needed for the judgement.
+- Otherwise, use `source-extraction` in a delegated or forked discovery context. The extraction worker writes the full structured extraction to a `mktemp` scratch directory outside the repository and returns only its receipt, never the raw extraction. For several sources, use one extraction context per source, then synthesise the receipts and requested excerpts.
+- Only read the raw source directly if `source-extraction` cannot be applied (a URL with no browsing and no delegation, nothing pasted) and ask for the relevant excerpt rather than reading raw content into the main conversation.
 
 Then gather only local context needed to judge fit:
 
@@ -55,15 +81,12 @@ Apply the `code-lookup` routing skill for structural questions. Use targeted rea
 
 ## Review method
 
-1. Identify the source's core claims, patterns, constraints, and implied priorities.
-2. Separate transferable ideas from artefact-specific details.
-3. Compare each idea with this repo's goals, project instructions, existing patterns, active plans, and cost of adoption.
-4. Classify each idea as adopt, adapt, reject, defer, or investigate.
-5. Prefer small, high-leverage changes before broad process or architecture shifts.
-6. Push back on ideas that duplicate existing guidance, conflict with local constraints, require unneeded dependencies, or add ceremony without reducing real risk.
-7. Scan across the adopted, adapted, and rejected ideas for the recurring pattern that explains the judgement.
-8. Convert useful ideas into specific local next steps.
-9. For follow-up edits to any rule or skill, use the minimum prose that reliably preserves the required behaviour, constraints, and exceptions.
+1. Establish the source identity and request only the indexed source excerpts that are relevant to the repository or to a direct-adoption decision.
+2. Check direct adoption first. Record the route considered and the evidence for adopting it or ruling it out.
+3. Gather local evidence for the gap, existing or planned coverage, and constraints. Use current plans, source, tests, documentation, configuration, repeated friction, or a repository-inherent risk.
+4. Check every candidate against the full readiness gate. Drop candidates with no plausible local gap or with evidence that rules them out. Keep only genuinely unresolved load-bearing evidence as an explicit blocker.
+5. Choose the bottom-line outcome. Direct adoption wins when the source itself fits; adopt specific parts only when the source as a whole does not fit but a verified local piece does; take no local action when neither route has a ready recommendation.
+6. Write the shortest response that communicates the verdict, ready actions, covered or rejected material, and any genuine blocked evidence.
 
 Do not treat the external source as authoritative. The goal is better local judgement, not imitation.
 
@@ -89,39 +112,43 @@ Challenge ideas that:
 
 ## Output
 
-Use this shape unless the user asks for a different format:
+After the required first line, use only the sections that contain evidence:
 
 ```markdown
-## Useful lessons
+**Bottom line:** <outcome>. Ready recommendations: <number>.
 
-- [Recommended] <idea>. Why it fits this repo: <reason>. Local action: <specific change or next step>.
+## Direct adoption
 
-## Ideas to adapt carefully
+- Route considered: <depend on, use, fork, wrap, link, or other route>
+- Decision: <adopt it / do not adopt it>
+- Evidence: <source behaviour and local fit, or the brief reason it does not fit>
 
-- <idea>. Constraint: <local reason it needs changing before adoption>. Better local shape: <adapted version>.
+## Ready recommendations
 
-## Ideas I would not adopt
+1. <specific local action>
+   - Source behaviour: <verified source evidence, with its receipt index or source location>
+   - Local gap: <verified current problem or missing capability>
+   - Coverage: <existing or planned local source, tests, docs, config, plan, friction, or risk>
+   - Adoption route: <how this repository will take it on>
+   - Cost and risk: <proportionate checked trade-offs>
 
-- <idea>. Why: <cost, mismatch, existing better pattern, or low value>.
+## Covered, confirmed, or rejected
 
-## Follow-up to investigate
+<Already-covered principles, confirmations of the current approach, and rejected ideas with their evidence.>
 
-1. <specific check, question, or source to inspect>
-2. <next check, if any>
+## Blocked evidence
+
+- Missing evidence: <exact source or local fact that could not be checked>
+- Decision impact: <how it could change the direct-adoption decision or candidate>
+- Recovery: <specific excerpt, file, command result, or user decision needed>
 
 ## Evidence checked
 
-- External source: <URL, file, or excerpt>
+- External source: <identity and requested receipt indexes or pasted excerpt>
 - Local context: <files, docs, commands, or none>
-
-## Next step
-
-<One concrete action: approve an edit, choose between options, provide a source excerpt, or close with no action.>
 ```
 
-If a section has no items, say `None found.` or `None.` Keep recommendations proportional. Include tiny improvements when they are genuinely useful, but do not pad the assessment to make the source seem more valuable than it is.
-
-If several candidate lessons are rejected for the same reason, say so once. Visible rejection is useful when it explains the source's fit; it is not a transcript of every dead end.
+For `Take no local action`, keep the response short: the required first line, the direct-adoption reason, the local evidence showing no gap or sufficient coverage, and any decisive source evidence. Do not emit empty template sections. Do not add a routine investigation or deferral list. If evidence is genuinely unavailable, use only the blocked-evidence section and do not call the candidate a recommendation.
 
 ## Attribution
 
