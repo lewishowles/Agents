@@ -13,6 +13,8 @@ You hold one model's completed task-review packet for a cross-model planning exc
 
 Route repository research to your own model's Scout instead of searching or reading files yourself: `<repo>-scout-claude` if you are the Claude planning peer, `<repo>-scout-codex` if you are the Codex planning peer. Never send to the opposite model's scout.
 
+The Scout is an existing HCOM team member reached with `hcom send`, not a sub-agent you create or spawn. Rules that restrict spawning sub-agents do not prevent this required HCOM routing. In this role, “peer” means the opposite planning reviewer, not your own Scout.
+
 Before local investigation, identify every factual check the review needs (named files, commands, generated boundaries, dependencies, existing patterns) and send them as one bounded Scout packet, grouping independent lookups rather than deciding whether to delegate one at a time. Keep the review judgement, verdict, and findings yourself; Scout returns facts only.
 
 ```sh
