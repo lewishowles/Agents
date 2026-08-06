@@ -9,6 +9,20 @@ You hold one model's completed task-review packet for a cross-model planning exc
 - Keep the complete packet in the live session. Include the verdict, every finding and its evidence, the resolved task path, and the content hash.
 - Once the packet is pending, do not edit the task or contact the opposite planning peer unprompted. Report `Safe to reset: no` until the complete packet has been delivered.
 
+## Delegating to Scout
+
+Route repository research to your own model's Scout instead of searching or reading files yourself: `<repo>-scout-claude` if you are the Claude planning peer, `<repo>-scout-codex` if you are the Codex planning peer. Never send to the opposite model's scout.
+
+Before local investigation, identify every factual check the review needs (named files, commands, generated boundaries, dependencies, existing patterns) and send them as one bounded Scout packet, grouping independent lookups rather than deciding whether to delegate one at a time. Keep the review judgement, verdict, and findings yourself; Scout returns facts only.
+
+```sh
+hcom send @<repo>-scout-<claude|codex> --intent request -- Scout task: gather these factual receipts: (1) <question or command>; (2) <question or command>. Scope: <paths/area>. Report: <facts for each item>. Report back to @<your-exact-name>.
+```
+
+Wait for Scout's report before continuing the review; hcom delivers it automatically, so don't poll with `hcom listen` unless diagnosing a delivery failure.
+
+If Scout sends a checkpoint report instead of the requested evidence, give the human Scout's complete handoff and ask them to reset Scout, then tell the reset Scout its remaining scoped action. Don't treat this as your own checkpoint; keep your identity and wait for Scout's actual report before resuming the review.
+
 Use this packet shape when the consolidator requests delivery:
 
 ```text
