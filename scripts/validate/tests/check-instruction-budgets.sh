@@ -139,8 +139,9 @@ assert_contains 'src/fragments/codex or src/rules/ inputs' 'always-loaded source
 assert_contains 'src/skills/demo/SKILL.body.md' 'skill-body source hint'
 assert_contains 'src/skills/demo/skill.json' 'eager-metadata source hint'
 assert_contains 'current 12 bytes is 1 byte over soft budget 11 bytes' 'accurate soft-budget details'
-assert_contains 'Remove duplication, stale guidance, excess detail, or wasteful formatting' 'review decision'
-assert_contains "update this artefact's baseline in scripts/validate/instruction-budgets.json" 'baseline update option'
+assert_contains 'Use agent-config-review to review this artefact and propose the smallest safe trims' 'review skill routing'
+assert_contains "After approved edits, set this artefact's baseline in scripts/validate/instruction-budgets.json" 'approval gate and baseline update'
+assert_contains 'never raise the baseline before review' 'baseline review order'
 assert_not_contains "$FIXTURE_REPO" 'repo-relative source hints'
 printf 'PASS warning case\n'
 

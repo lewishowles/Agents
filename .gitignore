@@ -5,6 +5,19 @@ PROGRESS.md
 .claude/PROGRESS.md
 .agents/AGENTS.md
 .agents/PROGRESS.md
+
+# Track the repo-local configuration-review skill despite global agent-directory ignores.
+!/.claude/
+/.claude/*
+!/.claude/skills/
+/.claude/skills/*
+!/.claude/skills/agent-config-review/
+!/.claude/skills/agent-config-review/SKILL.md
+!/.agents/
+/.agents/*
+!/.agents/skills/
+/.agents/skills/*
+!/.agents/skills/agent-config-review
 .agent/tools/
 servers/local-repo-gateway/repos.json
 servers/local-repo-gateway/.venv

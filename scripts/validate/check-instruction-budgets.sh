@@ -102,7 +102,7 @@ report_growth() {
 		--label-width 6 >&2
 	cli_style_row \
 		'↳ review:' \
-		"Remove duplication, stale guidance, excess detail, or wasteful formatting. Once trimmed as far as reasonable, update this artefact's baseline in scripts/validate/instruction-budgets.json to the resulting size — the post-trim size is the new baseline, not the pre-warning one." \
+		"Use agent-config-review to review this artefact and propose the smallest safe trims. After approved edits, set this artefact's baseline in scripts/validate/instruction-budgets.json to its exact post-trim size; never raise the baseline before review." \
 		--label-colour muted \
 		--value-colour muted \
 		--label-width 8 >&2
