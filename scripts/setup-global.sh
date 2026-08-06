@@ -68,6 +68,7 @@ setup_codex() {
 	link_path "$REPO_DIR/dist/codex/AGENTS.md" "$HOME/.codex/AGENTS.md" "Codex AGENTS.md"
 	link_path "$REPO_DIR/dist/codex/hooks.json" "$HOME/.codex/hooks.json" "Codex hooks"
 	link_path "$REPO_DIR/dist/codex/hooks/tool-call-checkpoint.sh" "$HOME/.codex/hooks/tool-call-checkpoint.sh" "Codex tool-call checkpoint"
+	link_path "$REPO_DIR/dist/codex/hooks/guard-destructive.sh" "$HOME/.codex/hooks/guard-destructive.sh" "Codex guard-destructive"
 	ensure_codex_config
 	cli_group_end
 

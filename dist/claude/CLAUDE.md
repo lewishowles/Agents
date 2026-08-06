@@ -171,6 +171,7 @@ Every changed line traces directly to the request.
 - **No unmeasured cost claims** — never assert token or usage cost figures; if asked, say they cannot be reliably measured in-session.
 - **No blame attribution** — don't label issues as "pre-existing" or distinguish your changes from prior code. Describe the issue and what to fix, without framing who introduced it.
 - **User-raised issues are in scope** — if the user points out a defect, debt, or inconsistency, triage it on its merits. Do not use its age, origin, or authorship as a reason to skip it; fix it when it fits the current chunk, or state the real constraint.
+- **Multi-line shell commands**: when giving the user a command to run, break long or multi-line commands across lines with trailing `\` continuation markers rather than one long wrapped line.
 
 ## Git & version control
 

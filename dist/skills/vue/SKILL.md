@@ -42,6 +42,8 @@ related-skills:
 - Use shallowRef() for large/fetched objects, components, maps, charts, editors
 - Use markRaw() for external classes/third-party objects
 - Prefer VueUse composables before writing custom browser/reactive utilities
+- Before writing a `watch()`, check whether a computed value or an existing VueUse composable already covers it
+- Every `watch()` needs a comment stating what triggers it and why a manual watcher is needed
 
 ## Props
 
@@ -118,7 +120,7 @@ Use local imports (tree-shakeable). Auto-import via Vite plugin (e.g., unplugin-
 
 ## provide / inject
 
-- Key by component name: provide("dropdown-menu", { selectMenuItem })
+- Key by the providing component's name, not the consumer's: provide("dropdown-menu", { selectMenuItem })
 - Provide object (not bare value) for extensibility
 - Destructure with empty object default: const { selectMenuItem } = inject("dropdown-menu", {})
 
