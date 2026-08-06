@@ -50,6 +50,9 @@ Configuration/Agents/
 ├── .agents/skills/agent-config  # Symlink to the above
 ├── .claude/skills/agent-config-review/ # Repo-local review skill (token footprint, rule/skill boundaries, drift)
 ├── .agents/skills/agent-config-review  # Symlink to the above
+├── .agent/                     # Ignored agent state, reports, diagnostics, and shared-tool symlinks
+│   ├── audits/                 # Generated audit evidence; never canonical script source
+│   └── scripts/                # Setup-managed symlinks to selected scripts/ tools
 ├── docs/                        # Generated reference tables — regenerate with scripts/build-docs.py
 │   ├── agents.md
 │   ├── commands.md
@@ -57,6 +60,7 @@ Configuration/Agents/
 │   ├── plugins.md
 │   └── skills.md
 ├── scripts/
+│   ├── audit/                  # Tracked transcript and usage analysis tools
 │   ├── sync.sh                  # Full regen: src/ → dist; calls sub-builders
 │   ├── validate.sh              # Checks dist/ consistency; exits 0 on pass
 │   ├── build/
@@ -71,6 +75,8 @@ Configuration/Agents/
 ├── templates/                   # Project AGENTS.md templates only
 └── README.md
 ```
+
+Durable script source belongs under `scripts/`. Keep `.agent/scripts/` as a symlink projection and `.agent/audits/` as generated evidence. The project-setup library owns the single list of tools linked into downstream projects.
 
 ## Skill conventions
 

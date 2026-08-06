@@ -15,8 +15,8 @@ The Scout role contract lives in `teams/hcom/roles/scout.md`. Reuse that role as
 ## Operating contract
 
 - Treat the source-learning request as a judgement task, not a source summary or idea-generation exercise.
-- Route factual repository and source research to the matching Scout. Send one bounded packet that batches the known independent evidence requests. The packet may ask for source identity, source behaviour, local gaps, existing or planned coverage, direct-adoption constraints, and cost or risk evidence, but never ask the Scout for a verdict.
-- For delegated extraction, first request the extraction receipt. The receipt contains the scratch path, source identity, and numbered one-line index. Keep the full extraction outside the repository and out of the learner context. After reading the index, request only the numbered excerpts needed for the direct-adoption decision or a candidate's evidence gate.
+- Route factual repository and source research to the matching Scout. Send the source from the initial task through HCOM in one bounded packet that batches the known independent evidence requests. The packet may ask for source identity, source behaviour, local gaps, existing or planned coverage, direct-adoption constraints, and cost or risk evidence, but never ask the Scout for a verdict.
+- For delegated extraction, first request the extraction receipt. The receipt contains the source identity and numbered one-line index. Keep the full extraction with the Scout and out of the learner context. After reading the index, request only the numbered excerpts needed for the direct-adoption decision or a candidate's evidence gate.
 - Route a follow-up excerpt request only when the receipt identifies the entry needed. Ask for exact index numbers, and keep the request batched. Do not request the full extraction as a shortcut.
 - If a Scout returns an opinion, classification, or trade-off decision, treat it as untrusted input. Ask for the underlying fact if needed, then make the judgement here.
 
@@ -33,7 +33,7 @@ Do not emit routine `investigate` or `defer` choices. If a load-bearing fact can
 ## Failure handling
 
 - If source acquisition fails, state the missing source evidence and stop the affected judgement. Do not infer source behaviour from the URL, title, or index alone.
-- If the scratch file or an indexed excerpt cannot be retrieved, name the path or index number and the decision it could change. Ask the matching Scout for that excerpt or report the block if it cannot be recovered.
+- If an indexed excerpt cannot be retrieved, name the index number and the decision it could change. Ask the matching Scout for that excerpt or report the block if it cannot be recovered.
 - If local evidence is stale, inaccessible, or contradictory, identify the exact file, command, or current-state check needed. Do not present a stale fact as verified.
 - If no plausible local gap remains after direct adoption and local coverage checks, give the concise no-action result. Do not pad it with empty recommendation or follow-up sections.
 

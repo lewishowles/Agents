@@ -1,0 +1,417 @@
+#!/usr/bin/env python3
+"""Reproduce the aggregate counts quoted in the session audit report.
+
+Consolidates the one-off queries run during the audit so every number in the
+report can be re-derived. Reads transcripts under ~/.claude/projects and the
+friction log at ~/.claude/logs/friction.log; writes nothing.
+
+Usage:
+    python3 scripts/audit/metrics.py [--days 21]
+
+Each section prints the figure and the report finding it supports.
+"""
+
+import argparse
+import collections
+import datetime
+import glob
+import json
+import os
+import re
+import statistics
+
+ROOT = os.path.expanduser("~/.claude/projects")
+FRICTION = os.path.expanduser("~/.claude/logs/friction.log")
+
+
+def session_paths(days):
+	"""Transcript paths modified within the window, newest last.
+
+	@param  {int}  days
+	    Size of the window in days.
+	"""
+	cutoff = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=days)
+
+	paths = []
+
+	for path in glob.glob(os.path.join(ROOT, "*", "*.jsonl")):
+		mtime = datetime.datetime.fromtimestamp(os.stat(path).st_mtime, datetime.timezone.utc)
+
+		if mtime >= cutoff:
+			paths.append(path)
+
+	return sorted(paths, key=os.path.getmtime)
+
+
+def records(path):
+	"""Yield parsed JSONL records, skipping malformed lines."""
+	with open(path, errors="replace") as handle:
+		for line in handle:
+			try:
+				yield json.loads(line)
+			except ValueError:
+				continue
+
+
+def blocks(record):
+	"""Yield the content blocks of a user or assistant record."""
+	content = (record.get("message") or {}).get("content")
+
+	if isinstance(content, str):
+		yield {"type": "text", "text": content}
+	elif isinstance(content, list):
+		for block in content:
+			if isinstance(block, dict):
+				yield block
+
+
+def record_text(record):
+	"""Flatten a record's text and tool-result content into one string."""
+	parts = []
+
+	for block in blocks(record):
+		if block.get("type") == "text":
+			parts.append(block.get("text", ""))
+		elif block.get("type") == "tool_result" and isinstance(block.get("content"), str):
+			parts.append(block["content"][:3000])
+
+	return " ".join(parts)
+
+
+def tool_calls(record):
+	"""Yield (name, input) for each tool call in an assistant record."""
+	for block in blocks(record):
+		if block.get("type") == "tool_use":
+			yield block.get("name"), (block.get("input") or {})
+
+
+def section(title, finding):
+	print(f"\n{'=' * 72}\n{title}  [{finding}]\n{'=' * 72}")
+
+
+# --- Section 1: corpus size -------------------------------------------------
+
+def corpus(paths):
+	section("Corpus", "Scope and method")
+
+	projects = {os.path.basename(os.path.dirname(p)) for p in paths}
+
+	print(f"sessions in window: {len(paths)}")
+	print(f"project directories: {len(projects)}")
+
+
+# --- Section 2: PROGRESS.md churn -------------------------------------------
+
+def progress_churn(paths):
+	section("PROGRESS.md churn", "F1")
+
+	total = 0
+	sessions = 0
+	by_day = collections.defaultdict(lambda: [0, 0])
+	worst = []
+
+	for path in paths:
+		edits = 0
+
+		for record in records(path):
+			if record.get("type") != "assistant":
+				continue
+
+			for name, params in tool_calls(record):
+				if name in ("Edit", "Write") and str(params.get("file_path", "")).endswith("PROGRESS.md"):
+					edits += 1
+
+		if edits > 1:
+			day = datetime.datetime.fromtimestamp(os.path.getmtime(path)).strftime("%Y-%m-%d")
+			total += edits
+			sessions += 1
+			by_day[day][0] += edits
+			by_day[day][1] += 1
+			worst.append((edits, os.path.basename(path)[:8], os.path.basename(os.path.dirname(path))[-34:]))
+
+	print(f"repeated PROGRESS.md edits: {total} across {sessions} sessions")
+	print("\nby day (edits / sessions):")
+
+	for day in sorted(by_day):
+		print(f"  {day}  {by_day[day][0]:4d}  {by_day[day][1]}")
+
+	print("\nworst sessions:")
+
+	for edits, sid, project in sorted(worst, reverse=True)[:6]:
+		print(f"  {edits:3d}  {sid}  {project}")
+
+
+# --- Section 3: read-after-edit ---------------------------------------------
+
+def count_pairs(sequence, window, by_type):
+	"""Count edits followed by a read of the same path within `window` calls.
+
+	@param  {list}  sequence
+	    Ordered (tool name, file path) pairs for one session.
+	@param  {int}  window
+	    How many following calls count as "immediately after".
+	@param  {Counter|None}  by_type
+	    Optional counter to tally the edited file's type into.
+	"""
+	pairs = 0
+
+	for index, (name, path_edited) in enumerate(sequence):
+		if name not in ("Edit", "Write"):
+			continue
+
+		for later_name, later_path in sequence[index + 1: index + 1 + window]:
+			if later_name == "Read" and later_path == path_edited:
+				pairs += 1
+
+				if by_type is not None:
+					text = str(path_edited)
+					by_type["PROGRESS.md" if text.endswith("PROGRESS.md") else (os.path.splitext(text)[1] or "none")] += 1
+
+				break
+
+	return pairs
+
+
+def read_after_edit(paths):
+	section("Verification re-reads after editing", "F7")
+
+	# The formatter notice the harness emits when a PostToolUse hook rewrites a
+	# file. Its presence in the window is what disproves the tooling-gap reading.
+	# Matched against the raw line, because the notice is not carried in a text
+	# or tool_result block and a parsed-content search misses almost all of them.
+	notice = "PostToolUse hook modified"
+
+	windows = {3: 0, 5: 0}
+	by_type = collections.Counter()
+	notices = 0
+	after_notice = 0
+	without_notice = 0
+	sidechain_pairs = 0
+
+	for path in paths:
+		sequence = []
+
+		with open(path, errors="replace") as handle:
+			for line in handle:
+				if notice in line:
+					sequence.append(("NOTICE", None, False))
+					notices += 1
+
+				try:
+					record = json.loads(line)
+				except ValueError:
+					continue
+
+				if record.get("type") != "assistant":
+					continue
+
+				# Every tool call enters the sequence, not just file operations, so
+				# that "within N calls" means what it says: a read that follows an
+				# edit almost immediately, rather than one separated by a dozen
+				# greps and builds.
+				for name, params in tool_calls(record):
+					sequence.append((name, params.get("file_path"), bool(record.get("isSidechain"))))
+
+		# Main-agent pairs are counted separately from delegated ones: the report
+		# quotes the main-agent figure, since subagent transcripts are governed by
+		# their own delegation packets.
+		main = [(name, path_edited) for name, path_edited, side in sequence if not side and name != "NOTICE"]
+		delegated = [(name, path_edited) for name, path_edited, side in sequence if side and name != "NOTICE"]
+
+		windows[3] += count_pairs(main, 3, by_type)
+		windows[5] += count_pairs(main, 5, None)
+		sidechain_pairs += count_pairs(delegated, 3, None)
+
+		# Notices stay in the sequence here, so a re-read can be attributed to one.
+		flat = [(name, path_edited) for name, path_edited, _ in sequence]
+
+		for index, (name, path_edited) in enumerate(flat):
+			if name not in ("Edit", "Write"):
+				continue
+
+			lookahead = flat[index + 1: index + 6]
+			saw_notice = any(item[0] == "NOTICE" for item in lookahead)
+
+			for later_name, later_path in lookahead:
+				if later_name == "Read" and later_path == path_edited:
+					if saw_notice:
+						after_notice += 1
+					else:
+						without_notice += 1
+
+					break
+
+	print(f"read-after-edit pairs, main agent (3-call window): {windows[3]}")
+	print(f"read-after-edit pairs, main agent (5-call window): {windows[5]}")
+	print(f"read-after-edit pairs, delegated agents (3-call window): {sidechain_pairs}")
+	print(f"\nby file type, main agent (3-call window): {dict(by_type.most_common(10))}")
+	print(f"\nformatter notices in window: {notices}")
+	print(f"  re-reads that followed a notice:  {after_notice}")
+	print(f"  re-reads with no notice at all:   {without_notice}")
+
+
+# --- Section 4: friction log ------------------------------------------------
+
+def friction():
+	section("Friction log composition", "F8")
+
+	if not os.path.exists(FRICTION):
+		print("no friction log found")
+		return
+
+	cutoff = "2026-07-04"
+	rows = []
+
+	with open(FRICTION, errors="replace") as handle:
+		for line in handle:
+			fields = line.rstrip("\n").split("\t")
+
+			if len(fields) >= 4 and fields[0] >= cutoff:
+				rows.append(fields)
+
+	categories = collections.Counter(row[1] for row in rows)
+	check_fails = [row for row in rows if row[1] == "check-fail"]
+	empty = [row for row in check_fails if not row[3].partition(":")[2].strip()]
+	by_repo = collections.Counter(os.path.basename(row[2]) for row in check_fails)
+	per_minute = collections.Counter(row[0][:16] for row in check_fails)
+
+	print(f"entries in window: {len(rows)}")
+	print(f"by category: {dict(categories.most_common())}")
+	print(f"\ncheck-fail rows with an empty error summary: {len(empty)} of {len(check_fails)}")
+	print(f"  as a share of all entries: {len(empty) / len(rows):.0%}")
+	print(f"\ncheck-fail by repository: {dict(by_repo.most_common(5))}")
+	print(f"\nbusiest minutes (retry clusters): {per_minute.most_common(5)}")
+
+
+# --- Section 5: response verbosity ------------------------------------------
+
+def verbosity(paths):
+	section("Assistant response verbosity", "Not findings")
+
+	lengths = []
+	large = []
+
+	for path in paths:
+		for record in records(path):
+			if record.get("type") != "assistant" or record.get("isSidechain"):
+				continue
+
+			for block in blocks(record):
+				if block.get("type") != "text":
+					continue
+
+				text = block.get("text", "").strip()
+
+				if not text:
+					continue
+
+				lengths.append(len(text))
+
+				if len(text) > 4000:
+					large.append((len(text), os.path.basename(path)[:8], (record.get("timestamp") or "")[:16]))
+
+	lengths.sort()
+
+	print(f"assistant text blocks: {len(lengths)}")
+	print(f"  median {statistics.median(lengths):.0f}")
+	print(f"  p90    {lengths[int(0.90 * len(lengths))]}")
+	print(f"  p99    {lengths[int(0.99 * len(lengths))]}")
+	print(f"  max    {lengths[-1]}")
+	print(f"\nblocks over 4000 characters: {len(large)}")
+
+	for size, sid, timestamp in sorted(large, reverse=True)[:5]:
+		print(f"  {size:6d}  {sid}  {timestamp}")
+
+
+# --- Section 6: command discipline ------------------------------------------
+
+def commands(paths):
+	section("Command discipline", "Successful patterns")
+
+	counts = collections.Counter()
+
+	for path in paths:
+		for record in records(path):
+			if record.get("type") != "assistant":
+				continue
+
+			for name, params in tool_calls(record):
+				if name != "Bash":
+					continue
+
+				command = str(params.get("command", ""))
+				counts["bash total"] += 1
+
+				if "project-diagnostics" in command:
+					counts["diagnostics wrapper"] += 1
+				elif re.search(r"\bnpm run (test|lint)|\bnpx vitest|\bvitest run", command):
+					counts["raw npm or vitest"] += 1
+
+				if re.search(r"\|\s*(tail|head)\b", command):
+					counts["output bounded"] += 1
+
+				if re.search(r"test:component|playwright test|\.pw\.js", command):
+					scoped = re.search(r"--test-file|\.pw\.js|--grep|-g ", command)
+					counts["playwright scoped" if scoped else "playwright broad"] += 1
+
+	for key in ("bash total", "diagnostics wrapper", "raw npm or vitest", "output bounded", "playwright scoped", "playwright broad"):
+		print(f"  {key:22s} {counts[key]}")
+
+
+# --- Section 7: skill presence ----------------------------------------------
+
+def skills(paths):
+	section("code-style presence in source-editing sessions", "F5")
+
+	# Skills load either through the Skill tool or by injection, which appears in
+	# the transcript as a "Base directory for this skill" preamble.
+	injected = re.compile(r"Base directory for this skill: \S+/([\w-]+)")
+
+	sessions = 0
+	with_code_style = 0
+
+	for path in paths:
+		loaded = set()
+		source_edits = 0
+
+		for record in records(path):
+			for name, params in tool_calls(record) if record.get("type") == "assistant" else ():
+				if name == "Skill":
+					loaded.add(params.get("skill"))
+				elif name in ("Edit", "Write") and str(params.get("file_path", "")).endswith((".vue", ".js", ".ts")):
+					source_edits += 1
+
+			for match in injected.finditer(record_text(record)):
+				loaded.add(match.group(1))
+
+		if source_edits >= 3:
+			sessions += 1
+
+			if "code-style" in loaded:
+				with_code_style += 1
+
+	print(f"sessions editing 3 or more JS/Vue/TS files: {sessions}")
+	print(f"  with code-style present: {with_code_style}")
+	print("\nNote: the skill-file-trigger hook injects code-style on every matching")
+	print("write, but PreToolUse additionalContext is not persisted in the")
+	print("transcript, so this undercounts. See 'Not findings' in the report.")
+
+
+def main():
+	parser = argparse.ArgumentParser(description=__doc__)
+	parser.add_argument("--days", type=int, default=21, help="window size in days (default 21)")
+	args = parser.parse_args()
+
+	paths = session_paths(args.days)
+
+	corpus(paths)
+	progress_churn(paths)
+	read_after_edit(paths)
+	friction()
+	verbosity(paths)
+	commands(paths)
+	skills(paths)
+
+
+if __name__ == "__main__":
+	main()

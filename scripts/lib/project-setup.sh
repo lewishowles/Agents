@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
 # Shared helpers for project setup commands.
 
+# Shared tool links installed into every configured project's .agent/scripts/ directory.
+SHARED_AGENT_TOOLS=(
+	"project-diagnostics.py|$REPO_DIR/scripts/project-diagnostics.py"
+	"change-impact.py|$REPO_DIR/scripts/validate/change-impact.py"
+	"repo-context.py|$REPO_DIR/scripts/repo-context.py"
+	"generated-file-guard.py|$REPO_DIR/scripts/validate/generated-file-guard.py"
+	"markdown-claims.py|$REPO_DIR/scripts/validate/markdown-claims.py"
+	"log-friction.sh|$REPO_DIR/scripts/log-friction.sh"
+)
+
 # Copies a template to target only if target does not already exist.
 #
 # @param  {string}  source
@@ -134,16 +144,18 @@ copy_claude_support_files() {
 # Links shared project-local agent tooling into the target project. Symlinks keep every
 # project tracking the central source, so improvements and fixes propagate without re-copying.
 copy_shared_agent_tools() {
+	local entry
+
 	cli_group_begin "Shared agent tools"
 	ensure_project_checks
 	ensure_dir "$PROJECT_DIR/.agent/scripts" ".agent/scripts/"
 
-	link_file "$REPO_DIR/scripts/project-diagnostics.py" "$PROJECT_DIR/.agent/scripts/project-diagnostics.py" ".agent/scripts/project-diagnostics.py"
-	link_file "$REPO_DIR/scripts/repo-context.py" "$PROJECT_DIR/.agent/scripts/repo-context.py" ".agent/scripts/repo-context.py"
-	link_file "$REPO_DIR/scripts/validate/change-impact.py" "$PROJECT_DIR/.agent/scripts/change-impact.py" ".agent/scripts/change-impact.py"
-	link_file "$REPO_DIR/scripts/validate/generated-file-guard.py" "$PROJECT_DIR/.agent/scripts/generated-file-guard.py" ".agent/scripts/generated-file-guard.py"
-	link_file "$REPO_DIR/scripts/validate/markdown-claims.py" "$PROJECT_DIR/.agent/scripts/markdown-claims.py" ".agent/scripts/markdown-claims.py"
-	link_file "$REPO_DIR/scripts/log-friction.sh" "$PROJECT_DIR/.agent/scripts/log-friction.sh" ".agent/scripts/log-friction.sh"
+	for entry in "${SHARED_AGENT_TOOLS[@]}"; do
+		local name="${entry%%|*}"
+		local source="${entry##*|}"
+
+		link_file "$source" "$PROJECT_DIR/.agent/scripts/$name" ".agent/scripts/$name"
+	done
 	cli_group_end
 }
 
@@ -353,6 +365,7 @@ check_status() {
 	local agents_md="$PROJECT_DIR/AGENTS.md"
 	local workspace_md="$PROJECT_DIR/WORKSPACE.md"
 	local detected_mode=""
+	local entry
 
 	# Detect mode from AGENTS.md body text.
 	if [ -f "$agents_md" ]; then
@@ -404,17 +417,10 @@ check_status() {
 	# Shared agent tools — each should be a symlink to the central source.
 	cli_group_begin "Shared agent tools"
 	local scripts_dir="$PROJECT_DIR/.agent/scripts"
-	local expected_tools=(
-		"project-diagnostics.py|$REPO_DIR/scripts/project-diagnostics.py"
-		"change-impact.py|$REPO_DIR/scripts/validate/change-impact.py"
-		"repo-context.py|$REPO_DIR/scripts/repo-context.py"
-		"generated-file-guard.py|$REPO_DIR/scripts/validate/generated-file-guard.py"
-		"markdown-claims.py|$REPO_DIR/scripts/validate/markdown-claims.py"
-	)
 	if [ ! -d "$scripts_dir" ]; then
 		cli_group_status warning ".agent/scripts/" "missing"
 	else
-		for entry in "${expected_tools[@]}"; do
+		for entry in "${SHARED_AGENT_TOOLS[@]}"; do
 			local name="${entry%%|*}"
 			local source="${entry##*|}"
 			local target="$scripts_dir/$name"

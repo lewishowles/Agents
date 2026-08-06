@@ -91,7 +91,29 @@ Use `--claude`, `--codex`, or `--both`:
 - `--codex` creates `AGENTS.md`
 - `--both` creates shared `AGENTS.md`, a root `CLAUDE.md` import, and the Claude `.claude/` files
 
-Project setup skips existing files. It does not overwrite or back up project files because those are likely hand-edited.
+Every mode also creates `WORKSPACE.md` when absent and links the six shared agent tools into
+`.agent/scripts/`. The links point to the maintained scripts in this repository, so fixes are
+available to every configured project without copying their implementations.
+
+Project setup skips existing project files. If a shared tool exists as a divergent local copy, it
+asks before replacing that copy with the central symlink.
+
+## Token usage report
+
+Generate a seven-day Claude and Codex token report:
+
+```bash
+python3 scripts/audit/usage.py --days 7
+```
+
+Use explicit inclusive UTC dates when you need repeatable historical output:
+
+```bash
+python3 scripts/audit/usage.py --since 2026-08-01 --until 2026-08-06
+```
+
+Both commands overwrite `.agent/audits/usage/latest.md` and `latest.json`. The report contains
+token counts rather than model pricing or monetary cost.
 
 ## Hook dependency
 
@@ -123,6 +145,7 @@ scripts/sync.sh
 scripts/sync-external-skills.sh
 scripts/setup-global.sh --both
 scripts/setup-project.sh --both
+python3 scripts/audit/usage.py --days 7
 tests/setup-project.sh
 ```
 

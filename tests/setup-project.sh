@@ -287,11 +287,13 @@ test_status_reports_drifted_project() {
 	run_setup "$target_dir" --both
 	rm "$target_dir/WORKSPACE.md"
 	rm "$target_dir/.agent/scripts/repo-context.py"
+	rm "$target_dir/.agent/scripts/log-friction.sh"
 
 	run_setup_output "$target_dir" --status > "$output" 2>&1
 
 	assert_contains "$output" "WORKSPACE.md"
 	assert_contains "$output" "repo-context.py"
+	assert_contains "$output" "log-friction.sh"
 }
 
 test_claude_setup
