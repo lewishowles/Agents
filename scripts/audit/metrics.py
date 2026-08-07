@@ -22,6 +22,8 @@ import statistics
 
 ROOT = os.path.expanduser("~/.claude/projects")
 FRICTION = os.path.expanduser("~/.claude/logs/friction.log")
+COMMAND_TEXT_LIMIT = 300
+RESULT_TEXT_LIMIT = 3000
 
 
 def session_paths(days):
@@ -73,7 +75,7 @@ def record_text(record):
 		if block.get("type") == "text":
 			parts.append(block.get("text", ""))
 		elif block.get("type") == "tool_result" and isinstance(block.get("content"), str):
-			parts.append(block["content"][:3000])
+			parts.append(block["content"][:RESULT_TEXT_LIMIT])
 
 	return " ".join(parts)
 
@@ -83,6 +85,39 @@ def tool_calls(record):
 	for block in blocks(record):
 		if block.get("type") == "tool_use":
 			yield block.get("name"), (block.get("input") or {})
+
+
+def classify_bash_command(command):
+	"""Return one stable, normalised identifier for a Bash command."""
+	if not isinstance(command, str) or not command.strip():
+		return None
+
+	command = command.strip()
+
+	if "project-diagnostics" in command:
+		return "project-diagnostics"
+
+	npm_match = re.search(r"\bnpm\s+(?:run\s+)?(test|lint)\b", command)
+	if npm_match:
+		return f"npm {npm_match.group(1)}"
+
+	if re.search(r"\b(?:npx\s+)?vitest(?:\s+run)?\b", command):
+		return "vitest"
+
+	for segment in re.split(r"\s*(?:&&|\|\||[;|])\s*", command):
+		tokens = segment.strip().split()
+		if not tokens:
+			continue
+
+		while tokens and tokens[0] in ("cd", "clear", "command", "env", "exec", "sudo"):
+			tokens.pop(0)
+			if tokens and tokens[0].startswith("/") and tokens[0].endswith(("/bash", "/zsh", "/sh")):
+				tokens.pop(0)
+
+		if tokens:
+			return re.sub(r"[^A-Za-z0-9_.-]", "", tokens[0]) or None
+
+	return None
 
 
 def section(title, finding):
@@ -341,10 +376,11 @@ def commands(paths):
 
 				command = str(params.get("command", ""))
 				counts["bash total"] += 1
+				classification = classify_bash_command(command)
 
-				if "project-diagnostics" in command:
+				if classification == "project-diagnostics":
 					counts["diagnostics wrapper"] += 1
-				elif re.search(r"\bnpm run (test|lint)|\bnpx vitest|\bvitest run", command):
+				elif classification in ("npm test", "npm lint", "vitest"):
 					counts["raw npm or vitest"] += 1
 
 				if re.search(r"\|\s*(tail|head)\b", command):

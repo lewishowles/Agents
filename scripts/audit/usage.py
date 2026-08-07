@@ -13,14 +13,30 @@ paths under the repository's ``.agent/audits/usage`` directory.
 """
 
 import argparse
+import collections
 import datetime
 import json
+import math
 import os
 import sqlite3
+import sys
 from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+AUDIT_DIRECTORY = Path(__file__).resolve().parent
+if str(AUDIT_DIRECTORY) not in sys.path:
+	sys.path.insert(0, str(AUDIT_DIRECTORY))
+
+from metrics import (  # noqa: E402
+	COMMAND_TEXT_LIMIT,
+	RESULT_TEXT_LIMIT,
+	blocks,
+	classify_bash_command,
+)
+from redundancy import repeated_call_indexes  # noqa: E402
+
+
 CLAUDE_ROOT = Path(os.environ.get("CLAUDE_CONFIG_DIR", "~/.claude")).expanduser() / "projects"
 _CODEX_HOME = Path(os.environ.get("CODEX_HOME", "~/.codex")).expanduser()
 CODEX_ROOTS = (
@@ -43,6 +59,7 @@ CODEX_FIELDS = (
 	"total_tokens",
 )
 TOOLS = ("Claude", "Codex")
+DRIVER_METHOD = "chars/4"
 UNATTRIBUTED = {
 	"agent_name": "unattributed",
 	"role": "unattributed",
@@ -143,6 +160,227 @@ def number(value):
 	return max(0, int(value))
 
 
+def safe_text(value):
+	"""Return a single-line string suitable for safe length measurement."""
+	if not isinstance(value, str):
+		return ""
+
+	return value.replace("\x00", "").replace("\r", " ").replace("\n", " ").strip()
+
+
+def object_input(value):
+	"""Decode a tool input object when a transcript stores it as JSON text."""
+	if isinstance(value, dict):
+		return value
+
+	if not isinstance(value, str):
+		return {}
+
+	try:
+		decoded = json.loads(value)
+	except (TypeError, ValueError):
+		return {}
+
+	return decoded if isinstance(decoded, dict) else {}
+
+
+def result_text(value):
+	"""Extract result text for bounded length measurement without reporting it."""
+	if isinstance(value, str):
+		return value
+
+	if isinstance(value, list):
+		return " ".join(result_text(item) for item in value)
+
+	if isinstance(value, dict):
+		for key in ("content", "output", "result", "text"):
+			if key in value:
+				return result_text(value[key])
+
+	return ""
+
+
+def tool_result_failed(value):
+	"""Return whether a tool result explicitly reports a failure."""
+	return isinstance(value, dict) and bool(value.get("is_error") or value.get("isError"))
+
+
+def command_input(tool_input):
+	"""Return a command from Claude or Codex tool input."""
+	for key in ("command", "cmd"):
+		command = safe_text(tool_input.get(key))
+		if command:
+			return command
+
+	return ""
+
+
+def driver_classification(name, tool_input):
+	"""Classify one tool call and return its safe key and estimate target."""
+	if not isinstance(name, str) or not name:
+		return None
+
+	if name in ("Bash", "exec_command"):
+		command = command_input(tool_input)
+		return {
+			"category": "bash",
+			"key": classify_bash_command(command) or "other",
+			"target": command,
+			"repeat_name": "Bash",
+			"repeat_input": {"command": command},
+		}
+
+	if name in ("Read", "Write", "Edit"):
+		file_path = safe_text(tool_input.get("file_path") or tool_input.get("path"))
+		if not file_path:
+			return None
+
+		return {
+			"category": name.lower(),
+			"key": file_path,
+			"target": file_path,
+			"repeat_name": name,
+			"repeat_input": {"file_path": file_path},
+		}
+
+	if name == "Skill":
+		skill_name = safe_text(tool_input.get("skill") or tool_input.get("name"))
+		if not skill_name:
+			return None
+
+		return {
+			"category": "skill",
+			"key": skill_name,
+			"target": skill_name,
+			"repeat_name": name,
+			"repeat_input": {},
+		}
+
+	if name == "Hook" or name.lower().startswith("hook"):
+		hook_name = safe_text(tool_input.get("name") or name)
+		return {
+			"category": "hook",
+			"key": hook_name,
+			"target": hook_name,
+			"repeat_name": name,
+			"repeat_input": {},
+		}
+
+	if name.startswith("mcp__") or name.startswith("mcp_"):
+		return {
+			"category": "mcp",
+			"key": name,
+			"target": name,
+			"repeat_name": name,
+			"repeat_input": {},
+		}
+
+	return {
+		"category": "tool",
+		"key": name,
+		"target": safe_text(
+			tool_input.get("file_path")
+			or tool_input.get("path")
+			or tool_input.get("subagent_type")
+			or name
+		),
+		"repeat_name": name,
+		"repeat_input": {},
+	}
+
+
+def new_driver_call(name, tool_input):
+	"""Create an internal tool-call record without retaining raw result content."""
+	classification = driver_classification(name, tool_input)
+	return {
+		"name": name,
+		"input": tool_input,
+		"classification": classification,
+		"result": "",
+		"failed": False,
+	}
+
+
+def estimated_payload_tokens(call):
+	"""Estimate one driver payload from bounded command, target, and result text."""
+	classification = call["classification"]
+	if classification is None:
+		target = safe_text(call.get("name"))
+	else:
+		target = classification["target"]
+
+	parts = [target[:COMMAND_TEXT_LIMIT], safe_text(call["result"])[:RESULT_TEXT_LIMIT]]
+	character_count = sum(len(part) for part in parts)
+	return math.ceil(character_count / 4) if character_count else 0
+
+
+def finalise_driver_ledger(session):
+	"""Build ranked driver rows and explicit unattributed counts for a session."""
+	calls = session["_driver_calls"]
+	repetition_calls = [
+		(
+			call["classification"]["repeat_name"] if call["classification"] else call["name"],
+			call["classification"]["repeat_input"] if call["classification"] else {},
+			index,
+		)
+		for index, call in enumerate(calls)
+	]
+	repeated_indexes = repeated_call_indexes(repetition_calls)
+	rows = {}
+	unattributed_count = 0
+	unattributed_payload = 0
+	failed_before = {}
+
+	for index, call in enumerate(calls):
+		classification = call["classification"]
+		payload_estimate = estimated_payload_tokens(call)
+		if classification is None:
+			unattributed_count += 1
+			unattributed_payload += payload_estimate
+			continue
+
+		category = classification["category"]
+		key = classification["key"]
+		identity = (category, key)
+		retry_count = 1 if failed_before.get(identity) else 0
+		if call["failed"]:
+			failed_before[identity] = True
+
+		row = rows.setdefault(
+			identity,
+			{
+				"category": category,
+				"key": key,
+				"count": 0,
+				"payload_estimate_tokens": 0,
+				"method": DRIVER_METHOD,
+				"failure_count": 0,
+				"retry_count": 0,
+				"repeated": False,
+			},
+		)
+		row["count"] += 1
+		row["payload_estimate_tokens"] += payload_estimate
+		row["failure_count"] += int(call["failed"])
+		row["retry_count"] += retry_count
+		row["repeated"] = row["repeated"] or index in repeated_indexes
+
+	ordered_rows = sorted(
+		rows.values(),
+		key=lambda row: (-row["payload_estimate_tokens"], row["category"], row["key"]),
+	)
+	session["driver_ledger"] = ordered_rows
+	session["unattributed_count"] = unattributed_count
+	session["unattributed"] = {
+		"count": unattributed_count,
+		"payload_estimate_tokens": unattributed_payload,
+		"method": DRIVER_METHOD,
+	}
+	session["driver_reconciles"] = session["tool_call_count"] == (
+		sum(row["count"] for row in ordered_rows) + unattributed_count
+	)
+
+
 def empty_totals(tool):
 	"""Create the token fields used by one tool's aggregate."""
 	fields = CLAUDE_FIELDS if tool == "Claude" else CODEX_FIELDS
@@ -216,6 +454,16 @@ def new_session(tool, session_id, path, project_directory):
 		"models": {},
 		"days": {},
 		"hcom": dict(UNATTRIBUTED),
+		"_driver_calls": [],
+		"tool_call_count": 0,
+		"driver_ledger": [],
+		"unattributed_count": 0,
+		"unattributed": {
+			"count": 0,
+			"payload_estimate_tokens": 0,
+			"method": DRIVER_METHOD,
+		},
+		"driver_reconciles": True,
 	}
 
 
@@ -229,23 +477,39 @@ def parse_claude_session(path, start, end):
 	session_id = path.stem
 	project_directory = path.parent.name
 	session = new_session("Claude", session_id, path, project_directory)
+	calls_by_id = {}
 
 	for record in records(path):
 		cwd = record.get("cwd")
 		if isinstance(cwd, str) and cwd:
 			session["project_directory"] = cwd
 
+		message = record.get("message") or {}
+		timestamp = parse_timestamp(record.get("timestamp"))
+		for block in blocks(record):
+			if block.get("type") == "tool_use" and in_window(timestamp, start, end):
+				call = new_driver_call(block.get("name"), object_input(block.get("input") or {}))
+				session["_driver_calls"].append(call)
+				session["tool_call_count"] += 1
+				call_id = block.get("id")
+				if isinstance(call_id, str) and call_id:
+					calls_by_id[call_id] = call
+			elif block.get("type") == "tool_result":
+				call_id = block.get("tool_use_id")
+				call = calls_by_id.get(call_id)
+				if call is not None:
+					call["result"] = result_text(block.get("content"))
+					call["failed"] = tool_result_failed(block)
+
 		if record.get("type") != "assistant":
 			continue
 
 		# Sidechain (subagent) usage lives only inside its own record here, never
 		# duplicated in the parent's usage, so it is counted rather than filtered.
-		message = record.get("message") or {}
 		usage = message.get("usage")
 		if not isinstance(usage, dict):
 			continue
 
-		timestamp = parse_timestamp(record.get("timestamp"))
 		if not in_window(timestamp, start, end):
 			continue
 
@@ -253,6 +517,7 @@ def parse_claude_session(path, start, end):
 		model = model if isinstance(model, str) and model else "unknown"
 		add_session_usage(session, usage, model, timestamp.date().isoformat(), "Claude")
 
+	finalise_driver_ledger(session)
 	return session if session["tokens"]["total_tokens"] else None
 
 
@@ -282,10 +547,14 @@ def parse_codex_session(path, start, end):
 	session = new_session("Codex", session_id, path, "unknown")
 	model = "unknown"
 	previous_total = None
+	calls_by_id = {}
 
 	for record in records(path):
-		payload = record.get("payload") or {}
+		payload = record.get("payload")
+		if not isinstance(payload, dict):
+			payload = {}
 		record_type = record.get("type")
+		timestamp = parse_timestamp(record.get("timestamp"))
 
 		if record_type == "session_meta":
 			metadata_session_id = payload.get("session_id") or payload.get("id")
@@ -305,6 +574,24 @@ def parse_codex_session(path, start, end):
 			if isinstance(cwd, str) and cwd:
 				session["project_directory"] = cwd
 
+		if record_type == "response_item":
+			response_type = payload.get("type")
+			if response_type in ("function_call", "custom_tool_call"):
+				name = payload.get("name") or payload.get("tool_name")
+				arguments = payload.get("arguments", payload.get("input", {}))
+				if in_window(timestamp, start, end):
+					call = new_driver_call(name, object_input(arguments))
+					session["_driver_calls"].append(call)
+					session["tool_call_count"] += 1
+					call_id = payload.get("call_id") or payload.get("id")
+					if isinstance(call_id, str) and call_id:
+						calls_by_id[call_id] = call
+			elif response_type in ("function_call_output", "custom_tool_call_output"):
+				call = calls_by_id.get(payload.get("call_id") or payload.get("id"))
+				if call is not None:
+					call["result"] = result_text(payload.get("output"))
+					call["failed"] = tool_result_failed(payload)
+
 		if record_type != "event_msg" or payload.get("type") != "token_count":
 			continue
 
@@ -318,12 +605,12 @@ def parse_codex_session(path, start, end):
 		if isinstance(total_usage, dict):
 			previous_total = total_usage
 
-		timestamp = parse_timestamp(record.get("timestamp"))
 		if not in_window(timestamp, start, end) or not isinstance(delta, dict):
 			continue
 
 		add_session_usage(session, delta, model, timestamp.date().isoformat(), "Codex")
 
+	finalise_driver_ledger(session)
 	return session if session["tokens"]["total_tokens"] else None
 
 
@@ -476,6 +763,50 @@ def aggregate(sessions):
 	return by_tool, by_model, by_day, by_project, by_role
 
 
+def aggregate_driver_ledger(sessions):
+	"""Combine session driver rows into one ranked ledger and reconciliation."""
+	rows = {}
+	tool_call_count = 0
+	unattributed_count = 0
+	unattributed_payload = 0
+
+	for session in sessions:
+		tool_call_count += session["tool_call_count"]
+		unattributed_count += session["unattributed_count"]
+		unattributed_payload += session["unattributed"]["payload_estimate_tokens"]
+
+		for source in session["driver_ledger"]:
+			identity = (source["category"], source["key"])
+			if identity not in rows:
+				rows[identity] = dict(source)
+			else:
+				row = rows[identity]
+				row["count"] += source["count"]
+				row["payload_estimate_tokens"] += source["payload_estimate_tokens"]
+				row["failure_count"] += source["failure_count"]
+				row["retry_count"] += source["retry_count"]
+				row["repeated"] = row["repeated"] or source["repeated"]
+
+	ordered_rows = sorted(
+		rows.values(),
+		key=lambda row: (-row["payload_estimate_tokens"], row["category"], row["key"]),
+	)
+	attributed_count = sum(row["count"] for row in ordered_rows)
+
+	return {
+		"driver_ledger": ordered_rows,
+		"tool_call_count": tool_call_count,
+		"attributed_count": attributed_count,
+		"unattributed_count": unattributed_count,
+		"unattributed": {
+			"count": unattributed_count,
+			"payload_estimate_tokens": unattributed_payload,
+			"method": DRIVER_METHOD,
+		},
+		"reconciles": tool_call_count == attributed_count + unattributed_count,
+	}
+
+
 def display_token_count(tokens):
 	"""Format a token count for the Markdown report."""
 	return f"{tokens:,}"
@@ -511,6 +842,30 @@ def markdown_table_for_group(group):
 				f"| {display_path(key)} | {tool} | {row['session_count']} | "
 				f"{display_token_count(row['tokens']['total_tokens'])} |"
 			)
+
+	return lines if len(lines) > 2 else ["No data in the selected window."]
+
+
+def markdown_driver_table(rows, unattributed):
+	"""Render ranked driver rows without including raw transcript payloads."""
+	lines = [
+		"| Rank | Category | Key | Count | Payload estimate (tokens) | Method | Failures | Retries | Repeated |",
+		"| ---: | --- | --- | ---: | ---: | --- | ---: | ---: | --- |",
+	]
+
+	for rank, row in enumerate(rows, start=1):
+		lines.append(
+			f"| {rank} | {row['category']} | {display_path(row['key'])} | {row['count']} | "
+			f"{row['payload_estimate_tokens']} | {row['method']} | {row['failure_count']} | "
+			f"{row['retry_count']} | {'yes' if row['repeated'] else 'no'} |"
+		)
+
+	if unattributed["count"]:
+		rank = len(rows) + 1
+		lines.append(
+			f"| {rank} | unattributed | — | {unattributed['count']} | "
+			f"{unattributed['payload_estimate_tokens']} | {unattributed['method']} | — | — | — |"
+		)
 
 	return lines if len(lines) > 2 else ["No data in the selected window."]
 
@@ -601,6 +956,46 @@ def render_markdown(report):
 	else:
 		lines.append("| | | no data | | | | |")
 
+	lines.extend(
+		[
+			"",
+			"## Driver ledger (ranked aggregate)",
+			"",
+			(
+				f"Tool calls: **{report['driver_reconciliation']['tool_call_count']}** = "
+				f"{report['driver_reconciliation']['attributed_count']} attributed + "
+				f"{report['driver_reconciliation']['unattributed_count']} unattributed."
+			),
+			"",
+		]
+	)
+	lines.extend(
+		markdown_driver_table(
+			report["driver_ledger"],
+			report["driver_reconciliation"]["unattributed"],
+		)
+	)
+
+	lines.extend(["", "## Driver ledger by session", ""])
+	if report["sessions"]:
+		for session in report["sessions"]:
+			lines.extend(
+				[
+					f"### {session['tool']} `{session['session_id']}`",
+					"",
+					(
+						f"Tool calls: **{session['tool_call_count']}** = "
+						f"{session['tool_call_count'] - session['unattributed_count']} attributed + "
+						f"{session['unattributed_count']} unattributed."
+					),
+					"",
+				]
+			)
+			lines.extend(markdown_driver_table(session["driver_ledger"], session["unattributed"]))
+			lines.append("")
+	else:
+		lines.append("No data in the selected window.")
+
 	lines.extend(["", "## Claude cache-read ratio (tokens, not cost)", ""])
 	claude_ratio = by_tool["Claude"].get("cache_read_ratio")
 	if by_tool["Claude"]["empty"]:
@@ -641,6 +1036,7 @@ def make_report(sessions, window, sections):
 	"""Build the deterministic JSON report object."""
 	start, end, display_since, display_until = window
 	by_tool, by_model, by_day, by_project, by_role = sections
+	driver_data = aggregate_driver_ledger(sessions)
 	ordered_sessions = sorted(
 		sessions,
 		key=lambda session: (
@@ -649,21 +1045,29 @@ def make_report(sessions, window, sections):
 			session["session_id"],
 		),
 	)
-	top_sessions = []
 
-	for rank, session in enumerate(ordered_sessions[:10], start=1):
-		top_sessions.append(
-			{
-				"rank": rank,
-				"tool": session["tool"],
-				"session_id": session["session_id"],
-				"transcript_path": session["transcript_path"],
-				"project_directory": session["project_directory"],
-				"hcom": session["hcom"],
-				"models": sorted(session["models"]),
-				"tokens": session["tokens"],
-			}
-		)
+	def session_report(session, rank):
+		return {
+			"rank": rank,
+			"tool": session["tool"],
+			"session_id": session["session_id"],
+			"transcript_path": session["transcript_path"],
+			"project_directory": session["project_directory"],
+			"hcom": session["hcom"],
+			"models": sorted(session["models"]),
+			"tokens": session["tokens"],
+			"tool_call_count": session["tool_call_count"],
+			"unattributed_count": session["unattributed_count"],
+			"unattributed": session["unattributed"],
+			"driver_reconciles": session["driver_reconciles"],
+			"driver_ledger": session["driver_ledger"],
+		}
+
+	all_sessions = [
+		session_report(session, rank)
+		for rank, session in enumerate(ordered_sessions, start=1)
+	]
+	top_sessions = all_sessions[:10]
 
 	for tool in TOOLS:
 		if by_tool[tool]["empty"]:
@@ -684,6 +1088,9 @@ def make_report(sessions, window, sections):
 		"totals_by_day": by_day,
 		"totals_by_project": by_project,
 		"totals_by_role": by_role,
+		"driver_ledger": driver_data["driver_ledger"],
+		"driver_reconciliation": driver_data,
+		"sessions": all_sessions,
 		"top_sessions": top_sessions,
 	}
 

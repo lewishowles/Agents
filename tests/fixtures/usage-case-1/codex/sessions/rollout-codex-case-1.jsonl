@@ -1,0 +1,19 @@
+{"type":"session_meta","timestamp":"2026-08-01T11:00:00Z","payload":{"id":"codex-case-1","cwd":"/fixture/codex/project"}}
+{"type":"turn_context","timestamp":"2026-08-01T11:00:01Z","payload":{"model":"codex-case-1","cwd":"/fixture/codex/project"}}
+{"type":"response_item","timestamp":"2026-08-01T11:00:02Z","payload":{"type":"function_call","name":"exec_command","call_id":"codex-bash","arguments":"{\"cmd\":\"git status --short\"}"}}
+{"type":"response_item","timestamp":"2026-08-01T11:00:03Z","payload":{"type":"function_call_output","call_id":"codex-bash","output":" M src/app.py\n M src/config.py\nThe bounded fixture status is complete."}}
+{"type":"response_item","timestamp":"2026-08-01T11:00:04Z","payload":{"type":"function_call","name":"Skill","call_id":"codex-skill","arguments":"{\"skill\":\"test\"}"}}
+{"type":"response_item","timestamp":"2026-08-01T11:00:05Z","payload":{"type":"function_call_output","call_id":"codex-skill","output":"Loaded test guidance for the fixture check."}}
+{"type":"response_item","timestamp":"2026-08-01T11:00:06Z","payload":{"type":"function_call","name":"spawn_agent","call_id":"codex-delegate","arguments":"{\"agent\":\"scout\"}"}}
+{"type":"response_item","timestamp":"2026-08-01T11:00:07Z","payload":{"type":"function_call_output","call_id":"codex-delegate","output":"Delegated fixture inspection completed."}}
+{"type":"response_item","timestamp":"2026-08-01T11:00:08Z","payload":{"type":"function_call","name":"Read","call_id":"codex-read","arguments":"{\"file_path\":\"/fixture/codex/project/src/app.py\"}"}}
+{"type":"response_item","timestamp":"2026-08-01T11:00:09Z","payload":{"type":"function_call_output","call_id":"codex-read","output":"codex fixture source line one\ncodex fixture source line two\ncodex fixture source line three"}}
+{"type":"response_item","timestamp":"2026-08-01T11:00:10Z","payload":{"type":"function_call","name":"mcp__fixture__inspect","call_id":"codex-mcp","arguments":"{\"path\":\"/fixture/codex/project\"}"}}
+{"type":"response_item","timestamp":"2026-08-01T11:00:11Z","payload":{"type":"function_call_output","call_id":"codex-mcp","output":"The Codex fixture inspection returned a bounded structured result for the requested project path."}}
+{"type":"event_msg","timestamp":"2026-08-01T11:00:12Z","payload":{"type":"token_count","info":{"last_token_usage":{"input_tokens":80,"cached_input_tokens":20,"reasoning_output_tokens":10,"output_tokens":30,"total_tokens":140},"total_token_usage":{"input_tokens":80,"cached_input_tokens":20,"reasoning_output_tokens":10,"output_tokens":30,"total_tokens":140}}}}
+{"type":"turn_context","timestamp":"2026-08-01T11:01:00Z","payload":{"model":"codex-case-1","cwd":"/fixture/codex/project"}}
+{"type":"response_item","timestamp":"2026-08-01T11:01:01Z","payload":{"type":"function_call","name":"Edit","call_id":"codex-edit","arguments":"{\"file_path\":\"/fixture/codex/project/src/app.py\",\"old_string\":\"old fixture value\",\"new_string\":\"new fixture value\"}"}}
+{"type":"response_item","timestamp":"2026-08-01T11:01:02Z","payload":{"type":"function_call_output","call_id":"codex-edit","output":"Edit completed."}}
+{"type":"response_item","timestamp":"2026-08-01T11:01:03Z","payload":{"type":"function_call","name":"Read","call_id":"codex-read-after-edit","arguments":"{\"file_path\":\"/fixture/codex/project/src/app.py\"}"}}
+{"type":"response_item","timestamp":"2026-08-01T11:01:04Z","payload":{"type":"function_call_output","call_id":"codex-read-after-edit","output":"new fixture value\ncodex fixture source line two"}}
+{"type":"event_msg","timestamp":"2026-08-01T11:01:05Z","payload":{"type":"token_count","info":{"last_token_usage":{"input_tokens":40,"cached_input_tokens":10,"reasoning_output_tokens":5,"output_tokens":15,"total_tokens":70},"total_token_usage":{"input_tokens":120,"cached_input_tokens":30,"reasoning_output_tokens":15,"output_tokens":45,"total_tokens":210}}}}

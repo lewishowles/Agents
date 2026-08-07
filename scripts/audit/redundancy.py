@@ -1,62 +1,135 @@
 #!/usr/bin/env python3
 """Detect redundant tool patterns: identical repeated bash, re-read after edit, repeated reads."""
-import json, os, glob, collections, datetime, sys
+import collections
+import datetime
+import glob
+import json
+import os
+
+from metrics import COMMAND_TEXT_LIMIT
 
 ROOT = os.path.expanduser("~/.claude/projects")
-CUTOFF = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=21)
 
-agg = collections.Counter()
-examples = collections.defaultdict(list)
 
-for path in glob.glob(os.path.join(ROOT, "*", "*.jsonl")):
-    st = os.stat(path)
-    if datetime.datetime.fromtimestamp(st.st_mtime, datetime.timezone.utc) < CUTOFF:
-        continue
-    calls = []
-    with open(path, errors="replace") as f:
-        for line in f:
-            try:
-                d = json.loads(line)
-            except Exception:
-                continue
-            if d.get("type") != "assistant" or d.get("isSidechain"):
-                continue
-            for b in d.get("message", {}).get("content", []) or []:
-                if isinstance(b, dict) and b.get("type") == "tool_use":
-                    calls.append((b.get("name"), b.get("input") or {}, (d.get("timestamp") or "")[:19]))
+def repeated_call_indexes(calls):
+	"""Return call indexes covered by the existing redundancy thresholds.
 
-    sess = os.path.basename(path)[:8]
-    proj = os.path.basename(os.path.dirname(path))[-32:]
+	@param  {list}  calls
+		Ordered ``(name, input, timestamp)`` tuples for one session.
+	@return {set}
+		Indexes marked as repeated Bash, repeated Read, or read-after-edit.
+	"""
+	repeated = set()
 
-    # 1. identical repeated bash commands (>=3 times)
-    bash = collections.Counter(str(i.get("command", ""))[:300] for n, i, t in calls if n == "Bash")
-    for cmd, c in bash.items():
-        if c >= 4 and cmd.strip():
-            agg["repeat_bash"] += 1
-            examples["repeat_bash"].append((c, proj, sess, cmd[:120]))
+	bash_indexes = collections.defaultdict(list)
+	for index, (name, tool_input, _) in enumerate(calls):
+		if name == "Bash":
+			command = str(tool_input.get("command", ""))[:COMMAND_TEXT_LIMIT]
+			if command.strip():
+				bash_indexes[command].append(index)
 
-    # 2. read of a file immediately after editing it (within next 3 calls)
-    for idx, (n, i, t) in enumerate(calls):
-        if n in ("Edit", "Write"):
-            fp = i.get("file_path")
-            for n2, i2, t2 in calls[idx + 1: idx + 4]:
-                if n2 == "Read" and i2.get("file_path") == fp:
-                    agg["read_after_edit"] += 1
-                    examples["read_after_edit"].append((proj, sess, t2, str(fp)[-60:]))
-                    break
+	for indexes in bash_indexes.values():
+		if len(indexes) >= 4:
+			repeated.update(indexes)
 
-    # 3. same file read >=4 times
-    reads = collections.Counter(i.get("file_path") for n, i, t in calls if n == "Read" and i.get("file_path"))
-    for fp, c in reads.items():
-        if c >= 6:
-            agg["repeat_read"] += 1
-            examples["repeat_read"].append((c, proj, sess, str(fp)[-70:]))
+	read_indexes = collections.defaultdict(list)
+	for index, (name, tool_input, _) in enumerate(calls):
+		if name == "Read" and tool_input.get("file_path"):
+			read_indexes[tool_input["file_path"]].append(index)
 
-print(dict(agg))
-for k in examples:
-    print(f"\n=== {k} (top) ===")
-    ex = examples[k]
-    if k in ("repeat_bash", "repeat_read"):
-        ex.sort(key=lambda x: -x[0])
-    for e in ex[:14]:
-        print("  ", e)
+	for indexes in read_indexes.values():
+		if len(indexes) >= 6:
+			repeated.update(indexes)
+
+	for index, (name, tool_input, _) in enumerate(calls):
+		if name not in ("Edit", "Write"):
+			continue
+
+		file_path = tool_input.get("file_path")
+		for read_index, (later_name, later_input, _) in enumerate(
+			calls[index + 1: index + 4],
+			start=index + 1,
+		):
+			if later_name == "Read" and later_input.get("file_path") == file_path:
+				repeated.update((index, read_index))
+				break
+
+	return repeated
+
+
+def main():
+	"""Print the existing redundancy report for recent Claude sessions."""
+	cutoff = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=21)
+	agg = collections.Counter()
+	examples = collections.defaultdict(list)
+
+	for path in glob.glob(os.path.join(ROOT, "*", "*.jsonl")):
+		st = os.stat(path)
+		if datetime.datetime.fromtimestamp(st.st_mtime, datetime.timezone.utc) < cutoff:
+			continue
+		calls = []
+		with open(path, errors="replace") as handle:
+			for line in handle:
+				try:
+					record = json.loads(line)
+				except (TypeError, ValueError):
+					continue
+				if record.get("type") != "assistant" or record.get("isSidechain"):
+					continue
+				for block in record.get("message", {}).get("content", []) or []:
+					if isinstance(block, dict) and block.get("type") == "tool_use":
+						calls.append(
+							(
+								block.get("name"),
+								block.get("input") or {},
+								(record.get("timestamp") or "")[:19],
+							)
+						)
+
+		session_id = os.path.basename(path)[:8]
+		project = os.path.basename(os.path.dirname(path))[-32:]
+		repeated = repeated_call_indexes(calls)
+
+		bash = collections.Counter(
+			str(tool_input.get("command", ""))[:COMMAND_TEXT_LIMIT]
+			for name, tool_input, _ in calls
+			if name == "Bash"
+		)
+		for command, count in bash.items():
+			if count >= 4 and command.strip():
+				agg["repeat_bash"] += 1
+				examples["repeat_bash"].append((count, project, session_id, command[:120]))
+
+		for index in repeated:
+			name, tool_input, timestamp = calls[index]
+			if name in ("Edit", "Write"):
+				for read_name, read_input, _ in calls[index + 1: index + 4]:
+					if read_name == "Read" and read_input.get("file_path") == tool_input.get("file_path"):
+						agg["read_after_edit"] += 1
+						examples["read_after_edit"].append(
+							(project, session_id, timestamp, str(tool_input.get("file_path"))[-60:])
+						)
+						break
+
+		reads = collections.Counter(
+			tool_input.get("file_path")
+			for name, tool_input, _ in calls
+			if name == "Read" and tool_input.get("file_path")
+		)
+		for file_path, count in reads.items():
+			if count >= 6:
+				agg["repeat_read"] += 1
+				examples["repeat_read"].append((count, project, session_id, str(file_path)[-70:]))
+
+	print(dict(agg))
+	for key in examples:
+		print(f"\n=== {key} (top) ===")
+		example_rows = examples[key]
+		if key in ("repeat_bash", "repeat_read"):
+			example_rows.sort(key=lambda row: -row[0])
+		for example in example_rows[:14]:
+			print("  ", example)
+
+
+if __name__ == "__main__":
+	main()
