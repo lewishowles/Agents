@@ -41,15 +41,16 @@ Do not use this skill for:
 Every assessment starts with this exact shape, before any other heading or explanation:
 
 ```markdown
-**Bottom line:** <Adopt the source directly / Adopt specific parts / Take no local action>. Ready recommendations: <number>.
+**Bottom line:** <Adopt the source directly / Adopt specific parts / Take no local action>. Ready recommendations: <number> must, <number> recommended, <number> nice-to-have.
 ```
 
-Use the plain-language outcome that best fits the evidence. Include the ready-recommendation count even when it is zero.
+Use the plain-language outcome that best fits the evidence. Include all three counts even when they are zero.
 
 Before extracting patterns to reproduce locally, decide whether this repository should adopt the source itself. Check the direct route that fits the artefact: depend on a package, use a tool or service, fork a repository, wrap a component, link to a workflow, or adopt another supported integration. If direct adoption does not apply or does not fit, state the reason briefly before considering local pieces.
 
 A recommendation is ready only when all of these are verified:
 
+- Why and when: in plain English, the concrete consequence of not doing this, and the point at which it should run or be applied. If this cannot be stated in a couple of plain sentences without jargon, the recommendation is not ready.
 - Source behaviour: the source's relevant behaviour, claim, or example is identified and checked.
 - Local gap: the repository has a current, evidenced problem or missing capability that this would address. User-profile interests and adjacent domains do not establish a gap.
 - Coverage: existing or planned local coverage is identified, including the relevant source, tests, documentation, configuration, plan, or repeated friction.
@@ -85,8 +86,9 @@ Apply the `code-lookup` routing skill for structural questions. Use targeted rea
 2. Check direct adoption first. Record the route considered and the evidence for adopting it or ruling it out.
 3. Gather local evidence for the gap, existing or planned coverage, and constraints. Use current plans, source, tests, documentation, configuration, repeated friction, or a repository-inherent risk.
 4. Check every candidate against the full readiness gate. Drop candidates with no plausible local gap or with evidence that rules them out. Keep only genuinely unresolved load-bearing evidence as an explicit blocker.
-5. Choose the bottom-line outcome. Direct adoption wins when the source itself fits; adopt specific parts only when the source as a whole does not fit but a verified local piece does; take no local action when neither route has a ready recommendation.
-6. Write the shortest response that communicates the verdict, ready actions, covered or rejected material, and any genuine blocked evidence.
+5. Assign each ready candidate a tier: Must, Recommended, or Nice-to-have.
+6. Choose the bottom-line outcome. Direct adoption wins when the source itself fits; adopt specific parts only when the source as a whole does not fit but a verified local piece does; take no local action when neither route has a ready recommendation.
+7. Write the shortest response that communicates the verdict, ready actions grouped by tier, covered or rejected material, and any genuine blocked evidence.
 
 Do not treat the external source as authoritative. The goal is better local judgement, not imitation.
 
@@ -110,12 +112,22 @@ Challenge ideas that:
 - duplicate guidance already present in `AGENTS.md`, `WORKSPACE.md`, `PROGRESS.md`, rules, or skills
 - would be hard to reverse without a strong reason
 
+## Recommendation tiers
+
+Every ready recommendation gets exactly one tier, chosen by how much the local gap is already hurting, not by how interesting the source idea is:
+
+- **Must** — an active, currently evidenced problem, wrong instruction, repeated friction, or risk that this recommendation removes. Left unaddressed, that problem stays live.
+- **Recommended** — a real, verified gap or missing capability, but nothing is currently breaking or actively causing harm without it. Safe to schedule for a later chunk.
+- **Nice-to-have** — small, proportionate polish or convenience. The gap is genuine but minor, and the cost of leaving it is low either way.
+
 ## Output
+
+Write the whole response in plain English. Explain technical terms the first time they appear, drop raw links from prose (put them only where a source location is genuinely needed, such as `Source behaviour`), and don't make the reader ask a follow-up question to understand why a recommendation exists. If a sentence would only make sense to someone who already read the source, rewrite it.
 
 After the required first line, use only the sections that contain evidence:
 
 ```markdown
-**Bottom line:** <outcome>. Ready recommendations: <number>.
+**Bottom line:** <outcome>. Ready recommendations: <number> must, <number> recommended, <number> nice-to-have.
 
 ## Direct adoption
 
@@ -123,14 +135,26 @@ After the required first line, use only the sections that contain evidence:
 - Decision: <adopt it / do not adopt it>
 - Evidence: <source behaviour and local fit, or the brief reason it does not fit>
 
-## Ready recommendations
+## Must
 
 1. <specific local action>
+
+   <One or two plain-English sentences: why this matters, with no jargon or links, as if explaining it to someone who has not read the source.>
+
+   - Why and when: <the concrete consequence of skipping this, and the point at which it should run or be applied>
    - Source behaviour: <verified source evidence, with its receipt index or source location>
    - Local gap: <verified current problem or missing capability>
    - Coverage: <existing or planned local source, tests, docs, config, plan, friction, or risk>
    - Adoption route: <how this repository will take it on>
    - Cost and risk: <proportionate checked trade-offs>
+
+## Recommended
+
+1. <same shape as Must>
+
+## Nice-to-have
+
+1. <same shape as Must>
 
 ## Covered, confirmed, or rejected
 
