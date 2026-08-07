@@ -18,6 +18,7 @@ import datetime
 import json
 import math
 import os
+import re
 import sqlite3
 import sys
 from pathlib import Path
@@ -182,6 +183,84 @@ def object_input(value):
 		return {}
 
 	return decoded if isinstance(decoded, dict) else {}
+
+
+def decode_js_string(value):
+	"""Decode one quoted JavaScript string literal without parsing the source."""
+	if not isinstance(value, str) or len(value) < 2:
+		return ""
+
+	if value.startswith('"') and value.endswith('"'):
+		try:
+			return safe_text(json.loads(value))
+		except (TypeError, ValueError):
+			return ""
+
+	if value.startswith("'") and value.endswith("'"):
+		try:
+			return safe_text(bytes(value[1:-1], "utf-8").decode("unicode_escape"))
+		except (UnicodeDecodeError, ValueError):
+			return ""
+
+	return ""
+
+
+def embedded_js_argument(source, key):
+	"""Extract one quoted argument from a nested JavaScript tool call."""
+	if not isinstance(source, str):
+		return ""
+
+	pattern = rf"(?:['\"]{re.escape(key)}['\"]|{re.escape(key)})\s*:\s*(\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*')"
+	match = re.search(pattern, source)
+	return decode_js_string(match.group(1)) if match else ""
+
+
+def embedded_patch_path(source):
+	"""Extract the first safe target path from an apply_patch source string."""
+	if not isinstance(source, str):
+		return ""
+
+	match = re.search(r"\*\*\* (?:Update|Add|Delete) File:\s*([^\s\\]+)", source)
+	return safe_text(match.group(1)) if match else ""
+
+
+def embedded_tool_call(value):
+	"""Extract the real tool call nested inside a Codex ``exec`` source string."""
+	if not isinstance(value, str):
+		return None
+
+	match = re.search(r"\btools\.([A-Za-z_][A-Za-z0-9_]*)\s*\(", value)
+	if not match:
+		return None
+
+	name = match.group(1)
+	tool_input = {
+		key: argument
+		for key in (
+			"agent",
+			"command",
+			"cmd",
+			"file_path",
+			"name",
+			"path",
+			"skill",
+			"subagent_type",
+		)
+		if (argument := embedded_js_argument(value, key))
+	}
+
+	if name == "apply_patch":
+		file_path = embedded_patch_path(value)
+		if file_path:
+			tool_input["file_path"] = file_path
+
+	if name == "exec_command" or name == "write_stdin":
+		return "Bash", tool_input
+
+	if name == "apply_patch":
+		return "Edit", tool_input
+
+	return name, tool_input
 
 
 def result_text(value):
@@ -486,6 +565,20 @@ def parse_claude_session(path, start, end):
 
 		message = record.get("message") or {}
 		timestamp = parse_timestamp(record.get("timestamp"))
+		attachment = record.get("attachment")
+		if (
+			isinstance(attachment, dict)
+			and attachment.get("type") == "hook_success"
+			and in_window(timestamp, start, end)
+		):
+			hook_name = safe_text(attachment.get("hookName"))
+			if hook_name:
+				call = new_driver_call("Hook", {"name": hook_name})
+				call["result"] = result_text(attachment.get("stdout"))
+				call["failed"] = attachment.get("exitCode") not in (None, 0, "0")
+				session["_driver_calls"].append(call)
+				session["tool_call_count"] += 1
+
 		for block in blocks(record):
 			if block.get("type") == "tool_use" and in_window(timestamp, start, end):
 				call = new_driver_call(block.get("name"), object_input(block.get("input") or {}))
@@ -579,8 +672,14 @@ def parse_codex_session(path, start, end):
 			if response_type in ("function_call", "custom_tool_call"):
 				name = payload.get("name") or payload.get("tool_name")
 				arguments = payload.get("arguments", payload.get("input", {}))
+				tool_input = object_input(arguments)
+				if response_type == "custom_tool_call":
+					embedded = embedded_tool_call(arguments)
+					if embedded is not None:
+						name, tool_input = embedded
+
 				if in_window(timestamp, start, end):
-					call = new_driver_call(name, object_input(arguments))
+					call = new_driver_call(name, tool_input)
 					session["_driver_calls"].append(call)
 					session["tool_call_count"] += 1
 					call_id = payload.get("call_id") or payload.get("id")

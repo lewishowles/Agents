@@ -19,6 +19,9 @@ Aggregates token usage for Claude and Codex over a bounded UTC window. The repor
 mechanical: it reports facts and does not make cost-reduction recommendations. Every figure is
 tokens, not cost. It includes totals by tool, model, day, project directory, and hcom role; the
 ten heaviest sessions; Claude cache-read ratio; and Codex reasoning-output ratio.
+It also includes ranked Driver ledger sections for aggregate and per-session bash, file, skill,
+hook, MCP, and other tool activity, with safe targets, payload estimates, failures, retries, and
+repetition markers.
 
 ```sh
 python3 scripts/audit/usage.py --days 7

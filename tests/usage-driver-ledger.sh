@@ -26,8 +26,8 @@ markdown = (report_directory / "latest.md").read_text(encoding="utf-8")
 
 assert report["session_count"] == 2
 assert report["driver_reconciliation"]["reconciles"] is True
-assert report["driver_reconciliation"]["tool_call_count"] == 15
-assert report["driver_reconciliation"]["attributed_count"] == 15
+assert report["driver_reconciliation"]["tool_call_count"] == 16
+assert report["driver_reconciliation"]["attributed_count"] == 16
 assert report["driver_reconciliation"]["unattributed_count"] == 0
 
 sessions = {session["tool"]: session for session in report["sessions"]}
@@ -52,7 +52,7 @@ assert codex["tokens"] == {
 
 for session in (claude, codex):
 	assert session["tool_call_count"] == sum(row["count"] for row in session["driver_ledger"])
-	assert session["tool_call_count"] == (8 if session["tool"] == "Claude" else 7)
+	assert session["tool_call_count"] == (9 if session["tool"] == "Claude" else 7)
 	assert session["driver_reconciles"] is True
 	assert all(row["method"] == "chars/4" for row in session["driver_ledger"])
 	assert session["driver_ledger"] == sorted(
@@ -65,18 +65,22 @@ codex_rows = {(row["category"], row["key"]): row for row in codex["driver_ledger
 assert claude_rows[("bash", "rg")]["count"] == 1
 assert claude_rows[("read", "/fixture/claude/project/src/app.py")]["repeated"] is True
 assert claude_rows[("edit", "/fixture/claude/project/src/app.py")]["repeated"] is True
+assert claude_rows[("write", "/fixture/claude/project/src/config.py")]["count"] == 1
 assert claude_rows[("skill", "code-style")]["count"] == 1
+assert claude_rows[("hook", "progress-resume")]["count"] == 1
 assert claude_rows[("tool", "Task")]["count"] == 1
 assert codex_rows[("bash", "git")]["count"] == 1
-assert codex_rows[("read", "/fixture/codex/project/src/app.py")]["repeated"] is True
-assert codex_rows[("skill", "test")]["count"] == 1
+assert codex_rows[("bash", "cat")]["count"] == 2
+assert codex_rows[("edit", "/fixture/codex/project/src/app.py")]["count"] == 1
 assert codex_rows[("tool", "spawn_agent")]["count"] == 1
 
 for forbidden in (
-	"fixture source line one",
-	"new fixture value",
-	"Delegated review completed",
-	"bounded structured result",
+	"SYNTHETIC_CLAUDE_HOOK_STDOUT_8F3C",
+	"SYNTHETIC_CLAUDE_READ_RESULT_1A7E",
+	"SYNTHETIC_CLAUDE_DELEGATION_RESULT_4C2B",
+	"SYNTHETIC_CODEX_COMMAND_RESULT_6D9A",
+	"SYNTHETIC_CODEX_DELEGATION_RESULT_3B1F",
+	"SYNTHETIC_CODEX_MCP_RESULT_5E8D",
 ):
 	assert forbidden not in markdown
 	assert forbidden not in json.dumps(report)

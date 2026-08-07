@@ -11,6 +11,27 @@ from metrics import COMMAND_TEXT_LIMIT
 ROOT = os.path.expanduser("~/.claude/projects")
 
 
+def repeated_read_indexes(calls):
+	"""Return Read indexes for files read at least six times.
+
+	@param  {list}  calls
+		Ordered ``(name, input, timestamp)`` tuples for one session.
+	@return {set}
+		Indexes covered by the repeated-read threshold.
+	"""
+	read_indexes = collections.defaultdict(list)
+	for index, (name, tool_input, _) in enumerate(calls):
+		if name == "Read" and tool_input.get("file_path"):
+			read_indexes[tool_input["file_path"]].append(index)
+
+	repeated = set()
+	for indexes in read_indexes.values():
+		if len(indexes) >= 6:
+			repeated.update(indexes)
+
+	return repeated
+
+
 def repeated_call_indexes(calls):
 	"""Return call indexes covered by the existing redundancy thresholds.
 
@@ -32,14 +53,7 @@ def repeated_call_indexes(calls):
 		if len(indexes) >= 4:
 			repeated.update(indexes)
 
-	read_indexes = collections.defaultdict(list)
-	for index, (name, tool_input, _) in enumerate(calls):
-		if name == "Read" and tool_input.get("file_path"):
-			read_indexes[tool_input["file_path"]].append(index)
-
-	for indexes in read_indexes.values():
-		if len(indexes) >= 6:
-			repeated.update(indexes)
+	repeated.update(repeated_read_indexes(calls))
 
 	for index, (name, tool_input, _) in enumerate(calls):
 		if name not in ("Edit", "Write"):
@@ -90,15 +104,22 @@ def main():
 		project = os.path.basename(os.path.dirname(path))[-32:]
 		repeated = repeated_call_indexes(calls)
 
-		bash = collections.Counter(
-			str(tool_input.get("command", ""))[:COMMAND_TEXT_LIMIT]
-			for name, tool_input, _ in calls
-			if name == "Bash"
-		)
-		for command, count in bash.items():
-			if count >= 4 and command.strip():
-				agg["repeat_bash"] += 1
-				examples["repeat_bash"].append((count, project, session_id, command[:120]))
+		repeated_bash = collections.defaultdict(list)
+		repeated_reads = collections.defaultdict(list)
+		for index in repeated:
+			name, tool_input, _ = calls[index]
+			if name == "Bash":
+				command = str(tool_input.get("command", ""))[:COMMAND_TEXT_LIMIT]
+				if command.strip():
+					repeated_bash[command].append(index)
+		for index in repeated_read_indexes(calls):
+			name, tool_input, _ = calls[index]
+			if name == "Read" and tool_input.get("file_path"):
+				repeated_reads[tool_input["file_path"]].append(index)
+
+		for command, indexes in repeated_bash.items():
+			agg["repeat_bash"] += 1
+			examples["repeat_bash"].append((len(indexes), project, session_id, command[:120]))
 
 		for index in repeated:
 			name, tool_input, timestamp = calls[index]
@@ -111,15 +132,9 @@ def main():
 						)
 						break
 
-		reads = collections.Counter(
-			tool_input.get("file_path")
-			for name, tool_input, _ in calls
-			if name == "Read" and tool_input.get("file_path")
-		)
-		for file_path, count in reads.items():
-			if count >= 6:
-				agg["repeat_read"] += 1
-				examples["repeat_read"].append((count, project, session_id, str(file_path)[-70:]))
+		for file_path, indexes in repeated_reads.items():
+			agg["repeat_read"] += 1
+			examples["repeat_read"].append((len(indexes), project, session_id, str(file_path)[-70:]))
 
 	print(dict(agg))
 	for key in examples:
