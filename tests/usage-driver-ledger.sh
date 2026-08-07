@@ -163,3 +163,42 @@ assert report["driver_ledger"]
 assert all("payload_estimate_tokens" in row for row in report["driver_ledger"])
 print("usage driver ledger Case 2: PASS")
 PY
+
+printf '%s\n' 'Running usage partial-data Case 3'
+CASE3_FIXTURE_DIR="$SCRIPT_DIR/fixtures/usage-case-3"
+output=$(
+	cd "$REPO_DIR"
+	CLAUDE_CONFIG_DIR="$CASE3_FIXTURE_DIR/claude" \
+	CODEX_HOME="$CASE3_FIXTURE_DIR/codex" \
+	python3 scripts/audit/usage.py --since 2026-08-01 --until 2026-08-01 2>&1
+)
+printf '%s\n' "$output" | tail -20
+
+cd "$REPO_DIR"
+python3 - <<'PY'
+import json
+from pathlib import Path
+
+
+report_directory = Path(".agent/audits/usage")
+report = json.loads((report_directory / "latest.json").read_text(encoding="utf-8"))
+markdown = (report_directory / "latest.md").read_text(encoding="utf-8")
+
+assert report["session_count"] == 2
+assert report["partial_data"] == {
+	"partial": True,
+	"skipped_record_count": 4,
+	"skipped_record_counts": {"Claude": 2, "Codex": 2},
+}
+
+sessions = {session["tool"]: session for session in report["sessions"]}
+assert sessions["Claude"]["tokens"]["total_tokens"] == 28
+assert sessions["Claude"]["skipped_record_count"] == 2
+assert sessions["Codex"]["tokens"]["total_tokens"] == 38
+assert sessions["Codex"]["skipped_record_count"] == 2
+assert "## Partial data" in markdown
+assert "Skipped records: **4**" in markdown
+assert "| Claude | 2 |" in markdown
+assert "| Codex | 2 |" in markdown
+print("usage partial-data Case 3: PASS")
+PY

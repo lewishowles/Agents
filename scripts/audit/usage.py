@@ -60,6 +60,25 @@ CODEX_FIELDS = (
 	"total_tokens",
 )
 TOOLS = ("Claude", "Codex")
+CLAUDE_RECORD_TYPES = (
+	"assistant",
+	"attachment",
+	"user",
+	"last-prompt",
+	"mode",
+	"permission-mode",
+	"file-history-snapshot",
+	"ai-title",
+	"system",
+	"queue-operation",
+)
+CODEX_RECORD_TYPES = (
+	"event_msg",
+	"response_item",
+	"session_meta",
+	"turn_context",
+	"compacted",
+)
 DRIVER_METHOD = "chars/4"
 UNATTRIBUTED = {
 	"agent_name": "unattributed",
@@ -137,18 +156,22 @@ def build_window(arguments):
 	return start, end, start.isoformat(timespec="seconds"), end.isoformat(timespec="seconds")
 
 
-def records(path):
-	"""Yield JSON objects from a JSONL file, ignoring malformed lines."""
+def records(path, supported_types, record_stats):
+	"""Yield supported JSON objects and count skipped transcript records."""
 	try:
 		with path.open(encoding="utf-8", errors="replace") as handle:
 			for line in handle:
 				try:
 					record = json.loads(line)
 				except (TypeError, ValueError):
+					record_stats["skipped_record_count"] += 1
 					continue
 
-				if isinstance(record, dict):
-					yield record
+				if not isinstance(record, dict) or record.get("type") not in supported_types:
+					record_stats["skipped_record_count"] += 1
+					continue
+
+				yield record
 	except OSError:
 		return
 
@@ -535,6 +558,7 @@ def new_session(tool, session_id, path, project_directory):
 		"hcom": dict(UNATTRIBUTED),
 		"_driver_calls": [],
 		"tool_call_count": 0,
+		"skipped_record_count": 0,
 		"driver_ledger": [],
 		"unattributed_count": 0,
 		"unattributed": {
@@ -557,8 +581,9 @@ def parse_claude_session(path, start, end):
 	project_directory = path.parent.name
 	session = new_session("Claude", session_id, path, project_directory)
 	calls_by_id = {}
+	record_stats = {"skipped_record_count": 0}
 
-	for record in records(path):
+	for record in records(path, CLAUDE_RECORD_TYPES, record_stats):
 		cwd = record.get("cwd")
 		if isinstance(cwd, str) and cwd:
 			session["project_directory"] = cwd
@@ -610,6 +635,7 @@ def parse_claude_session(path, start, end):
 		model = model if isinstance(model, str) and model else "unknown"
 		add_session_usage(session, usage, model, timestamp.date().isoformat(), "Claude")
 
+	session["skipped_record_count"] = record_stats["skipped_record_count"]
 	finalise_driver_ledger(session)
 	return session if session["tokens"]["total_tokens"] else None
 
@@ -641,8 +667,9 @@ def parse_codex_session(path, start, end):
 	model = "unknown"
 	previous_total = None
 	calls_by_id = {}
+	record_stats = {"skipped_record_count": 0}
 
-	for record in records(path):
+	for record in records(path, CODEX_RECORD_TYPES, record_stats):
 		payload = record.get("payload")
 		if not isinstance(payload, dict):
 			payload = {}
@@ -709,6 +736,7 @@ def parse_codex_session(path, start, end):
 
 		add_session_usage(session, delta, model, timestamp.date().isoformat(), "Codex")
 
+	session["skipped_record_count"] = record_stats["skipped_record_count"]
 	finalise_driver_ledger(session)
 	return session if session["tokens"]["total_tokens"] else None
 
@@ -996,6 +1024,23 @@ def render_markdown(report):
 			]
 		)
 
+	partial_data = report["partial_data"]
+	if partial_data["partial"]:
+		lines.extend(
+			[
+				"## Partial data",
+				"",
+				f"Skipped records: **{partial_data['skipped_record_count']}**",
+				"",
+				"| Runtime | Skipped records |",
+				"| --- | ---: |",
+			]
+		)
+		for tool in TOOLS:
+			lines.append(
+				f"| {tool} | {partial_data['skipped_record_counts'][tool]} |"
+			)
+
 	lines.extend(
 		[
 			"## Totals by tool (tokens, not cost)",
@@ -1156,6 +1201,7 @@ def make_report(sessions, window, sections):
 			"models": sorted(session["models"]),
 			"tokens": session["tokens"],
 			"tool_call_count": session["tool_call_count"],
+			"skipped_record_count": session["skipped_record_count"],
 			"unattributed_count": session["unattributed_count"],
 			"unattributed": session["unattributed"],
 			"driver_reconciles": session["driver_reconciles"],
@@ -1181,6 +1227,22 @@ def make_report(sessions, window, sections):
 			"end_utc_exclusive": end.isoformat(),
 		},
 		"empty_window": not sessions,
+		"partial_data": {
+			"partial": any(
+				session["skipped_record_count"] > 0 for session in sessions
+			),
+			"skipped_record_count": sum(
+				session["skipped_record_count"] for session in sessions
+			),
+			"skipped_record_counts": {
+				tool: sum(
+					session["skipped_record_count"]
+					for session in sessions
+					if session["tool"] == tool
+				)
+				for tool in TOOLS
+			},
+		},
 		"session_count": len(sessions),
 		"totals_by_tool": by_tool,
 		"totals_by_model": by_model,
