@@ -184,21 +184,104 @@ report_directory = Path(".agent/audits/usage")
 report = json.loads((report_directory / "latest.json").read_text(encoding="utf-8"))
 markdown = (report_directory / "latest.md").read_text(encoding="utf-8")
 
-assert report["session_count"] == 2
+assert report["session_count"] == 4
 assert report["partial_data"] == {
 	"partial": True,
-	"skipped_record_count": 4,
-	"skipped_record_counts": {"Claude": 2, "Codex": 2},
+	"skipped_record_count": 8,
+	"skipped_record_counts": {"Claude": 4, "Codex": 4},
 }
 
-sessions = {session["tool"]: session for session in report["sessions"]}
-assert sessions["Claude"]["tokens"]["total_tokens"] == 28
-assert sessions["Claude"]["skipped_record_count"] == 2
-assert sessions["Codex"]["tokens"]["total_tokens"] == 38
-assert sessions["Codex"]["skipped_record_count"] == 2
+sessions = {(session["tool"], session["session_id"]): session for session in report["sessions"]}
+assert sessions[("Claude", "claude-case-3")]["tokens"]["total_tokens"] == 28
+assert sessions[("Claude", "claude-case-3")]["skipped_record_count"] == 2
+assert sessions[("Codex", "codex-case-3")]["tokens"]["total_tokens"] == 38
+assert sessions[("Codex", "codex-case-3")]["skipped_record_count"] == 2
+assert sessions[("Claude", "claude-case-3-skipped-only")]["tokens"]["total_tokens"] == 0
+assert sessions[("Claude", "claude-case-3-skipped-only")]["skipped_record_count"] == 2
+assert sessions[("Codex", "codex-case-3-skipped-only")]["tokens"]["total_tokens"] == 0
+assert sessions[("Codex", "codex-case-3-skipped-only")]["skipped_record_count"] == 2
 assert "## Partial data" in markdown
-assert "Skipped records: **4**" in markdown
-assert "| Claude | 2 |" in markdown
-assert "| Codex | 2 |" in markdown
+assert "Skipped records: **8**" in markdown
+assert "| Claude | 4 |" in markdown
+assert "| Codex | 4 |" in markdown
 print("usage partial-data Case 3: PASS")
+PY
+
+printf '%s\n' 'Running usage correctness regressions'
+cd "$REPO_DIR"
+python3 - <<'PY'
+import json
+import tempfile
+from pathlib import Path
+from unittest.mock import patch
+
+from scripts.audit import usage
+
+
+with tempfile.TemporaryDirectory() as temporary_directory:
+	missing_path = Path(temporary_directory) / "missing.jsonl"
+	try:
+		list(usage.records(missing_path, usage.CLAUDE_RECORD_TYPES, {"skipped_record_count": 0}))
+	except FileNotFoundError:
+		pass
+	else:
+		raise AssertionError("missing transcript reads must raise FileNotFoundError")
+
+
+parsed_usage = json.loads(
+	'{"input_tokens": 3.9, "cached_input_tokens": NaN, '
+	'"reasoning_output_tokens": Infinity, "output_tokens": -Infinity, '
+	'"total_tokens": Infinity}'
+)
+assert usage.usage_totals(parsed_usage, "Codex") == {
+	"input_tokens": 3,
+	"cached_input_tokens": 0,
+	"reasoning_output_tokens": 0,
+	"output_tokens": 0,
+	"total_tokens": 3,
+}
+assert usage.number(float("nan")) == 0
+assert usage.number(float("inf")) == 0
+assert usage.number(float("-inf")) == 0
+
+
+class FakeQuery:
+	def fetchall(self):
+		return []
+
+
+class FakeConnection:
+	def __init__(self, query_error=False):
+		self.query_error = query_error
+		self.closed = False
+
+	def execute(self, query):
+		if self.query_error:
+			raise usage.sqlite3.OperationalError("synthetic query failure")
+
+		return FakeQuery()
+
+	def close(self):
+		self.closed = True
+
+
+with tempfile.TemporaryDirectory() as temporary_directory:
+	database_path = Path(temporary_directory) / "hcom.db"
+	database_path.touch()
+	previous_database = usage.HCOM_DATABASE
+	usage.HCOM_DATABASE = database_path
+	try:
+		success_connection = FakeConnection()
+		with patch.object(usage.sqlite3, "connect", return_value=success_connection):
+			assert usage.load_hcom_labels() == ({}, {})
+		assert success_connection.closed
+
+		error_connection = FakeConnection(query_error=True)
+		with patch.object(usage.sqlite3, "connect", return_value=error_connection):
+			assert usage.load_hcom_labels() == ({}, {})
+		assert error_connection.closed
+	finally:
+		usage.HCOM_DATABASE = previous_database
+
+print("usage correctness regressions: PASS")
 PY

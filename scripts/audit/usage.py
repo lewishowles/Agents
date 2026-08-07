@@ -14,6 +14,7 @@ paths under the repository's ``.agent/audits/usage`` directory.
 
 import argparse
 import collections
+import contextlib
 import datetime
 import json
 import math
@@ -158,27 +159,31 @@ def build_window(arguments):
 
 def records(path, supported_types, record_stats):
 	"""Yield supported JSON objects and count skipped transcript records."""
-	try:
-		with path.open(encoding="utf-8", errors="replace") as handle:
-			for line in handle:
-				try:
-					record = json.loads(line)
-				except (TypeError, ValueError):
-					record_stats["skipped_record_count"] += 1
-					continue
+	with path.open(encoding="utf-8", errors="replace") as handle:
+		for line in handle:
+			try:
+				record = json.loads(line)
+			except (TypeError, ValueError):
+				record_stats["skipped_record_count"] += 1
+				continue
 
-				if not isinstance(record, dict) or record.get("type") not in supported_types:
-					record_stats["skipped_record_count"] += 1
-					continue
+			if not isinstance(record, dict) or record.get("type") not in supported_types:
+				record_stats["skipped_record_count"] += 1
+				continue
 
-				yield record
-	except OSError:
-		return
+			yield record
 
 
 def number(value):
-	"""Return a non-negative integer token value for a parsed field."""
+	"""Return a non-negative integer token value for a parsed field.
+
+	Non-finite floats are invalid and become zero. Finite floats are truncated
+	toward zero by ``int()`` before negative values are clamped to zero.
+	"""
 	if isinstance(value, bool) or not isinstance(value, (int, float)):
+		return 0
+
+	if isinstance(value, float) and not math.isfinite(value):
 		return 0
 
 	return max(0, int(value))
@@ -637,7 +642,9 @@ def parse_claude_session(path, start, end):
 
 	session["skipped_record_count"] = record_stats["skipped_record_count"]
 	finalise_driver_ledger(session)
-	return session if session["tokens"]["total_tokens"] else None
+	if session["tokens"]["total_tokens"] or session["skipped_record_count"]:
+		return session
+	return None
 
 
 def codex_delta(last_usage, total_usage, previous_total):
@@ -738,7 +745,9 @@ def parse_codex_session(path, start, end):
 
 	session["skipped_record_count"] = record_stats["skipped_record_count"]
 	finalise_driver_ledger(session)
-	return session if session["tokens"]["total_tokens"] else None
+	if session["tokens"]["total_tokens"] or session["skipped_record_count"]:
+		return session
+	return None
 
 
 def normalise_path(value):
@@ -770,17 +779,18 @@ def load_hcom_labels():
 		return by_session_id, by_path
 
 	try:
-		connection = sqlite3.connect(
-			f"file:{HCOM_DATABASE}?mode=ro",
-			uri=True,
-			timeout=1,
-		)
-		connection.row_factory = sqlite3.Row
-		rows = connection.execute(
-			"SELECT name, session_id, transcript_path, tag, parent_name, tool "
-			"FROM instances"
-		).fetchall()
-		connection.close()
+		with contextlib.closing(
+			sqlite3.connect(
+				f"file:{HCOM_DATABASE}?mode=ro",
+				uri=True,
+				timeout=1,
+			)
+		) as connection:
+			connection.row_factory = sqlite3.Row
+			rows = connection.execute(
+				"SELECT name, session_id, transcript_path, tag, parent_name, tool "
+				"FROM instances"
+			).fetchall()
 	except sqlite3.Error:
 		return by_session_id, by_path
 
