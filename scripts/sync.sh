@@ -48,11 +48,11 @@ copy_hooks() {
 		done
 	done
 
-	local shared_hook
-	for shared_hook in "$REPO_DIR/src/hooks/shared/"*.sh; do
-		[ -f "$shared_hook" ] || continue
-		cp "$shared_hook" "$REPO_DIR/dist/claude/hooks/$(basename "$shared_hook")"
-		cp "$shared_hook" "$REPO_DIR/dist/codex/hooks/$(basename "$shared_hook")"
+	local shared_file
+	for shared_file in "$REPO_DIR/src/hooks/shared/"*.sh "$REPO_DIR/src/hooks/shared/"*.md; do
+		[ -f "$shared_file" ] || continue
+		cp "$shared_file" "$REPO_DIR/dist/claude/hooks/$(basename "$shared_file")"
+		cp "$shared_file" "$REPO_DIR/dist/codex/hooks/$(basename "$shared_file")"
 	done
 }
 

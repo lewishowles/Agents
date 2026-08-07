@@ -43,4 +43,17 @@ if [ -f "$shared_hook" ]; then
 	done
 fi
 
+shared_message="$REPO_DIR/src/hooks/shared/tool-call-checkpoint-message.md"
+if [ -f "$shared_message" ]; then
+	for destination in "$REPO_DIR/dist/claude/hooks/tool-call-checkpoint-message.md" "$REPO_DIR/dist/codex/hooks/tool-call-checkpoint-message.md"; do
+		if [ ! -f "$destination" ]; then
+			validate_fail "${destination#"$REPO_DIR/"} missing (run scripts/sync.sh)"
+			STALE=$((STALE + 1))
+		elif ! diff -q "$shared_message" "$destination" >/dev/null 2>&1; then
+			validate_fail "${destination#"$REPO_DIR/"} out of sync with source (run scripts/sync.sh)"
+			STALE=$((STALE + 1))
+		fi
+	done
+fi
+
 validate_finish

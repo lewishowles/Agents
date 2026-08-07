@@ -11,7 +11,17 @@ set -euo pipefail
 
 readonly TOOL_CALL_LIMIT=20
 readonly COMPACTION_CONTEXT="CONTEXT CHECKPOINT: This session is about to compact. Before continuing, hand off or record the current scope, changed paths, verification, blockers and next decision. Do not expand scope or reset peers."
-readonly TOOL_CALL_CONTEXT='TOOL-CALL CHECKPOINT (20/20): HCOM Scout, Implementer, and Reviewer: send one --intent inform checkpoint only to your direct sender, the peer whose request you are working on (the Orchestrator, or the Reviewer that assigned you). Begin with "State: stopped; human decision required." State that you reached a tool-call checkpoint, then hand off: completed work and changed paths; discoveries worth retaining; verification completed or pending; remaining work; and the exact next action if continued. Report the true state of the work. Do not send it to the human or another team member, continue on your own initiative, create a successor, or ask for another packet. Then wait for a direct human continuation or reset decision. HCOM Orchestrator receiving that report: it is always a mandatory stop, never a routine progress update. Confirm every discovery is captured in the report text and list changed paths. Present the human the completed work, changed paths, discoveries, remaining work, verification, and safe-to-reset assessment. Recommend a reset by default: a fresh worker seeded with the checkpoint report and required skills reconstructs the same state at a known cost. Recommend continuing the same worker only when its own in-context state holds something the report and a fresh session could not reconstruct, and the report does not say the session is unsafe to continue; treat a worker claim of being safe to continue as one input to that judgement, not the deciding one. Do not reset it yourself or resume it on your own judgement. If the human continues the current worker, give its exact next action directly. If the human resets it, give the replacement packet the checkpoint evidence, exact next action, and required skills. HCOM Orchestrator awaiting a Scout, Implementer, or Reviewer report: keep your exact identity and wait. Do not create a checkpoint, reset yourself, or start a successor. HCOM Orchestrator with no outstanding team-member report: stop expanding this work cycle, provide the human a compact handoff, and wait for a direct continuation or reset decision. HCOM Reviewer receiving a Scout checkpoint report: it is always a mandatory stop, never a routine progress update. Confirm every discovery is captured in the report text and list changed paths. Present the human the completed work, changed paths, discoveries, remaining work, verification, and safe-to-reset assessment. Recommend a reset by default: a fresh Scout seeded with the checkpoint report and required skills reconstructs the same state at a known cost. Recommend continuing the same Scout only when its own in-context state holds something the report and a fresh session could not reconstruct, and the report does not say the session is unsafe to continue; treat a Scout claim of being safe to continue as one input to that judgement, not the deciding one. Do not escalate this to the Orchestrator or treat it as your own checkpoint. Do not reset or resume Scout on your own judgement. If the human continues Scout, give its exact next action directly. If the human resets Scout, give the replacement packet the checkpoint evidence, exact next action, and required skills. HCOM Reviewer awaiting a delegated Scout report: keep your exact identity and wait. Do not create a checkpoint, reset yourself, or start a successor. Outside HCOM, give the user the same compact handoff and wait for a continuation message.'
+# Resolve managed hook symlinks so the companion remains beside the generated script.
+script_path="${BASH_SOURCE[0]}"
+while [[ -L "$script_path" ]]; do
+	script_directory="$(cd -P "$(dirname "$script_path")" && pwd)"
+	script_path="$(readlink "$script_path")"
+	if [[ "$script_path" != /* ]]; then
+		script_path="$script_directory/$script_path"
+	fi
+done
+readonly SCRIPT_DIR="$(cd -P "$(dirname "$script_path")" && pwd)"
+readonly TOOL_CALL_CONTEXT_FILE="$SCRIPT_DIR/tool-call-checkpoint-message.md"
 
 # Writes an opt-in, non-sensitive summary of the received hook event.
 #
@@ -54,6 +64,11 @@ if [[ "$event_name" == "PreCompact" ]]; then
 	else
 		jq -n --arg context "$COMPACTION_CONTEXT" '{systemMessage: $context}'
 	fi
+	exit 0
+fi
+
+# Planning peers finish their review packet without the mid-review call stop.
+if [[ "$event_name" == "PreToolUse" && "${HCOM_PLANNING_WORKFLOW:-}" == "1" ]]; then
 	exit 0
 fi
 
@@ -104,6 +119,8 @@ printf '%s\n' "$count" > "$state_file"
 
 (( count == TOOL_CALL_LIMIT )) || exit 0
 
+[[ -f "$TOOL_CALL_CONTEXT_FILE" ]] || exit 0
+
 jq -n \
-	--arg context "$TOOL_CALL_CONTEXT" \
+	--rawfile context "$TOOL_CALL_CONTEXT_FILE" \
 	'{hookSpecificOutput: {hookEventName: "PreToolUse", additionalContext: $context}}'
