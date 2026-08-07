@@ -35,4 +35,6 @@ One compact message:
 hcom send @<exact-requester-name> --intent inform -- Implemented <task>. Changed <paths>. Verified with <command/result>. Remaining concern: <none or detail>.
 ```
 
+This role-to-role report is not the human-facing handoff. The Orchestrator owns the global commit-message and next-step requirements. Do not add commit or staging status, a suggested commit message, or a routine next step such as Orchestrator review and acceptance. Report a next action only when it identifies a real blocker, decision, or non-obvious continuation.
+
 Don't report implementation complete until verification has actually run. The Orchestrator decides when the task is done. If review requests a correction, apply only that correction and report the new verification result.
