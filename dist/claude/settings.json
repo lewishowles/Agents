@@ -2,6 +2,7 @@
   "env": {
     "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
     "CLAUDE_CODE_SUBAGENT_MODEL": "haiku",
+    "HCOM": "hcom",
     "MAX_THINKING_TOKENS": "10000"
   },
   "statusLine": {
@@ -95,6 +96,15 @@
         ]
       },
       {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'bash \"$HOME/.claude/hooks/image-for-agent-read.sh\"'"
+          }
+        ]
+      },
+      {
         "matcher": "Write|Edit",
         "hooks": [
           {
@@ -168,6 +178,16 @@
         ]
       }
     ],
+    "PostToolUseFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cmd=${HCOM:-hcom}; command -v \"${cmd%% *}\" >/dev/null 2>&1 && exec $cmd post-failure || exit 0"
+          }
+        ]
+      }
+    ],
     "PreCompact": [
       {
         "hooks": [
@@ -228,6 +248,16 @@
             "command": "bash -c 'bash \"$HOME/.claude/hooks/pre-stop-checks.sh\"'",
             "timeout": 60,
             "statusMessage": "Checking lint and tests\u2026"
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cmd=${HCOM:-hcom}; command -v \"${cmd%% *}\" >/dev/null 2>&1 && exec $cmd stop-failure || exit 0"
           }
         ]
       }

@@ -17,6 +17,10 @@
 			"timeout": 86400
 		},
 		{
+			"event": "PostToolUseFailure",
+			"command": "cmd=${HCOM:-hcom}; command -v \"${cmd%% *}\" >/dev/null 2>&1 && exec $cmd post-failure || exit 0"
+		},
+		{
 			"event": "PreToolUse",
 			"matcher": "Bash|Task|Write|Edit",
 			"command": "cmd=${HCOM:-hcom}; command -v \"${cmd%% *}\" >/dev/null 2>&1 && exec $cmd pre || exit 0"
@@ -33,6 +37,10 @@
 			"event": "Stop",
 			"command": "cmd=${HCOM:-hcom}; command -v \"${cmd%% *}\" >/dev/null 2>&1 && exec $cmd poll || exit 0",
 			"timeout": 86400
+		},
+		{
+			"event": "StopFailure",
+			"command": "cmd=${HCOM:-hcom}; command -v \"${cmd%% *}\" >/dev/null 2>&1 && exec $cmd stop-failure || exit 0"
 		},
 		{
 			"event": "SubagentStart",
