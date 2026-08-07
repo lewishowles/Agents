@@ -12,6 +12,8 @@ transcripts and the optional hcom database, then overwrites two fixed report
 paths under the repository's ``.agent/audits/usage`` directory.
 """
 
+from __future__ import annotations
+
 import argparse
 import collections
 import contextlib
@@ -23,6 +25,7 @@ import re
 import sqlite3
 import sys
 from pathlib import Path
+from typing import TypedDict
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -81,7 +84,187 @@ CODEX_RECORD_TYPES = (
 	"compacted",
 )
 DRIVER_METHOD = "chars/4"
-UNATTRIBUTED = {
+
+
+class RecordStats(TypedDict):
+	"""Track skipped records while reading one transcript."""
+
+	skipped_record_count: int
+
+
+class TokenTotals(TypedDict, total=False):
+	"""Store the normalised token fields for one runtime."""
+
+	input_tokens: int
+	cache_creation_input_tokens: int
+	cache_read_input_tokens: int
+	cached_input_tokens: int
+	reasoning_output_tokens: int
+	output_tokens: int
+	total_tokens: int
+	total_input_tokens: int
+
+
+class DriverClassification(TypedDict):
+	"""Describe the safe grouping and repeat identity for one tool call."""
+
+	category: str
+	key: str
+	target: str
+	repeat_name: str
+	repeat_input: dict[str, object]
+
+
+class DriverCall(TypedDict):
+	"""Store bounded tool-call data while a session is being parsed."""
+
+	name: object
+	input: dict[str, object]
+	classification: DriverClassification | None
+	result: str
+	failed: bool
+
+
+class DriverLedgerRow(TypedDict):
+	"""Store one ranked driver-ledger aggregate."""
+
+	category: str
+	key: str
+	count: int
+	payload_estimate_tokens: int
+	method: str
+	failure_count: int
+	retry_count: int
+	repeated: bool
+
+
+class Unattributed(TypedDict):
+	"""Store tool calls that cannot be assigned to a driver row."""
+
+	count: int
+	payload_estimate_tokens: int
+	method: str
+
+
+class HcomLabel(TypedDict):
+	"""Store the safe hcom label joined to a transcript session."""
+
+	agent_name: str
+	role: str
+	tool: str
+
+
+class Session(TypedDict):
+	"""Store the internal report model for one parsed transcript."""
+
+	tool: str
+	session_id: str
+	transcript_path: str
+	project_directory: str
+	tokens: TokenTotals
+	models: dict[str, TokenTotals]
+	days: dict[str, TokenTotals]
+	hcom: HcomLabel
+	_driver_calls: list[DriverCall]
+	tool_call_count: int
+	skipped_record_count: int
+	driver_ledger: list[DriverLedgerRow]
+	unattributed_count: int
+	unattributed: Unattributed
+	driver_reconciles: bool
+
+
+class RatioData(TypedDict):
+	"""Store ratio inputs and the calculated ratio for report consumers."""
+
+	numerator_tokens: int
+	denominator_tokens: int
+	ratio: float | None
+
+
+class AggregateRow(TypedDict, total=False):
+	"""Store one grouped report aggregate, including empty-tool metadata."""
+
+	session_count: int
+	tokens: TokenTotals
+	empty: bool
+	cache_read_ratio: RatioData
+	reasoning_output_ratio: RatioData
+	message: str
+
+
+Group = dict[str, dict[str, AggregateRow]]
+Window = tuple[datetime.datetime, datetime.datetime, str, str]
+Sections = tuple[dict[str, AggregateRow], dict[str, Group], Group, Group, Group]
+
+
+class WindowReport(TypedDict):
+	"""Store the selected window in the serialised report."""
+
+	since: str
+	until: str
+	start_utc: str
+	end_utc_exclusive: str
+
+
+class PartialData(TypedDict):
+	"""Store skipped-record totals in the serialised report."""
+
+	partial: bool
+	skipped_record_count: int
+	skipped_record_counts: dict[str, int]
+
+
+class SessionReport(TypedDict):
+	"""Store one serialised session row in the report."""
+
+	rank: int
+	tool: str
+	session_id: str
+	transcript_path: str
+	project_directory: str
+	hcom: HcomLabel
+	models: list[str]
+	tokens: TokenTotals
+	tool_call_count: int
+	skipped_record_count: int
+	unattributed_count: int
+	unattributed: Unattributed
+	driver_reconciles: bool
+	driver_ledger: list[DriverLedgerRow]
+
+
+class DriverReconciliation(TypedDict):
+	"""Store aggregate driver rows and their reconciliation counts."""
+
+	driver_ledger: list[DriverLedgerRow]
+	tool_call_count: int
+	attributed_count: int
+	unattributed_count: int
+	unattributed: Unattributed
+	reconciles: bool
+
+
+class Report(TypedDict):
+	"""Store the complete serialised usage report."""
+
+	units: str
+	window: WindowReport
+	empty_window: bool
+	partial_data: PartialData
+	session_count: int
+	totals_by_tool: dict[str, AggregateRow]
+	totals_by_model: dict[str, Group]
+	totals_by_day: Group
+	totals_by_project: Group
+	totals_by_role: Group
+	driver_ledger: list[DriverLedgerRow]
+	driver_reconciliation: DriverReconciliation
+	sessions: list[SessionReport]
+	top_sessions: list[SessionReport]
+
+
+UNATTRIBUTED: HcomLabel = {
 	"agent_name": "unattributed",
 	"role": "unattributed",
 	"tool": "unknown",
@@ -124,7 +307,7 @@ def parse_timestamp(value):
 	return timestamp.astimezone(datetime.timezone.utc)
 
 
-def build_window(arguments):
+def build_window(arguments) -> Window:
 	"""Build the half-open UTC window selected by the command line."""
 	if arguments.days is not None and (arguments.since or arguments.until):
 		arguments.parser.error("use --days or --since/--until, not both")
@@ -157,7 +340,7 @@ def build_window(arguments):
 	return start, end, start.isoformat(timespec="seconds"), end.isoformat(timespec="seconds")
 
 
-def records(path, supported_types, record_stats):
+def records(path, supported_types, record_stats: RecordStats):
 	"""Yield supported JSON objects and count skipped transcript records."""
 	with path.open(encoding="utf-8", errors="replace") as handle:
 		for line in handle:
@@ -322,7 +505,7 @@ def command_input(tool_input):
 	return ""
 
 
-def driver_classification(name, tool_input):
+def driver_classification(name, tool_input: dict[str, object]) -> DriverClassification | None:
 	"""Classify one tool call and return its safe key and estimate target."""
 	if not isinstance(name, str) or not name:
 		return None
@@ -396,7 +579,7 @@ def driver_classification(name, tool_input):
 	}
 
 
-def new_driver_call(name, tool_input):
+def new_driver_call(name, tool_input: dict[str, object]) -> DriverCall:
 	"""Create an internal tool-call record without retaining raw result content."""
 	classification = driver_classification(name, tool_input)
 	return {
@@ -421,7 +604,7 @@ def estimated_payload_tokens(call):
 	return math.ceil(character_count / 4) if character_count else 0
 
 
-def finalise_driver_ledger(session):
+def finalise_driver_ledger(session: Session):
 	"""Build ranked driver rows and explicit unattributed counts for a session."""
 	calls = session["_driver_calls"]
 	repetition_calls = [
@@ -433,10 +616,10 @@ def finalise_driver_ledger(session):
 		for index, call in enumerate(calls)
 	]
 	repeated_indexes = repeated_call_indexes(repetition_calls)
-	rows = {}
+	rows: dict[tuple[str, str], DriverLedgerRow] = {}
 	unattributed_count = 0
 	unattributed_payload = 0
-	failed_before = {}
+	failed_before: dict[tuple[str, str], bool] = {}
 
 	for index, call in enumerate(calls):
 		classification = call["classification"]
@@ -488,7 +671,7 @@ def finalise_driver_ledger(session):
 	)
 
 
-def empty_totals(tool):
+def empty_totals(tool: str) -> TokenTotals:
 	"""Create the token fields used by one tool's aggregate."""
 	fields = CLAUDE_FIELDS if tool == "Claude" else CODEX_FIELDS
 	totals = {field: 0 for field in fields}
@@ -500,7 +683,7 @@ def empty_totals(tool):
 	return totals
 
 
-def usage_totals(usage, tool):
+def usage_totals(usage: dict[str, object], tool: str) -> TokenTotals:
 	"""Normalise one Claude or Codex usage object into token fields."""
 	fields = CLAUDE_FIELDS if tool == "Claude" else CODEX_FIELDS
 	values = {field: number(usage.get(field)) for field in fields}
@@ -521,7 +704,7 @@ def usage_totals(usage, tool):
 	return values
 
 
-def add_totals(target, source, tool):
+def add_totals(target: TokenTotals, source: TokenTotals, tool: str):
 	"""Add one normalised usage object to an aggregate."""
 	for field, value in source.items():
 		if field != "total_input_tokens" or tool == "Claude":
@@ -539,7 +722,13 @@ def add_totals(target, source, tool):
 		target["total_tokens"] = target["total_input_tokens"] + target["output_tokens"]
 
 
-def add_session_usage(session, usage, model, day, tool):
+def add_session_usage(
+	session: Session,
+	usage: dict[str, object],
+	model: str,
+	day: str,
+	tool: str,
+):
 	"""Add one in-window event to session, model, and day totals."""
 	normalised = usage_totals(usage, tool)
 	if not normalised["total_tokens"]:
@@ -550,7 +739,7 @@ def add_session_usage(session, usage, model, day, tool):
 	add_totals(session["days"].setdefault(day, empty_totals(tool)), normalised, tool)
 
 
-def new_session(tool, session_id, path, project_directory):
+def new_session(tool: str, session_id: str, path: Path, project_directory: str) -> Session:
 	"""Create the internal representation for one transcript session."""
 	return {
 		"tool": tool,
@@ -580,13 +769,17 @@ def in_window(timestamp, start, end):
 	return timestamp is not None and start <= timestamp < end
 
 
-def parse_claude_session(path, start, end):
+def parse_claude_session(
+	path: Path,
+	start: datetime.datetime,
+	end: datetime.datetime,
+) -> Session | None:
 	"""Parse in-window Claude usage records from one transcript."""
 	session_id = path.stem
 	project_directory = path.parent.name
 	session = new_session("Claude", session_id, path, project_directory)
-	calls_by_id = {}
-	record_stats = {"skipped_record_count": 0}
+	calls_by_id: dict[str, DriverCall] = {}
+	record_stats: RecordStats = {"skipped_record_count": 0}
 
 	for record in records(path, CLAUDE_RECORD_TYPES, record_stats):
 		cwd = record.get("cwd")
@@ -647,7 +840,7 @@ def parse_claude_session(path, start, end):
 	return None
 
 
-def codex_delta(last_usage, total_usage, previous_total):
+def codex_delta(last_usage, total_usage, previous_total) -> TokenTotals | None:
 	"""Return one Codex event delta, preferring the recorded per-event value."""
 	if isinstance(last_usage, dict):
 		return last_usage
@@ -664,7 +857,11 @@ def codex_delta(last_usage, total_usage, previous_total):
 	return None
 
 
-def parse_codex_session(path, start, end):
+def parse_codex_session(
+	path: Path,
+	start: datetime.datetime,
+	end: datetime.datetime,
+) -> Session | None:
 	"""Parse in-window Codex token-count events from one rollout transcript."""
 	session_id = path.stem
 	if session_id.startswith("rollout-"):
@@ -673,8 +870,8 @@ def parse_codex_session(path, start, end):
 	session = new_session("Codex", session_id, path, "unknown")
 	model = "unknown"
 	previous_total = None
-	calls_by_id = {}
-	record_stats = {"skipped_record_count": 0}
+	calls_by_id: dict[str, DriverCall] = {}
+	record_stats: RecordStats = {"skipped_record_count": 0}
 
 	for record in records(path, CODEX_RECORD_TYPES, record_stats):
 		payload = record.get("payload")
@@ -770,10 +967,10 @@ def hcom_role(tag, parent_name):
 	return value.rsplit("-", 1)[-1] or "unattributed"
 
 
-def load_hcom_labels():
+def load_hcom_labels() -> tuple[dict[str, HcomLabel], dict[str, HcomLabel]]:
 	"""Load best-effort transcript labels from hcom's read-only database."""
-	by_session_id = {}
-	by_path = {}
+	by_session_id: dict[str, HcomLabel] = {}
+	by_path: dict[str, HcomLabel] = {}
 
 	if not HCOM_DATABASE.is_file():
 		return by_session_id, by_path
@@ -795,7 +992,7 @@ def load_hcom_labels():
 		return by_session_id, by_path
 
 	for row in rows:
-		label = {
+		label: HcomLabel = {
 			"agent_name": row["name"] or "unattributed",
 			"role": hcom_role(row["tag"], row["parent_name"]),
 			"tool": row["tool"] or "unknown",
@@ -811,7 +1008,11 @@ def load_hcom_labels():
 	return by_session_id, by_path
 
 
-def apply_hcom_label(session, by_session_id, by_path):
+def apply_hcom_label(
+	session: Session,
+	by_session_id: dict[str, HcomLabel],
+	by_path: dict[str, HcomLabel],
+):
 	"""Join one parsed session to hcom, retaining an explicit fallback label."""
 	label = by_path.get(normalise_path(session["transcript_path"]))
 	if label is None:
@@ -829,7 +1030,7 @@ def ratio(numerator, denominator):
 	return round(numerator / denominator, 6)
 
 
-def ratio_data(numerator, denominator):
+def ratio_data(numerator: int, denominator: int) -> RatioData:
 	"""Return ratio inputs as well as the calculated ratio for JSON consumers."""
 	return {
 		"numerator_tokens": numerator,
@@ -838,7 +1039,13 @@ def ratio_data(numerator, denominator):
 	}
 
 
-def add_group(group, key, tool, session_count, tokens):
+def add_group(
+	group: Group,
+	key: str,
+	tool: str,
+	session_count: int,
+	tokens: TokenTotals,
+):
 	"""Add a session or event aggregate to a grouped report section."""
 	row = group.setdefault(key, {})
 	tool_row = row.setdefault(
@@ -852,19 +1059,21 @@ def add_group(group, key, tool, session_count, tokens):
 	add_totals(tool_row["tokens"], tokens, tool)
 
 
-def aggregate(sessions):
+def aggregate(
+	sessions: list[Session],
+) -> Sections:
 	"""Build all report breakdowns from parsed sessions."""
-	by_tool = {
+	by_tool: dict[str, AggregateRow] = {
 		tool: {
 			"session_count": 0,
 			"tokens": empty_totals(tool),
 		}
 		for tool in TOOLS
 	}
-	by_model = {tool: {} for tool in TOOLS}
-	by_day = {}
-	by_project = {}
-	by_role = {}
+	by_model: dict[str, Group] = {tool: {} for tool in TOOLS}
+	by_day: Group = {}
+	by_project: Group = {}
+	by_role: Group = {}
 
 	for session in sessions:
 		tool = session["tool"]
@@ -900,9 +1109,9 @@ def aggregate(sessions):
 	return by_tool, by_model, by_day, by_project, by_role
 
 
-def aggregate_driver_ledger(sessions):
+def aggregate_driver_ledger(sessions: list[Session]) -> DriverReconciliation:
 	"""Combine session driver rows into one ranked ledger and reconciliation."""
-	rows = {}
+	rows: dict[tuple[str, str], DriverLedgerRow] = {}
 	tool_call_count = 0
 	unattributed_count = 0
 	unattributed_payload = 0
@@ -962,7 +1171,7 @@ def format_ratio(data):
 	return f"{data['ratio'] * 100:.2f}%"
 
 
-def markdown_table_for_group(group):
+def markdown_table_for_group(group: Group):
 	"""Render grouped token totals as a deterministic Markdown table."""
 	lines = [
 		"| Group | Tool | Sessions | Total tokens |",
@@ -983,7 +1192,10 @@ def markdown_table_for_group(group):
 	return lines if len(lines) > 2 else ["No data in the selected window."]
 
 
-def markdown_driver_table(rows, unattributed):
+def markdown_driver_table(
+	rows: list[DriverLedgerRow],
+	unattributed: Unattributed,
+):
 	"""Render ranked driver rows without including raw transcript payloads."""
 	lines = [
 		"| Rank | Category | Key | Count | Payload estimate (tokens) | Method | Failures | Retries | Repeated |",
@@ -1007,7 +1219,7 @@ def markdown_driver_table(rows, unattributed):
 	return lines if len(lines) > 2 else ["No data in the selected window."]
 
 
-def render_markdown(report):
+def render_markdown(report: Report):
 	"""Render the machine-readable report as concise Markdown."""
 	window = report["window"]
 	by_tool = report["totals_by_tool"]
@@ -1186,7 +1398,7 @@ def render_markdown(report):
 	return "\n".join(lines) + "\n"
 
 
-def make_report(sessions, window, sections):
+def make_report(sessions: list[Session], window: Window, sections: Sections) -> Report:
 	"""Build the deterministic JSON report object."""
 	start, end, display_since, display_until = window
 	by_tool, by_model, by_day, by_project, by_role = sections
@@ -1200,7 +1412,7 @@ def make_report(sessions, window, sections):
 		),
 	)
 
-	def session_report(session, rank):
+	def session_report(session: Session, rank: int) -> SessionReport:
 		return {
 			"rank": rank,
 			"tool": session["tool"],
@@ -1218,7 +1430,7 @@ def make_report(sessions, window, sections):
 			"driver_ledger": session["driver_ledger"],
 		}
 
-	all_sessions = [
+	all_sessions: list[SessionReport] = [
 		session_report(session, rank)
 		for rank, session in enumerate(ordered_sessions, start=1)
 	]
@@ -1295,7 +1507,7 @@ def transcript_paths():
 	return claude_paths, sorted(codex_paths)
 
 
-def write_report(report):
+def write_report(report: Report):
 	"""Overwrite the fixed Markdown and JSON report paths."""
 	REPORT_DIRECTORY.mkdir(parents=True, exist_ok=True)
 	json_path = REPORT_DIRECTORY / "latest.json"
@@ -1316,7 +1528,7 @@ def main():
 	window = build_window(arguments)
 	start, end, _, _ = window
 	claude_paths, codex_paths = transcript_paths()
-	sessions = []
+	sessions: list[Session] = []
 
 	for path in claude_paths:
 		session = parse_claude_session(path, start, end)
