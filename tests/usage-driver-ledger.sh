@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Prove the Case 1 driver ledger against synthetic Claude and Codex sessions.
+# Prove the driver ledger against synthetic Case 1 and Case 2 Claude and Codex sessions.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -89,4 +89,77 @@ assert "/fixture/claude/project/src/app.py" in markdown
 assert "## Driver ledger (ranked aggregate)" in markdown
 assert "## Driver ledger by session" in markdown
 print("usage driver ledger Case 1: PASS")
+PY
+
+printf '%s\n' 'Running usage driver ledger Case 2'
+CASE2_FIXTURE_DIR="$SCRIPT_DIR/fixtures/usage-case-2"
+output=$(
+	cd "$REPO_DIR"
+	CLAUDE_CONFIG_DIR="$CASE2_FIXTURE_DIR/claude" \
+	CODEX_HOME="$CASE2_FIXTURE_DIR/codex" \
+	python3 scripts/audit/usage.py --since 2026-08-01 --until 2026-08-01 2>&1
+)
+printf '%s\n' "$output" | tail -20
+
+cd "$REPO_DIR"
+python3 - <<'PY'
+import json
+from pathlib import Path
+
+
+report_directory = Path(".agent/audits/usage")
+report = json.loads((report_directory / "latest.json").read_text(encoding="utf-8"))
+
+assert report["session_count"] == 2
+assert report["driver_reconciliation"]["tool_call_count"] == 5
+assert report["driver_reconciliation"]["attributed_count"] == 5
+assert report["driver_reconciliation"]["unattributed_count"] == 0
+assert report["driver_reconciliation"]["reconciles"] is True
+
+sessions = {session["tool"]: session for session in report["sessions"]}
+claude = sessions["Claude"]
+codex = sessions["Codex"]
+claude_rows = {(row["category"], row["key"]): row for row in claude["driver_ledger"]}
+codex_rows = {(row["category"], row["key"]): row for row in codex["driver_ledger"]}
+
+assert claude["tool_call_count"] == 4
+assert claude["driver_reconciles"] is True
+assert claude["tokens"]["total_tokens"] == 42
+assert "payload_estimate_tokens" not in claude["tokens"]
+assert claude["driver_ledger"] == sorted(
+	claude["driver_ledger"],
+	key=lambda row: (-row["payload_estimate_tokens"], row["category"], row["key"]),
+)
+assert claude_rows[("bash", "rg")]["count"] == 2
+assert claude_rows[("bash", "rg")]["failure_count"] == 1
+assert claude_rows[("bash", "rg")]["retry_count"] == 1
+assert claude_rows[("read", "/fixture/claude/project/src/app.py")]["count"] == 2
+assert claude_rows[("read", "/fixture/claude/project/src/app.py")]["failure_count"] == 1
+assert claude_rows[("read", "/fixture/claude/project/src/app.py")]["retry_count"] == 1
+
+assert codex["tool_call_count"] == 1
+assert codex["driver_reconciles"] is True
+assert codex_rows[("bash", "rg")]["failure_count"] == 0
+assert codex_rows[("bash", "rg")]["retry_count"] == 0
+
+aggregate_rows = {(row["category"], row["key"]): row for row in report["driver_ledger"]}
+assert aggregate_rows[("bash", "rg")]["count"] == 3
+assert aggregate_rows[("bash", "rg")]["failure_count"] == 1
+assert aggregate_rows[("bash", "rg")]["retry_count"] == 1
+assert aggregate_rows[("read", "/fixture/claude/project/src/app.py")]["count"] == 2
+assert aggregate_rows[("read", "/fixture/claude/project/src/app.py")]["failure_count"] == 1
+assert aggregate_rows[("read", "/fixture/claude/project/src/app.py")]["retry_count"] == 1
+
+for session in (claude, codex):
+	assert session["tool_call_count"] == sum(row["count"] for row in session["driver_ledger"])
+	assert all(row["method"] == "chars/4" for row in session["driver_ledger"])
+	assert all(row["payload_estimate_tokens"] > 0 for row in session["driver_ledger"])
+
+assert report["driver_ledger"] == sorted(
+	report["driver_ledger"],
+	key=lambda row: (-row["payload_estimate_tokens"], row["category"], row["key"]),
+)
+assert report["driver_ledger"]
+assert all("payload_estimate_tokens" in row for row in report["driver_ledger"])
+print("usage driver ledger Case 2: PASS")
 PY
