@@ -21,10 +21,11 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-CLAUDE_ROOT = Path("~/.claude/projects").expanduser()
+CLAUDE_ROOT = Path(os.environ.get("CLAUDE_CONFIG_DIR", "~/.claude")).expanduser() / "projects"
+_CODEX_HOME = Path(os.environ.get("CODEX_HOME", "~/.codex")).expanduser()
 CODEX_ROOTS = (
-	Path("~/.codex/sessions").expanduser(),
-	Path("~/.codex/archived_sessions").expanduser(),
+	_CODEX_HOME / "sessions",
+	_CODEX_HOME / "archived_sessions",
 )
 HCOM_DATABASE = Path("~/.hcom/hcom.db").expanduser()
 REPORT_DIRECTORY = REPO_ROOT / ".agent/audits/usage"

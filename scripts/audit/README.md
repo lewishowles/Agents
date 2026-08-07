@@ -25,6 +25,9 @@ python3 scripts/audit/usage.py --days 7
 python3 scripts/audit/usage.py --since 2026-08-01 --until 2026-08-06
 ```
 
+Set `CLAUDE_CONFIG_DIR` or `CODEX_HOME` to read transcripts from a non-default location; both
+fall back to `~/.claude` and `~/.codex` respectively.
+
 Both runs overwrite `.agent/audits/usage/latest.md` and
 `.agent/audits/usage/latest.json`. The explicit date form uses inclusive UTC calendar dates and
 is byte-stable when repeated with the same bounds, provided the window has fully elapsed — a

@@ -24,23 +24,29 @@ FAILED_CHECKS=0
 
 cli_section "Validation" "Run repository checks"
 
+cli_group_begin "Checks"
+
 # Runs a command as a named validation check.
-# Prints a section header before running and ✓/✗ after.
+# Records the result in the active group. Passing checks stay silent and are
+# reported in the group summary; failures print their output and a ✗ row.
+# Set CLI_STYLE_VERBOSE=1 to show a row for every check as it runs.
 #
 # @param  {string}  label
-#     Human-readable name displayed before and after the check runs.
+#     Human-readable name recorded for the check.
 # @param  {string}  ...
 #     Command and arguments to execute.
 run_check() {
 	local label="$1"
 	local output
 	shift
-	cli_status info "Checking" "$label"
+	if [ "${CLI_STYLE_VERBOSE:-0}" = "1" ]; then
+		cli_status info "Checking" "$label"
+	fi
 	if [ "$label" = "instruction budgets" ]; then
 		if "$@"; then
-			cli_status success "$label"
+			cli_group_status success "$label"
 		else
-			cli_status error "$label" "failed"
+			cli_group_status error "$label" "failed"
 			FAILED_CHECKS=$((FAILED_CHECKS + 1))
 		fi
 		return
@@ -50,12 +56,12 @@ run_check() {
 		if [ "$label" = "staleness" ] && [ -n "$output" ]; then
 			printf '%s\n' "$output"
 		fi
-		cli_status success "$label"
+		cli_group_status success "$label"
 	else
 		if [ -n "$output" ]; then
 			printf '%s\n' "$output" >&2
 		fi
-		cli_status error "$label" "failed"
+		cli_group_status error "$label" "failed"
 		FAILED_CHECKS=$((FAILED_CHECKS + 1))
 	fi
 }
@@ -85,6 +91,8 @@ run_check "dead path refs"        python3 "$REPO_DIR/scripts/validate/markdown-c
 run_check "script command refs"   python3 "$REPO_DIR/scripts/validate/markdown-claims.py" --mode commands
 run_check "setup drift"           python3 "$REPO_DIR/scripts/validate/check-setup-drift.py"
 run_check "staleness"             python3 "$REPO_DIR/scripts/validate/check-staleness.py"
+
+cli_group_end
 
 printf '\n'
 if [ "$FAILED_CHECKS" -gt 0 ]; then
