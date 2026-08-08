@@ -11,6 +11,47 @@ SHARED_AGENT_TOOLS=(
 	"log-friction.sh|$REPO_DIR/scripts/agent-tools/log-friction.sh"
 )
 
+# Asserts that the shared tool declaration exactly covers the source directory.
+assert_shared_agent_tools() {
+	local tools_dir="$REPO_DIR/scripts/agent-tools"
+	local entry
+	local source
+	local declared_source
+	local declared
+	local validation_failed=0
+
+	for entry in "${SHARED_AGENT_TOOLS[@]}"; do
+		source="${entry##*|}"
+
+		if [[ "$source" != "$tools_dir/"* ]] || [[ ! -f "$source" ]]; then
+			printf 'Shared agent tool source must be a file under scripts/agent-tools/: %s\n' "$source" >&2
+			validation_failed=1
+		fi
+	done
+
+	for source in "$tools_dir"/.[!.]* "$tools_dir"/*; do
+		if [[ ! -f "$source" ]]; then
+			continue
+		fi
+
+		declared=0
+		for entry in "${SHARED_AGENT_TOOLS[@]}"; do
+			declared_source="${entry##*|}"
+			if [[ "$declared_source" == "$source" ]]; then
+				declared=1
+				break
+			fi
+		done
+
+		if [[ "$declared" -eq 0 ]]; then
+			printf 'Shared agent tool source is not declared by SHARED_AGENT_TOOLS: %s\n' "$source" >&2
+			validation_failed=1
+		fi
+	done
+
+	return "$validation_failed"
+}
+
 # Copies a template to target only if target does not already exist.
 #
 # @param  {string}  source
@@ -145,6 +186,11 @@ copy_claude_support_files() {
 # project tracking the central source, so improvements and fixes propagate without re-copying.
 copy_shared_agent_tools() {
 	local entry
+
+	if ! assert_shared_agent_tools; then
+		cli_status failed "Shared agent tools" "source declarations do not match scripts/agent-tools/"
+		return 1
+	fi
 
 	cli_group_begin "Shared agent tools"
 	ensure_project_checks
@@ -366,6 +412,7 @@ check_status() {
 	local workspace_md="$PROJECT_DIR/WORKSPACE.md"
 	local detected_mode=""
 	local entry
+	local source_validation_status=0
 
 	# Detect mode from AGENTS.md body text.
 	if [ -f "$agents_md" ]; then
@@ -416,6 +463,11 @@ check_status() {
 
 	# Shared agent tools — each should be a symlink to the central source.
 	cli_group_begin "Shared agent tools"
+	if ! assert_shared_agent_tools; then
+		cli_group_status failed "source declarations" "do not match scripts/agent-tools/"
+		source_validation_status=1
+	fi
+
 	local scripts_dir="$PROJECT_DIR/.agent/scripts"
 	if [ ! -d "$scripts_dir" ]; then
 		cli_group_status warning ".agent/scripts/" "missing"
@@ -468,4 +520,5 @@ check_status() {
 	local _json
 	_json='{"next":'"$(cli_style_json_string "Repair setup drift")"',"reason":'"$(cli_style_json_string "")"',"commands":'"$(cli_style_json_string_array "setup-project.sh --$detected_mode" "setup-project.sh --write-workspace" "setup-project.sh --force-workspace")"',"alternatives":'"$(cli_style_json_string_array)"'}'
 	cli_style_render_json next-step-block "$_json"
+	return "$source_validation_status"
 }

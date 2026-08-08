@@ -296,6 +296,36 @@ test_status_reports_drifted_project() {
 	assert_contains "$output" "log-friction.sh"
 }
 
+test_shared_agent_tool_source_contract() {
+	local target_dir="$TEST_ROOT/source-contract"
+	local source_dir="$target_dir/scripts/agent-tools"
+	local setup_library="$REPO_DIR/scripts/lib/project-setup.sh"
+	local output="$TEST_ROOT/source-contract.out"
+
+	mkdir -p "$target_dir/scripts"
+	cp -R "$REPO_DIR/scripts/agent-tools" "$target_dir/scripts/"
+
+	if (
+		REPO_DIR="$target_dir"
+		source "$setup_library"
+		SHARED_AGENT_TOOLS+=("missing-tool.sh|$REPO_DIR/scripts/agent-tools/missing-tool.sh")
+		assert_shared_agent_tools
+	) > "$output" 2>&1; then
+		fail "Expected a missing declared source to fail validation"
+	fi
+	assert_contains "$output" "missing-tool.sh"
+
+	touch "$source_dir/unlisted-tool.sh"
+	if (
+		REPO_DIR="$target_dir"
+		source "$setup_library"
+		assert_shared_agent_tools
+	) > "$output" 2>&1; then
+		fail "Expected an undeclared source to fail validation"
+	fi
+	assert_contains "$output" "unlisted-tool.sh"
+}
+
 test_claude_setup
 test_codex_setup
 test_both_setup
@@ -313,5 +343,6 @@ test_no_skill_packs_suppresses_detection
 test_status_reports_clean_project
 test_status_reports_configured_project
 test_status_reports_drifted_project
+test_shared_agent_tool_source_contract
 
 printf '✓ setup-project tests passed\n'
