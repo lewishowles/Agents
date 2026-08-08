@@ -15,7 +15,6 @@ paths under the repository's ``.agent/audits/usage`` directory.
 from __future__ import annotations
 
 import argparse
-import collections
 import contextlib
 import datetime
 import json
@@ -237,81 +236,63 @@ def apply_hcom_label(
 		session["hcom"] = dict(label)
 
 
-def ratio(numerator: int, denominator: int) -> float | None:
-	"""Return a stable ratio, or None when the denominator is zero.
+def make_report(sessions: list[Session], window: Window) -> Report:
+	"""Build the deterministic JSON report object.
 
 	Args:
-		numerator: Ratio numerator.
-		denominator: Ratio denominator.
-
+		sessions: Parsed sessions included in the selected window.
+		window: UTC window and display bounds for the report.
 	Returns:
-		The ratio rounded to six decimal places, or None for a zero denominator.
+		The deterministic serialisable report object.
 	"""
-	if not denominator:
-		return None
+	start, end, display_since, display_until = window
 
-	return round(numerator / denominator, 6)
+	def ratio_data(numerator: int, denominator: int) -> RatioData:
+		"""Return ratio inputs as well as the calculated ratio for JSON consumers.
 
+		Args:
+			numerator: Ratio numerator in tokens.
+			denominator: Ratio denominator in tokens.
 
-def ratio_data(numerator: int, denominator: int) -> RatioData:
-	"""Return ratio inputs as well as the calculated ratio for JSON consumers.
+		Returns:
+			A serialisable ratio object containing both inputs and the result.
+		"""
+		return {
+			"numerator_tokens": numerator,
+			"denominator_tokens": denominator,
+			"ratio": None if not denominator else round(numerator / denominator, 6),
+		}
 
-	Args:
-		numerator: Ratio numerator in tokens.
-		denominator: Ratio denominator in tokens.
+	def add_group(
+		group: Group,
+		key: str,
+		tool: str,
+		session_count: int,
+		tokens: TokenTotals,
+	) -> None:
+		"""Add a session or event aggregate to a grouped report section.
 
-	Returns:
-		A serialisable ratio object containing both inputs and the result.
-	"""
-	return {
-		"numerator_tokens": numerator,
-		"denominator_tokens": denominator,
-		"ratio": ratio(numerator, denominator),
-	}
+		Args:
+			group: Group receiving the aggregate.
+			key: Grouping key for the aggregate.
+			tool: Runtime name for the aggregate.
+			session_count: Number of sessions represented by the aggregate.
+			tokens: Normalised token totals to add.
 
+		Returns:
+			None. The grouped aggregate is updated in place.
+		"""
+		row = group.setdefault(key, {})
+		tool_row = row.setdefault(
+			tool,
+			{
+				"session_count": 0,
+				"tokens": empty_totals(tool),
+			},
+		)
+		tool_row["session_count"] += session_count
+		add_totals(tool_row["tokens"], tokens, tool)
 
-def add_group(
-	group: Group,
-	key: str,
-	tool: str,
-	session_count: int,
-	tokens: TokenTotals,
-) -> None:
-	"""Add a session or event aggregate to a grouped report section.
-
-	Args:
-		group: Group receiving the aggregate.
-		key: Grouping key for the aggregate.
-		tool: Runtime name for the aggregate.
-		session_count: Number of sessions represented by the aggregate.
-		tokens: Normalised token totals to add.
-
-	Returns:
-		None. The grouped aggregate is updated in place.
-	"""
-	row = group.setdefault(key, {})
-	tool_row = row.setdefault(
-		tool,
-		{
-			"session_count": 0,
-			"tokens": empty_totals(tool),
-		},
-	)
-	tool_row["session_count"] += session_count
-	add_totals(tool_row["tokens"], tokens, tool)
-
-
-def aggregate(
-	sessions: list[Session],
-) -> Sections:
-	"""Build all report breakdowns from parsed sessions.
-
-	Args:
-		sessions: Parsed sessions to aggregate.
-
-	Returns:
-		Tool, model, day, project, and hcom-role report breakdowns.
-	"""
 	by_tool: dict[str, AggregateRow] = {
 		tool: {
 			"session_count": 0,
@@ -357,18 +338,6 @@ def aggregate(
 				f"No {tool} token usage records in the selected window."
 			)
 
-	return by_tool, by_model, by_day, by_project, by_role
-
-
-def aggregate_driver_ledger(sessions: list[Session]) -> DriverReconciliation:
-	"""Combine session driver rows into one ranked ledger and reconciliation.
-
-	Args:
-		sessions: Parsed sessions whose driver ledgers should be combined.
-
-	Returns:
-		The ranked aggregate ledger and reconciliation counts.
-	"""
 	rows: dict[tuple[str, str], DriverLedgerRow] = {}
 	tool_call_count = 0
 	unattributed_count = 0
@@ -396,8 +365,7 @@ def aggregate_driver_ledger(sessions: list[Session]) -> DriverReconciliation:
 		key=lambda row: (-row["payload_estimate_tokens"], row["category"], row["key"]),
 	)
 	attributed_count = sum(row["count"] for row in ordered_rows)
-
-	return {
+	driver_data: DriverReconciliation = {
 		"driver_ledger": ordered_rows,
 		"tool_call_count": tool_call_count,
 		"attributed_count": attributed_count,
@@ -409,22 +377,6 @@ def aggregate_driver_ledger(sessions: list[Session]) -> DriverReconciliation:
 		},
 		"reconciles": tool_call_count == attributed_count + unattributed_count,
 	}
-
-
-def make_report(sessions: list[Session], window: Window, sections: Sections) -> Report:
-	"""Build the deterministic JSON report object.
-
-	Args:
-		sessions: Parsed sessions included in the selected window.
-		window: UTC window and display bounds for the report.
-		sections: Precomputed report breakdowns.
-
-	Returns:
-		The deterministic serialisable report object.
-	"""
-	start, end, display_since, display_until = window
-	by_tool, by_model, by_day, by_project, by_role = sections
-	driver_data = aggregate_driver_ledger(sessions)
 	ordered_sessions = sorted(
 		sessions,
 		key=lambda session: (
@@ -603,7 +555,7 @@ def main() -> None:
 	for session in sessions:
 		apply_hcom_label(session, by_session_id, by_path)
 
-	report = make_report(sessions, window, aggregate(sessions))
+	report = make_report(sessions, window)
 	markdown_path, json_path = write_report(report)
 	print(
 		f"Wrote {report['session_count']} sessions, tokens not cost, "
