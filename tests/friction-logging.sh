@@ -256,12 +256,12 @@ test_analyser_groups_log_entries() {
 	printf '2026-05-15T19:01:00Z\trule-ignored\t/project-a\tskipped review gate\n' >> "$log_file"
 	printf '2026-05-15T19:02:00Z\tcheck-fail\t/project-b\ttest:unit:run: unit tests exploded\n' >> "$log_file"
 
-	HOME="$home_dir" "$REPO_DIR/scripts/analyse-friction.sh" > "$output_file"
+	HOME="$home_dir" "$REPO_DIR/src/skills/friction-review/scripts/analyse-friction.sh" > "$output_file"
 
 	assert_contains "$output_file" "2	rule-ignored	/project-a	skipped review gate"
 	assert_not_contains "$output_file" "check-fail"
 
-	HOME="$home_dir" FRICTION_INCLUDE_CHECK_FAILS=1 "$REPO_DIR/scripts/analyse-friction.sh" > "$output_file"
+	HOME="$home_dir" FRICTION_INCLUDE_CHECK_FAILS=1 "$REPO_DIR/src/skills/friction-review/scripts/analyse-friction.sh" > "$output_file"
 
 	assert_contains "$output_file" "1	check-fail	/project-b	test:unit:run: unit tests exploded"
 }
@@ -275,11 +275,11 @@ test_analyser_tolerates_legacy_lines() {
 	printf '2026-05-01T10:00:00Z\t/legacy-project\tlint\tlint exploded\n' > "$log_file"
 	printf '2026-05-01T10:01:00Z\t/legacy-project\tlint\tlint exploded\n' >> "$log_file"
 
-	HOME="$home_dir" "$REPO_DIR/scripts/analyse-friction.sh" > "$output_file"
+	HOME="$home_dir" "$REPO_DIR/src/skills/friction-review/scripts/analyse-friction.sh" > "$output_file"
 
 	assert_not_contains "$output_file" "check-fail"
 
-	HOME="$home_dir" FRICTION_INCLUDE_CHECK_FAILS=1 "$REPO_DIR/scripts/analyse-friction.sh" > "$output_file"
+	HOME="$home_dir" FRICTION_INCLUDE_CHECK_FAILS=1 "$REPO_DIR/src/skills/friction-review/scripts/analyse-friction.sh" > "$output_file"
 
 	assert_contains "$output_file" "2	check-fail	/legacy-project	lint	lint exploded"
 }
@@ -294,7 +294,7 @@ test_analyser_excludes_resolved_pattern() {
 	printf '2026-05-15T19:01:00Z\trule-ignored\t/project-a\tskipped review gate\n' >> "$log_file"
 	printf 'RESOLVED\trule-ignored\tskipped review gate\tfeat(rules): add blocking review gate\n' >> "$log_file"
 
-	HOME="$home_dir" "$REPO_DIR/scripts/analyse-friction.sh" > "$output_file"
+	HOME="$home_dir" "$REPO_DIR/src/skills/friction-review/scripts/analyse-friction.sh" > "$output_file"
 
 	assert_not_contains "$output_file" "skipped review gate"
 }
@@ -309,9 +309,17 @@ test_analyser_resurfaces_pattern_after_resolution() {
 	printf 'RESOLVED\trule-ignored\tskipped review gate\tfeat(rules): add blocking review gate\n' >> "$log_file"
 	printf '2026-06-01T09:00:00Z\trule-ignored\t/project-a\tskipped review gate\n' >> "$log_file"
 
-	HOME="$home_dir" "$REPO_DIR/scripts/analyse-friction.sh" > "$output_file"
+	HOME="$home_dir" "$REPO_DIR/src/skills/friction-review/scripts/analyse-friction.sh" > "$output_file"
 
 	assert_contains "$output_file" "1	rule-ignored	/project-a	skipped review gate"
+}
+
+test_analyser_selftest_passes() {
+	local output_file="$TEST_ROOT/analyser-selftest.out"
+
+	"$REPO_DIR/src/skills/friction-review/scripts/analyse-friction.sh" --selftest > "$output_file"
+
+	assert_contains "$output_file" "analyse-friction.sh --selftest passed"
 }
 
 test_manual_writer_logs_entry() {
@@ -359,7 +367,7 @@ test_analyser_discovers_project_fallback_logs() {
 	printf '2026-05-15T19:02:00Z\tmissing-guidance\t/project-b\tcentral log was sandboxed\n' >> "$fallback_log"
 	printf 'RESOLVED\trule-ignored\tskipped review gate\tfeat(rules): add blocking review gate\n' > "$canonical_log"
 
-	HOME="$home_dir" FRICTION_DEV_ROOT="$dev_root" "$REPO_DIR/scripts/analyse-friction.sh" > "$output_file"
+	HOME="$home_dir" FRICTION_DEV_ROOT="$dev_root" "$REPO_DIR/src/skills/friction-review/scripts/analyse-friction.sh" > "$output_file"
 
 	assert_not_contains "$output_file" "skipped review gate"
 	assert_contains "$output_file" "1	missing-guidance	/project-b	central log was sandboxed"
@@ -467,6 +475,7 @@ test_analyser_resurfaces_pattern_after_resolution
 test_manual_writer_logs_entry
 test_manual_writer_falls_back_to_project_log
 test_analyser_discovers_project_fallback_logs
+test_analyser_selftest_passes
 test_codex_hcom_hooks_bootstrap_homebrew_path
 test_codex_hook_logs_check_failure
 test_codex_hook_does_not_log_on_pass

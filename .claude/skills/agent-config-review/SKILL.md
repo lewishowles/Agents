@@ -110,7 +110,7 @@ Evidence order:
 1. Direct file contents or script output
 2. Validation scripts and fixtures
 3. `PROGRESS.md` decisions and discoveries
-4. Friction-log summaries from `scripts/analyse-friction.sh`
+4. Friction-log summaries from `src/skills/friction-review/scripts/analyse-friction.sh`
 5. Inferred risk (clearly labelled)
 
 Don't overfit to single annoyances. Weight repeated friction, missing validation, expensive always-loaded guidance.

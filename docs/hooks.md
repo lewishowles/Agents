@@ -150,7 +150,7 @@ Fires when the Claude Code session ends. Cleans up per-session hook data stored 
 
 Runs when Claude finishes a response. Checks for a `package.json` (skips silently if absent — not all projects are frontend projects). If present, it runs `npm run lint` and `npm run test:unit:run` if those scripts are defined. On failure, outputs a JSON pause signal with the error output, preventing Claude from stopping until the issues are resolved.
 
-Failures are appended to `~/.claude/logs/friction.log` as tab-separated lines: timestamp, category (`check-fail` for this hook), project path, and a detail string folding the failed check names and first error line. Use `scripts/analyse-friction.sh` to group the most common category/project/detail combinations; it still aggregates log lines written before the category field existed.
+Failures are appended to `~/.claude/logs/friction.log` as tab-separated lines: timestamp, category (`check-fail` for this hook), project path, and a detail string folding the failed check names and first error line. Use `src/skills/friction-review/scripts/analyse-friction.sh` to group the most common category/project/detail combinations; it still aggregates log lines written before the category field existed.
 
 Behavioural friction (rule ignored, wrong approach, token waste, tool misuse, missing guidance) can be logged manually with `.agent/scripts/log-friction.sh "<category>" "<detail>"`, sharing the same log and schema.
 

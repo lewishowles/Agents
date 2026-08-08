@@ -91,7 +91,7 @@ is_duplicate_entry() {
 }
 
 # Appends a tab-separated entry to the friction log so patterns can be
-# analysed later with scripts/analyse-friction.sh.
+# analysed later with src/skills/friction-review/scripts/analyse-friction.sh.
 #
 # @param  {string}  category
 #     Friction category — check-fail for automated check failures.

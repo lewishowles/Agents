@@ -2,7 +2,7 @@
 # Generated — edit skill.json and SKILL.body.md instead.
 name: friction-review
 description: >
-  Use this skill to turn recurring friction-log patterns into specific, minimal, human-reviewed amendments to src/rules/ or src/skills/. Runs scripts/analyse-friction.sh, proposes a diff per pattern, never auto-applies.
+  Use this skill to turn recurring friction-log patterns into specific, minimal, human-reviewed amendments to src/rules/ or src/skills/. Runs src/skills/friction-review/scripts/analyse-friction.sh, proposes a diff per pattern, never auto-applies.
 do-not-use-when:
   - Logging a single friction entry — use .agent/scripts/log-friction.sh directly
   - The friction log is empty or has no recurring patterns
@@ -14,7 +14,7 @@ Turns recurring friction-log patterns into specific, minimal, human-reviewed ame
 
 ## Workflow
 
-1. **Run the analyser** — from the Configuration/Agents repo root (the script lives at `scripts/analyse-friction.sh` there, not under this skill's own directory), run `bash scripts/analyse-friction.sh`. Output is `count ⇥ category ⇥ cwd ⇥ detail`, sorted most-frequent-first. By default combines central friction log with project-local logs under `$HOME/Dev` and excludes automated `check-fail` rows; set `FRICTION_INCLUDE_CHECK_FAILS=1` only when reviewing verification debt. Pass explicit paths for scoped review. Never `Read`/`cat` a raw `friction.log` directly: the analyser's output already excludes resolved patterns and stays bounded to active entries regardless of how large the underlying log gets.
+1. **Run the analyser** — from the Configuration/Agents repo root, run the skill-bundled `bash src/skills/friction-review/scripts/analyse-friction.sh`. Output is `count ⇥ category ⇥ cwd ⇥ detail`, sorted most-frequent-first. By default combines central friction log with project-local logs under `$HOME/Dev` and excludes automated `check-fail` rows; set `FRICTION_INCLUDE_CHECK_FAILS=1` only when reviewing verification debt. Pass explicit paths for scoped review. Never `Read`/`cat` a raw `friction.log` directly: the analyser's output already excludes resolved patterns and stays bounded to active entries regardless of how large the underlying log gets.
 2. **Take top recurring patterns** — entries with count ≥ 2 warrant review; a single occurrence is usually not yet a pattern. Group entries describing the same failure even if `cwd`/`detail` differ slightly. Treat `check-fail` rows as verification debt unless detail shows repeated agent behaviour existing guidance would not prevent.
 3. **Skip already-resolved patterns** — later `RESOLVED` markers exclude patterns from analyser output automatically. If a resolved pattern reappears, state so explicitly; the earlier fix didn't hold, and the amendment should account for why.
 4. **Decide the fix's home** — if guidance applies every turn regardless of task, it belongs in `rules/global-rules.md` (mirror in `skills/global-rules/SKILL.body.md`). If task-specific, it belongs in the relevant `skills/<name>/SKILL.body.md`.
