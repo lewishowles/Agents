@@ -25,11 +25,14 @@ import re
 import sqlite3
 import sys
 from pathlib import Path
-from typing import Callable, Optional, TypedDict
+from typing import Callable, Iterator, Optional, TypedDict
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 AUDIT_DIRECTORY = Path(__file__).resolve().parent
+
+# Both direct script execution and ``from scripts.audit import usage`` are
+# supported; each invocation style needs the sibling audit modules on sys.path.
 if str(AUDIT_DIRECTORY) not in sys.path:
 	sys.path.insert(0, str(AUDIT_DIRECTORY))
 
@@ -71,6 +74,22 @@ CODEX_RECORD_TYPES = (
 	"compacted",
 )
 DRIVER_METHOD = "chars/4"
+
+# Match a quoted or bare JavaScript property and capture its quoted string value.
+EMBEDDED_JS_ARGUMENT_PATTERN = (
+	r"""(?:['"]{key}['"]|{key})\s*:\s*"""
+	r"""("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')"""
+)
+
+# Match the first file path named by an apply_patch source string.
+EMBEDDED_PATCH_PATH_PATTERN = re.compile(
+	r"\*\*\* (?:Update|Add|Delete) File:\s*([^\s\\]+)"
+)
+
+# Match the tool name in a nested Codex exec source string.
+EMBEDDED_TOOL_CALL_PATTERN = re.compile(
+	r"\btools\.([A-Za-z_][A-Za-z0-9_]*)\s*\("
+)
 
 
 class RecordStats(TypedDict):
@@ -309,12 +328,13 @@ UNATTRIBUTED: HcomLabel = {
 }
 
 
-def parse_date(value):
+def parse_date(value: str) -> datetime.date:
 	"""Parse a command-line date as a UTC calendar date.
 
-	@param  {str}  value
-		The YYYY-MM-DD value supplied by the caller.
-	@return  {datetime.date}
+	Args:
+		value: The YYYY-MM-DD value supplied by the caller.
+
+	Returns:
 		The parsed calendar date.
 	"""
 	try:
@@ -323,12 +343,13 @@ def parse_date(value):
 		raise argparse.ArgumentTypeError("expected YYYY-MM-DD") from error
 
 
-def parse_timestamp(value):
+def parse_timestamp(value: object) -> datetime.datetime | None:
 	"""Parse a transcript timestamp, treating naive values as UTC.
 
-	@param  {object}  value
-		The timestamp value read from a JSONL record.
-	@return  {datetime.datetime|None}
+	Args:
+		value: The timestamp value read from a JSONL record.
+
+	Returns:
 		An aware UTC timestamp, or None for an unsupported value.
 	"""
 	if not isinstance(value, str) or not value:
@@ -345,8 +366,15 @@ def parse_timestamp(value):
 	return timestamp.astimezone(datetime.timezone.utc)
 
 
-def build_window(arguments) -> Window:
-	"""Build the half-open UTC window selected by the command line."""
+def build_window(arguments: argparse.Namespace) -> Window:
+	"""Build the half-open UTC window selected by the command line.
+
+	Args:
+		arguments: Parsed command-line options containing the date bounds.
+
+	Returns:
+		The UTC start, exclusive end, and display bounds for the report.
+	"""
 	if arguments.days is not None and (arguments.since or arguments.until):
 		arguments.parser.error("use --days or --since/--until, not both")
 
@@ -378,8 +406,21 @@ def build_window(arguments) -> Window:
 	return start, end, start.isoformat(timespec="seconds"), end.isoformat(timespec="seconds")
 
 
-def records(path, supported_types, record_stats: RecordStats):
-	"""Yield supported JSON objects and count skipped transcript records."""
+def records(
+	path: Path,
+	supported_types: tuple[str, ...],
+	record_stats: RecordStats,
+) -> Iterator[dict[str, object]]:
+	"""Yield supported JSON objects and count skipped transcript records.
+
+	Args:
+		path: Transcript path to read as JSONL.
+		supported_types: Record types accepted by the caller's parser.
+		record_stats: Mutable counter updated for malformed or unsupported records.
+
+	Returns:
+		An iterator over supported JSON object records.
+	"""
 	with path.open(encoding="utf-8", errors="replace") as handle:
 		for line in handle:
 			try:
@@ -395,11 +436,15 @@ def records(path, supported_types, record_stats: RecordStats):
 			yield record
 
 
-def number(value):
+def number(value: object) -> int:
 	"""Return a non-negative integer token value for a parsed field.
 
-	Non-finite floats are invalid and become zero. Finite floats are truncated
-	toward zero by ``int()`` before negative values are clamped to zero.
+	Args:
+		value: Parsed token field value.
+
+	Returns:
+		A finite value truncated toward zero and clamped to zero, or zero for an
+		unsupported or non-finite value.
 	"""
 	if isinstance(value, bool) or not isinstance(value, (int, float)):
 		return 0
@@ -410,16 +455,30 @@ def number(value):
 	return max(0, int(value))
 
 
-def safe_text(value):
-	"""Return a single-line string suitable for safe length measurement."""
+def safe_text(value: object) -> str:
+	"""Return a single-line string suitable for safe length measurement.
+
+	Args:
+		value: Value to normalise when it is a string.
+
+	Returns:
+		A stripped, single-line string, or an empty string for other values.
+	"""
 	if not isinstance(value, str):
 		return ""
 
 	return value.replace("\x00", "").replace("\r", " ").replace("\n", " ").strip()
 
 
-def object_input(value):
-	"""Decode a tool input object when a transcript stores it as JSON text."""
+def object_input(value: object) -> dict[str, object]:
+	"""Decode a tool input object when a transcript stores it as JSON text.
+
+	Args:
+		value: Tool input object or JSON text.
+
+	Returns:
+		The decoded object, or an empty object when decoding is unsupported.
+	"""
 	if isinstance(value, dict):
 		return value
 
@@ -434,8 +493,15 @@ def object_input(value):
 	return decoded if isinstance(decoded, dict) else {}
 
 
-def decode_js_string(value):
-	"""Decode one quoted JavaScript string literal without parsing the source."""
+def decode_js_string(value: object) -> str:
+	"""Decode one quoted JavaScript string literal without parsing the source.
+
+	Args:
+		value: Quoted JavaScript string literal.
+
+	Returns:
+		The decoded single-line string, or an empty string for invalid input.
+	"""
 	if not isinstance(value, str) or len(value) < 2:
 		return ""
 
@@ -454,31 +520,53 @@ def decode_js_string(value):
 	return ""
 
 
-def embedded_js_argument(source, key):
-	"""Extract one quoted argument from a nested JavaScript tool call."""
+def embedded_js_argument(source: object, key: str) -> str:
+	"""Extract one quoted argument from a nested JavaScript tool call.
+
+	Args:
+		source: JavaScript source containing a nested tool call.
+		key: Property name whose quoted value should be extracted.
+
+	Returns:
+		The decoded property value, or an empty string when it is absent.
+	"""
 	if not isinstance(source, str):
 		return ""
 
-	pattern = rf"(?:['\"]{re.escape(key)}['\"]|{re.escape(key)})\s*:\s*(\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*')"
+	pattern = EMBEDDED_JS_ARGUMENT_PATTERN.format(key=re.escape(key))
 	match = re.search(pattern, source)
 	return decode_js_string(match.group(1)) if match else ""
 
 
-def embedded_patch_path(source):
-	"""Extract the first safe target path from an apply_patch source string."""
+def embedded_patch_path(source: object) -> str:
+	"""Extract the first safe target path from an apply_patch source string.
+
+	Args:
+		source: apply_patch source containing a file header.
+
+	Returns:
+		The first safe target path, or an empty string when no header is present.
+	"""
 	if not isinstance(source, str):
 		return ""
 
-	match = re.search(r"\*\*\* (?:Update|Add|Delete) File:\s*([^\s\\]+)", source)
+	match = EMBEDDED_PATCH_PATH_PATTERN.search(source)
 	return safe_text(match.group(1)) if match else ""
 
 
-def embedded_tool_call(value):
-	"""Extract the real tool call nested inside a Codex ``exec`` source string."""
+def embedded_tool_call(value: object) -> tuple[str, dict[str, object]] | None:
+	"""Extract the real tool call nested inside a Codex ``exec`` source string.
+
+	Args:
+		value: Codex exec source containing a nested tool call.
+
+	Returns:
+		The extracted tool name and input, or None when no call is present.
+	"""
 	if not isinstance(value, str):
 		return None
 
-	match = re.search(r"\btools\.([A-Za-z_][A-Za-z0-9_]*)\s*\(", value)
+	match = EMBEDDED_TOOL_CALL_PATTERN.search(value)
 	if not match:
 		return None
 
@@ -512,8 +600,15 @@ def embedded_tool_call(value):
 	return name, tool_input
 
 
-def result_text(value):
-	"""Extract result text for bounded length measurement without reporting it."""
+def result_text(value: object) -> str:
+	"""Extract result text for bounded length measurement without reporting it.
+
+	Args:
+		value: Tool result value, possibly nested in content fields.
+
+	Returns:
+		The bounded-measurement source text, or an empty string when absent.
+	"""
 	if isinstance(value, str):
 		return value
 
@@ -528,13 +623,27 @@ def result_text(value):
 	return ""
 
 
-def tool_result_failed(value):
-	"""Return whether a tool result explicitly reports a failure."""
+def tool_result_failed(value: object) -> bool:
+	"""Return whether a tool result explicitly reports a failure.
+
+	Args:
+		value: Tool result value to inspect.
+
+	Returns:
+		True when the result contains an error flag, otherwise False.
+	"""
 	return isinstance(value, dict) and bool(value.get("is_error") or value.get("isError"))
 
 
-def command_input(tool_input):
-	"""Return a command from Claude or Codex tool input."""
+def command_input(tool_input: dict[str, object]) -> str:
+	"""Return a command from Claude or Codex tool input.
+
+	Args:
+		tool_input: Decoded tool input object.
+
+	Returns:
+		The first non-empty command value, or an empty string when absent.
+	"""
 	for key in ("command", "cmd"):
 		command = safe_text(tool_input.get(key))
 		if command:
@@ -544,18 +653,42 @@ def command_input(tool_input):
 
 
 def extract_command_target(name: str, tool_input: dict[str, object]) -> str:
-	"""Return a command target, including an empty target when absent."""
+	"""Return a command target, including an empty target when absent.
+
+	Args:
+		name: Tool name supplied by the classification rule.
+		tool_input: Decoded tool input object.
+
+	Returns:
+		The command target, or an empty string when absent.
+	"""
 	return command_input(tool_input)
 
 
 def extract_file_target(name: str, tool_input: dict[str, object]) -> str | None:
-	"""Return a non-empty file target from tool input."""
+	"""Return a non-empty file target from tool input.
+
+	Args:
+		name: Tool name supplied by the classification rule.
+		tool_input: Decoded tool input object.
+
+	Returns:
+		The normalised file target, or None when absent.
+	"""
 	target = safe_text(tool_input.get("file_path") or tool_input.get("path"))
 	return target or None
 
 
 def extract_skill_target(name: str, tool_input: dict[str, object]) -> str | None:
-	"""Return a non-empty skill target from tool input."""
+	"""Return a non-empty skill target from tool input.
+
+	Args:
+		name: Tool name supplied by the classification rule.
+		tool_input: Decoded tool input object.
+
+	Returns:
+		The normalised skill target, or None when absent.
+	"""
 	target = safe_text(tool_input.get("skill") or tool_input.get("name"))
 	return target or None
 
@@ -590,17 +723,40 @@ DRIVER_RULES: dict[str, DriverRule] = {
 
 
 def extract_hook_target(name: str, tool_input: dict[str, object]) -> str:
-	"""Return a hook name from tool input, falling back to the tool name."""
+	"""Return a hook name from tool input, falling back to the tool name.
+
+	Args:
+		name: Hook tool name used as the fallback.
+		tool_input: Decoded tool input object.
+
+	Returns:
+		The hook target, or the tool name when absent.
+	"""
 	return safe_text(tool_input.get("name") or name)
 
 
 def extract_name_target(name: str, tool_input: dict[str, object]) -> str:
-	"""Return the tool name when it is also the classification target."""
+	"""Return the tool name when it is also the classification target.
+
+	Args:
+		name: Tool name used as the target.
+		tool_input: Decoded tool input object.
+
+	Returns:
+		The supplied tool name.
+	"""
 	return name
 
 
 def driver_rule(name: str) -> DriverRule | None:
-	"""Return the table or dynamic rule for a tool name."""
+	"""Return the table or dynamic rule for a tool name.
+
+	Args:
+		name: Tool name to classify.
+
+	Returns:
+		The matching classification rule, or None for unsupported tools.
+	"""
 	rule = DRIVER_RULES.get(name)
 	if rule is not None:
 		return rule
@@ -619,7 +775,16 @@ def driver_repeat_identity(
 	category: str,
 	target: str,
 ) -> tuple[str, dict[str, object]]:
-	"""Return the tool identity and bounded input used for repeat detection."""
+	"""Return the tool identity and bounded input used for repeat detection.
+
+	Args:
+		name: Tool name being classified.
+		category: Classification category for the tool.
+		target: Extracted target used by the classifier.
+
+	Returns:
+		The repeat-detection tool name and bounded input object.
+	"""
 	if category == "bash":
 		return "Bash", {"command": target}
 
@@ -635,7 +800,17 @@ def build_driver_classification(
 	target: str,
 	classification_key: str | None = None,
 ) -> DriverClassification:
-	"""Build a classification from its category, target, and repeat identity."""
+	"""Build a classification from its category, target, and repeat identity.
+
+	Args:
+		name: Tool name being classified.
+		category: Classification category for the tool.
+		target: Extracted target used by the classifier.
+		classification_key: Optional explicit grouping key.
+
+	Returns:
+		The completed driver classification.
+	"""
 	repeat_name, repeat_input = driver_repeat_identity(name, category, target)
 	key = classification_key or target
 	if classification_key is None and category == "bash":
@@ -654,7 +829,15 @@ def fallback_driver_classification(
 	name: str,
 	tool_input: dict[str, object],
 ) -> DriverClassification:
-	"""Classify an unknown tool using its safest available target."""
+	"""Classify an unknown tool using its safest available target.
+
+	Args:
+		name: Unknown tool name.
+		tool_input: Decoded tool input object.
+
+	Returns:
+		A fallback classification using the safest available target.
+	"""
 	target = safe_text(
 		tool_input.get("file_path")
 		or tool_input.get("path")
@@ -664,8 +847,19 @@ def fallback_driver_classification(
 	return build_driver_classification(name, "tool", target, name)
 
 
-def driver_classification(name, tool_input: dict[str, object]) -> DriverClassification | None:
-	"""Classify one tool call and return its safe key and estimate target."""
+def driver_classification(
+	name: object,
+	tool_input: dict[str, object],
+) -> DriverClassification | None:
+	"""Classify one tool call and return its safe key and estimate target.
+
+	Args:
+		name: Tool name read from a transcript record.
+		tool_input: Decoded tool input object.
+
+	Returns:
+		The safe classification, or None when the tool cannot be classified.
+	"""
 	if not isinstance(name, str) or not name:
 		return None
 
@@ -680,8 +874,16 @@ def driver_classification(name, tool_input: dict[str, object]) -> DriverClassifi
 	return build_driver_classification(name, rule["category"], target)
 
 
-def new_driver_call(name, tool_input: dict[str, object]) -> DriverCall:
-	"""Create an internal tool-call record without retaining raw result content."""
+def new_driver_call(name: object, tool_input: dict[str, object]) -> DriverCall:
+	"""Create an internal tool-call record without retaining raw result content.
+
+	Args:
+		name: Tool name read from a transcript record.
+		tool_input: Decoded tool input object.
+
+	Returns:
+		The bounded internal tool-call record.
+	"""
 	classification = driver_classification(name, tool_input)
 	return {
 		"name": name,
@@ -693,7 +895,11 @@ def new_driver_call(name, tool_input: dict[str, object]) -> DriverCall:
 
 
 def new_session_parse_state() -> tuple[dict[str, DriverCall], RecordStats]:
-	"""Create driver correlation and record-skipping state for one session."""
+	"""Create driver correlation and record-skipping state for one session.
+
+	Returns:
+		Empty response-correlation mapping and record-skipping counter.
+	"""
 	return {}, {"skipped_record_count": 0}
 
 
@@ -702,8 +908,18 @@ def append_driver_call(
 	calls_by_id: dict[str, DriverCall],
 	call: DriverCall,
 	call_id: object = None,
-):
-	"""Append one in-window driver call and register its response identifier."""
+) -> None:
+	"""Append one in-window driver call and register its response identifier.
+
+	Args:
+		session: Session receiving the driver call.
+		calls_by_id: Response identifier mapping for correlated results.
+		call: Bounded driver call to append.
+		call_id: Optional response identifier for the call.
+
+	Returns:
+		None. The session and mapping are updated in place.
+	"""
 	session["_driver_calls"].append(call)
 	session["tool_call_count"] += 1
 
@@ -716,16 +932,33 @@ def update_driver_call_result(
 	call_id: object,
 	result: object,
 	failed: bool,
-):
-	"""Attach one correlated result to a previously recorded driver call."""
+) -> None:
+	"""Attach one correlated result to a previously recorded driver call.
+
+	Args:
+		calls_by_id: Response identifier mapping for recorded calls.
+		call_id: Response identifier to resolve.
+		result: Tool result value to measure.
+		failed: Whether the result explicitly reports failure.
+
+	Returns:
+		None. The matching call is updated when the identifier is known.
+	"""
 	call = calls_by_id.get(call_id)
 	if call is not None:
 		call["result"] = result_text(result)
 		call["failed"] = failed
 
 
-def estimated_payload_tokens(call):
-	"""Estimate one driver payload from bounded command, target, and result text."""
+def estimated_payload_tokens(call: DriverCall) -> int:
+	"""Estimate one driver payload from bounded command, target, and result text.
+
+	Args:
+		call: Bounded driver call to measure.
+
+	Returns:
+		The estimated payload size in tokens.
+	"""
 	classification = call["classification"]
 	if classification is None:
 		target = safe_text(call.get("name"))
@@ -737,8 +970,15 @@ def estimated_payload_tokens(call):
 	return math.ceil(character_count / 4) if character_count else 0
 
 
-def finalise_driver_ledger(session: Session):
-	"""Build ranked driver rows and explicit unattributed counts for a session."""
+def finalise_driver_ledger(session: Session) -> None:
+	"""Build ranked driver rows and explicit unattributed counts for a session.
+
+	Args:
+		session: Session whose parsed driver calls should be aggregated.
+
+	Returns:
+		None. Driver ledger fields are updated in the session.
+	"""
 	calls = session["_driver_calls"]
 	repetition_calls = [
 		(
@@ -805,12 +1045,26 @@ def finalise_driver_ledger(session: Session):
 
 
 def token_schema(tool: str) -> TokenSchema:
-	"""Return the token field schema for one runtime."""
+	"""Return the token field schema for one runtime.
+
+	Args:
+		tool: Runtime name whose token fields are needed.
+
+	Returns:
+		The matching token schema, defaulting to Codex fields.
+	"""
 	return TOKEN_SCHEMAS.get(tool, TOKEN_SCHEMAS["Codex"])
 
 
 def empty_totals(tool: str) -> TokenTotals:
-	"""Create the token fields used by one tool's aggregate."""
+	"""Create the token fields used by one tool's aggregate.
+
+	Args:
+		tool: Runtime name whose token fields are needed.
+
+	Returns:
+		A zero-valued token aggregate for the runtime.
+	"""
 	schema = token_schema(tool)
 	totals = {field: 0 for field in schema["fields"]}
 	totals["total_tokens"] = 0
@@ -822,7 +1076,15 @@ def empty_totals(tool: str) -> TokenTotals:
 
 
 def usage_totals(usage: dict[str, object], tool: str) -> TokenTotals:
-	"""Normalise one Claude or Codex usage object into token fields."""
+	"""Normalise one Claude or Codex usage object into token fields.
+
+	Args:
+		usage: Raw usage object from a transcript record.
+		tool: Runtime name whose token fields are needed.
+
+	Returns:
+		The normalised non-negative token totals.
+	"""
 	schema = token_schema(tool)
 	values = {field: number(usage.get(field)) for field in schema["fields"]}
 	total_input_fields = schema["total_input_fields"]
@@ -838,8 +1100,17 @@ def usage_totals(usage: dict[str, object], tool: str) -> TokenTotals:
 	return values
 
 
-def add_totals(target: TokenTotals, source: TokenTotals, tool: str):
-	"""Add one normalised usage object to an aggregate."""
+def add_totals(target: TokenTotals, source: TokenTotals, tool: str) -> None:
+	"""Add one normalised usage object to an aggregate.
+
+	Args:
+		target: Aggregate updated in place.
+		source: Normalised usage totals to add.
+		tool: Runtime name whose total-input fields are needed.
+
+	Returns:
+		None. The target aggregate is updated in place.
+	"""
 	schema = token_schema(tool)
 	for field, value in source.items():
 		if field != "total_input_tokens" or schema["total_input_fields"]:
@@ -858,8 +1129,19 @@ def add_session_usage(
 	model: str,
 	day: str,
 	tool: str,
-):
-	"""Add one in-window event to session, model, and day totals."""
+) -> None:
+	"""Add one in-window event to session, model, and day totals.
+
+	Args:
+		session: Session receiving the usage event.
+		usage: Raw usage object from the transcript.
+		model: Model name used by the event.
+		day: UTC calendar day used by the event.
+		tool: Runtime name whose totals are being updated.
+
+	Returns:
+		None. Session, model, and day aggregates are updated in place.
+	"""
 	normalised = usage_totals(usage, tool)
 	if not normalised["total_tokens"]:
 		return
@@ -870,7 +1152,17 @@ def add_session_usage(
 
 
 def new_session(tool: str, session_id: str, path: Path, project_directory: str) -> Session:
-	"""Create the internal representation for one transcript session."""
+	"""Create the internal representation for one transcript session.
+
+	Args:
+		tool: Runtime that produced the transcript.
+		session_id: Stable identifier for the transcript session.
+		path: Transcript path used in the report.
+		project_directory: Initial project directory from the transcript location.
+
+	Returns:
+		A zero-valued internal session model.
+	"""
 	return {
 		"tool": tool,
 		"session_id": session_id,
@@ -895,7 +1187,15 @@ def new_session(tool: str, session_id: str, path: Path, project_directory: str) 
 
 
 def finalise_session(session: Session, record_stats: RecordStats) -> Session | None:
-	"""Attach parser bookkeeping and omit sessions with no usage or skipped records."""
+	"""Attach parser bookkeeping and omit sessions with no usage or skipped records.
+
+	Args:
+		session: Parsed session to finalise.
+		record_stats: Record-skipping counter from transcript reading.
+
+	Returns:
+		The session when it has usage or skipped records, otherwise None.
+	"""
 	session["skipped_record_count"] = record_stats["skipped_record_count"]
 	finalise_driver_ledger(session)
 
@@ -905,13 +1205,34 @@ def finalise_session(session: Session, record_stats: RecordStats) -> Session | N
 	return None
 
 
-def in_window(timestamp, start, end):
-	"""Return whether a timestamp belongs to the selected half-open window."""
+def in_window(
+	timestamp: datetime.datetime | None,
+	start: datetime.datetime,
+	end: datetime.datetime,
+) -> bool:
+	"""Return whether a timestamp belongs to the selected half-open window.
+
+	Args:
+		timestamp: Timestamp to test.
+		start: Inclusive UTC window start.
+		end: Exclusive UTC window end.
+
+	Returns:
+		True when the timestamp is inside the window, otherwise False.
+	"""
 	return timestamp is not None and start <= timestamp < end
 
 
-def update_claude_metadata(session: Session, record: dict[str, object]):
-	"""Update the project directory from one Claude record."""
+def update_claude_metadata(session: Session, record: dict[str, object]) -> None:
+	"""Update the project directory from one Claude record.
+
+	Args:
+		session: Session receiving metadata.
+		record: Claude transcript record to inspect.
+
+	Returns:
+		None. The session project directory is updated in place when present.
+	"""
 	cwd = record.get("cwd")
 	if isinstance(cwd, str) and cwd:
 		session["project_directory"] = cwd
@@ -921,11 +1242,23 @@ def append_claude_hook_call(
 	session: Session,
 	calls_by_id: dict[str, DriverCall],
 	record: dict[str, object],
-	timestamp,
+	timestamp: datetime.datetime | None,
 	start: datetime.datetime,
 	end: datetime.datetime,
-):
-	"""Record one in-window Claude hook attachment as a driver call."""
+) -> None:
+	"""Record one in-window Claude hook attachment as a driver call.
+
+	Args:
+		session: Session receiving the hook call.
+		calls_by_id: Response identifier mapping for correlated results.
+		record: Claude transcript record to inspect.
+		timestamp: Parsed UTC timestamp for the record.
+		start: Inclusive UTC window start.
+		end: Exclusive UTC window end.
+
+	Returns:
+		None. An in-window hook attachment is appended when valid.
+	"""
 	attachment = record.get("attachment")
 	if not (
 		isinstance(attachment, dict)
@@ -948,11 +1281,23 @@ def process_claude_tool_blocks(
 	session: Session,
 	calls_by_id: dict[str, DriverCall],
 	record: dict[str, object],
-	timestamp,
+	timestamp: datetime.datetime | None,
 	start: datetime.datetime,
 	end: datetime.datetime,
-):
-	"""Correlate Claude tool calls and their results for one record."""
+) -> None:
+	"""Correlate Claude tool calls and their results for one record.
+
+	Args:
+		session: Session receiving in-window tool calls.
+		calls_by_id: Response identifier mapping for correlated results.
+		record: Claude transcript record to inspect.
+		timestamp: Parsed UTC timestamp for the record.
+		start: Inclusive UTC window start.
+		end: Exclusive UTC window end.
+
+	Returns:
+		None. Tool calls and results are recorded in the session state.
+	"""
 	for block in blocks(record):
 		if block.get("type") == "tool_use" and in_window(timestamp, start, end):
 			call = new_driver_call(block.get("name"), object_input(block.get("input") or {}))
@@ -968,11 +1313,21 @@ def process_claude_tool_blocks(
 
 def claude_usage_event(
 	record: dict[str, object],
-	timestamp,
+	timestamp: datetime.datetime | None,
 	start: datetime.datetime,
 	end: datetime.datetime,
-):
-	"""Return one in-window Claude usage event with its model and day."""
+) -> tuple[dict[str, object], str, str] | None:
+	"""Return one in-window Claude usage event with its model and day.
+
+	Args:
+		record: Claude transcript record to inspect.
+		timestamp: Parsed UTC timestamp for the record.
+		start: Inclusive UTC window start.
+		end: Exclusive UTC window end.
+
+	Returns:
+		The usage object, model, and UTC day, or None when out of scope.
+	"""
 	if record.get("type") != "assistant":
 		return None
 
@@ -988,8 +1343,19 @@ def claude_usage_event(
 	return usage, model, timestamp.date().isoformat()
 
 
-def aggregate_claude_usage(session: Session, event):
-	"""Add one parsed Claude usage event to the session totals."""
+def aggregate_claude_usage(
+	session: Session,
+	event: tuple[dict[str, object], str, str] | None,
+) -> None:
+	"""Add one parsed Claude usage event to the session totals.
+
+	Args:
+		session: Session receiving the usage event.
+		event: Parsed usage object, model, and UTC day, or None.
+
+	Returns:
+		None. Session aggregates are updated in place when an event is present.
+	"""
 	if event is None:
 		return
 
@@ -1002,7 +1368,16 @@ def parse_claude_session(
 	start: datetime.datetime,
 	end: datetime.datetime,
 ) -> Session | None:
-	"""Parse in-window Claude usage records from one transcript."""
+	"""Parse in-window Claude usage records from one transcript.
+
+	Args:
+		path: Claude transcript path to parse.
+		start: Inclusive UTC window start.
+		end: Exclusive UTC window end.
+
+	Returns:
+		The parsed session, or None when it has no usage or skipped records.
+	"""
 	session_id = path.stem
 	project_directory = path.parent.name
 	session = new_session("Claude", session_id, path, project_directory)
@@ -1018,8 +1393,21 @@ def parse_claude_session(
 	return finalise_session(session, record_stats)
 
 
-def codex_delta(last_usage, total_usage, previous_total) -> TokenTotals | None:
-	"""Return one Codex event delta, preferring the recorded per-event value."""
+def codex_delta(
+	last_usage: object,
+	total_usage: object,
+	previous_total: object,
+) -> TokenTotals | None:
+	"""Return one Codex event delta, preferring the recorded per-event value.
+
+	Args:
+		last_usage: Per-event token usage, when recorded.
+		total_usage: Cumulative token usage, when recorded.
+		previous_total: Previous cumulative token usage for this session.
+
+	Returns:
+		The event delta, or None when neither usage representation is available.
+	"""
 	if isinstance(last_usage, dict):
 		return last_usage
 
@@ -1040,7 +1428,16 @@ def update_codex_metadata(
 	record: dict[str, object],
 	model: str,
 ) -> str:
-	"""Update Codex session metadata and return the current model."""
+	"""Update Codex session metadata and return the current model.
+
+	Args:
+		session: Session receiving metadata.
+		record: Codex transcript record to inspect.
+		model: Current model name before this record.
+
+	Returns:
+		The current model name after applying the record.
+	"""
 	payload = record.get("payload")
 	if not isinstance(payload, dict):
 		return model
@@ -1051,14 +1448,12 @@ def update_codex_metadata(
 		if isinstance(metadata_session_id, str) and metadata_session_id:
 			session["session_id"] = metadata_session_id
 
-		cwd = payload.get("cwd")
-		if isinstance(cwd, str) and cwd:
-			session["project_directory"] = cwd
 	elif record_type == "turn_context":
 		context_model = payload.get("model")
 		if isinstance(context_model, str) and context_model:
 			model = context_model
 
+	if record_type in ("session_meta", "turn_context"):
 		cwd = payload.get("cwd")
 		if isinstance(cwd, str) and cwd:
 			session["project_directory"] = cwd
@@ -1067,7 +1462,14 @@ def update_codex_metadata(
 
 
 def decode_codex_tool_call(payload: dict[str, object]) -> tuple[object, dict[str, object]]:
-	"""Decode a Codex response item, including embedded JavaScript calls."""
+	"""Decode a Codex response item, including embedded JavaScript calls.
+
+	Args:
+		payload: Codex response-item payload to decode.
+
+	Returns:
+		The decoded tool name and input object.
+	"""
 	name = payload.get("name") or payload.get("tool_name")
 	arguments = payload.get("arguments", payload.get("input", {}))
 	tool_input = object_input(arguments)
@@ -1083,11 +1485,23 @@ def process_codex_response_item(
 	session: Session,
 	calls_by_id: dict[str, DriverCall],
 	record: dict[str, object],
-	timestamp,
+	timestamp: datetime.datetime | None,
 	start: datetime.datetime,
 	end: datetime.datetime,
-):
-	"""Correlate Codex response-item tool calls and their results."""
+) -> None:
+	"""Correlate Codex response-item tool calls and their results.
+
+	Args:
+		session: Session receiving in-window tool calls.
+		calls_by_id: Response identifier mapping for correlated results.
+		record: Codex transcript record to inspect.
+		timestamp: Parsed UTC timestamp for the record.
+		start: Inclusive UTC window start.
+		end: Exclusive UTC window end.
+
+	Returns:
+		None. Tool calls and results are recorded in the session state.
+	"""
 	if record.get("type") != "response_item":
 		return
 
@@ -1118,7 +1532,15 @@ def codex_usage_event(
 	record: dict[str, object],
 	previous_total: dict[str, object] | None,
 ) -> tuple[TokenTotals | None, dict[str, object] | None]:
-	"""Return a Codex token delta and the next cumulative total."""
+	"""Return a Codex token delta and the next cumulative total.
+
+	Args:
+		record: Codex transcript record to inspect.
+		previous_total: Previous cumulative token usage for this session.
+
+	Returns:
+		The event delta and the cumulative total for the next record.
+	"""
 	if record.get("type") != "event_msg":
 		return None, previous_total
 
@@ -1143,11 +1565,23 @@ def aggregate_codex_usage(
 	session: Session,
 	delta: TokenTotals | None,
 	model: str,
-	timestamp,
+	timestamp: datetime.datetime | None,
 	start: datetime.datetime,
 	end: datetime.datetime,
-):
-	"""Add one in-window Codex token delta to the session totals."""
+) -> None:
+	"""Add one in-window Codex token delta to the session totals.
+
+	Args:
+		session: Session receiving the usage event.
+		delta: Parsed token delta, or None when unavailable.
+		model: Model name used by the event.
+		timestamp: Parsed UTC timestamp for the event.
+		start: Inclusive UTC window start.
+		end: Exclusive UTC window end.
+
+	Returns:
+		None. Session aggregates are updated in place when the event is in scope.
+	"""
 	if not in_window(timestamp, start, end) or not isinstance(delta, dict):
 		return
 
@@ -1159,7 +1593,16 @@ def parse_codex_session(
 	start: datetime.datetime,
 	end: datetime.datetime,
 ) -> Session | None:
-	"""Parse in-window Codex token-count events from one rollout transcript."""
+	"""Parse in-window Codex token-count events from one rollout transcript.
+
+	Args:
+		path: Codex rollout transcript path to parse.
+		start: Inclusive UTC window start.
+		end: Exclusive UTC window end.
+
+	Returns:
+		The parsed session, or None when it has no usage or skipped records.
+	"""
 	session_id = path.stem
 	if session_id.startswith("rollout-"):
 		session_id = session_id.removeprefix("rollout-")
@@ -1179,8 +1622,15 @@ def parse_codex_session(
 	return finalise_session(session, record_stats)
 
 
-def normalise_path(value):
-	"""Return a comparable absolute path for an optional hcom value."""
+def normalise_path(value: object) -> str:
+	"""Return a comparable absolute path for an optional hcom value.
+
+	Args:
+		value: Optional path value read from hcom.
+
+	Returns:
+		A comparable absolute path, or an empty string when absent.
+	"""
 	if not isinstance(value, str) or not value:
 		return ""
 
@@ -1190,8 +1640,16 @@ def normalise_path(value):
 		return os.path.abspath(os.path.expanduser(value))
 
 
-def hcom_role(tag, parent_name):
-	"""Extract the repository-scoped role suffix from an hcom label."""
+def hcom_role(tag: object, parent_name: object) -> str:
+	"""Extract the repository-scoped role suffix from an hcom label.
+
+	Args:
+		tag: Optional hcom tag.
+		parent_name: Optional parent agent name used as fallback.
+
+	Returns:
+		The repository-scoped role suffix, or ``unattributed`` when absent.
+	"""
 	value = tag or parent_name or ""
 	if not isinstance(value, str) or not value:
 		return "unattributed"
@@ -1200,7 +1658,11 @@ def hcom_role(tag, parent_name):
 
 
 def load_hcom_labels() -> tuple[dict[str, HcomLabel], dict[str, HcomLabel]]:
-	"""Load best-effort transcript labels from hcom's read-only database."""
+	"""Load best-effort transcript labels from hcom's read-only database.
+
+	Returns:
+		Mappings keyed by session id and normalised transcript path.
+	"""
 	by_session_id: dict[str, HcomLabel] = {}
 	by_path: dict[str, HcomLabel] = {}
 
@@ -1244,8 +1706,17 @@ def apply_hcom_label(
 	session: Session,
 	by_session_id: dict[str, HcomLabel],
 	by_path: dict[str, HcomLabel],
-):
-	"""Join one parsed session to hcom, retaining an explicit fallback label."""
+) -> None:
+	"""Join one parsed session to hcom, retaining an explicit fallback label.
+
+	Args:
+		session: Parsed session receiving its hcom label.
+		by_session_id: Labels indexed by transcript session id.
+		by_path: Labels indexed by normalised transcript path.
+
+	Returns:
+		None. The session hcom label is updated in place when matched.
+	"""
 	label = by_path.get(normalise_path(session["transcript_path"]))
 	if label is None:
 		label = by_session_id.get(session["session_id"])
@@ -1254,8 +1725,16 @@ def apply_hcom_label(
 		session["hcom"] = dict(label)
 
 
-def ratio(numerator, denominator):
-	"""Return a stable ratio, or None when the denominator is zero."""
+def ratio(numerator: int, denominator: int) -> float | None:
+	"""Return a stable ratio, or None when the denominator is zero.
+
+	Args:
+		numerator: Ratio numerator.
+		denominator: Ratio denominator.
+
+	Returns:
+		The ratio rounded to six decimal places, or None for a zero denominator.
+	"""
 	if not denominator:
 		return None
 
@@ -1263,7 +1742,15 @@ def ratio(numerator, denominator):
 
 
 def ratio_data(numerator: int, denominator: int) -> RatioData:
-	"""Return ratio inputs as well as the calculated ratio for JSON consumers."""
+	"""Return ratio inputs as well as the calculated ratio for JSON consumers.
+
+	Args:
+		numerator: Ratio numerator in tokens.
+		denominator: Ratio denominator in tokens.
+
+	Returns:
+		A serialisable ratio object containing both inputs and the result.
+	"""
 	return {
 		"numerator_tokens": numerator,
 		"denominator_tokens": denominator,
@@ -1277,8 +1764,19 @@ def add_group(
 	tool: str,
 	session_count: int,
 	tokens: TokenTotals,
-):
-	"""Add a session or event aggregate to a grouped report section."""
+) -> None:
+	"""Add a session or event aggregate to a grouped report section.
+
+	Args:
+		group: Group receiving the aggregate.
+		key: Grouping key for the aggregate.
+		tool: Runtime name for the aggregate.
+		session_count: Number of sessions represented by the aggregate.
+		tokens: Normalised token totals to add.
+
+	Returns:
+		None. The grouped aggregate is updated in place.
+	"""
 	row = group.setdefault(key, {})
 	tool_row = row.setdefault(
 		tool,
@@ -1294,7 +1792,14 @@ def add_group(
 def aggregate(
 	sessions: list[Session],
 ) -> Sections:
-	"""Build all report breakdowns from parsed sessions."""
+	"""Build all report breakdowns from parsed sessions.
+
+	Args:
+		sessions: Parsed sessions to aggregate.
+
+	Returns:
+		Tool, model, day, project, and hcom-role report breakdowns.
+	"""
 	by_tool: dict[str, AggregateRow] = {
 		tool: {
 			"session_count": 0,
@@ -1342,7 +1847,14 @@ def aggregate(
 
 
 def aggregate_driver_ledger(sessions: list[Session]) -> DriverReconciliation:
-	"""Combine session driver rows into one ranked ledger and reconciliation."""
+	"""Combine session driver rows into one ranked ledger and reconciliation.
+
+	Args:
+		sessions: Parsed sessions whose driver ledgers should be combined.
+
+	Returns:
+		The ranked aggregate ledger and reconciliation counts.
+	"""
 	rows: dict[tuple[str, str], DriverLedgerRow] = {}
 	tool_call_count = 0
 	unattributed_count = 0
@@ -1385,26 +1897,54 @@ def aggregate_driver_ledger(sessions: list[Session]) -> DriverReconciliation:
 	}
 
 
-def display_token_count(tokens):
-	"""Format a token count for the Markdown report."""
+def display_token_count(tokens: int) -> str:
+	"""Format a token count for the Markdown report.
+
+	Args:
+		tokens: Token count to format.
+
+	Returns:
+		The count with thousands separators.
+	"""
 	return f"{tokens:,}"
 
 
-def display_path(value):
-	"""Keep grouped paths safe in a Markdown table."""
+def display_path(value: object) -> str:
+	"""Keep grouped paths safe in a Markdown table.
+
+	Args:
+		value: Path or other value to display.
+
+	Returns:
+		A string with Markdown table separators escaped.
+	"""
 	return str(value).replace("|", "\\|").replace("\n", " ")
 
 
-def format_ratio(data):
-	"""Format a ratio row for Markdown."""
+def format_ratio(data: RatioData) -> str:
+	"""Format a ratio row for Markdown.
+
+	Args:
+		data: Ratio object containing the calculated value.
+
+	Returns:
+		A percentage string, or ``n/a`` when no ratio is available.
+	"""
 	if data["ratio"] is None:
 		return "n/a"
 
 	return f"{data['ratio'] * 100:.2f}%"
 
 
-def markdown_table_for_group(group: Group):
-	"""Render grouped token totals as a deterministic Markdown table."""
+def markdown_table_for_group(group: Group) -> list[str]:
+	"""Render grouped token totals as a deterministic Markdown table.
+
+	Args:
+		group: Grouped token totals to render.
+
+	Returns:
+		Markdown table lines, or a no-data line when the group is empty.
+	"""
 	lines = [
 		"| Group | Tool | Sessions | Total tokens |",
 		"| --- | --- | ---: | ---: |",
@@ -1427,10 +1967,21 @@ def markdown_table_for_group(group: Group):
 def markdown_driver_table(
 	rows: list[DriverLedgerRow],
 	unattributed: Unattributed,
-):
-	"""Render ranked driver rows without including raw transcript payloads."""
+) -> list[str]:
+	"""Render ranked driver rows without including raw transcript payloads.
+
+	Args:
+		rows: Ranked attributed driver rows to render.
+		unattributed: Aggregate row for calls without a classification.
+
+	Returns:
+		Markdown table lines, or a no-data line when no calls exist.
+	"""
 	lines = [
-		"| Rank | Category | Key | Count | Payload estimate (tokens) | Method | Failures | Retries | Repeated |",
+		(
+			"| Rank | Category | Key | Count | Payload estimate (tokens) | "
+			"Method | Failures | Retries | Repeated |"
+		),
 		"| ---: | --- | --- | ---: | ---: | --- | ---: | ---: | --- |",
 	]
 
@@ -1452,7 +2003,14 @@ def markdown_driver_table(
 
 
 def render_window_section(report: Report) -> list[str]:
-	"""Render the report window, empty-window, and partial-data sections."""
+	"""Render the report window, empty-window, and partial-data sections.
+
+	Args:
+		report: Serialised report containing window and partial-data details.
+
+	Returns:
+		Markdown lines for the report window sections.
+	"""
 	window = report["window"]
 	lines = [
 		"## Window (tokens, not cost)",
@@ -1494,7 +2052,14 @@ def render_window_section(report: Report) -> list[str]:
 
 
 def render_tool_totals_section(report: Report) -> list[str]:
-	"""Render token totals grouped by runtime tool."""
+	"""Render token totals grouped by runtime tool.
+
+	Args:
+		report: Serialised report containing tool totals.
+
+	Returns:
+		Markdown lines for the tool totals section.
+	"""
 	by_tool = report["totals_by_tool"]
 	lines = [
 		"## Totals by tool (tokens, not cost)",
@@ -1522,7 +2087,14 @@ def render_tool_totals_section(report: Report) -> list[str]:
 
 
 def render_group_tables_section(report: Report) -> list[str]:
-	"""Render model, day, project, and hcom role totals."""
+	"""Render model, day, project, and hcom role totals.
+
+	Args:
+		report: Serialised report containing grouped totals.
+
+	Returns:
+		Markdown lines for the grouped totals sections.
+	"""
 	lines = ["", "## Totals by model (tokens, not cost)", ""]
 	for line in markdown_table_for_group(report["totals_by_model"]["Claude"]):
 		lines.append(line)
@@ -1540,7 +2112,14 @@ def render_group_tables_section(report: Report) -> list[str]:
 
 
 def render_top_sessions_section(report: Report) -> list[str]:
-	"""Render the top sessions ranked by total tokens."""
+	"""Render the top sessions ranked by total tokens.
+
+	Args:
+		report: Serialised report containing ranked sessions.
+
+	Returns:
+		Markdown lines for the top sessions section.
+	"""
 	lines = [
 		"",
 		"## Top 10 sessions by total tokens (tokens, not cost)",
@@ -1565,7 +2144,14 @@ def render_top_sessions_section(report: Report) -> list[str]:
 
 
 def render_driver_views_section(report: Report) -> list[str]:
-	"""Render aggregate and per-session driver ledger views."""
+	"""Render aggregate and per-session driver ledger views.
+
+	Args:
+		report: Serialised report containing aggregate and session ledgers.
+
+	Returns:
+		Markdown lines for the driver ledger sections.
+	"""
 	lines = [
 		"",
 		"## Driver ledger (ranked aggregate)",
@@ -1608,7 +2194,14 @@ def render_driver_views_section(report: Report) -> list[str]:
 
 
 def render_ratios_section(report: Report) -> list[str]:
-	"""Render Claude cache-read and Codex reasoning-output ratios."""
+	"""Render Claude cache-read and Codex reasoning-output ratios.
+
+	Args:
+		report: Serialised report containing runtime ratio data.
+
+	Returns:
+		Markdown lines for the ratio sections.
+	"""
 	by_tool = report["totals_by_tool"]
 	lines = ["", "## Claude cache-read ratio (tokens, not cost)", ""]
 	claude_ratio = by_tool["Claude"].get("cache_read_ratio")
@@ -1636,7 +2229,11 @@ def render_ratios_section(report: Report) -> list[str]:
 
 
 def render_semantic_notes_section() -> list[str]:
-	"""Render the report's token-counting semantics note."""
+	"""Render the report's token-counting semantics note.
+
+	Returns:
+		Markdown lines describing Codex token-counting semantics.
+	"""
 	return [
 		"",
 		"## Codex counting semantics (tokens, not cost)",
@@ -1647,8 +2244,15 @@ def render_semantic_notes_section() -> list[str]:
 	]
 
 
-def render_markdown(report: Report):
-	"""Render the machine-readable report as concise Markdown."""
+def render_markdown(report: Report) -> str:
+	"""Render the machine-readable report as concise Markdown.
+
+	Args:
+		report: Serialised report to render.
+
+	Returns:
+		The complete Markdown report with a trailing newline.
+	"""
 	lines = [
 		"# Token usage report",
 		"",
@@ -1667,7 +2271,16 @@ def render_markdown(report: Report):
 
 
 def make_report(sessions: list[Session], window: Window, sections: Sections) -> Report:
-	"""Build the deterministic JSON report object."""
+	"""Build the deterministic JSON report object.
+
+	Args:
+		sessions: Parsed sessions included in the selected window.
+		window: UTC window and display bounds for the report.
+		sections: Precomputed report breakdowns.
+
+	Returns:
+		The deterministic serialisable report object.
+	"""
 	start, end, display_since, display_until = window
 	by_tool, by_model, by_day, by_project, by_role = sections
 	driver_data = aggregate_driver_ledger(sessions)
@@ -1681,6 +2294,15 @@ def make_report(sessions: list[Session], window: Window, sections: Sections) -> 
 	)
 
 	def session_report(session: Session, rank: int) -> SessionReport:
+		"""Build one serialised session row.
+
+		Args:
+			session: Parsed session to serialise.
+			rank: One-based ranking for the session.
+
+		Returns:
+			The serialised session row.
+		"""
 		return {
 			"rank": rank,
 			"tool": session["tool"],
@@ -1704,9 +2326,14 @@ def make_report(sessions: list[Session], window: Window, sections: Sections) -> 
 	]
 	top_sessions = all_sessions[:10]
 
-	for tool in TOOLS:
-		if by_tool[tool]["empty"]:
-			by_tool[tool].pop("tokens", None)
+	totals_by_tool: dict[str, AggregateRow] = {
+		tool: {
+			field: value
+			for field, value in row.items()
+			if not (row["empty"] and field == "tokens")
+		}
+		for tool, row in by_tool.items()
+	}
 
 	return {
 		"units": "tokens, not cost",
@@ -1734,7 +2361,7 @@ def make_report(sessions: list[Session], window: Window, sections: Sections) -> 
 			},
 		},
 		"session_count": len(sessions),
-		"totals_by_tool": by_tool,
+		"totals_by_tool": totals_by_tool,
 		"totals_by_model": by_model,
 		"totals_by_day": by_day,
 		"totals_by_project": by_project,
@@ -1746,8 +2373,12 @@ def make_report(sessions: list[Session], window: Window, sections: Sections) -> 
 	}
 
 
-def parse_arguments():
-	"""Parse command-line bounds and retain the parser for validation errors."""
+def parse_arguments() -> argparse.Namespace:
+	"""Parse command-line bounds and retain the parser for validation errors.
+
+	Returns:
+		Parsed command-line options with the parser attached for validation errors.
+	"""
 	parser = argparse.ArgumentParser(description=__doc__)
 	parser.add_argument("--since", type=parse_date, help="inclusive UTC date, YYYY-MM-DD")
 	parser.add_argument("--until", type=parse_date, help="inclusive UTC date, YYYY-MM-DD")
@@ -1757,8 +2388,12 @@ def parse_arguments():
 	return arguments
 
 
-def transcript_paths():
-	"""Return sorted Claude and Codex transcript paths that currently exist."""
+def transcript_paths() -> tuple[list[Path], list[Path]]:
+	"""Return sorted Claude and Codex transcript paths that currently exist.
+
+	Returns:
+		Sorted Claude paths followed by sorted Codex rollout paths.
+	"""
 	claude_paths = sorted(CLAUDE_ROOT.rglob("*.jsonl")) if CLAUDE_ROOT.is_dir() else []
 	codex_paths = []
 	seen = set()
@@ -1775,8 +2410,15 @@ def transcript_paths():
 	return claude_paths, sorted(codex_paths)
 
 
-def write_report(report: Report):
-	"""Overwrite the fixed Markdown and JSON report paths."""
+def write_report(report: Report) -> tuple[Path, Path]:
+	"""Overwrite the fixed Markdown and JSON report paths.
+
+	Args:
+		report: Serialised report to write.
+
+	Returns:
+		Markdown path followed by JSON path.
+	"""
 	REPORT_DIRECTORY.mkdir(parents=True, exist_ok=True)
 	json_path = REPORT_DIRECTORY / "latest.json"
 	markdown_path = REPORT_DIRECTORY / "latest.md"
@@ -1790,8 +2432,12 @@ def write_report(report: Report):
 	return markdown_path, json_path
 
 
-def main():
-	"""Read transcripts, write both reports, and print only a bounded summary."""
+def main() -> None:
+	"""Read transcripts, write both reports, and print only a bounded summary.
+
+	Returns:
+		None. Reports are written and a bounded summary is printed.
+	"""
 	arguments = parse_arguments()
 	window = build_window(arguments)
 	start, end, _, _ = window
