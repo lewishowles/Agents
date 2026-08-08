@@ -50,19 +50,6 @@ CODEX_ROOTS = (
 )
 HCOM_DATABASE = Path("~/.hcom/hcom.db").expanduser()
 REPORT_DIRECTORY = REPO_ROOT / ".agent/audits/usage"
-CLAUDE_FIELDS = (
-	"input_tokens",
-	"cache_creation_input_tokens",
-	"cache_read_input_tokens",
-	"output_tokens",
-)
-CODEX_FIELDS = (
-	"input_tokens",
-	"cached_input_tokens",
-	"reasoning_output_tokens",
-	"output_tokens",
-	"total_tokens",
-)
 TOOLS = ("Claude", "Codex")
 CLAUDE_RECORD_TYPES = (
 	"assistant",
@@ -103,6 +90,43 @@ class TokenTotals(TypedDict, total=False):
 	output_tokens: int
 	total_tokens: int
 	total_input_tokens: int
+
+
+class TokenSchema(TypedDict):
+	"""Define source and derived token fields for one runtime."""
+
+	fields: tuple[str, ...]
+	total_input_fields: tuple[str, ...]
+
+
+TOKEN_SCHEMAS: dict[str, TokenSchema] = {
+	"Claude": {
+		"fields": (
+			"input_tokens",
+			"cache_creation_input_tokens",
+			"cache_read_input_tokens",
+			"output_tokens",
+		),
+		"total_input_fields": (
+			"input_tokens",
+			"cache_creation_input_tokens",
+			"cache_read_input_tokens",
+		),
+	},
+	"Codex": {
+		"fields": (
+			"input_tokens",
+			"cached_input_tokens",
+			"reasoning_output_tokens",
+			"output_tokens",
+			"total_tokens",
+		),
+		"total_input_fields": (),
+	},
+}
+
+# Keep the Codex field order available to the existing audit helper that consumes it.
+CODEX_FIELDS = TOKEN_SCHEMAS["Codex"]["fields"]
 
 
 class DriverClassification(TypedDict):
@@ -591,6 +615,38 @@ def new_driver_call(name, tool_input: dict[str, object]) -> DriverCall:
 	}
 
 
+def new_session_parse_state() -> tuple[dict[str, DriverCall], RecordStats]:
+	"""Create driver correlation and record-skipping state for one session."""
+	return {}, {"skipped_record_count": 0}
+
+
+def append_driver_call(
+	session: Session,
+	calls_by_id: dict[str, DriverCall],
+	call: DriverCall,
+	call_id: object = None,
+):
+	"""Append one in-window driver call and register its response identifier."""
+	session["_driver_calls"].append(call)
+	session["tool_call_count"] += 1
+
+	if isinstance(call_id, str) and call_id:
+		calls_by_id[call_id] = call
+
+
+def update_driver_call_result(
+	calls_by_id: dict[str, DriverCall],
+	call_id: object,
+	result: object,
+	failed: bool,
+):
+	"""Attach one correlated result to a previously recorded driver call."""
+	call = calls_by_id.get(call_id)
+	if call is not None:
+		call["result"] = result_text(result)
+		call["failed"] = failed
+
+
 def estimated_payload_tokens(call):
 	"""Estimate one driver payload from bounded command, target, and result text."""
 	classification = call["classification"]
@@ -671,31 +727,32 @@ def finalise_driver_ledger(session: Session):
 	)
 
 
+def token_schema(tool: str) -> TokenSchema:
+	"""Return the token field schema for one runtime."""
+	return TOKEN_SCHEMAS.get(tool, TOKEN_SCHEMAS["Codex"])
+
+
 def empty_totals(tool: str) -> TokenTotals:
 	"""Create the token fields used by one tool's aggregate."""
-	fields = CLAUDE_FIELDS if tool == "Claude" else CODEX_FIELDS
-	totals = {field: 0 for field in fields}
+	schema = token_schema(tool)
+	totals = {field: 0 for field in schema["fields"]}
 	totals["total_tokens"] = 0
 
-	if tool == "Claude":
-		totals["total_input_tokens"] = 0
+	for field in schema["total_input_fields"]:
+		totals[field] = 0
 
 	return totals
 
 
 def usage_totals(usage: dict[str, object], tool: str) -> TokenTotals:
 	"""Normalise one Claude or Codex usage object into token fields."""
-	fields = CLAUDE_FIELDS if tool == "Claude" else CODEX_FIELDS
-	values = {field: number(usage.get(field)) for field in fields}
+	schema = token_schema(tool)
+	values = {field: number(usage.get(field)) for field in schema["fields"]}
+	total_input_fields = schema["total_input_fields"]
 
-	if tool == "Claude":
+	if total_input_fields:
 		values["total_input_tokens"] = sum(
-			values[field]
-			for field in (
-				"input_tokens",
-				"cache_creation_input_tokens",
-				"cache_read_input_tokens",
-			)
+			values[field] for field in total_input_fields
 		)
 		values["total_tokens"] = values["total_input_tokens"] + values["output_tokens"]
 	elif not values["total_tokens"]:
@@ -706,18 +763,14 @@ def usage_totals(usage: dict[str, object], tool: str) -> TokenTotals:
 
 def add_totals(target: TokenTotals, source: TokenTotals, tool: str):
 	"""Add one normalised usage object to an aggregate."""
+	schema = token_schema(tool)
 	for field, value in source.items():
-		if field != "total_input_tokens" or tool == "Claude":
+		if field != "total_input_tokens" or schema["total_input_fields"]:
 			target[field] = target.get(field, 0) + value
 
-	if tool == "Claude":
+	if schema["total_input_fields"]:
 		target["total_input_tokens"] = sum(
-			target[field]
-			for field in (
-				"input_tokens",
-				"cache_creation_input_tokens",
-				"cache_read_input_tokens",
-			)
+			target[field] for field in schema["total_input_fields"]
 		)
 		target["total_tokens"] = target["total_input_tokens"] + target["output_tokens"]
 
@@ -764,9 +817,107 @@ def new_session(tool: str, session_id: str, path: Path, project_directory: str) 
 	}
 
 
+def finalise_session(session: Session, record_stats: RecordStats) -> Session | None:
+	"""Attach parser bookkeeping and omit sessions with no usage or skipped records."""
+	session["skipped_record_count"] = record_stats["skipped_record_count"]
+	finalise_driver_ledger(session)
+
+	if session["tokens"]["total_tokens"] or session["skipped_record_count"]:
+		return session
+
+	return None
+
+
 def in_window(timestamp, start, end):
 	"""Return whether a timestamp belongs to the selected half-open window."""
 	return timestamp is not None and start <= timestamp < end
+
+
+def update_claude_metadata(session: Session, record: dict[str, object]):
+	"""Update the project directory from one Claude record."""
+	cwd = record.get("cwd")
+	if isinstance(cwd, str) and cwd:
+		session["project_directory"] = cwd
+
+
+def append_claude_hook_call(
+	session: Session,
+	calls_by_id: dict[str, DriverCall],
+	record: dict[str, object],
+	timestamp,
+	start: datetime.datetime,
+	end: datetime.datetime,
+):
+	"""Record one in-window Claude hook attachment as a driver call."""
+	attachment = record.get("attachment")
+	if not (
+		isinstance(attachment, dict)
+		and attachment.get("type") == "hook_success"
+		and in_window(timestamp, start, end)
+	):
+		return
+
+	hook_name = safe_text(attachment.get("hookName"))
+	if not hook_name:
+		return
+
+	call = new_driver_call("Hook", {"name": hook_name})
+	call["result"] = result_text(attachment.get("stdout"))
+	call["failed"] = attachment.get("exitCode") not in (None, 0, "0")
+	append_driver_call(session, calls_by_id, call)
+
+
+def process_claude_tool_blocks(
+	session: Session,
+	calls_by_id: dict[str, DriverCall],
+	record: dict[str, object],
+	timestamp,
+	start: datetime.datetime,
+	end: datetime.datetime,
+):
+	"""Correlate Claude tool calls and their results for one record."""
+	for block in blocks(record):
+		if block.get("type") == "tool_use" and in_window(timestamp, start, end):
+			call = new_driver_call(block.get("name"), object_input(block.get("input") or {}))
+			append_driver_call(session, calls_by_id, call, block.get("id"))
+		elif block.get("type") == "tool_result":
+			update_driver_call_result(
+				calls_by_id,
+				block.get("tool_use_id"),
+				block.get("content"),
+				tool_result_failed(block),
+			)
+
+
+def claude_usage_event(
+	record: dict[str, object],
+	timestamp,
+	start: datetime.datetime,
+	end: datetime.datetime,
+):
+	"""Return one in-window Claude usage event with its model and day."""
+	if record.get("type") != "assistant":
+		return None
+
+	message = record.get("message") or {}
+	# Sidechain (subagent) usage lives only inside its own record here, never
+	# duplicated in the parent's usage, so it is counted rather than filtered.
+	usage = message.get("usage")
+	if not isinstance(usage, dict) or not in_window(timestamp, start, end):
+		return None
+
+	model = message.get("model")
+	model = model if isinstance(model, str) and model else "unknown"
+	return usage, model, timestamp.date().isoformat()
+
+
+def aggregate_claude_usage(session: Session, event):
+	"""Add one parsed Claude usage event to the session totals."""
+	if event is None:
+		return
+
+	usage, model, day = event
+	add_session_usage(session, usage, model, day, "Claude")
 
 
 def parse_claude_session(
@@ -778,66 +929,16 @@ def parse_claude_session(
 	session_id = path.stem
 	project_directory = path.parent.name
 	session = new_session("Claude", session_id, path, project_directory)
-	calls_by_id: dict[str, DriverCall] = {}
-	record_stats: RecordStats = {"skipped_record_count": 0}
+	calls_by_id, record_stats = new_session_parse_state()
 
 	for record in records(path, CLAUDE_RECORD_TYPES, record_stats):
-		cwd = record.get("cwd")
-		if isinstance(cwd, str) and cwd:
-			session["project_directory"] = cwd
-
-		message = record.get("message") or {}
+		update_claude_metadata(session, record)
 		timestamp = parse_timestamp(record.get("timestamp"))
-		attachment = record.get("attachment")
-		if (
-			isinstance(attachment, dict)
-			and attachment.get("type") == "hook_success"
-			and in_window(timestamp, start, end)
-		):
-			hook_name = safe_text(attachment.get("hookName"))
-			if hook_name:
-				call = new_driver_call("Hook", {"name": hook_name})
-				call["result"] = result_text(attachment.get("stdout"))
-				call["failed"] = attachment.get("exitCode") not in (None, 0, "0")
-				session["_driver_calls"].append(call)
-				session["tool_call_count"] += 1
+		append_claude_hook_call(session, calls_by_id, record, timestamp, start, end)
+		process_claude_tool_blocks(session, calls_by_id, record, timestamp, start, end)
+		aggregate_claude_usage(session, claude_usage_event(record, timestamp, start, end))
 
-		for block in blocks(record):
-			if block.get("type") == "tool_use" and in_window(timestamp, start, end):
-				call = new_driver_call(block.get("name"), object_input(block.get("input") or {}))
-				session["_driver_calls"].append(call)
-				session["tool_call_count"] += 1
-				call_id = block.get("id")
-				if isinstance(call_id, str) and call_id:
-					calls_by_id[call_id] = call
-			elif block.get("type") == "tool_result":
-				call_id = block.get("tool_use_id")
-				call = calls_by_id.get(call_id)
-				if call is not None:
-					call["result"] = result_text(block.get("content"))
-					call["failed"] = tool_result_failed(block)
-
-		if record.get("type") != "assistant":
-			continue
-
-		# Sidechain (subagent) usage lives only inside its own record here, never
-		# duplicated in the parent's usage, so it is counted rather than filtered.
-		usage = message.get("usage")
-		if not isinstance(usage, dict):
-			continue
-
-		if not in_window(timestamp, start, end):
-			continue
-
-		model = message.get("model")
-		model = model if isinstance(model, str) and model else "unknown"
-		add_session_usage(session, usage, model, timestamp.date().isoformat(), "Claude")
-
-	session["skipped_record_count"] = record_stats["skipped_record_count"]
-	finalise_driver_ledger(session)
-	if session["tokens"]["total_tokens"] or session["skipped_record_count"]:
-		return session
-	return None
+	return finalise_session(session, record_stats)
 
 
 def codex_delta(last_usage, total_usage, previous_total) -> TokenTotals | None:
@@ -857,6 +958,125 @@ def codex_delta(last_usage, total_usage, previous_total) -> TokenTotals | None:
 	return None
 
 
+def update_codex_metadata(
+	session: Session,
+	record: dict[str, object],
+	model: str,
+) -> str:
+	"""Update Codex session metadata and return the current model."""
+	payload = record.get("payload")
+	if not isinstance(payload, dict):
+		return model
+
+	record_type = record.get("type")
+	if record_type == "session_meta":
+		metadata_session_id = payload.get("session_id") or payload.get("id")
+		if isinstance(metadata_session_id, str) and metadata_session_id:
+			session["session_id"] = metadata_session_id
+
+		cwd = payload.get("cwd")
+		if isinstance(cwd, str) and cwd:
+			session["project_directory"] = cwd
+	elif record_type == "turn_context":
+		context_model = payload.get("model")
+		if isinstance(context_model, str) and context_model:
+			model = context_model
+
+		cwd = payload.get("cwd")
+		if isinstance(cwd, str) and cwd:
+			session["project_directory"] = cwd
+
+	return model
+
+
+def decode_codex_tool_call(payload: dict[str, object]) -> tuple[object, dict[str, object]]:
+	"""Decode a Codex response item, including embedded JavaScript calls."""
+	name = payload.get("name") or payload.get("tool_name")
+	arguments = payload.get("arguments", payload.get("input", {}))
+	tool_input = object_input(arguments)
+	if payload.get("type") == "custom_tool_call":
+		embedded = embedded_tool_call(arguments)
+		if embedded is not None:
+			return embedded
+
+	return name, tool_input
+
+
+def process_codex_response_item(
+	session: Session,
+	calls_by_id: dict[str, DriverCall],
+	record: dict[str, object],
+	timestamp,
+	start: datetime.datetime,
+	end: datetime.datetime,
+):
+	"""Correlate Codex response-item tool calls and their results."""
+	if record.get("type") != "response_item":
+		return
+
+	payload = record.get("payload")
+	if not isinstance(payload, dict):
+		return
+
+	response_type = payload.get("type")
+	if response_type in ("function_call", "custom_tool_call"):
+		if not in_window(timestamp, start, end):
+			return
+
+		name, tool_input = decode_codex_tool_call(payload)
+		call = new_driver_call(name, tool_input)
+		call_id = payload.get("call_id") or payload.get("id")
+		append_driver_call(session, calls_by_id, call, call_id)
+	elif response_type in ("function_call_output", "custom_tool_call_output"):
+		call_id = payload.get("call_id") or payload.get("id")
+		update_driver_call_result(
+			calls_by_id,
+			call_id,
+			payload.get("output"),
+			tool_result_failed(payload),
+		)
+
+
+def codex_usage_event(
+	record: dict[str, object],
+	previous_total: dict[str, object] | None,
+) -> tuple[TokenTotals | None, dict[str, object] | None]:
+	"""Return a Codex token delta and the next cumulative total."""
+	if record.get("type") != "event_msg":
+		return None, previous_total
+
+	payload = record.get("payload")
+	if not isinstance(payload, dict) or payload.get("type") != "token_count":
+		return None, previous_total
+
+	info = payload.get("info")
+	if not isinstance(info, dict):
+		info = payload
+
+	total_usage = info.get("total_token_usage")
+	last_usage = info.get("last_token_usage")
+	delta = codex_delta(last_usage, total_usage, previous_total)
+	if isinstance(total_usage, dict):
+		previous_total = total_usage
+
+	return delta, previous_total
+
+
+def aggregate_codex_usage(
+	session: Session,
+	delta: TokenTotals | None,
+	model: str,
+	timestamp,
+	start: datetime.datetime,
+	end: datetime.datetime,
+):
+	"""Add one in-window Codex token delta to the session totals."""
+	if not in_window(timestamp, start, end) or not isinstance(delta, dict):
+		return
+
+	add_session_usage(session, delta, model, timestamp.date().isoformat(), "Codex")
+
+
 def parse_codex_session(
 	path: Path,
 	start: datetime.datetime,
@@ -870,81 +1090,16 @@ def parse_codex_session(
 	session = new_session("Codex", session_id, path, "unknown")
 	model = "unknown"
 	previous_total = None
-	calls_by_id: dict[str, DriverCall] = {}
-	record_stats: RecordStats = {"skipped_record_count": 0}
+	calls_by_id, record_stats = new_session_parse_state()
 
 	for record in records(path, CODEX_RECORD_TYPES, record_stats):
-		payload = record.get("payload")
-		if not isinstance(payload, dict):
-			payload = {}
-		record_type = record.get("type")
+		model = update_codex_metadata(session, record, model)
 		timestamp = parse_timestamp(record.get("timestamp"))
+		process_codex_response_item(session, calls_by_id, record, timestamp, start, end)
+		delta, previous_total = codex_usage_event(record, previous_total)
+		aggregate_codex_usage(session, delta, model, timestamp, start, end)
 
-		if record_type == "session_meta":
-			metadata_session_id = payload.get("session_id") or payload.get("id")
-			if isinstance(metadata_session_id, str) and metadata_session_id:
-				session["session_id"] = metadata_session_id
-
-			cwd = payload.get("cwd")
-			if isinstance(cwd, str) and cwd:
-				session["project_directory"] = cwd
-
-		elif record_type == "turn_context":
-			context_model = payload.get("model")
-			if isinstance(context_model, str) and context_model:
-				model = context_model
-
-			cwd = payload.get("cwd")
-			if isinstance(cwd, str) and cwd:
-				session["project_directory"] = cwd
-
-		if record_type == "response_item":
-			response_type = payload.get("type")
-			if response_type in ("function_call", "custom_tool_call"):
-				name = payload.get("name") or payload.get("tool_name")
-				arguments = payload.get("arguments", payload.get("input", {}))
-				tool_input = object_input(arguments)
-				if response_type == "custom_tool_call":
-					embedded = embedded_tool_call(arguments)
-					if embedded is not None:
-						name, tool_input = embedded
-
-				if in_window(timestamp, start, end):
-					call = new_driver_call(name, tool_input)
-					session["_driver_calls"].append(call)
-					session["tool_call_count"] += 1
-					call_id = payload.get("call_id") or payload.get("id")
-					if isinstance(call_id, str) and call_id:
-						calls_by_id[call_id] = call
-			elif response_type in ("function_call_output", "custom_tool_call_output"):
-				call = calls_by_id.get(payload.get("call_id") or payload.get("id"))
-				if call is not None:
-					call["result"] = result_text(payload.get("output"))
-					call["failed"] = tool_result_failed(payload)
-
-		if record_type != "event_msg" or payload.get("type") != "token_count":
-			continue
-
-		info = payload.get("info")
-		if not isinstance(info, dict):
-			info = payload
-
-		total_usage = info.get("total_token_usage")
-		last_usage = info.get("last_token_usage")
-		delta = codex_delta(last_usage, total_usage, previous_total)
-		if isinstance(total_usage, dict):
-			previous_total = total_usage
-
-		if not in_window(timestamp, start, end) or not isinstance(delta, dict):
-			continue
-
-		add_session_usage(session, delta, model, timestamp.date().isoformat(), "Codex")
-
-	session["skipped_record_count"] = record_stats["skipped_record_count"]
-	finalise_driver_ledger(session)
-	if session["tokens"]["total_tokens"] or session["skipped_record_count"]:
-		return session
-	return None
+	return finalise_session(session, record_stats)
 
 
 def normalise_path(value):
