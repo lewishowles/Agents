@@ -91,6 +91,7 @@ run_check "dead path refs"        python3 "$REPO_DIR/scripts/agent-tools/markdow
 run_check "script command refs"   python3 "$REPO_DIR/scripts/agent-tools/markdown-claims.py" --mode commands
 run_check "setup drift"           python3 "$REPO_DIR/scripts/validate/check-setup-drift.py"
 run_check "staleness"             python3 "$REPO_DIR/scripts/validate/check-staleness.py"
+run_check "staleness regression"  python3 "$REPO_DIR/tests/check-staleness.py"
 
 cli_group_end
 

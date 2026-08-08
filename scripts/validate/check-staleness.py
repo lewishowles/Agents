@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Flag skills and rules files unchanged for too long.
 # Warns when a file has not been committed in N days or N repo commits.
-# Always exits 0 — staleness is a warning signal, not a hard failure.
+# Staleness findings are advisory; an invalid source inventory fails validation.
 
 from __future__ import annotations
 
@@ -17,17 +17,27 @@ DEFAULT_DAYS = 45
 DEFAULT_COMMITS = 200
 
 SCAN_GLOBS = [
-	("rules", "*.md"),
-	("skills", "**/SKILL.body.md"),
+	("src/rules", "*.md"),
+	("src/skills", "**/SKILL.body.md"),
 ]
 
 
+class SourceInventoryError(RuntimeError):
+	"""Raised when a configured source family contains no files."""
+
+
 def collect_files() -> list[Path]:
+	"""Collect files from every configured source family."""
+
 	files = []
 	for directory, pattern in SCAN_GLOBS:
 		d = REPO_ROOT / directory
-		if d.exists():
-			files.extend(sorted(d.glob(pattern)))
+		matches = sorted(path for path in d.glob(pattern) if path.is_file()) if d.is_dir() else []
+		if not matches:
+			raise SourceInventoryError(
+				f"Configured staleness source family is empty: {d} ({pattern})"
+			)
+		files.extend(matches)
 	return files
 
 
@@ -66,14 +76,19 @@ def commits_since(commit_hash: str) -> int:
 		return 0
 
 
-def main() -> None:
+def main() -> int:
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--days", type=int, default=DEFAULT_DAYS)
 	parser.add_argument("--commits", type=int, default=DEFAULT_COMMITS)
 	args = parser.parse_args()
 
 	now = int(time.time())
-	files = collect_files()
+	try:
+		files = collect_files()
+	except SourceInventoryError as error:
+		print(f"ERROR: {error}", file=sys.stderr)
+		return 1
+
 	warnings = 0
 
 	for path in files:
@@ -93,6 +108,8 @@ def main() -> None:
 	if warnings:
 		print(f"  {warnings} stale file(s) — review for drift against current runtime behaviour")
 
+	return 0
+
 
 if __name__ == "__main__":
-	main()
+	raise SystemExit(main())
