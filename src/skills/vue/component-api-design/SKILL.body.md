@@ -38,7 +38,7 @@ Use the table to resolve competing interpretations before implementation. If a d
 - Avoid prop pairs that can drift apart; use one structured prop when values belong together.
 - Do not add props for content that belongs in slots.
 
-Follow Vue prop JSDoc: describe consumer inputs, not internals.
+For prop JSDoc, metadata, and user-facing docs, describe what the prop accepts and why a user would set it, not its internal mechanism. When the expected value is not obvious, include one concrete example.
 
 ## Slots
 
