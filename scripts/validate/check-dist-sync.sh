@@ -5,7 +5,7 @@
 
 set -euo pipefail
 
-source "$(cd "$(dirname "$0")/.." && pwd)/lib/validate.sh"
+source "$(cd "$(dirname "$0")/.." && pwd)/lib/validation-helpers.sh"
 
 REAL_REPO_DIR="$REPO_DIR"
 TMP_DIR=$(mktemp -d)

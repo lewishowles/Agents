@@ -1,7 +1,7 @@
 # Session audit scripts
 
 Read-only analysis over Claude Code and Codex transcripts. The scripts never write to transcripts.
-Generated reports and working data belong under `.agent/audits/`; `usage.py` overwrites its two
+Generated reports and working data belong under `.agent/audits/`; `token_usage_report.py` overwrites its two
 fixed report files under `.agent/audits/usage/`.
 
 Transcripts live at `~/.claude/projects/<encoded-project-path>/<session-id>.jsonl`, one JSON record
@@ -13,7 +13,7 @@ hcom write their own separate transcripts, so they appear as sessions rather tha
 All scripts default to a 21-day window measured from when they run, so figures drift as the window
 moves. Python 3 only, no dependencies.
 
-## usage.py
+## token_usage_report.py
 
 Aggregates token usage for Claude and Codex over a bounded UTC window. The report is deliberately
 mechanical: it reports facts and does not make cost-reduction recommendations. Every figure is
@@ -24,8 +24,8 @@ hook, MCP, and other tool activity, with safe targets, payload estimates, failur
 repetition markers.
 
 ```sh
-python3 scripts/audit/usage.py --days 7
-python3 scripts/audit/usage.py --since 2026-08-01 --until 2026-08-06
+python3 scripts/audit/token_usage_report.py --days 7
+python3 scripts/audit/token_usage_report.py --since 2026-08-01 --until 2026-08-06
 ```
 
 Set `CLAUDE_CONFIG_DIR` or `CODEX_HOME` to read transcripts from a non-default location; both

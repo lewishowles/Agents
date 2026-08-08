@@ -3,7 +3,7 @@
 
 set -euo pipefail
 
-source "$(cd "$(dirname "$0")/.." && pwd)/lib/validate.sh"
+source "$(cd "$(dirname "$0")/.." && pwd)/lib/validation-helpers.sh"
 
 validate_require_jq
 
@@ -44,4 +44,3 @@ while IFS= read -r -d '' fixture_file; do
 		fi
 	done < "$fixture_file"
 done < <(find "$REPO_DIR/tests/fixtures" \( -name "expected-skills.txt" -o -name "forbidden-skills.txt" \) -print0 | sort -z)
-

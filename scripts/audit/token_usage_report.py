@@ -26,13 +26,13 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 AUDIT_DIRECTORY = Path(__file__).resolve().parent
 
-# Both direct script execution and ``from scripts.audit import usage`` are
+# Both direct script execution and ``from scripts.audit import token_usage_report`` are
 # supported; each invocation style needs the sibling audit modules on sys.path.
 if str(AUDIT_DIRECTORY) not in sys.path:
 	sys.path.insert(0, str(AUDIT_DIRECTORY))
 
-from usage_driver import DRIVER_METHOD  # noqa: E402
-from usage_parsing import (  # noqa: E402
+from tool_call_attribution import DRIVER_METHOD  # noqa: E402
+from token_usage_parsing import (  # noqa: E402
 	CLAUDE_RECORD_TYPES,
 	add_totals,
 	empty_totals,
@@ -42,8 +42,8 @@ from usage_parsing import (  # noqa: E402
 	records,
 	usage_totals,
 )
-from usage_rendering import render_markdown  # noqa: E402
-from usage_types import (  # noqa: E402
+from token_usage_rendering import render_markdown  # noqa: E402
+from token_usage_types import (  # noqa: E402
 	AggregateRow,
 	DriverLedgerRow,
 	DriverReconciliation,

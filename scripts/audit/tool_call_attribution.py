@@ -6,7 +6,7 @@ import math
 
 from metrics import COMMAND_TEXT_LIMIT, RESULT_TEXT_LIMIT, classify_bash_command
 from redundancy import repeated_call_indexes
-from usage_types import (
+from token_usage_types import (
 	DriverCall,
 	DriverClassification,
 	DriverLedgerRow,

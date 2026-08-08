@@ -10,7 +10,7 @@ output=$(
 	cd "$REPO_DIR"
 	CLAUDE_CONFIG_DIR="$FIXTURE_DIR/claude" \
 	CODEX_HOME="$FIXTURE_DIR/codex" \
-	python3 scripts/audit/usage.py --since 2026-08-01 --until 2026-08-01 2>&1
+	python3 scripts/audit/token_usage_report.py --since 2026-08-01 --until 2026-08-01 2>&1
 )
 printf '%s\n' "$output" | tail -20
 
@@ -97,7 +97,7 @@ output=$(
 	cd "$REPO_DIR"
 	CLAUDE_CONFIG_DIR="$CASE2_FIXTURE_DIR/claude" \
 	CODEX_HOME="$CASE2_FIXTURE_DIR/codex" \
-	python3 scripts/audit/usage.py --since 2026-08-01 --until 2026-08-01 2>&1
+	python3 scripts/audit/token_usage_report.py --since 2026-08-01 --until 2026-08-01 2>&1
 )
 printf '%s\n' "$output" | tail -20
 
@@ -170,7 +170,7 @@ output=$(
 	cd "$REPO_DIR"
 	CLAUDE_CONFIG_DIR="$CASE3_FIXTURE_DIR/claude" \
 	CODEX_HOME="$CASE3_FIXTURE_DIR/codex" \
-	python3 scripts/audit/usage.py --since 2026-08-01 --until 2026-08-01 2>&1
+	python3 scripts/audit/token_usage_report.py --since 2026-08-01 --until 2026-08-01 2>&1
 )
 printf '%s\n' "$output" | tail -20
 
@@ -215,13 +215,13 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-from scripts.audit import usage
+from scripts.audit import token_usage_report
 
 
 with tempfile.TemporaryDirectory() as temporary_directory:
 	missing_path = Path(temporary_directory) / "missing.jsonl"
 	try:
-		list(usage.records(missing_path, usage.CLAUDE_RECORD_TYPES, {"skipped_record_count": 0}))
+		list(token_usage_report.records(missing_path, token_usage_report.CLAUDE_RECORD_TYPES, {"skipped_record_count": 0}))
 	except FileNotFoundError:
 		pass
 	else:
@@ -233,16 +233,16 @@ parsed_usage = json.loads(
 	'"reasoning_output_tokens": Infinity, "output_tokens": -Infinity, '
 	'"total_tokens": Infinity}'
 )
-assert usage.usage_totals(parsed_usage, "Codex") == {
+assert token_usage_report.usage_totals(parsed_usage, "Codex") == {
 	"input_tokens": 3,
 	"cached_input_tokens": 0,
 	"reasoning_output_tokens": 0,
 	"output_tokens": 0,
 	"total_tokens": 3,
 }
-assert usage.number(float("nan")) == 0
-assert usage.number(float("inf")) == 0
-assert usage.number(float("-inf")) == 0
+assert token_usage_report.number(float("nan")) == 0
+assert token_usage_report.number(float("inf")) == 0
+assert token_usage_report.number(float("-inf")) == 0
 
 
 class FakeQuery:
@@ -257,7 +257,7 @@ class FakeConnection:
 
 	def execute(self, query):
 		if self.query_error:
-			raise usage.sqlite3.OperationalError("synthetic query failure")
+			raise token_usage_report.sqlite3.OperationalError("synthetic query failure")
 
 		return FakeQuery()
 
@@ -268,20 +268,20 @@ class FakeConnection:
 with tempfile.TemporaryDirectory() as temporary_directory:
 	database_path = Path(temporary_directory) / "hcom.db"
 	database_path.touch()
-	previous_database = usage.HCOM_DATABASE
-	usage.HCOM_DATABASE = database_path
+	previous_database = token_usage_report.HCOM_DATABASE
+	token_usage_report.HCOM_DATABASE = database_path
 	try:
 		success_connection = FakeConnection()
-		with patch.object(usage.sqlite3, "connect", return_value=success_connection):
-			assert usage.load_hcom_labels() == ({}, {})
+		with patch.object(token_usage_report.sqlite3, "connect", return_value=success_connection):
+			assert token_usage_report.load_hcom_labels() == ({}, {})
 		assert success_connection.closed
 
 		error_connection = FakeConnection(query_error=True)
-		with patch.object(usage.sqlite3, "connect", return_value=error_connection):
-			assert usage.load_hcom_labels() == ({}, {})
+		with patch.object(token_usage_report.sqlite3, "connect", return_value=error_connection):
+			assert token_usage_report.load_hcom_labels() == ({}, {})
 		assert error_connection.closed
 	finally:
-		usage.HCOM_DATABASE = previous_database
+		token_usage_report.HCOM_DATABASE = previous_database
 
 print("usage correctness regressions: PASS")
 PY

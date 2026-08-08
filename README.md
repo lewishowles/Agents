@@ -103,13 +103,13 @@ asks before replacing that copy with the central symlink.
 Generate a seven-day Claude and Codex token report:
 
 ```bash
-python3 scripts/audit/usage.py --days 7
+python3 scripts/audit/token_usage_report.py --days 7
 ```
 
 Use explicit inclusive UTC dates when you need repeatable historical output:
 
 ```bash
-python3 scripts/audit/usage.py --since 2026-08-01 --until 2026-08-06
+python3 scripts/audit/token_usage_report.py --since 2026-08-01 --until 2026-08-06
 ```
 
 Both commands overwrite `.agent/audits/usage/latest.md` and `latest.json`. The report contains
@@ -145,7 +145,7 @@ scripts/sync.sh
 scripts/sync-external-skills.sh
 scripts/setup-global.sh --both
 scripts/setup-project.sh --both
-python3 scripts/audit/usage.py --days 7
+python3 scripts/audit/token_usage_report.py --days 7
 tests/setup-project.sh
 ```
 

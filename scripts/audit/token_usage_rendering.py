@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from usage_types import (
+from token_usage_types import (
 	DriverLedgerRow,
 	Group,
 	RatioData,
