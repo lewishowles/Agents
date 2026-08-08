@@ -1374,15 +1374,10 @@ def markdown_driver_table(
 	return lines if len(lines) > 2 else ["No data in the selected window."]
 
 
-def render_markdown(report: Report):
-	"""Render the machine-readable report as concise Markdown."""
+def render_window_section(report: Report) -> list[str]:
+	"""Render the report window, empty-window, and partial-data sections."""
 	window = report["window"]
-	by_tool = report["totals_by_tool"]
 	lines = [
-		"# Token usage report",
-		"",
-		"All figures below are tokens, not cost. The report contains no price or dollar estimate.",
-		"",
 		"## Window (tokens, not cost)",
 		"",
 		f"- Since (UTC): `{window['since']}`",
@@ -1418,14 +1413,18 @@ def render_markdown(report: Report):
 				f"| {tool} | {partial_data['skipped_record_counts'][tool]} |"
 			)
 
-	lines.extend(
-		[
-			"## Totals by tool (tokens, not cost)",
-			"",
-			"| Tool | Sessions | Total tokens | Input tokens | Output tokens |",
-			"| --- | ---: | ---: | ---: | ---: |",
-		]
-	)
+	return lines
+
+
+def render_tool_totals_section(report: Report) -> list[str]:
+	"""Render token totals grouped by runtime tool."""
+	by_tool = report["totals_by_tool"]
+	lines = [
+		"## Totals by tool (tokens, not cost)",
+		"",
+		"| Tool | Sessions | Total tokens | Input tokens | Output tokens |",
+		"| --- | ---: | ---: | ---: | ---: |",
+	]
 
 	for tool in TOOLS:
 		row = by_tool[tool]
@@ -1442,7 +1441,12 @@ def render_markdown(report: Report):
 			f"{display_token_count(tokens['output_tokens'])} |"
 		)
 
-	lines.extend(["", "## Totals by model (tokens, not cost)", ""])
+	return lines
+
+
+def render_group_tables_section(report: Report) -> list[str]:
+	"""Render model, day, project, and hcom role totals."""
+	lines = ["", "## Totals by model (tokens, not cost)", ""]
 	for line in markdown_table_for_group(report["totals_by_model"]["Claude"]):
 		lines.append(line)
 	for line in markdown_table_for_group(report["totals_by_model"]["Codex"]):
@@ -1455,15 +1459,18 @@ def render_markdown(report: Report):
 	lines.extend(["", "## Totals by hcom role (tokens, not cost)", ""])
 	lines.extend(markdown_table_for_group(report["totals_by_role"]))
 
-	lines.extend(
-		[
-			"",
-			"## Top 10 sessions by total tokens (tokens, not cost)",
-			"",
-			"| Rank | Tool | Session id | Total tokens | Project directory | Transcript path | Hcom role |",
-			"| ---: | --- | --- | ---: | --- | --- | --- |",
-		]
-	)
+	return lines
+
+
+def render_top_sessions_section(report: Report) -> list[str]:
+	"""Render the top sessions ranked by total tokens."""
+	lines = [
+		"",
+		"## Top 10 sessions by total tokens (tokens, not cost)",
+		"",
+		"| Rank | Tool | Session id | Total tokens | Project directory | Transcript path | Hcom role |",
+		"| ---: | --- | --- | ---: | --- | --- | --- |",
+	]
 
 	if report["top_sessions"]:
 		for session in report["top_sessions"]:
@@ -1477,19 +1484,22 @@ def render_markdown(report: Report):
 	else:
 		lines.append("| | | no data | | | | |")
 
-	lines.extend(
-		[
-			"",
-			"## Driver ledger (ranked aggregate)",
-			"",
-			(
-				f"Tool calls: **{report['driver_reconciliation']['tool_call_count']}** = "
-				f"{report['driver_reconciliation']['attributed_count']} attributed + "
-				f"{report['driver_reconciliation']['unattributed_count']} unattributed."
-			),
-			"",
-		]
-	)
+	return lines
+
+
+def render_driver_views_section(report: Report) -> list[str]:
+	"""Render aggregate and per-session driver ledger views."""
+	lines = [
+		"",
+		"## Driver ledger (ranked aggregate)",
+		"",
+		(
+			f"Tool calls: **{report['driver_reconciliation']['tool_call_count']}** = "
+			f"{report['driver_reconciliation']['attributed_count']} attributed + "
+			f"{report['driver_reconciliation']['unattributed_count']} unattributed."
+		),
+		"",
+	]
 	lines.extend(
 		markdown_driver_table(
 			report["driver_ledger"],
@@ -1517,7 +1527,13 @@ def render_markdown(report: Report):
 	else:
 		lines.append("No data in the selected window.")
 
-	lines.extend(["", "## Claude cache-read ratio (tokens, not cost)", ""])
+	return lines
+
+
+def render_ratios_section(report: Report) -> list[str]:
+	"""Render Claude cache-read and Codex reasoning-output ratios."""
+	by_tool = report["totals_by_tool"]
+	lines = ["", "## Claude cache-read ratio (tokens, not cost)", ""]
 	claude_ratio = by_tool["Claude"].get("cache_read_ratio")
 	if by_tool["Claude"]["empty"]:
 		lines.append("No Claude usage records in the selected window.")
@@ -1539,16 +1555,36 @@ def render_markdown(report: Report):
 			f"{display_token_count(codex_ratio['denominator_tokens'])})."
 		)
 
-	lines.extend(
-		[
-			"",
-			"## Codex counting semantics (tokens, not cost)",
-			"",
-			"`total_token_usage` is cumulative per session. `last_token_usage` is the per-event delta, "
-			"which is what this report sums.",
-			"",
-		]
-	)
+	return lines
+
+
+def render_semantic_notes_section() -> list[str]:
+	"""Render the report's token-counting semantics note."""
+	return [
+		"",
+		"## Codex counting semantics (tokens, not cost)",
+		"",
+		"`total_token_usage` is cumulative per session. `last_token_usage` is the per-event delta, "
+		"which is what this report sums.",
+		"",
+	]
+
+
+def render_markdown(report: Report):
+	"""Render the machine-readable report as concise Markdown."""
+	lines = [
+		"# Token usage report",
+		"",
+		"All figures below are tokens, not cost. The report contains no price or dollar estimate.",
+		"",
+	]
+	lines.extend(render_window_section(report))
+	lines.extend(render_tool_totals_section(report))
+	lines.extend(render_group_tables_section(report))
+	lines.extend(render_top_sessions_section(report))
+	lines.extend(render_driver_views_section(report))
+	lines.extend(render_ratios_section(report))
+	lines.extend(render_semantic_notes_section())
 
 	return "\n".join(lines) + "\n"
 
