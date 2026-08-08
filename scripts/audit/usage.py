@@ -25,7 +25,7 @@ import re
 import sqlite3
 import sys
 from pathlib import Path
-from typing import TypedDict
+from typing import Callable, Optional, TypedDict
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -137,6 +137,20 @@ class DriverClassification(TypedDict):
 	target: str
 	repeat_name: str
 	repeat_input: dict[str, object]
+
+
+# Define the target-extraction callable used by each classification rule.
+# Assigned at module load (not deferred by `from __future__ import annotations`,
+# which only covers annotations), so it needs `Optional[str]`: Python 3.9 doesn't
+# support `str | None` as a runtime expression.
+DriverTargetExtractor = Callable[[str, dict[str, object]], Optional[str]]
+
+
+class DriverRule(TypedDict):
+	"""Define how one known tool name supplies its classification target."""
+
+	category: str
+	target_extractor: DriverTargetExtractor
 
 
 class DriverCall(TypedDict):
@@ -529,78 +543,141 @@ def command_input(tool_input):
 	return ""
 
 
+def extract_command_target(name: str, tool_input: dict[str, object]) -> str:
+	"""Return a command target, including an empty target when absent."""
+	return command_input(tool_input)
+
+
+def extract_file_target(name: str, tool_input: dict[str, object]) -> str | None:
+	"""Return a non-empty file target from tool input."""
+	target = safe_text(tool_input.get("file_path") or tool_input.get("path"))
+	return target or None
+
+
+def extract_skill_target(name: str, tool_input: dict[str, object]) -> str | None:
+	"""Return a non-empty skill target from tool input."""
+	target = safe_text(tool_input.get("skill") or tool_input.get("name"))
+	return target or None
+
+
+# Define the fixed-name rules before adding the dynamic hook and MCP rules.
+DRIVER_RULES: dict[str, DriverRule] = {
+	"Bash": {
+		"category": "bash",
+		"target_extractor": extract_command_target,
+	},
+	"Edit": {
+		"category": "edit",
+		"target_extractor": extract_file_target,
+	},
+	"Read": {
+		"category": "read",
+		"target_extractor": extract_file_target,
+	},
+	"Skill": {
+		"category": "skill",
+		"target_extractor": extract_skill_target,
+	},
+	"Write": {
+		"category": "write",
+		"target_extractor": extract_file_target,
+	},
+	"exec_command": {
+		"category": "bash",
+		"target_extractor": extract_command_target,
+	},
+}
+
+
+def extract_hook_target(name: str, tool_input: dict[str, object]) -> str:
+	"""Return a hook name from tool input, falling back to the tool name."""
+	return safe_text(tool_input.get("name") or name)
+
+
+def extract_name_target(name: str, tool_input: dict[str, object]) -> str:
+	"""Return the tool name when it is also the classification target."""
+	return name
+
+
+def driver_rule(name: str) -> DriverRule | None:
+	"""Return the table or dynamic rule for a tool name."""
+	rule = DRIVER_RULES.get(name)
+	if rule is not None:
+		return rule
+
+	if name == "Hook" or name.lower().startswith("hook"):
+		return {"category": "hook", "target_extractor": extract_hook_target}
+
+	if name.startswith(("mcp__", "mcp_")):
+		return {"category": "mcp", "target_extractor": extract_name_target}
+
+	return None
+
+
+def driver_repeat_identity(
+	name: str,
+	category: str,
+	target: str,
+) -> tuple[str, dict[str, object]]:
+	"""Return the tool identity and bounded input used for repeat detection."""
+	if category == "bash":
+		return "Bash", {"command": target}
+
+	if category in ("read", "write", "edit"):
+		return name, {"file_path": target}
+
+	return name, {}
+
+
+def build_driver_classification(
+	name: str,
+	category: str,
+	target: str,
+	classification_key: str | None = None,
+) -> DriverClassification:
+	"""Build a classification from its category, target, and repeat identity."""
+	repeat_name, repeat_input = driver_repeat_identity(name, category, target)
+	key = classification_key or target
+	if classification_key is None and category == "bash":
+		key = classify_bash_command(target) or "other"
+
+	return {
+		"category": category,
+		"key": key,
+		"target": target,
+		"repeat_name": repeat_name,
+		"repeat_input": repeat_input,
+	}
+
+
+def fallback_driver_classification(
+	name: str,
+	tool_input: dict[str, object],
+) -> DriverClassification:
+	"""Classify an unknown tool using its safest available target."""
+	target = safe_text(
+		tool_input.get("file_path")
+		or tool_input.get("path")
+		or tool_input.get("subagent_type")
+		or name
+	)
+	return build_driver_classification(name, "tool", target, name)
+
+
 def driver_classification(name, tool_input: dict[str, object]) -> DriverClassification | None:
 	"""Classify one tool call and return its safe key and estimate target."""
 	if not isinstance(name, str) or not name:
 		return None
 
-	if name in ("Bash", "exec_command"):
-		command = command_input(tool_input)
-		return {
-			"category": "bash",
-			"key": classify_bash_command(command) or "other",
-			"target": command,
-			"repeat_name": "Bash",
-			"repeat_input": {"command": command},
-		}
+	rule = driver_rule(name)
+	if rule is None:
+		return fallback_driver_classification(name, tool_input)
 
-	if name in ("Read", "Write", "Edit"):
-		file_path = safe_text(tool_input.get("file_path") or tool_input.get("path"))
-		if not file_path:
-			return None
+	target = rule["target_extractor"](name, tool_input)
+	if target is None:
+		return None
 
-		return {
-			"category": name.lower(),
-			"key": file_path,
-			"target": file_path,
-			"repeat_name": name,
-			"repeat_input": {"file_path": file_path},
-		}
-
-	if name == "Skill":
-		skill_name = safe_text(tool_input.get("skill") or tool_input.get("name"))
-		if not skill_name:
-			return None
-
-		return {
-			"category": "skill",
-			"key": skill_name,
-			"target": skill_name,
-			"repeat_name": name,
-			"repeat_input": {},
-		}
-
-	if name == "Hook" or name.lower().startswith("hook"):
-		hook_name = safe_text(tool_input.get("name") or name)
-		return {
-			"category": "hook",
-			"key": hook_name,
-			"target": hook_name,
-			"repeat_name": name,
-			"repeat_input": {},
-		}
-
-	if name.startswith("mcp__") or name.startswith("mcp_"):
-		return {
-			"category": "mcp",
-			"key": name,
-			"target": name,
-			"repeat_name": name,
-			"repeat_input": {},
-		}
-
-	return {
-		"category": "tool",
-		"key": name,
-		"target": safe_text(
-			tool_input.get("file_path")
-			or tool_input.get("path")
-			or tool_input.get("subagent_type")
-			or name
-		),
-		"repeat_name": name,
-		"repeat_input": {},
-	}
+	return build_driver_classification(name, rule["category"], target)
 
 
 def new_driver_call(name, tool_input: dict[str, object]) -> DriverCall:
