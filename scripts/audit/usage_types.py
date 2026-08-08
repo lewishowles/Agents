@@ -60,6 +60,7 @@ TOKEN_SCHEMAS: dict[str, TokenSchema] = {
 
 # Keep the Codex field order available to the existing audit helper that consumes it.
 CODEX_FIELDS = TOKEN_SCHEMAS["Codex"]["fields"]
+TOOLS = ("Claude", "Codex")
 
 
 class DriverClassification(TypedDict):
