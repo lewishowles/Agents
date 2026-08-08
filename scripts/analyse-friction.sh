@@ -5,7 +5,7 @@
 # and excludes automated check-fail rows. Set FRICTION_INCLUDE_CHECK_FAILS=1
 # to include them when reviewing verification debt.
 # Entries are written by pre-stop-checks.sh, the Codex Stop hook, and
-# scripts/log-friction.sh as tab-separated lines.
+# scripts/agent-tools/log-friction.sh as tab-separated lines.
 
 set -euo pipefail
 

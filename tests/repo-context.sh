@@ -14,7 +14,7 @@ run_context() {
 	local target_dir="$1"
 	shift
 
-	"$REPO_DIR/scripts/repo-context.py" --project-dir "$target_dir" "$@"
+	"$REPO_DIR/scripts/agent-tools/repo-context.py" --project-dir "$target_dir" "$@"
 }
 
 create_project() {

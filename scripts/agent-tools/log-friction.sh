@@ -2,7 +2,7 @@
 # Manually appends a friction log entry, falling back to the current project's
 # .agent/logs/friction.log when the central log is not writable.
 #
-# Usage: scripts/log-friction.sh "<category>" "<detail>"
+# Usage: scripts/agent-tools/log-friction.sh "<category>" "<detail>"
 # Categories: rule-ignored, wrong-approach, token-waste, tool-misuse,
 # check-fail, missing-guidance.
 

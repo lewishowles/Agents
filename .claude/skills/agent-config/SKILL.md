@@ -172,13 +172,13 @@ Root `PROGRESS.md`, when present, tracks active maintenance session state; root 
 Use these scripts before manual inspection where they answer the question:
 
 ```sh
-scripts/repo-context.py
-scripts/validate/generated-file-guard.py
-scripts/project-diagnostics.py --list
+scripts/agent-tools/repo-context.py
+scripts/agent-tools/generated-file-guard.py
+scripts/agent-tools/project-diagnostics.py --list
 ```
 
-- `scripts/repo-context.py` — compact startup context (rules, progress, workspace, diagnostics, generated output, Git)
-- `scripts/validate/generated-file-guard.py` — checks for direct edits to generated files and stale output
-- `scripts/project-diagnostics.py --list` — discovers checks; use `--check <name>` for specific verification or `--test-file <path>` to narrow unit tests
+- `scripts/agent-tools/repo-context.py` — compact startup context (rules, progress, workspace, diagnostics, generated output, Git)
+- `scripts/agent-tools/generated-file-guard.py` — checks for direct edits to generated files and stale output
+- `scripts/agent-tools/project-diagnostics.py --list` — discovers checks; use `--check <name>` for specific verification or `--test-file <path>` to narrow unit tests
 
 Pair `agent-config` with `agent-config-review` when reviewing this system. Prioritise: generated/source drift, token cost in always-loaded rules, rule/skill boundaries, skill taxonomy, validation coverage. Use `project-audit` for other projects only.

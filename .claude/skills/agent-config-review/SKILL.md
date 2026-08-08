@@ -35,7 +35,7 @@ Do not assess product code quality, UI accessibility, dependencies, or repositor
 
 1. Read root `AGENTS.md`. No `WORKSPACE.md` by design — not a downstream project.
 2. Load `.claude/skills/agent-config/SKILL.md` for repo structure.
-3. Entry points: `scripts/validate.sh` and `scripts/sync.sh`. Don't run `scripts/repo-context.py` or `scripts/project-diagnostics.py` against this repo — both default to target projects and are templates for downstream use, not introspecting Configuration/Agents itself.
+3. Entry points: `scripts/validate.sh` and `scripts/sync.sh`. Don't run `scripts/agent-tools/repo-context.py` or `scripts/agent-tools/project-diagnostics.py` against this repo — both default to target projects and are templates for downstream use, not introspecting Configuration/Agents itself.
 4. Inspect `PROGRESS.md` when active work or unfinished validation may affect recommendations.
 5. Use targeted searches. Avoid broad reads of `dist/`, generated docs, external references, or logs unless findings point there.
 

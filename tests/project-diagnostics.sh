@@ -49,13 +49,13 @@ test_local_validate_script() {
 	printf '#!/usr/bin/env bash\nprintf "validation ok\\n"\n' > "$target_dir/scripts/validate.sh"
 	chmod +x "$target_dir/scripts/validate.sh"
 
-	"$REPO_DIR/scripts/project-diagnostics.py" --project "$target_dir" > "$list_output"
+	"$REPO_DIR/scripts/agent-tools/project-diagnostics.py" --project "$target_dir" > "$list_output"
 
 	assert_contains "$list_output" "Mode: list only. No checks were run."
 	assert_contains "$list_output" "| validate | \`bash scripts/validate.sh\` |"
 	assert_not_exists "$target_dir/.agent/diagnostics"
 
-	"$REPO_DIR/scripts/project-diagnostics.py" --project "$target_dir" --check validate > "$output"
+	"$REPO_DIR/scripts/agent-tools/project-diagnostics.py" --project "$target_dir" --check validate > "$output"
 
 	assert_contains "$output" "Project diagnostics"
 	assert_contains "$output" "| validate | passed |"
@@ -68,7 +68,7 @@ test_json_skipped_when_no_safe_checks() {
 	local output="$TEST_ROOT/no-checks.json"
 	mkdir -p "$target_dir"
 
-	"$REPO_DIR/scripts/project-diagnostics.py" --project "$target_dir" --json --list > "$output"
+	"$REPO_DIR/scripts/agent-tools/project-diagnostics.py" --project "$target_dir" --json --list > "$output"
 
 	assert_contains "$output" '"mode": "list"'
 	assert_contains "$output" '"checks": []'
@@ -85,7 +85,7 @@ test_scoped_unit_test_files_and_globs() {
 	printf 'test\n' > "$target_dir/src/example.test.js"
 	printf 'test\n' > "$target_dir/src/components/button.test.js"
 
-	"$REPO_DIR/scripts/project-diagnostics.py" \
+	"$REPO_DIR/scripts/agent-tools/project-diagnostics.py" \
 		--project "$target_dir" \
 		--check test:unit \
 		--test-file src/example.test.js \
@@ -109,7 +109,7 @@ test_scoped_playwright_component_tests() {
 	write_fake_playwright_project "$unscoped_dir"
 	write_fake_playwright_project "$all_dir"
 
-	"$REPO_DIR/scripts/project-diagnostics.py" \
+	"$REPO_DIR/scripts/agent-tools/project-diagnostics.py" \
 		--project "$targeted_dir" \
 		--check test:component \
 		--test-file src/components/ui-button.pw.js > "$output"
@@ -120,7 +120,7 @@ test_scoped_playwright_component_tests() {
 	fi
 	assert_contains "$output" "| test:component | passed |"
 
-	if "$REPO_DIR/scripts/project-diagnostics.py" \
+	if "$REPO_DIR/scripts/agent-tools/project-diagnostics.py" \
 		--project "$unscoped_dir" \
 		--check test:component > "$error_output" 2>&1; then
 		fail "Expected unscoped Playwright component check to be rejected"
@@ -128,7 +128,7 @@ test_scoped_playwright_component_tests() {
 	assert_contains "$error_output" "test:component requires --test-file or --test-glob"
 	assert_not_exists "$unscoped_dir/component-test-args"
 
-	"$REPO_DIR/scripts/project-diagnostics.py" --project "$all_dir" --all > "$all_output"
+	"$REPO_DIR/scripts/agent-tools/project-diagnostics.py" --project "$all_dir" --all > "$all_output"
 
 	assert_contains "$all_output" "test:component: requires --test-file or --test-glob and is excluded from --all"
 	assert_not_exists "$all_dir/component-test-args"
@@ -154,7 +154,7 @@ test_xcode_cli_targets_are_discovered() {
 			productType = "com.apple.product-type.tool";
 		};'
 
-	"$REPO_DIR/scripts/project-diagnostics.py" --project "$single_target_dir" --list > "$single_output"
+	"$REPO_DIR/scripts/agent-tools/project-diagnostics.py" --project "$single_target_dir" --list > "$single_output"
 
 	assert_contains "$single_output" "| build:cli | \`xcodebuild build -project App.xcodeproj -target boilersuit -destination platform=macOS,arch=arm64\` |"
 	assert_not_contains "$single_output" "build:cli:"
@@ -171,7 +171,7 @@ test_xcode_cli_targets_are_discovered() {
 			productType = "com.apple.product-type.tool";
 		};'
 
-	"$REPO_DIR/scripts/project-diagnostics.py" --project "$multiple_target_dir" --list > "$multiple_output"
+	"$REPO_DIR/scripts/agent-tools/project-diagnostics.py" --project "$multiple_target_dir" --list > "$multiple_output"
 
 	assert_not_contains "$multiple_output" "| build:cli |"
 	assert_contains "$multiple_output" "| build:cli:boiler-helper |"
@@ -184,7 +184,7 @@ test_xcode_cli_targets_are_discovered() {
 			productType = "com.apple.product-type.application";
 		};'
 
-	"$REPO_DIR/scripts/project-diagnostics.py" --project "$app_only_dir" --list > "$app_only_output"
+	"$REPO_DIR/scripts/agent-tools/project-diagnostics.py" --project "$app_only_dir" --list > "$app_only_output"
 
 	assert_not_contains "$app_only_output" "build:cli"
 }
@@ -199,7 +199,7 @@ test_scoped_xcode_unit_test_files_and_globs() {
 	printf 'test\n' > "$target_dir/BoilersuitTests/TemplateEngineTests.swift"
 	printf 'test\n' > "$target_dir/BoilersuitTests/Rendering/PreviewTests.swift"
 
-	PATH="$target_dir/bin:$PATH" "$REPO_DIR/scripts/project-diagnostics.py" \
+	PATH="$target_dir/bin:$PATH" "$REPO_DIR/scripts/agent-tools/project-diagnostics.py" \
 		--project "$target_dir" \
 		--check test:unit \
 		--test-file BoilersuitTests/TemplateEngineTests.swift \
@@ -211,7 +211,7 @@ test_scoped_xcode_unit_test_files_and_globs() {
 	assert_not_contains "$output" "-- BoilersuitTests/"
 
 	printf 'test\n' > "$target_dir/BoilersuitTests/README.md"
-	if PATH="$target_dir/bin:$PATH" "$REPO_DIR/scripts/project-diagnostics.py" \
+	if PATH="$target_dir/bin:$PATH" "$REPO_DIR/scripts/agent-tools/project-diagnostics.py" \
 		--project "$target_dir" \
 		--check test:unit \
 		--test-file BoilersuitTests/README.md > "$output" 2>&1; then
@@ -221,7 +221,7 @@ test_scoped_xcode_unit_test_files_and_globs() {
 
 	mkdir -p "$target_dir/Support"
 	printf 'test\n' > "$target_dir/Support/TestHelpers.swift"
-	if PATH="$target_dir/bin:$PATH" "$REPO_DIR/scripts/project-diagnostics.py" \
+	if PATH="$target_dir/bin:$PATH" "$REPO_DIR/scripts/agent-tools/project-diagnostics.py" \
 		--project "$target_dir" \
 		--check test:unit \
 		--test-file Support/TestHelpers.swift > "$output" 2>&1; then
@@ -238,7 +238,7 @@ test_scoped_unit_tests_reject_unsafe_targets() {
 	printf '{"scripts":{"test:unit":"node test-runner.js","lint":"node test-runner.js"}}\n' > "$target_dir/package.json"
 	printf 'console.log("ran");\n' > "$target_dir/test-runner.js"
 
-	if "$REPO_DIR/scripts/project-diagnostics.py" \
+	if "$REPO_DIR/scripts/agent-tools/project-diagnostics.py" \
 		--project "$target_dir" \
 		--check test:unit \
 		--test-file ../outside.test.js > "$output" 2>&1; then
@@ -246,7 +246,7 @@ test_scoped_unit_tests_reject_unsafe_targets() {
 	fi
 	assert_contains "$output" "test file must stay inside the project"
 
-	if "$REPO_DIR/scripts/project-diagnostics.py" \
+	if "$REPO_DIR/scripts/agent-tools/project-diagnostics.py" \
 		--project "$target_dir" \
 		--check test:unit \
 		--test-glob 'src/**/*.test.js' > "$output" 2>&1; then
@@ -254,7 +254,7 @@ test_scoped_unit_tests_reject_unsafe_targets() {
 	fi
 	assert_contains "$output" "test glob matched no files"
 
-	if "$REPO_DIR/scripts/project-diagnostics.py" \
+	if "$REPO_DIR/scripts/agent-tools/project-diagnostics.py" \
 		--project "$target_dir" \
 		--check lint \
 		--test-file test-runner.js > "$output" 2>&1; then

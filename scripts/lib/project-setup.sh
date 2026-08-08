@@ -3,12 +3,12 @@
 
 # Shared tool links installed into every configured project's .agent/scripts/ directory.
 SHARED_AGENT_TOOLS=(
-	"project-diagnostics.py|$REPO_DIR/scripts/project-diagnostics.py"
-	"change-impact.py|$REPO_DIR/scripts/validate/change-impact.py"
-	"repo-context.py|$REPO_DIR/scripts/repo-context.py"
-	"generated-file-guard.py|$REPO_DIR/scripts/validate/generated-file-guard.py"
-	"markdown-claims.py|$REPO_DIR/scripts/validate/markdown-claims.py"
-	"log-friction.sh|$REPO_DIR/scripts/log-friction.sh"
+	"project-diagnostics.py|$REPO_DIR/scripts/agent-tools/project-diagnostics.py"
+	"change-impact.py|$REPO_DIR/scripts/agent-tools/change-impact.py"
+	"repo-context.py|$REPO_DIR/scripts/agent-tools/repo-context.py"
+	"generated-file-guard.py|$REPO_DIR/scripts/agent-tools/generated-file-guard.py"
+	"markdown-claims.py|$REPO_DIR/scripts/agent-tools/markdown-claims.py"
+	"log-friction.sh|$REPO_DIR/scripts/agent-tools/log-friction.sh"
 )
 
 # Copies a template to target only if target does not already exist.

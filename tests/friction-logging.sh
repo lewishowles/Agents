@@ -320,7 +320,7 @@ test_manual_writer_logs_entry() {
 
 	(
 		cd "$TEST_ROOT"
-		HOME="$home_dir" bash "$REPO_DIR/scripts/log-friction.sh" "wrong-approach" "reimplemented clamp instead of using helper" >/dev/null
+		HOME="$home_dir" bash "$REPO_DIR/scripts/agent-tools/log-friction.sh" "wrong-approach" "reimplemented clamp instead of using helper" >/dev/null
 	)
 
 	assert_file "$log_file"
@@ -338,7 +338,7 @@ test_manual_writer_falls_back_to_project_log() {
 
 	(
 		cd "$project_dir"
-		HOME="$blocked_home" bash "$REPO_DIR/scripts/log-friction.sh" "missing-guidance" "central log was sandboxed" >/dev/null 2>/dev/null
+		HOME="$blocked_home" bash "$REPO_DIR/scripts/agent-tools/log-friction.sh" "missing-guidance" "central log was sandboxed" >/dev/null 2>/dev/null
 	)
 
 	assert_file "$log_file"
