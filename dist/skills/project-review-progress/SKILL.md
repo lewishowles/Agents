@@ -95,7 +95,7 @@ Use this shape:
 
 ## Assumptions, risks, and open questions
 
-- <unknown or assumption that affects confidence>.
+- <unknown or assumption that affects confidence, limited to an observed failure or a concrete unresolved scenario traced from changed lines to a real consumer or public contract>.
 
 ## Checks run
 

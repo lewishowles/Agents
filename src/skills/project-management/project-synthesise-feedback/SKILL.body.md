@@ -82,7 +82,7 @@ Use this shape unless the user asks for a different format:
 
 ## Risks, assumptions, and open questions
 
-- <risk, assumption, or question that affects confidence>.
+- <risk, assumption, or question that affects confidence, limited to an observed failure or a concrete unresolved scenario traced from changed lines to a real consumer or public contract>.
 
 ## Checks run
 

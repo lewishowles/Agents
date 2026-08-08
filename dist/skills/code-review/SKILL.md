@@ -94,6 +94,7 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 
 - Does the change include tests for new behaviour?
 - Do existing tests still pass?
+- For a library or package whose public surface is produced by a build step, source inspection alone does not establish the change works: name the built artefact checked, or state that built-output evidence was not obtained and what that leaves unproven. Inspect only the exact expected output path, do not list or read build trees, and ask before triggering a broad build.
 
 ### Tailoring by PR type
 

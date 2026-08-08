@@ -50,7 +50,7 @@ Include ignored task files in each candidate lookup. If the supplied path is mis
 - **Altitude** — enough detail to act safely, with no speculative architecture or line-by-line solution disguised as a requirement.
 - **Maintainability** — existing helpers and patterns are considered; abstractions, flexibility, and process are proportionate to the evidence.
 - **Acceptance and verification** — each load-bearing claim has observable evidence, with static, executed, observed, or blocked checks distinguished where useful.
-- **Risks and proportionality** — concrete failure modes, recovery paths, and checks match the task's impact and complexity.
+- **Risks and proportionality** — concrete failure modes, recovery paths, and checks match the task's impact and complexity; every reservation must name an observed failure or a concrete unresolved scenario traced from changed lines to a real consumer or public contract, and must not withhold approval or reduce stated confidence because a linked issue or PR description is absent, untouched behaviour lacks tests, or a future defect is hypothetical.
 
 ## Finding standards
 
@@ -91,7 +91,7 @@ Use this shape and keep empty sections explicit with `None.` or `None found.`:
 
 ## Assumptions and blocked checks
 
-- <assumption or blocked check, with what would settle it>.
+- <assumption or blocked check, with what would settle it, limited to an observed failure or a concrete unresolved scenario traced from changed lines to a real consumer or public contract>.
 
 ## Next step
 

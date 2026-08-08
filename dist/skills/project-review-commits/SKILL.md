@@ -138,7 +138,7 @@ Use this shape:
 
 ## Questions or assumptions
 
-- <unknown that affects confidence>.
+- <unknown that affects confidence, limited to an observed failure or a concrete unresolved scenario traced from changed lines to a real consumer or public contract>.
 
 ## Checks run
 
