@@ -58,6 +58,21 @@ Do not leave the split implicit in prose elsewhere in the task, such as the Purp
 
 A feature spec may describe a larger goal, investigation, or phase sequence. Its phases are not task boundaries by default: create the next concrete task only when its scope, acceptance criteria, and verification are independently reviewable.
 
+### Clear planning language
+
+Write task files, inline `PROGRESS.md` entries, and feature specs for a reader who does not share the investigation context. Before marking a task `ready`:
+
+- State the concrete problem before the proposed work.
+- Use direct statements with a clear subject and action. Where shorthand could be ambiguous, name the actor, input, behaviour, and result.
+- Keep one requirement, decision, recommendation, or question per bullet.
+- Explain unfamiliar terms at first use, while preserving exact API names, paths, commands, standards, and platform terms.
+- Keep confirmed requirements, recommended defaults, and unresolved questions visibly separate.
+- Describe interactions explicitly, including ordering, filtering, focus, state composition, and failure or recovery behaviour where relevant.
+- Write accessibility requirements and acceptance criteria as observable behaviour.
+- Preserve edge cases, constraints, failure behaviour, verification requirements, and technical decisions when simplifying the wording.
+
+If clearer wording would require making a product or architecture decision, leave the requirement unresolved and mark the task `needs-decision` instead of guessing. A rewrite clarifies the existing contract; it does not change scope, behaviour, decisions, or evidence.
+
 ### Body
 
 No `# Title` heading; front matter `title` is the single source. Sections, in order, optional ones marked:

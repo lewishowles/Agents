@@ -44,6 +44,7 @@ Include ignored task files in each candidate lookup. If the supplied path is mis
 
 - **Repository truth** — named paths, commands, generated outputs, dependencies, and current patterns are real and applicable.
 - **Purpose** — the problem, beneficiary, and observable outcome are clear.
+- **Clear language** — a reader without the investigation context can understand each requirement; statements name the relevant subject and action, bullets do not compress separate requirements or decisions, unfamiliar terms are explained, and confirmed requirements, recommended defaults, and unresolved questions remain distinct.
 - **Behavioural contract** — inputs, outputs, states, boundaries, and relevant failure or recovery behaviour are stated without implementation recipes.
 - **Task boundary** — one coherent outcome, explicit non-goals, and independently reviewable files and verification.
 - **Dependencies** — real prerequisites, cross-repository relationships, permission limits, and sequencing are named.
@@ -55,7 +56,7 @@ Include ignored task files in each candidate lookup. If the supplied path is mis
 ## Finding standards
 
 - **Must-fix** — stale or false repository facts, missing contract or boundary, unsafe ambiguity, impossible acceptance, missing required verification, or a risk that blocks implementation.
-- **Recommended** — a material maintainability, evidence, failure-state, or clarity gap that should be corrected before implementation.
+- **Recommended** — a material maintainability, evidence, failure-state, or clarity gap that should be corrected before implementation, including context-dependent shorthand that makes the contract harder to interpret safely.
 - **Nice-to-have** — useful polish that is neither required nor a reason to delay the task.
 
 Every finding names the task or evidence location where possible, the problem, its effect, and the smallest planning change that resolves it. Mark assumptions and blocked checks explicitly. If the evidence does not support a change, do not manufacture one.

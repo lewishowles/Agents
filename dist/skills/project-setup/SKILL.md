@@ -83,6 +83,8 @@ Enables autonomous multi-hour execution while keeping the main agent as architec
 
 Before asking for approval on any substantive task or feature contract, self-check it against: repository truth, contract, boundary, altitude, failure and recovery states, acceptance evidence, and verification. Leave a strong contract unchanged. Invoke `project-review-task` explicitly when a high-risk or high-ambiguity contract warrants an independent pass, or once a genuine second reviewer is available — a solo self-check by the authoring model is not a substitute.
 
+Apply the clear planning language gate from `docs/progress-format.md` to task files, inline `PROGRESS.md` entries, and feature specs. Write for a reader who does not share the investigation context: state the problem first, use direct statements with a clear subject and action, keep one requirement, decision, recommendation, or question per bullet, explain unfamiliar terms, separate confirmed requirements from recommended defaults and unresolved questions, and make acceptance criteria observable. Preserve exact APIs, paths, commands, edge cases, constraints, failure behaviour, verification requirements, and technical decisions. If clarification would require a new product or architecture decision, leave it unresolved and use `needs-decision` instead of guessing.
+
 ## Feature specs
 
 Use linked specs only for larger spikes or ambiguous features. Skip small changes, bug fixes, routine docs, or single-section work.

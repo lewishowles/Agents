@@ -86,6 +86,8 @@ For a multi-commit task, add `## Commit plan` before `## Tasks`. Each entry has 
 
 Before implementation or delegation, self-check any substantive task file against: repository truth, contract, boundary, altitude, failure and recovery states, acceptance evidence, and verification. Keep a strong task unchanged; correct only what the evidence supports. Invoke `project-review-task` explicitly for a high-risk or high-ambiguity task, or once a genuine second reviewer (a different model or peer) is available — a solo run by the same model that wrote the plan does not replace an independent check.
 
+Apply the clear planning language gate from `docs/progress-format.md` to task files, inline `PROGRESS.md` entries, and feature specs. Write for a reader who does not share the investigation context: state the problem first, use direct statements with a clear subject and action, keep one requirement, decision, recommendation, or question per bullet, explain unfamiliar terms, separate confirmed requirements from recommended defaults and unresolved questions, and make acceptance criteria observable. Preserve exact APIs, paths, commands, edge cases, constraints, failure behaviour, verification requirements, and technical decisions. If clarification would require a new product or architecture decision, leave it unresolved and use `needs-decision` instead of guessing.
+
 ## Feature specs
 
 For larger spikes or ambiguous features, create/reference a per-feature spec under `.agent/specs/` instead of expanding `PROGRESS.md` with design history. Keep `PROGRESS.md` focused on execution state and add `### Spec` link in relevant section. Do not create specs for small changes, direct bug fixes, routine docs edits, or work fitting one progress section.
