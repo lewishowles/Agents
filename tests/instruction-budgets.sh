@@ -3,7 +3,7 @@
 
 set -euo pipefail
 
-SCRIPT_DIR=$(cd "$(dirname "$0")/.." && pwd)
+SCRIPT_DIR=$(cd "$(dirname "$0")/../scripts/validate" && pwd)
 VALIDATOR="$SCRIPT_DIR/check-instruction-budgets.sh"
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
