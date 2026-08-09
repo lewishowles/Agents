@@ -60,6 +60,7 @@ Before primitive operations (length, clamping, type checks, string/array/object 
 - Add short purpose comment when intentional behaviour may look like bug/workaround
 - No banner/divider comments; use JSDoc and blank lines
 - Comments explain purpose, not mechanics; remove stale bug-fix comments once code expresses behaviour
+- Check each docstring's claim against the function body it describes. Restating the name, or asserting behaviour the code doesn't have, both fail the same as no docstring
 - For fixes, state the rule the code follows, not the avoided mechanism. Use "why" only as a guardrail (e.g. declared after `initialise()` so seeding does not emit)
 - Block comments: purpose and external constraints; skip internal trivia
 - Document caller contract: return value, mutation, observable edge cases. Omit internal mechanics

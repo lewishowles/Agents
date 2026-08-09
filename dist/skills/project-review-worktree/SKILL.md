@@ -66,7 +66,7 @@ Before approval, report skills applied, ready or changes requested, and concrete
 Classify each load-bearing acceptance criterion:
 
 - **Observed** — seen in a rendered browser page or the running app
-- **Executed** — a test or repro ran and passed against the changed production code
+- **Executed** — a specific assertion or repro step ran and would fail if this claim were false, not merely that the containing suite exited 0
 - **Static** — read the code and reasoned about it
 - **Blocked** — could not be checked here, with the reason
 
