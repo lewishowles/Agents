@@ -79,6 +79,7 @@ A confident conclusion is not authorisation to implement. If the last user messa
 
 - State assumptions explicitly. If confidence in understanding the requirement is below 95%, list what is understood and what needs clarifying before touching any files
 - Before making a change, name what existing functionality it could affect and what evidence will confirm it is unaffected.
+- Every authored physical-direction style must either have a documented visual reason to remain physical or use its logical equivalent. Coupled overflow state and CSS require RTL browser verification before changing.
 
 - Request names both a fix and the symptom it's meant to solve? Confirm the fix actually intercepts that symptom before implementing — otherwise report the mismatch first instead of building it.
 - Multiple interpretations? Present all, don't pick silently
