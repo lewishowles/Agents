@@ -38,6 +38,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/code-lookup` | `code-lookup` | When choosing a code discovery, tracing, health analysis, or semantic editing tool |
 | `/code-review` | `code-review` | When reviewing a PR or diff, or receiving review feedback |
 | `/code-style` | `code-style` | When formatting code, covering naming, comments, arrays, objects |
+| `/codex-insights` | `codex-insights` | When generating a Codex usage or interaction report |
 | `/component-api-design` | `component-api-design` | When creating a component or changing its public props, slots, emits, models, expose, or contract |
 | `/component-library` | `component-library` | When choosing, reusing, or wrapping @lewishowles/components APIs, especially when unclear |
 | `/debugging` | `debugging` | When encountering any bug, test failure, or unexpected behaviour — before proposing a fix |

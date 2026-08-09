@@ -1,0 +1,28 @@
+{
+	"name": "codex-insights",
+	"title": "Codex insights",
+	"description": "Use this skill when turning bounded Codex rollout extraction JSON into an evidence-backed narrative usage report and self-contained static HTML report.",
+	"when": "When generating a Codex usage or interaction report",
+	"triggers": [
+		"Codex insights",
+		"Codex usage report",
+		"Codex session report",
+		"latest-narrative.json",
+		"codex_insights_extract.py",
+		"codex_insights_render.py"
+	],
+	"do-not-use-when": [
+		"Analysing another coding agent's transcripts or usage data",
+		"Extracting raw session metrics without writing the Codex narrative report",
+		"Writing a general project retrospective without bounded Codex rollout evidence",
+		"Editing AGENTS.md from an unaudited anecdote"
+	],
+	"filePatterns": ["latest.json", "latest-narrative.json", "codex_insights_*.py"],
+	"pathPatterns": [".agent/audits/codex-insights/**", "src/skills/codex-insights/**"],
+	"dependencies": ["writing"],
+	"capabilities": {
+		"promptTriggering": true,
+		"fileTriggering": true
+	},
+	"targets": ["codex"]
+}
