@@ -30,6 +30,8 @@ For a continuation in the same unchanged worktree, a packet with the exact faili
 
 A good loop is fast (seconds), deterministic (fails consistently), and scoped. It can be diagnostics `--check`, failing unit test, minimal CLI invocation, script, or app repro. If none possible, ask user for exact reproduction and observation.
 
+Match evidence to the failing boundary. Static inspection or jsdom does not prove browser layout, a screenshot does not prove interaction, and a passing subcommand does not prove editor integration or host pickup. Verify where the symptom occurs; if that cannot be done locally, request the exact user-run evidence and keep the claim unverified.
+
 ## Phase 2 — Investigate
 
 1. **Read the error fully.** Stack traces, line numbers, and error codes often contain the answer.
