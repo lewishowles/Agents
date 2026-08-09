@@ -156,7 +156,7 @@ cat "${existing_log_files[@]}" > "$merged_log_file"
 # position before filtering the second pass.
 awk -F '\t' -v include_check_fails="$include_check_fails" '
 	BEGIN {
-		split("rule-ignored wrong-approach token-waste tool-misuse check-fail missing-guidance", cats, " ")
+		split("rule-ignored wrong-approach token-waste tool-misuse check-fail tool-error missing-guidance", cats, " ")
 		for (i in cats) known[cats[i]] = 1
 	}
 

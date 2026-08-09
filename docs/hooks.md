@@ -24,11 +24,18 @@ Hooks are shell scripts that Claude Code runs automatically at specific points i
 | `skill-file-trigger` | Injects matching skill reminders before file writes and edits. | PreToolUse (`Write\|Edit`) | `silent`; requires jq |
 | `test-skeleton-reminder` | Suggests matching tests when implementation files change. | PreToolUse (`Write\|Edit`) | `silent`; requires jq |
 | `tool-call-checkpoint` | Adds advisory checkpoints after 20 tool calls and before context compaction in a Claude worker session. | PreToolUse, PreCompact, SessionStart (`clear`) | `silent`; requires jq |
+| `tool-failure-log` | Logs failed Claude tool calls for recurring friction analysis. | PostToolUseFailure | `silent`; requires jq |
 <!-- END GENERATED: registered-hooks -->
 
 ## HCOM ownership
 
 The repository manages only the verified HCOM commands in `src/hooks/claude/hcom/hook.json`. Global setup links the generated `settings.json` and does not import existing Claude preferences, so unrelated local settings stay outside this source tree.
+
+### tool-failure-log
+
+Logs failed Claude tool calls for recurring friction analysis.
+
+**Limitation:** Edit `old_string`-mismatch failures never reach `PostToolUse` or `PostToolUseFailure`. This is a known harness-level gap, deferred to a future `audit-metrics-harness` transcript-mining pass. This single-observation finding was not independently reproduced.
 
 ### skill-file-trigger.sh
 

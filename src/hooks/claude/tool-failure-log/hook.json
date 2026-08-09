@@ -1,0 +1,12 @@
+{
+	"name": "tool-failure-log",
+	"description": "Logs failed Claude tool calls for recurring friction analysis.",
+	"runtime": "claude",
+	"events": [
+		{
+			"event": "PostToolUseFailure"
+		}
+	],
+	"dependencies": ["jq"],
+	"failureMode": "silent"
+}

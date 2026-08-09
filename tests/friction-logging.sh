@@ -66,6 +66,17 @@ run_hook() {
 	)
 }
 
+run_tool_failure_hook() {
+	local project_dir="$1"
+	local home_dir="$2"
+	local payload="$3"
+
+	(
+		cd "$project_dir"
+		HOME="$home_dir" bash "$REPO_DIR/dist/claude/hooks/tool-failure-log.sh" <<< "$payload"
+	)
+}
+
 test_failed_checks_are_logged() {
 	local project_dir="$TEST_ROOT/failing-project"
 	local home_dir="$TEST_ROOT/home"
@@ -98,6 +109,21 @@ test_successful_checks_are_not_logged() {
 	run_hook "$project_dir" "$home_dir" "$bin_dir"
 
 	assert_not_file "$log_file"
+}
+
+test_tool_failures_are_logged() {
+	local project_dir="$TEST_ROOT/tool-failure-project"
+	local home_dir="$TEST_ROOT/tool-failure-home"
+	local log_file="$home_dir/.claude/logs/friction.log"
+	local payload='{"tool_name":"Bash","tool_input":{"command":"cat missing.txt"},"error":"cat: missing.txt: No such file or directory","is_interrupt":false,"duration_ms":12,"session_id":"test-session","cwd":"/ignored/by/log/schema"}'
+
+	mkdir -p "$project_dir" "$home_dir"
+	run_tool_failure_hook "$project_dir" "$home_dir" "$payload"
+
+	assert_file "$log_file"
+	assert_contains "$log_file" "tool-error"
+	assert_contains "$log_file" "$project_dir"
+	assert_contains "$log_file" "Bash: cat missing.txt — cat: missing.txt: No such file or directory"
 }
 
 # Writes an npm stub that mimics real npm output: a blank line and "> script"
@@ -266,6 +292,20 @@ test_analyser_groups_log_entries() {
 	assert_contains "$output_file" "1	check-fail	/project-b	test:unit:run: unit tests exploded"
 }
 
+test_analyser_groups_tool_error_entries_by_default() {
+	local home_dir="$TEST_ROOT/tool-error-analyse-home"
+	local log_file="$home_dir/.claude/logs/friction.log"
+	local output_file="$TEST_ROOT/tool-error-analyse.out"
+
+	mkdir -p "$(dirname "$log_file")"
+	printf '2026-05-15T19:00:00Z\ttool-error\t/project-a\tBash: cat missing.txt — cat: missing.txt: No such file or directory\n' > "$log_file"
+	printf '2026-05-15T19:01:00Z\ttool-error\t/project-a\tBash: cat missing.txt — cat: missing.txt: No such file or directory\n' >> "$log_file"
+
+	HOME="$home_dir" "$REPO_DIR/src/skills/friction-review/scripts/analyse-friction.sh" > "$output_file"
+
+	assert_contains "$output_file" "2	tool-error	/project-a	Bash: cat missing.txt — cat: missing.txt: No such file or directory"
+}
+
 test_analyser_tolerates_legacy_lines() {
 	local home_dir="$TEST_ROOT/legacy-home"
 	local log_file="$home_dir/.claude/logs/friction.log"
@@ -352,6 +392,22 @@ test_manual_writer_falls_back_to_project_log() {
 	assert_file "$log_file"
 	assert_contains "$log_file" "missing-guidance"
 	assert_contains "$log_file" "central log was sandboxed"
+}
+
+test_tool_failure_hook_falls_back_to_project_log() {
+	local project_dir="$TEST_ROOT/tool-failure-fallback-project"
+	local blocked_home="$TEST_ROOT/tool-failure-blocked-home"
+	local log_file="$project_dir/.agent/logs/friction.log"
+	local payload='{"tool_name":"Read","tool_input":{"file_path":"missing.md"},"error":"File does not exist","is_interrupt":false,"duration_ms":8,"session_id":"test-session","cwd":"/ignored/by/log/schema"}'
+
+	mkdir -p "$project_dir"
+	printf 'not a directory\n' > "$blocked_home"
+
+	run_tool_failure_hook "$project_dir" "$blocked_home" "$payload" >/dev/null 2>/dev/null
+
+	assert_file "$log_file"
+	assert_contains "$log_file" "tool-error"
+	assert_contains "$log_file" "Read: missing.md — File does not exist"
 }
 
 test_analyser_discovers_project_fallback_logs() {
@@ -463,17 +519,20 @@ test_codex_hook_falls_back_to_project_log() {
 
 test_failed_checks_are_logged
 test_successful_checks_are_not_logged
+test_tool_failures_are_logged
 test_error_summary_skips_npm_banner
 test_duplicate_entries_are_suppressed
 test_unchanged_passing_worktree_skips_checks
 test_changed_worktree_reruns_checks
 test_failing_worktree_is_never_cached
 test_analyser_groups_log_entries
+test_analyser_groups_tool_error_entries_by_default
 test_analyser_tolerates_legacy_lines
 test_analyser_excludes_resolved_pattern
 test_analyser_resurfaces_pattern_after_resolution
 test_manual_writer_logs_entry
 test_manual_writer_falls_back_to_project_log
+test_tool_failure_hook_falls_back_to_project_log
 test_analyser_discovers_project_fallback_logs
 test_analyser_selftest_passes
 test_codex_hcom_hooks_bootstrap_homebrew_path
