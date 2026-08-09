@@ -102,6 +102,10 @@ Focused checks, manual review, or evidence required before handoff.
 
 ## Risks
 
+## Open questions      (optional)
+
+Unresolved decisions the user needs to weigh in on before implementation, kept next to the bullet they affect rather than restated elsewhere. Omit once resolved.
+
 ## Notes               (optional)
 
 Durable execution constraints needed to resume the task. Do not use this as a running session log.

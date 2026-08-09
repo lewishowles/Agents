@@ -35,7 +35,7 @@ If no generator exists, don't create manually. Inspect `AGENTS.md`, package scri
 2. **Ask** — identify all known decision-blocking ambiguities, constraints, tradeoffs, and alternatives, then ask them together. Do not cap this initial set. Ask further questions only when an answer reveals a material new unknown.
 3. **Discuss** — if multiple approaches exist, present them; don't pick silently
 4. **Plan** — create initial `PROGRESS.md` using standard schema below
-5. **Wait** — do not start until plan is reviewed and approved
+5. **Wait** — do not start until plan is reviewed and approved. For a task file, point to it rather than duplicating it in chat; the user quotes a passage to challenge it or answers an inline `## Open questions` entry. A genuinely trivial inline section can just be shown directly.
 
 ## Subagent delegation (optional)
 
@@ -290,6 +290,10 @@ Optional. Link to `.agent/specs/<feature>.md` only when this task needs heavier 
 Focused checks, manual review, or evidence required before handoff.
 
 ## Risks
+
+## Open questions
+
+Optional. Unresolved decisions the user needs to weigh in on, kept next to the bullet they affect. Omit once resolved.
 
 ## Notes
 

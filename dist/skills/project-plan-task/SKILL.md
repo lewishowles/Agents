@@ -40,7 +40,8 @@ Run only when user asks and it exists in current shell.
 4. **Approach exploration** (opt-in) — for complex tasks, surface 2–3 approaches with tradeoffs; wait for user choice before writing. Skip single-file, obvious, or decided work. Present options first, write after confirmation.
 5. **Reorganise** — if new work changes later needs, update upcoming sections
 6. **Insert** — add section: purpose, model tier, files likely to change, tasks, risks, notes. Order Tasks steps decisions-first, mechanical-last (see `docs/progress-format.md`)
-7. **Update parking lot** — move related ideas into new section or leave parked
+7. **Review checkpoint** — for a task file, don't duplicate or summarise it in chat; point to it and invite comments. The user quotes a passage to challenge it or answers an inline `## Open questions` entry. Put any decision the agent can't resolve inline in the file, next to the bullet it affects, not in a separate chat summary. When the user replies, re-read only the cited section before patching, report what changed, and wait for approval before implementing. Trivial inline `PROGRESS.md` sections are short enough to show directly instead.
+8. **Update parking lot** — move related ideas into new section or leave parked
 
 ## Planning for learning
 
@@ -100,7 +101,7 @@ Spec explains why now, problem, goals, current status (optional), non-goals, app
 
 ## Task files vs progress sections
 
-Once a plan has more than the current one or two active items, prefer a standalone file under `.agent/tasks/<task-slug>.md` over an inline `PROGRESS.md` section for concrete, ready-to-pick-up work. This keeps the read surface small: the next agent opens only the active task's file, not the whole plan. The canonical contract is `docs/progress-format.md` in the Configuration/Agents repo — keep this skill's template in sync with it.
+Once a plan has more than the current one or two active items, or the work needs a decision from the user before it can proceed, prefer a standalone file under `.agent/tasks/<task-slug>.md` over an inline `PROGRESS.md` section for concrete, ready-to-pick-up work. This keeps the read surface small: the next agent opens only the active task's file, not the whole plan. Inline sections are for genuinely trivial work only; anything that would need an `## Open questions` entry belongs in a task file, not inline. The canonical contract is `docs/progress-format.md` in the Configuration/Agents repo — keep this skill's template in sync with it.
 
 New task filenames use stable, descriptive kebab-case slugs such as `repair-cli-help.md`. The filename identifies the task, not its priority or queue position. Choose a concise slug from the task's purpose and add a meaningful qualifier on collision. The human-facing name lives in front matter `title`; task files do not prescribe branch names.
 
@@ -229,6 +230,10 @@ Optional. Link to `.agent/specs/<feature>.md` only when this task needs heavier 
 Focused checks, manual review, or evidence required before handoff.
 
 ## Risks
+
+## Open questions
+
+Optional. Unresolved decisions the user needs to weigh in on, kept next to the bullet they affect. Omit once resolved.
 
 ## Notes
 

@@ -92,6 +92,10 @@ Spec files should keep this outline:
 ## Verification
 ```
 
+## Extracting inline sections into task files
+
+Inline `PROGRESS.md` sections exist only for genuinely trivial work: a single item, nothing left to decide. During compaction, move any inline section that has grown past that, multiple tasks, unresolved decisions, or its own file list, into `.agent/tasks/<task-slug>.md` (see `project-plan-task`'s "Task files vs progress sections"). Point the queue entry at the new file; don't leave both an inline section and a task file describing the same work. Leave a genuinely trivial section inline; don't create a file just to satisfy this rule.
+
 ## Handoff-first format
 
 If missing `## Session handoff`, create it at top. Agents read from top and stop after handoff when it has enough context.
