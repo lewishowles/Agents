@@ -8,12 +8,37 @@
 - No trailing spaces, no mixed tabs/spaces
 - Comma-dangle always multiline; quote props consistent-as-needed
 - No one-line `if` statements — full block with braces, body on new line
-- Blank lines separate logical steps in functions
+- Blank lines separate distinct logical steps inside functions and loops. Treat initialisation, guards, parsing, validation, transformation, and return/output as separate steps when each has its own purpose.
+- Add a blank line after a completed control-flow block before the next logical step. Keep connected clauses (`if`/`elif`/`else`, `try`/`except`/`finally`) together.
+- Keep tightly coupled statements together. Don't add blank lines mechanically between every statement.
 - Multi-line variable declarations should have a blank line before and after them
 - Repeated inline logic? Extract named function with JSDoc/equivalent; don't duplicate
 - Prefer line parsing, structured APIs, or small helpers over complex regex. Use regex only when clearest; name complex patterns and explain match.
 - For multi-line generated strings, prefer named values and `["line one", value, "line three"].join("\n")` over dense escaped templates.
 - Split dense template expressions into named intermediate values before interpolation.
+
+For example, separate a Python loop's guard, parsing, validation, and collection steps:
+
+```python
+records = []
+
+for line in contents.splitlines():
+	if not line or len(line) > MAX_RECORD_BYTES:
+		malformed_count += int(bool(line))
+		continue
+
+	try:
+		record = json.loads(line)
+	except (TypeError, ValueError):
+		malformed_count += 1
+		continue
+
+	if not isinstance(record, dict):
+		malformed_count += 1
+		continue
+
+	records.append(record)
+```
 
 ## Naming & imports
 
