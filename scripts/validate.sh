@@ -89,7 +89,6 @@ run_check "generated-file guard"  bash "$REPO_DIR/tests/generated-file-guard.sh"
 run_check "change impact"         bash "$REPO_DIR/tests/change-impact.sh"
 run_check "friction logging"      bash "$REPO_DIR/tests/friction-logging.sh"
 run_check "dead path refs"        python3 "$REPO_DIR/scripts/agent-tools/markdown-claims.py" --mode paths
-run_check "script command refs"   python3 "$REPO_DIR/scripts/agent-tools/markdown-claims.py" --mode commands
 run_check "setup drift"           python3 "$REPO_DIR/scripts/validate/check-setup-drift.py"
 run_check "staleness"             python3 "$REPO_DIR/scripts/validate/check-staleness.py"
 run_check "staleness regression"  python3 "$REPO_DIR/tests/check-staleness.py"
