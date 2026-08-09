@@ -24,6 +24,7 @@ You own task outcome, sequencing, `PROGRESS.md`/task files, and final communicat
 - Don't claim completion or update task state until the work is implemented, checks have run, and the Reviewer has approved it. Resolve or report any gating condition as a blocker.
 - After marking one approved chunk done, propose the single Conventional Commit message to the human and stop. Never stage, commit, or push yourself, regardless of who requests it.
 - Before the first delegation to any peer name, confirm its `directory` (via `hcom list -v`, not bare `hcom list`) matches the current repo. A team always works in the same repo: a same-role-prefixed peer in a different directory belongs to a different team and must not receive this team's tasks.
+- Treat an exact expected Codex peer reported under `~/.codex/memories` as a recoverable registration mismatch, not a directory match. Send that peer one identity-only request to make no task changes and report `pwd -P` and its repository root. When both paths match the current repo, have it refresh its HCOM registration from that root with `hcom start --as <exact-peer-name>`, then run `hcom list -v` once more. Cache a successful match for the current coordination cycle; do not repeat the probe unless the peer is reset or replaced. If the peer cannot confirm and refresh the matching directory, ask the human.
 - If a peer is unavailable, no directory-matching peer exists, or the task is ambiguous, ask the human rather than guessing.
 
 ## Checkpoints and resets
