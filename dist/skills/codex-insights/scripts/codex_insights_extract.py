@@ -30,7 +30,8 @@ from scripts.audit.token_usage_report import (  # noqa: E402
 	update_codex_metadata,
 )
 
-OUTPUT_PATH = REPO_ROOT / ".agent/audits/codex-insights/latest.json"
+CODEX_HOME = Path(os.environ.get("CODEX_HOME") or Path.home() / ".codex").expanduser()
+OUTPUT_PATH = CODEX_HOME / "usage-data/latest.json"
 UTC = datetime.timezone.utc
 FAILURE_CATEGORIES = (
 	"permission",
@@ -415,7 +416,7 @@ def serialise_report(report: dict[str, object]) -> str:
 
 
 def write_report(report: dict[str, object]) -> None:
-	"""Write the report to the gitignored .agent/audits output path, creating it if needed."""
+	"""Write the extraction to Codex's global usage-data directory."""
 	OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
 	OUTPUT_PATH.write_text(serialise_report(report), encoding="utf-8")
 

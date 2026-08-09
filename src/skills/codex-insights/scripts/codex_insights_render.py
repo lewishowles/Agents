@@ -8,13 +8,14 @@ import copy
 import datetime
 import html
 import json
+import os
 import sys
 import tempfile
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[4]
-AUDIT_DIRECTORY = REPO_ROOT / ".agent/audits/codex-insights"
-DEFAULT_INPUT_PATH = AUDIT_DIRECTORY / "latest-narrative.json"
+CODEX_HOME = Path(os.environ.get("CODEX_HOME") or Path.home() / ".codex").expanduser()
+USAGE_DATA_DIRECTORY = CODEX_HOME / "usage-data"
+DEFAULT_INPUT_PATH = USAGE_DATA_DIRECTORY / "latest-narrative.json"
 UTC = datetime.timezone.utc
 
 SECTION_DEFINITIONS = (
@@ -627,9 +628,10 @@ def render_report(value: object) -> str:
 
 
 def report_path(now: datetime.datetime | None = None) -> Path:
-	"""Return the UTC-dated output path, replacing a same-day report on write."""
+	"""Return a UTC-timestamped path in Codex's global usage-data directory."""
 	now = datetime.datetime.now(UTC) if now is None else now
-	return AUDIT_DIRECTORY / f"report-{now.astimezone(UTC).date().isoformat()}.html"
+	timestamp = now.astimezone(UTC).strftime("%Y-%m-%d-%H%M%S")
+	return USAGE_DATA_DIRECTORY / f"report-{timestamp}.html"
 
 
 def write_html(value: object, path: Path) -> None:
@@ -639,7 +641,7 @@ def write_html(value: object, path: Path) -> None:
 
 
 def write_report(value: object) -> Path:
-	"""Write the narrative report to its current UTC-dated audit path."""
+	"""Write the narrative report to a UTC-timestamped usage-data path."""
 	path = report_path()
 	write_html(value, path)
 	return path
@@ -692,7 +694,7 @@ def fixture_narrative(hostile: bool = False) -> dict[str, object]:
 		"schema_version": 1,
 		"generated_at": "2026-08-09T12:00:00Z",
 		"source": {
-			"extraction_path": ".agent/audits/codex-insights/latest.json",
+			"extraction_path": "~/.codex/usage-data/latest.json",
 			"window": {
 				"since": "2026-08-05T00:00:00Z",
 				"until": "2026-08-06T00:00:00Z",
@@ -757,8 +759,12 @@ def run_selftest() -> None:
 	assert "<script" not in hostile_html.casefold()
 	assert "@import" not in hostile_html.casefold()
 
+	fixed_now = datetime.datetime(2026, 8, 9, 14, 30, 52, tzinfo=UTC)
+	expected_directory = Path(os.environ.get("CODEX_HOME") or Path.home() / ".codex").expanduser() / "usage-data"
+	assert report_path(fixed_now) == expected_directory / "report-2026-08-09-143052.html"
+
 	with tempfile.TemporaryDirectory() as directory:
-		output_path = Path(directory) / "report-2026-08-09.html"
+		output_path = Path(directory) / "report-2026-08-09-143052.html"
 		write_html(valid, output_path)
 		first_size = output_path.stat().st_size
 		write_html(fixture_narrative(hostile=True), output_path)
@@ -775,7 +781,7 @@ def parse_arguments() -> argparse.Namespace:
 		epilog=(
 			"Example: python3 src/skills/codex-insights/scripts/"
 			"codex_insights_render.py --input "
-			".agent/audits/codex-insights/latest-narrative.json"
+			"~/.codex/usage-data/latest-narrative.json"
 		),
 	)
 	parser.add_argument(
@@ -783,7 +789,7 @@ def parse_arguments() -> argparse.Namespace:
 		type=Path,
 		default=DEFAULT_INPUT_PATH,
 		metavar="PATH",
-		help="narrative JSON path (default: .agent/audits/codex-insights/latest-narrative.json)",
+		help="narrative JSON path (default: $CODEX_HOME/usage-data/latest-narrative.json)",
 	)
 	parser.add_argument(
 		"--selftest",

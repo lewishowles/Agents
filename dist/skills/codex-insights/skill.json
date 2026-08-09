@@ -18,7 +18,7 @@
 		"Editing AGENTS.md from an unaudited anecdote"
 	],
 	"filePatterns": ["latest.json", "latest-narrative.json", "codex_insights_*.py"],
-	"pathPatterns": [".agent/audits/codex-insights/**", "src/skills/codex-insights/**"],
+	"pathPatterns": ["**/.codex/usage-data/**", "src/skills/codex-insights/**"],
 	"dependencies": ["writing"],
 	"capabilities": {
 		"promptTriggering": true,

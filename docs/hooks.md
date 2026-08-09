@@ -59,7 +59,7 @@ Extension-to-skill mapping:
 | `latest.json` | `codex-insights`, `writing` |
 | `latest-narrative.json` | `codex-insights`, `writing` |
 | `codex_insights_*.py` | `codex-insights`, `writing` |
-| `.agent/audits/codex-insights/**` | `codex-insights`, `writing` |
+| `**/.codex/usage-data/**` | `codex-insights`, `writing` |
 | `src/skills/codex-insights/**` | `codex-insights`, `writing` |
 | `*.e2e.ts` | `test-e2e`, `code-style`, `test-unit`, `vue-project-stack` |
 | `*.e2e.js` | `test-e2e`, `code-style`, `test-unit`, `vue-project-stack` |
