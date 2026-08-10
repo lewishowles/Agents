@@ -238,20 +238,44 @@ def parsed_exit_code(value: object) -> int | None:
 	return int(match.group(1)) if match is not None else None
 
 
+def result_exit_code(result_payload: dict[str, object] | None) -> int | None:
+	"""Return structured or explicitly reported result exit code without inferring status."""
+	if result_payload is None:
+		return None
+
+	result_output = result_payload.get("output")
+	for value in (result_output, result_payload):
+		exit_code = exit_code_from_value(value)
+		if exit_code is not None:
+			return exit_code
+
+	for value in (result_output, result_payload):
+		exit_code = parsed_exit_code(value)
+		if exit_code is not None:
+			return exit_code
+
+	return None
+
+
 def tool_status(call_payload: dict[str, object], result_payload: dict[str, object] | None) -> tuple[str, int | None, str]:
 	"""Resolve tool status from structured error/status/exit evidence, else unknown."""
 	result_output = None if result_payload is None else result_payload.get("output")
+	exit_code = result_exit_code(result_payload)
 	if result_payload is not None and explicit_error(result_payload):
-		return "failure", None, "explicit_error"
+		return "failure", exit_code, "explicit_error"
 	if isinstance(result_output, dict) and explicit_error(result_output):
-		return "failure", None, "explicit_error"
+		return "failure", exit_code, "explicit_error"
 	if explicit_error(call_payload):
-		return "failure", None, "explicit_error"
+		return "failure", exit_code, "explicit_error"
 
 	for value, source in ((result_output, "structured_exit_code"), (result_payload, "structured_exit_code")):
-		exit_code = exit_code_from_value(value)
-		if exit_code is not None:
-			return ("success" if exit_code == 0 else "failure"), exit_code, source
+		structured_exit_code = exit_code_from_value(value)
+		if structured_exit_code is not None:
+			return (
+				"success" if structured_exit_code == 0 else "failure",
+				structured_exit_code,
+				source,
+			)
 
 	result_output_status = result_output.get("status") if isinstance(result_output, dict) else None
 	for value, source in (
@@ -264,9 +288,9 @@ def tool_status(call_payload: dict[str, object], result_payload: dict[str, objec
 			return status, None, source
 
 	for value, source in ((result_output, "parsed_exit_code"), (result_payload, "parsed_exit_code")):
-		exit_code = parsed_exit_code(value)
-		if exit_code is not None:
-			return ("success" if exit_code == 0 else "failure"), exit_code, source
+		parsed_code = parsed_exit_code(value)
+		if parsed_code is not None:
+			return "success" if parsed_code == 0 else "failure", parsed_code, source
 
 	return "unknown", None, "unavailable"
 
@@ -1105,7 +1129,7 @@ def run_selftest() -> None:
 		assert evidence_references_resolve(bounded_report)
 		assert tool_status({}, {"is_error": True, "output": {"exit_code": 0, "status": "success"}}) == (
 			"failure",
-			None,
+			0,
 			"explicit_error",
 		)
 		assert tool_status({}, {"output": {"exit_code": 1, "status": "success"}}) == (
