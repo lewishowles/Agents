@@ -1,7 +1,7 @@
 {
 	"name": "project-learn-from-source",
 	"title": "Project learn from source",
-	"description": "Use this skill when asked to inspect an external artefact and decide what the current repo should adopt directly, adopt in parts, or leave unchanged based on verified evidence.",
+	"description": "Use this skill to assess an external artefact at the user's requested level and identify verified lessons for the current repo.",
 	"do-not-use-when": [
 		"Reviewing a specific difficult agent session — use session-retrospective instead",
 		"Reviewing a code diff or PR — use code-review instead"
