@@ -33,6 +33,7 @@ If no generator exists, don't create manually. Inspect `AGENTS.md`, package scri
 
 1. **Explore** — read repo, identify patterns, tech, relevant files; check `PROGRESS.md`, `AGENTS.md`, `WORKSPACE.md`, `CONTEXT.md`, `README.md`
 2. **Ask** — identify all known decision-blocking ambiguities, constraints, tradeoffs, and alternatives, then ask them together. Do not cap this initial set. Ask further questions only when an answer reveals a material new unknown.
+   - For ambiguous or consequential work, group questions by dependency. In each round, ask every question whose prerequisites are settled, give a recommended default, then reassess after the reply. Do not ask downstream questions that assume an answer still open.
 3. **Discuss** — if multiple approaches exist, present them; don't pick silently
 4. **Plan** — create initial `PROGRESS.md` using standard schema below
 5. **Wait** — do not start until plan is reviewed and approved. For a task file, point to it rather than duplicating it in chat; the user quotes a passage to challenge it or answers an inline `## Open questions` entry. A genuinely trivial inline section can just be shown directly.

@@ -30,6 +30,7 @@ Run only when user asks and it exists in current shell.
 ## Workflow
 
 1. **Discuss** — identify all known decision-blocking questions about requirements, scope, and dependencies, then ask them together before editing `PROGRESS.md`. Do not cap this initial set. Ask further questions only when an answer reveals a material new unknown.
+   - For ambiguous or consequential work, group questions by dependency. In each round, ask every question whose prerequisites are settled, give a recommended default, then reassess after the reply. Do not ask downstream questions that assume an answer still open.
 2. **Risk triage** (opt-in) — identify high-risk files before planning:
    - **Git churn**: `git log --oneline --since="1 month ago" -- <path> | wc -l` — high recent change = defect-prone
    - **Complexity**: large files or high function counts (use a targeted symbol or file measure)
