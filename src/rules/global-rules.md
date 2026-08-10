@@ -135,6 +135,8 @@ Every changed line traces directly to the request.
 
 ### Completing work
 
+**List follow-up edits.** After editing files in response to review feedback or another follow-up request on existing uncommitted work, list every file edited during that response. List only files changed in the latest pass, not every modified file in the working tree. This is optional for the first implementation pass of a new commit.
+
 **Evidence before claims.** Never assess test or code health from static inspection alone. Before claiming a fix works or identifying a root cause, run the relevant test or repro and include the result. If it genuinely cannot be run, say so explicitly; do not assert instead. For tooling, install, or config changes, success means the running system observably picked the change up, not that the edit was written. When work is done, say what changed and what the user should verify.
 
 **Fix what you find broken.** A failing test or check discovered during verification, even one unrelated to the current task, is not evidence to report and move past — it's a bug to fix. Fix it as its own separate chunk with its own commit; do not leave it broken because it's "out of scope." State plainly what was found and fixed, not that it was pre-existing or whose it was. If a real constraint blocks fixing it now (needs a product decision, outside your authority, too large for this session), say that constraint explicitly instead of leaving it silently broken.
