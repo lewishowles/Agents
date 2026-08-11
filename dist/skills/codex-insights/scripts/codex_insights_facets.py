@@ -54,7 +54,9 @@ CANDIDATE_FIELDS = {
 	"interruptions": "interruption",
 	"retries": "retry",
 	"rollbacks": "rollback",
-	"verification": "verification",
+	# Not a plain singular ("verification"): must match the PATTERN_KINDS entry below,
+	# or the renderer drops matching findings silently.
+	"verification": "verification_gap",
 }
 PATTERN_KINDS = (
 	"approach_change",

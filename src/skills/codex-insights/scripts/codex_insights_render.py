@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate a Codex insights narrative and render a self-contained HTML report."""
+"""Validate the bound Codex insights provenance chain and render the actionable HTML report."""
 
 from __future__ import annotations
 
@@ -7,38 +7,46 @@ import argparse
 import copy
 import datetime
 import html
-import json
 import os
 import sys
 import tempfile
 from pathlib import Path
 
+import codex_insights_facets as facets
+
 CODEX_HOME = Path(os.environ.get("CODEX_HOME") or Path.home() / ".codex").expanduser()
 USAGE_DATA_DIRECTORY = CODEX_HOME / "usage-data"
-DEFAULT_INPUT_PATH = USAGE_DATA_DIRECTORY / "latest-narrative.json"
+DEFAULT_EXTRACTION_PATH = USAGE_DATA_DIRECTORY / "latest.json"
+DEFAULT_FACETS_PATH = USAGE_DATA_DIRECTORY / "latest-facets.json"
+DEFAULT_NARRATIVE_PATH = USAGE_DATA_DIRECTORY / "latest-narrative.json"
 UTC = datetime.timezone.utc
 
-SECTION_DEFINITIONS = (
-	("at-a-glance", "At a glance"),
-	("what-you-work-on", "What you work on"),
-	("how-you-use-codex", "How you use Codex"),
-	("what-is-working", "What is working"),
-	("where-things-go-wrong", "Where things go wrong"),
-	("codex-capabilities-to-try", "Codex capabilities to try"),
-	("new-ways-to-use-codex", "New ways to use Codex"),
-	("on-the-horizon", "On the horizon"),
+KIND_LABELS = {
+	"tool_failure": "Tool failure",
+	"verification_gap": "Verification gap",
+	"correction": "User correction",
+	"configuration_touch": "Configuration touch",
+	"successful_behaviour": "Successful behaviour",
+	"approach_change": "Approach change",
+	"retry": "Retry",
+	"interruption": "Interruption",
+	"rollback": "Rollback",
+}
+KIND_GROUPS = (
+	("failures", "Repeated failures", frozenset({"tool_failure", "verification_gap"})),
+	("corrections", "Repeated user corrections", frozenset({"correction"})),
+	("configuration", "Configuration opportunities", frozenset({"configuration_touch"})),
+	("successes", "Successful behaviours worth standardising", frozenset({"successful_behaviour"})),
+	("workflow", "Workflow patterns", frozenset({"approach_change", "retry", "interruption", "rollback"})),
 )
-CAPABILITY_SECTION_INDEX = 5
-CAPABILITY_KINDS = frozenset({"capability", "agents-md-addition"})
-VERIFICATION_BASES = frozenset({"official-documentation", "observed-local-capability"})
-TOP_LEVEL_KEYS = frozenset({"schema_version", "generated_at", "source", "sections"})
-SOURCE_KEYS = frozenset({"extraction_path", "window", "session_count"})
-WINDOW_KEYS = frozenset({"since", "until"})
-SECTION_KEYS = frozenset({"key", "title", "summary", "findings"})
-FINDING_KEYS = frozenset({"title", "text", "evidence"})
-CAPABILITY_FINDING_KEYS = FINDING_KEYS | frozenset({"kind", "verification"})
-EVIDENCE_KEYS = frozenset({"session_id", "timestamp", "source", "detail"})
-VERIFICATION_KEYS = frozenset({"basis", "source", "verified_on"})
+CONFIGURATION_STATUS_LABELS = {
+	"missing": "Missing — no matching guidance found",
+	"already_remediated": "Already remediated — guidance already covers this",
+	"present_but_ignored": "Present but ignored — guidance exists but was not followed",
+	"ambiguous": "Ambiguous — could not resolve to one configuration surface",
+	"unavailable": "Unavailable — the surface could not be read",
+	"not_applicable": "Not tied to a named configuration surface",
+}
 
 REPORT_STYLE = """
 :root {
@@ -52,6 +60,8 @@ REPORT_STYLE = """
   --accent: #005a9c;
   --focus: #005fcc;
   --highlight: #eff6ff;
+  --high-confidence: #0f5132;
+  --low-confidence: #664d03;
 }
 
 * {
@@ -119,7 +129,7 @@ h4 {
 }
 
 h1 {
-  max-width: 18ch;
+  max-width: 24ch;
   margin: 0;
   font-size: clamp(2rem, 5vw, 3rem);
 }
@@ -184,26 +194,55 @@ p {
 }
 
 .findings,
-.evidence-list {
+.lead-list,
+.evidence-list,
+.limitations-list {
   margin: 0;
   padding-left: 1.5rem;
 }
 
 .finding {
   min-width: 0;
-  margin-top: 1.5rem;
+  margin-top: 1.75rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--border);
 }
 
 .finding:first-child {
   margin-top: 0;
+  padding-top: 0;
+  border-top: none;
 }
 
-.finding-text {
-  margin-bottom: 0;
+.finding-meta {
+  margin: 0.5rem 0;
 }
 
+.badge {
+  display: inline-block;
+  margin: 0.15rem 0.35rem 0.15rem 0;
+  padding: 0.15rem 0.55rem;
+  color: var(--heading);
+  font-size: 0.85rem;
+  background: var(--highlight);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.badge-confidence-high {
+  color: var(--high-confidence);
+  border-color: var(--high-confidence);
+}
+
+.badge-confidence-low {
+  color: var(--low-confidence);
+  border-color: var(--low-confidence);
+}
+
+.proposed-change,
+.current-state,
 .evidence,
-.verification {
+.limitations {
   min-width: 0;
   margin-top: 1rem;
   padding: 0.9rem 1rem;
@@ -211,17 +250,21 @@ p {
   border-left: 0.3rem solid var(--accent);
 }
 
+.proposed-change h4,
+.current-state h4,
 .evidence h4,
-.verification h4 {
+.limitations h4 {
   margin-top: 0;
 }
 
-.evidence-list li {
+.evidence-list li,
+.limitations-list li {
   margin-top: 0.55rem;
   overflow-wrap: anywhere;
 }
 
-.evidence-list li:first-child {
+.evidence-list li:first-child,
+.limitations-list li:first-child {
   margin-top: 0;
 }
 
@@ -239,6 +282,18 @@ code {
   margin-bottom: 0;
   color: var(--muted);
   font-style: italic;
+}
+
+.appendix-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.appendix-table th,
+.appendix-table td {
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
 }
 
 .report-footer {
@@ -260,240 +315,17 @@ code {
 """.strip()
 
 
-class NarrativeValidationError(ValueError):
-	"""Describe one narrative input that does not meet the report schema."""
-
-
-def require_exact_mapping(
-	value: object,
-	expected_keys: frozenset[str],
-	location: str,
-) -> dict[str, object]:
-	"""Return a mapping when it has exactly the keys required at a schema location."""
-	if not isinstance(value, dict):
-		raise NarrativeValidationError(f"{location} must be an object")
-
-	actual_keys = set(value)
-	if actual_keys != expected_keys:
-		missing = sorted(expected_keys - actual_keys)
-		extra = sorted(actual_keys - expected_keys)
-		details = []
-		if missing:
-			details.append(f"missing {', '.join(missing)}")
-		if extra:
-			details.append(f"unexpected {', '.join(extra)}")
-		raise NarrativeValidationError(f"{location} has invalid keys: {'; '.join(details)}")
-
-	return value
-
-
-def require_string(value: object, location: str) -> str:
-	"""Return a non-empty string value or reject the schema location."""
-	if not isinstance(value, str) or not value.strip():
-		raise NarrativeValidationError(f"{location} must be a non-empty string")
-
-	return value
-
-
-def require_non_negative_integer(value: object, location: str) -> int:
-	"""Return a non-negative integer while rejecting booleans and other values."""
-	if isinstance(value, bool) or not isinstance(value, int) or value < 0:
-		raise NarrativeValidationError(f"{location} must be a non-negative integer")
-
-	return value
-
-
-def parse_utc_timestamp(value: object, location: str) -> tuple[str, datetime.datetime]:
-	"""Return the original UTC timestamp and its parsed value."""
-	text = require_string(value, location)
-	normalised = f"{text[:-1]}+00:00" if text.endswith("Z") else text
-	try:
-		parsed = datetime.datetime.fromisoformat(normalised)
-	except ValueError as error:
-		raise NarrativeValidationError(f"{location} must be an ISO-8601 timestamp") from error
-
-	if parsed.tzinfo is None or parsed.utcoffset() != datetime.timedelta(0):
-		raise NarrativeValidationError(f"{location} must include an explicit UTC offset")
-
-	return text, parsed
-
-
-def require_optional_utc_timestamp(
-	value: object,
-	location: str,
-) -> str | None:
-	"""Return an optional UTC timestamp, preserving null as unavailable."""
-	if value is None:
-		return None
-
-	text, _ = parse_utc_timestamp(value, location)
-	return text
-
-
-def require_date(value: object, location: str) -> str:
-	"""Return a calendar date in the verification schema's YYYY-MM-DD form."""
-	text = require_string(value, location)
-	try:
-		datetime.date.fromisoformat(text)
-	except ValueError as error:
-		raise NarrativeValidationError(f"{location} must be a YYYY-MM-DD date") from error
-
-	if len(text) != 10:
-		raise NarrativeValidationError(f"{location} must be a YYYY-MM-DD date")
-
-	return text
-
-
-def validate_evidence(value: object, location: str) -> list[dict[str, object]]:
-	"""Validate and normalise the evidence objects attached to one finding."""
-	if not isinstance(value, list) or not value:
-		raise NarrativeValidationError(f"{location} must be a non-empty array")
-
-	validated = []
-	for index, evidence in enumerate(value):
-		item_location = f"{location}[{index}]"
-		item = require_exact_mapping(evidence, EVIDENCE_KEYS, item_location)
-		timestamp, _ = parse_utc_timestamp(item["timestamp"], f"{item_location}.timestamp")
-		validated.append(
-			{
-				"session_id": require_string(item["session_id"], f"{item_location}.session_id"),
-				"timestamp": timestamp,
-				"source": require_string(item["source"], f"{item_location}.source"),
-				"detail": require_string(item["detail"], f"{item_location}.detail"),
-			}
-		)
-
-	return validated
-
-
-def validate_verification(value: object, location: str) -> dict[str, str]:
-	"""Validate capability evidence provenance and its verification date."""
-	verification = require_exact_mapping(value, VERIFICATION_KEYS, location)
-	basis = require_string(verification["basis"], f"{location}.basis")
-	if basis not in VERIFICATION_BASES:
-		raise NarrativeValidationError(
-			f"{location}.basis must be one of: {', '.join(sorted(VERIFICATION_BASES))}"
-		)
-
-	source = require_string(verification["source"], f"{location}.source")
-	if basis == "official-documentation" and not source.startswith("https://"):
-		raise NarrativeValidationError(
-			f"{location}.source must be an HTTPS documentation source for official verification"
-		)
-	if basis == "observed-local-capability" and not source.startswith("local:"):
-		raise NarrativeValidationError(
-			f"{location}.source must start with local: for local verification"
-		)
-
-	return {
-		"basis": basis,
-		"source": source,
-		"verified_on": require_date(verification["verified_on"], f"{location}.verified_on"),
-	}
-
-
-def validate_finding(
-	value: object,
-	location: str,
-	capability_section: bool,
-) -> dict[str, object]:
-	"""Validate one finding and require verification metadata in section six."""
-	expected_keys = CAPABILITY_FINDING_KEYS if capability_section else FINDING_KEYS
-	finding = require_exact_mapping(value, expected_keys, location)
-	validated: dict[str, object] = {
-		"title": require_string(finding["title"], f"{location}.title"),
-		"text": require_string(finding["text"], f"{location}.text"),
-		"evidence": validate_evidence(finding["evidence"], f"{location}.evidence"),
-	}
-	if capability_section:
-		kind = require_string(finding["kind"], f"{location}.kind")
-		if kind not in CAPABILITY_KINDS:
-			raise NarrativeValidationError(
-				f"{location}.kind must be one of: {', '.join(sorted(CAPABILITY_KINDS))}"
-			)
-		validated["kind"] = kind
-		validated["verification"] = validate_verification(
-			finding["verification"], f"{location}.verification"
-		)
-
-	return validated
-
-
-def validate_narrative(value: object) -> dict[str, object]:
-	"""Validate and normalise a complete eight-section narrative document."""
-	narrative = require_exact_mapping(value, TOP_LEVEL_KEYS, "narrative")
-	schema_version = narrative["schema_version"]
-	if isinstance(schema_version, bool) or schema_version != 1:
-		raise NarrativeValidationError("narrative.schema_version must be 1")
-
-	generated_at, _ = parse_utc_timestamp(narrative["generated_at"], "narrative.generated_at")
-	source = require_exact_mapping(narrative["source"], SOURCE_KEYS, "narrative.source")
-	window = require_exact_mapping(source["window"], WINDOW_KEYS, "narrative.source.window")
-	since = require_optional_utc_timestamp(window["since"], "narrative.source.window.since")
-	until = require_optional_utc_timestamp(window["until"], "narrative.source.window.until")
-	if since is not None and until is not None:
-		_, since_value = parse_utc_timestamp(since, "narrative.source.window.since")
-		_, until_value = parse_utc_timestamp(until, "narrative.source.window.until")
-		if until_value < since_value:
-			raise NarrativeValidationError("narrative.source.window.until must not precede since")
-
-	sections = narrative["sections"]
-	if not isinstance(sections, list) or len(sections) != len(SECTION_DEFINITIONS):
-		raise NarrativeValidationError("narrative.sections must contain exactly eight sections")
-
-	validated_sections = []
-	for index, (expected_key, expected_title) in enumerate(SECTION_DEFINITIONS):
-		location = f"narrative.sections[{index}]"
-		section = require_exact_mapping(sections[index], SECTION_KEYS, location)
-		if section["key"] != expected_key or section["title"] != expected_title:
-			raise NarrativeValidationError(
-				f"{location} must be {expected_key!r} / {expected_title!r} in canonical order"
-			)
-		findings = section["findings"]
-		if not isinstance(findings, list):
-			raise NarrativeValidationError(f"{location}.findings must be an array")
-		validated_sections.append(
-			{
-				"key": expected_key,
-				"title": expected_title,
-				"summary": require_string(section["summary"], f"{location}.summary"),
-				"findings": [
-					validate_finding(
-						finding,
-						f"{location}.findings[{finding_index}]",
-						index == CAPABILITY_SECTION_INDEX,
-					)
-					for finding_index, finding in enumerate(findings)
-				],
-			}
-		)
-
-	return {
-		"schema_version": 1,
-		"generated_at": generated_at,
-		"source": {
-			"extraction_path": require_string(
-				source["extraction_path"], "narrative.source.extraction_path"
-			),
-			"window": {"since": since, "until": until},
-			"session_count": require_non_negative_integer(
-				source["session_count"], "narrative.source.session_count"
-			),
-		},
-		"sections": validated_sections,
-	}
-
-
-def load_narrative(path: Path) -> dict[str, object]:
-	"""Read and validate one narrative JSON file."""
-	try:
-		value = json.loads(path.read_text(encoding="utf-8"))
-	except OSError as error:
-		raise NarrativeValidationError(f"could not read {path}: {error}") from error
-	except json.JSONDecodeError as error:
-		raise NarrativeValidationError(f"{path} is not valid JSON: {error.msg}") from error
-
-	return validate_narrative(value)
+def load_and_validate(
+	extraction_path: Path, facets_path: Path, narrative_path: Path
+) -> tuple[dict[str, object], dict[str, object], dict[str, object]]:
+	"""Validate the extraction, facets, and narrative provenance chain before rendering."""
+	extraction_info = facets.validate_extraction(extraction_path)
+	facets_document = facets.load_json(facets_path)
+	facets.validate_facets(facets_document, extraction_info)
+	facets_sha256 = facets.hash_bytes(facets_path.read_bytes())
+	narrative_document = facets.load_json(narrative_path)
+	facets.validate_narrative(narrative_document, extraction_info, facets_document, facets_sha256)
+	return extraction_info, facets_document, narrative_document
 
 
 def escaped(value: object) -> str:
@@ -501,66 +333,230 @@ def escaped(value: object) -> str:
 	return html.escape(str(value), quote=True)
 
 
-def display_optional(value: str | None) -> str:
+def display_optional(value: object) -> str:
 	"""Render an unavailable optional value without inventing evidence."""
-	return "Not available" if value is None else escaped(value)
+	return "Not available" if value in (None, "") else escaped(value)
 
 
-def render_evidence(evidence: list[dict[str, object]]) -> list[str]:
-	"""Render evidence in source order with all values escaped."""
+def finding_sort_key(finding: dict[str, object]) -> tuple[int, int, int]:
+	"""Rank findings by confidence, then occurrence, then conversation spread."""
+	frequency = finding["frequency"]
+	return (
+		0 if finding["confidence"] == "high" else 1,
+		-int(frequency["occurrences"]),
+		-int(frequency["unique_conversations"]),
+	)
+
+
+def render_lead_list(findings: list[dict[str, object]]) -> list[str]:
+	"""Render the ranked proposed-change digest that leads the report."""
+	if not findings:
+		return ['<p class="empty">No repeated pattern reached the two-conversation recurrence bar in this window.</p>']
+
+	lines = ['<ol class="lead-list">']
+	for finding in sorted(findings, key=finding_sort_key):
+		kind_label = KIND_LABELS.get(finding["kind"], finding["kind"])
+		lines.append(
+			"<li>"
+			f'<a href="#finding-{escaped(finding["finding_id"])}">'
+			f"{escaped(kind_label)}: {escaped(finding['proposed_target'])}"
+			"</a> — "
+			f"{escaped(finding['exact_change_or_next_investigation'])}"
+			"</li>"
+		)
+	lines.append("</ol>")
+	return lines
+
+
+def render_current_state(current_configuration_status: dict[str, object]) -> list[str]:
+	"""Render the current configuration state read before proposing a change."""
+	status = current_configuration_status.get("status")
+	lines = [
+		'<div class="current-state">',
+		"<h4>Current configuration state</h4>",
+		f"<p>{escaped(CONFIGURATION_STATUS_LABELS.get(status, status))}</p>",
+	]
+	surfaces = current_configuration_status.get("surfaces") or []
+	if surfaces:
+		lines.append('<ul class="evidence-list">')
+		for surface in surfaces:
+			path = display_optional(surface.get("path") or surface.get("surface"))
+			surface_status = escaped(CONFIGURATION_STATUS_LABELS.get(surface.get("status"), surface.get("status")))
+			lines.append(f"<li><code>{path}</code>: {surface_status}</li>")
+		lines.append("</ul>")
+	lines.append("</div>")
+	return lines
+
+
+def render_evidence(citations: list[dict[str, object]]) -> list[str]:
+	"""Render bounded supporting evidence citations in source order."""
 	lines = [
 		'<div class="evidence">',
-		"<h4>Evidence</h4>",
+		"<h4>Supporting evidence</h4>",
 		'<ul class="evidence-list">',
 	]
-	for item in evidence:
+	for citation in citations:
+		conversation_id = display_optional(citation.get("conversation_id"))
+		timestamp = citation.get("timestamp")
+		time_html = (
+			f'<time datetime="{escaped(timestamp)}">{escaped(timestamp)}</time>'
+			if timestamp
+			else "<span>time unavailable</span>"
+		)
 		lines.append(
-				"<li>"
-				f"<code>{escaped(item['session_id'])}</code> "
-				f'<time datetime="{escaped(item["timestamp"])}">{escaped(item["timestamp"])}</time>'
-				'<span class="evidence-detail">'
-				f"<strong>{escaped(item['source'])}:</strong> {escaped(item['detail'])}"
-				"</span>"
-				"</li>"
+			"<li>"
+			f"<code>{conversation_id}</code> {time_html}"
+			'<span class="evidence-detail">'
+			f"{escaped(citation.get('detail') or 'No excerpt retained')}"
+			"</span>"
+			"</li>"
 		)
 	lines.extend(["</ul>", "</div>"])
 	return lines
 
 
-def render_verification(verification: dict[str, str]) -> list[str]:
-	"""Render the provenance required for a capability suggestion."""
-	return [
-		'<div class="verification">',
-		"<h4>Verification</h4>",
-		"<p>"
-		f"<strong>Basis:</strong> {escaped(verification['basis'])}. "
-		f"<strong>Source:</strong> <code>{escaped(verification['source'])}</code>. "
-		f"<strong>Verified:</strong> <time datetime=\"{escaped(verification['verified_on'])}\">"
-		f"{escaped(verification['verified_on'])}</time>."
-		"</p>",
-		"</div>",
-	]
+def render_limitations(limitations: list[str]) -> list[str]:
+	"""Render counterevidence and limitations attached to one finding."""
+	lines = ['<div class="limitations">', "<h4>Limitations</h4>", '<ul class="limitations-list">']
+	for limitation in limitations:
+		lines.append(f"<li>{escaped(limitation)}</li>")
+	lines.extend(["</ul>", "</div>"])
+	return lines
 
 
 def render_finding(finding: dict[str, object]) -> list[str]:
-	"""Render one finding, its evidence, and optional capability verification."""
+	"""Render one finding with its evidence strength, current state, and proposed change."""
+	kind_label = KIND_LABELS.get(finding["kind"], finding["kind"])
+	frequency = finding["frequency"]
+	time_span = finding["time_span"]
+	confidence = finding["confidence"]
 	lines = [
-		'<li class="finding">',
-		f"<h3>{escaped(finding['title'])}</h3>",
-		f'<p class="finding-text">{escaped(finding["text"])}</p>',
+		f'<li class="finding" id="finding-{escaped(finding["finding_id"])}">',
+		f"<h3>{escaped(kind_label)}: {escaped(finding['observed_pattern'])}</h3>",
+		'<p class="finding-meta">',
+		f'<span class="badge badge-confidence-{escaped(confidence)}">Confidence: {escaped(confidence)}</span>',
+		f'<span class="badge">{escaped(frequency["occurrences"])} occurrences '
+		f'across {escaped(frequency["unique_conversations"])} conversations</span>',
+		f'<span class="badge">{display_optional(time_span.get("since"))} '
+		f'to {display_optional(time_span.get("until"))}</span>',
+		"</p>",
+		f"<p><strong>Consequence:</strong> {escaped(finding['consequence'])}</p>",
+		'<div class="proposed-change">',
+		"<h4>Proposed change</h4>",
+		f"<p><strong>Owner:</strong> {escaped(finding['owner'])}. "
+		f"<strong>Layer:</strong> {escaped(finding['proposed_layer'])}. "
+		f"<strong>Target:</strong> {escaped(finding['proposed_target'])}.</p>",
+		f"<p>{escaped(finding['exact_change_or_next_investigation'])}</p>",
+		"</div>",
 	]
-	lines.extend(render_evidence(finding["evidence"]))
-	if "verification" in finding:
-		lines.extend(render_verification(finding["verification"]))
+	lines.extend(render_current_state(finding["current_configuration_status"]))
+	lines.extend(render_evidence(finding["supporting_evidence"]))
+	lines.extend(render_limitations(finding["counterevidence_or_limitations"]))
 	lines.append("</li>")
 	return lines
 
 
-def render_report(value: object) -> str:
-	"""Return a self-contained accessible HTML report for a valid narrative."""
-	narrative = validate_narrative(value)
-	source = narrative["source"]
-	window = source["window"]
+def render_category_section(
+	section_id: str, title: str, findings: list[dict[str, object]]
+) -> list[str]:
+	"""Render one categorised section of findings, or its explicit empty state."""
+	lines = [
+		f'<section id="{section_id}" class="report-section" aria-labelledby="{section_id}-title">',
+		f'<h2 id="{section_id}-title">{escaped(title)}</h2>',
+	]
+	if findings:
+		lines.append('<ul class="findings">')
+		for finding in sorted(findings, key=finding_sort_key):
+			lines.extend(render_finding(finding))
+		lines.append("</ul>")
+	else:
+		lines.append(f'<p class="empty">No evidenced {escaped(title.lower())} were found in this window.</p>')
+	lines.append("</section>")
+	return lines
+
+
+def render_evidence_limits_section(
+	section_id: str, facets_document: dict[str, object], narrative_document: dict[str, object]
+) -> list[str]:
+	"""Render the deduplicated evidence limits carried from facets and narrative."""
+	limitations = list(dict.fromkeys(facets_document.get("limitations", []) + narrative_document.get("limitations", [])))
+	counts = facets_document.get("counts", {})
+	illustrated_only = counts.get("pattern_count", 0) - counts.get("repeated_pattern_count", 0)
+	if illustrated_only:
+		limitations.append(
+			f"{illustrated_only} pattern(s) were observed once and are not shown; "
+			"a repeated pattern needs at least two unique conversations."
+		)
+	lines = [
+		f'<section id="{section_id}" class="report-section" aria-labelledby="{section_id}-title">',
+		f'<h2 id="{section_id}-title">Evidence limits</h2>',
+	]
+	if limitations:
+		lines.append('<ul class="limitations-list">')
+		for limitation in limitations:
+			lines.append(f"<li>{escaped(limitation)}</li>")
+		lines.append("</ul>")
+	else:
+		lines.append('<p class="empty">No evidence limits were recorded for this window.</p>')
+	lines.append("</section>")
+	return lines
+
+
+def render_appendix_section(
+	section_id: str, extraction_info: dict[str, object], facets_document: dict[str, object]
+) -> list[str]:
+	"""Render repository, rollout, conversation, and pattern totals as a supporting appendix."""
+	extraction_counts = extraction_info["document"].get("counts", {})
+	facets_counts = facets_document.get("counts", {})
+	project_paths = {
+		rollout.get("project_path")
+		for rollout in extraction_info["rollout_index"].values()
+		if rollout.get("project_path")
+	}
+	binding = extraction_info["binding"]
+	rows = [
+		("Repository directories touched", str(len(project_paths))),
+		("Rollouts extracted", str(extraction_counts.get("rollout_count", 0))),
+		("Conversations", str(extraction_counts.get("conversation_count", 0))),
+		("Subagent rollouts", str(extraction_counts.get("subagent_rollout_count", 0))),
+		("Conversation facets classified", str(facets_counts.get("conversation_facet_count", 0))),
+		("Patterns observed", str(facets_counts.get("pattern_count", 0))),
+		("Repeated patterns promoted to findings", str(facets_counts.get("repeated_pattern_count", 0))),
+		("Extraction schema", str(binding.get("extraction_schema_version"))),
+		("Extraction SHA-256", str(binding.get("extraction_sha256"))),
+	]
+	lines = [
+		f'<section id="{section_id}" class="report-section" aria-labelledby="{section_id}-title">',
+		f'<h2 id="{section_id}-title">Appendix: totals and provenance</h2>',
+		'<table class="appendix-table">',
+		"<tbody>",
+	]
+	for label, value in rows:
+		lines.append(f"<tr><th scope=\"row\">{escaped(label)}</th><td>{escaped(value)}</td></tr>")
+	lines.extend(["</tbody>", "</table>", "</section>"])
+	return lines
+
+
+def render_report(
+	narrative_document: dict[str, object],
+	facets_document: dict[str, object],
+	extraction_info: dict[str, object],
+) -> str:
+	"""Return a self-contained accessible HTML report for one validated provenance chain."""
+	findings = narrative_document.get("findings", [])
+	window = narrative_document["provenance"]["window"]
+
+	sections: list[tuple[str, str, list[str]]] = []
+	for group_id, title, kinds in KIND_GROUPS:
+		group_findings = [finding for finding in findings if finding["kind"] in kinds]
+		sections.append((group_id, title, render_category_section(group_id, title, group_findings)))
+	sections.append(
+		("evidence-limits", "Evidence limits", render_evidence_limits_section("evidence-limits", facets_document, narrative_document))
+	)
+	sections.append(
+		("appendix", "Appendix: totals and provenance", render_appendix_section("appendix", extraction_info, facets_document))
+	)
+
 	lines = [
 		"<!doctype html>",
 		'<html lang="en">',
@@ -578,46 +574,37 @@ def render_report(value: object) -> str:
 		'<div class="page-width">',
 		"<h1>Codex insights report</h1>",
 		'<p class="metadata">',
-		f"Generated {escaped(narrative['generated_at'])}. "
-		f"Analysed {escaped(source['session_count'])} sessions. "
-		f"Window: {display_optional(window['since'])} to {display_optional(window['until'])}.",
+		f"Generated {escaped(narrative_document['generated_at'])}. "
+		f"Window: {display_optional(window.get('since'))} to {display_optional(window.get('until'))}.",
 		"</p>",
 		"</div>",
 		"</header>",
 		'<nav class="section-nav" aria-label="Report sections">',
 		'<div class="page-width">',
 		"<ol>",
+		'<li><a href="#proposed-changes">Proposed changes</a></li>',
 	]
-	for index, (_, title) in enumerate(SECTION_DEFINITIONS, start=1):
-		lines.append(f'<li><a href="#section-{index}">{escaped(title)}</a></li>')
+	for section_id, title, _ in sections:
+		lines.append(f'<li><a href="#{section_id}">{escaped(title)}</a></li>')
 	lines.extend(["</ol>", "</div>", "</nav>"])
-	lines.extend(['<main id="main" class="report-main page-width" tabindex="-1">'])
-
-	for index, section in enumerate(narrative["sections"], start=1):
-		section_id = f"section-{index}"
-		lines.extend(
-			[
-				f'<section id="{section_id}" class="report-section" aria-labelledby="{section_id}-title">',
-				f'<h2 id="{section_id}-title">{escaped(section["title"])}</h2>',
-				f'<p class="section-summary">{escaped(section["summary"])}</p>',
-			]
-		)
-		findings = section["findings"]
-		if findings:
-			lines.append('<ul class="findings">')
-			for finding in findings:
-				lines.extend(render_finding(finding))
-			lines.append("</ul>")
-		else:
-			lines.append('<p class="empty">No evidenced findings were recorded for this section.</p>')
-		lines.append("</section>")
-
+	lines.append('<main id="main" class="report-main page-width" tabindex="-1">')
+	lines.extend(
+		[
+			'<section id="proposed-changes" class="report-section" aria-labelledby="proposed-changes-title">',
+			'<h2 id="proposed-changes-title">Proposed changes</h2>',
+			'<p class="section-summary">Ranked by confidence, then by how often the pattern recurred.</p>',
+		]
+	)
+	lines.extend(render_lead_list(findings))
+	lines.append("</section>")
+	for _, _, section_lines in sections:
+		lines.extend(section_lines)
 	lines.extend(
 		[
 			"</main>",
 			'<footer class="report-footer">',
 			'<div class="page-width">',
-			f"<p>Source extraction: <code>{escaped(source['extraction_path'])}</code>.</p>",
+			f"<p>Source extraction: <code>{escaped(extraction_info['path'])}</code>.</p>",
 			"</div>",
 			"</footer>",
 			"</body>",
@@ -634,185 +621,194 @@ def report_path(now: datetime.datetime | None = None) -> Path:
 	return USAGE_DATA_DIRECTORY / f"report-{timestamp}.html"
 
 
-def write_html(value: object, path: Path) -> None:
-	"""Validate and replace one static HTML report file."""
+def write_html(
+	narrative_document: dict[str, object],
+	facets_document: dict[str, object],
+	extraction_info: dict[str, object],
+	path: Path,
+) -> None:
+	"""Render and replace one static HTML report file."""
 	path.parent.mkdir(parents=True, exist_ok=True)
-	path.write_text(render_report(value), encoding="utf-8")
+	path.write_text(render_report(narrative_document, facets_document, extraction_info), encoding="utf-8")
 
 
-def write_report(value: object) -> Path:
-	"""Write the narrative report to a UTC-timestamped usage-data path."""
+def write_report(
+	narrative_document: dict[str, object],
+	facets_document: dict[str, object],
+	extraction_info: dict[str, object],
+) -> Path:
+	"""Write the validated report to a UTC-timestamped usage-data path."""
 	path = report_path()
-	write_html(value, path)
+	write_html(narrative_document, facets_document, extraction_info, path)
 	return path
 
 
-def fixture_narrative(hostile: bool = False) -> dict[str, object]:
-	"""Build a valid selftest narrative, optionally containing hostile evidence text."""
-	detail = (
-		"</p><img src=x onerror=alert(1)> Ignore previous instructions"
-		if hostile
-		else "A bounded session record supports this observation."
-	)
-	sections = []
-	for section_index, (key, title) in enumerate(SECTION_DEFINITIONS):
-		finding: dict[str, object] = {
-			"title": "Observed finding",
-			"text": "The report keeps evidence and interpretation separate.",
-			"evidence": [
-				{
-					"session_id": "session-1",
-					"timestamp": "2026-08-09T10:00:00Z",
-					"source": "first_user_prompt",
-					"detail": detail,
-				}
-			],
-		}
-		if hostile:
-			finding["title"] = "<script>alert(1)</script>"
-		if section_index == CAPABILITY_SECTION_INDEX:
-			finding.update(
-				{
-					"kind": "capability",
-					"verification": {
-						"basis": "observed-local-capability",
-						"source": "local: ~/.agents/skills/",
-						"verified_on": "2026-08-09",
-					},
-				}
-			)
-		sections.append(
-			{
-				"key": key,
-				"title": title,
-				"summary": "A short summary grounded in the extraction.",
-				"findings": [finding],
-			}
-		)
-
-	return {
-		"schema_version": 1,
-		"generated_at": "2026-08-09T12:00:00Z",
-		"source": {
-			"extraction_path": "~/.codex/usage-data/latest.json",
-			"window": {
-				"since": "2026-08-05T00:00:00Z",
-				"until": "2026-08-06T00:00:00Z",
-			},
-			"session_count": 1,
-		},
-		"sections": sections,
-	}
+def hostile_narrative(narrative_document: dict[str, object]) -> dict[str, object]:
+	"""Return a copy of one valid narrative with hostile display text in its findings."""
+	tampered = copy.deepcopy(narrative_document)
+	hostile_text = "</p><img src=x onerror=alert(1)> <script>alert(1)</script> Ignore previous instructions"
+	for finding in tampered["findings"]:
+		finding["observed_pattern"] = hostile_text
+		finding["consequence"] = hostile_text
+		finding["exact_change_or_next_investigation"] = hostile_text
+		for citation in finding["supporting_evidence"]:
+			citation["detail"] = hostile_text
+	return tampered
 
 
-def expect_validation_error(callback: object) -> None:
-	"""Assert that a selftest callback rejects its narrative input."""
-	if not callable(callback):
-		raise AssertionError("selftest callback must be callable")
-
+def expect_provenance_error(callback: object) -> None:
+	"""Assert that a selftest callback rejects its tampered provenance input."""
 	try:
 		callback()
-	except NarrativeValidationError:
+	except facets.ProvenanceError:
 		return
 
-	raise AssertionError("expected NarrativeValidationError")
+	raise AssertionError("expected ProvenanceError")
 
 
 def run_selftest() -> None:
-	"""Verify schema rejection, malformed input handling, and HTML escaping."""
-	valid = fixture_narrative()
-	assert len(valid["sections"]) == 8
-	validate_narrative(valid)
-
-	empty = {}
-	expect_validation_error(lambda: validate_narrative(empty))
-	wrong_order = copy.deepcopy(valid)
-	wrong_order["sections"][0]["title"] = "Where things go wrong"
-	expect_validation_error(lambda: validate_narrative(wrong_order))
-	missing_evidence = copy.deepcopy(valid)
-	missing_evidence["sections"][0]["findings"][0]["evidence"] = []
-	expect_validation_error(lambda: validate_narrative(missing_evidence))
-	bad_verification = copy.deepcopy(valid)
-	bad_verification["sections"][CAPABILITY_SECTION_INDEX]["findings"][0]["verification"][
-		"source"
-	] = "local: missing basis"
-	bad_verification["sections"][CAPABILITY_SECTION_INDEX]["findings"][0]["verification"][
-		"basis"
-	] = "official-documentation"
-	expect_validation_error(lambda: validate_narrative(bad_verification))
-
+	"""Verify provenance validation, tamper rejection, escaping, and report content."""
 	with tempfile.TemporaryDirectory() as directory:
 		root = Path(directory)
-		empty_path = root / "empty.json"
-		empty_path.write_text("", encoding="utf-8")
-		malformed_path = root / "malformed.json"
-		malformed_path.write_text("{not json", encoding="utf-8")
-		expect_validation_error(lambda: load_narrative(empty_path))
-		expect_validation_error(lambda: load_narrative(malformed_path))
+		project = root / "project"
+		project.mkdir()
 
-	hostile_html = render_report(fixture_narrative(hostile=True))
-	assert "<script" not in hostile_html.casefold()
-	assert "<img" not in hostile_html.casefold()
-	assert "&lt;script&gt;" in hostile_html
-	assert "&lt;/p&gt;&lt;img" in hostile_html
-	assert "<link" not in hostile_html.casefold()
-	assert "<script" not in hostile_html.casefold()
-	assert "@import" not in hostile_html.casefold()
+		extraction_path = root / "latest.json"
+		facets.write_json(extraction_path, facets.fixture_extraction(project))
+		extraction_info = facets.validate_extraction(extraction_path)
+		facets_document = facets.make_facets(extraction_info)
+		facets.validate_facets(facets_document, extraction_info)
+		facets_path = root / "latest-facets.json"
+		facets.write_json(facets_path, facets_document)
+		facets_sha256 = facets.hash_bytes(facets_path.read_bytes())
+		narrative_document = facets.make_narrative(facets_document, extraction_info, facets_sha256)
+		facets.validate_narrative(narrative_document, extraction_info, facets_document, facets_sha256)
+		narrative_path = root / "latest-narrative.json"
+		facets.write_json(narrative_path, narrative_document)
 
-	fixed_now = datetime.datetime(2026, 8, 9, 14, 30, 52, tzinfo=UTC)
-	expected_directory = Path(os.environ.get("CODEX_HOME") or Path.home() / ".codex").expanduser() / "usage-data"
-	assert report_path(fixed_now) == expected_directory / "report-2026-08-09-143052.html"
+		loaded_extraction_info, loaded_facets, loaded_narrative = load_and_validate(
+			extraction_path, facets_path, narrative_path
+		)
+		assert loaded_narrative["findings"]
 
-	with tempfile.TemporaryDirectory() as directory:
-		output_path = Path(directory) / "report-2026-08-09-143052.html"
-		write_html(valid, output_path)
+		report = render_report(loaded_narrative, loaded_facets, loaded_extraction_info)
+		assert "Proposed changes" in report
+		assert "Repeated failures" in report
+		assert "Appendix: totals and provenance" in report
+		for finding in loaded_narrative["findings"]:
+			assert f'id="finding-{finding["finding_id"]}"' in report
+			assert finding["exact_change_or_next_investigation"] in report
+
+		hostile = hostile_narrative(loaded_narrative)
+		hostile_report = render_report(hostile, loaded_facets, loaded_extraction_info)
+		assert "<script" not in hostile_report.casefold()
+		assert "<img" not in hostile_report.casefold()
+		assert "&lt;script&gt;" in hostile_report
+		assert "&lt;/p&gt;&lt;img" in hostile_report
+
+		empty_findings_narrative = copy.deepcopy(loaded_narrative)
+		empty_findings_narrative["findings"] = []
+		empty_report = render_report(empty_findings_narrative, loaded_facets, loaded_extraction_info)
+		assert "No repeated pattern reached the two-conversation recurrence bar" in empty_report
+
+		tampered_extraction = facets.load_json(extraction_path)
+		tampered_extraction["counts"]["rollout_count"] = 1
+		tampered_extraction_path = root / "tampered-extraction.json"
+		facets.write_json(tampered_extraction_path, tampered_extraction)
+		expect_provenance_error(
+			lambda: load_and_validate(tampered_extraction_path, facets_path, narrative_path)
+		)
+
+		tampered_facets = facets.load_json(facets_path)
+		tampered_facets["provenance"]["input_sha256"] = "c" * 64
+		tampered_facets_path = root / "tampered-facets.json"
+		facets.write_json(tampered_facets_path, tampered_facets)
+		expect_provenance_error(
+			lambda: load_and_validate(extraction_path, tampered_facets_path, narrative_path)
+		)
+
+		tampered_narrative = facets.load_json(narrative_path)
+		tampered_narrative["provenance"]["extraction_sha256"] = "d" * 64
+		tampered_narrative_path = root / "tampered-narrative.json"
+		facets.write_json(tampered_narrative_path, tampered_narrative)
+		expect_provenance_error(
+			lambda: load_and_validate(extraction_path, facets_path, tampered_narrative_path)
+		)
+
+		fixed_now = datetime.datetime(2026, 8, 9, 14, 30, 52, tzinfo=UTC)
+		expected_directory = Path(os.environ.get("CODEX_HOME") or Path.home() / ".codex").expanduser() / "usage-data"
+		assert report_path(fixed_now) == expected_directory / "report-2026-08-09-143052.html"
+
+		output_path = root / "report-2026-08-09-143052.html"
+		write_html(loaded_narrative, loaded_facets, loaded_extraction_info, output_path)
 		first_size = output_path.stat().st_size
-		write_html(fixture_narrative(hostile=True), output_path)
+		write_html(hostile, loaded_facets, loaded_extraction_info, output_path)
 		assert output_path.stat().st_size != first_size
-		assert output_path.read_text(encoding="utf-8") == hostile_html
+		assert output_path.read_text(encoding="utf-8") == hostile_report
 
 	print("codex_insights_render selftest passed")
 
 
 def parse_arguments() -> argparse.Namespace:
-	"""Parse the narrative input path or the fixture-based selftest flag."""
+	"""Parse the extraction, facets, and narrative input paths or the isolated self-test flag."""
 	parser = argparse.ArgumentParser(
 		description=__doc__,
 		epilog=(
 			"Example: python3 src/skills/codex-insights/scripts/"
-			"codex_insights_render.py --input "
+			"codex_insights_render.py --narrative "
 			"~/.codex/usage-data/latest-narrative.json"
 		),
 	)
 	parser.add_argument(
-		"--input",
+		"--extraction",
 		type=Path,
-		default=DEFAULT_INPUT_PATH,
+		default=DEFAULT_EXTRACTION_PATH,
+		metavar="PATH",
+		help="extraction JSON path (default: $CODEX_HOME/usage-data/latest.json)",
+	)
+	parser.add_argument(
+		"--facets",
+		type=Path,
+		default=DEFAULT_FACETS_PATH,
+		metavar="PATH",
+		help="facets JSON path (default: $CODEX_HOME/usage-data/latest-facets.json)",
+	)
+	parser.add_argument(
+		"--narrative",
+		type=Path,
+		default=DEFAULT_NARRATIVE_PATH,
 		metavar="PATH",
 		help="narrative JSON path (default: $CODEX_HOME/usage-data/latest-narrative.json)",
 	)
 	parser.add_argument(
 		"--selftest",
 		action="store_true",
-		help="run schema and escaping fixtures without writing a report",
+		help="run provenance, tamper-rejection, and escaping fixtures without writing a report",
 	)
 	arguments = parser.parse_args()
-	if arguments.selftest and arguments.input != DEFAULT_INPUT_PATH:
-		parser.error("--selftest cannot be combined with --input")
+	custom_paths = (
+		(arguments.extraction, DEFAULT_EXTRACTION_PATH),
+		(arguments.facets, DEFAULT_FACETS_PATH),
+		(arguments.narrative, DEFAULT_NARRATIVE_PATH),
+	)
+	if arguments.selftest and any(path != default for path, default in custom_paths):
+		parser.error("--selftest cannot be combined with custom paths")
 	return arguments
 
 
 def main() -> None:
-	"""Run the selftest or render one validated narrative JSON document."""
+	"""Run the selftest or validate and render one bound provenance chain."""
 	arguments = parse_arguments()
 	if arguments.selftest:
 		run_selftest()
 		return
 
 	try:
-		narrative = load_narrative(arguments.input)
-		output_path = write_report(narrative)
-	except NarrativeValidationError as error:
+		extraction_info, facets_document, narrative_document = load_and_validate(
+			arguments.extraction, arguments.facets, arguments.narrative
+		)
+		output_path = write_report(narrative_document, facets_document, extraction_info)
+	except facets.ProvenanceError as error:
 		print(f"codex_insights_render: {error}", file=sys.stderr)
 		raise SystemExit(2) from error
 
