@@ -1,7 +1,7 @@
 {
 	"name": "codex-insights",
 	"title": "Codex insights",
-	"description": "Use this skill when turning bounded Codex rollout extraction JSON into an evidence-backed narrative usage report and self-contained static HTML report.",
+	"description": "Use this skill when turning bounded Codex rollout extraction JSON into conversation facets, repeated-behaviour findings, and an evidence-backed narrative usage report.",
 	"when": "When generating a Codex usage or interaction report",
 	"triggers": [
 		"Codex insights",
@@ -9,6 +9,7 @@
 		"Codex session report",
 		"latest-narrative.json",
 		"codex_insights_extract.py",
+		"codex_insights_facets.py",
 		"codex_insights_render.py"
 	],
 	"do-not-use-when": [
