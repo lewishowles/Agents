@@ -120,15 +120,16 @@ codex_config_section() {
 	'
 }
 
-# Ensures the Codex TUI uses the managed status line while preserving all
-# unrelated TUI preferences.
+# Ensures the Codex TUI uses the managed settings while preserving unrelated
+# TUI preferences.
 #
 # @param  {string}  config
 #     Codex config file to update.
-ensure_codex_status_line() {
+ensure_codex_tui_settings() {
 	local config="$1"
-	local status_line status_line_use_colors temp
+	local alternate_screen status_line status_line_use_colors temp
 
+	alternate_screen=$(codex_config_value "tui" "alternate_screen")
 	status_line=$(codex_config_value "tui" "status_line")
 	status_line_use_colors=$(codex_config_value "tui" "status_line_use_colors")
 
@@ -140,6 +141,7 @@ ensure_codex_status_line() {
 		}
 		/^\[tui\]$/ {
 			print
+			print "alternate_screen = " alternate_screen
 			print "status_line = " status_line
 			print "status_line_use_colors = " status_line_use_colors
 			in_tui = 1
@@ -147,17 +149,18 @@ ensure_codex_status_line() {
 			next
 		}
 		/^\[/ { in_tui = 0 }
-		in_tui && /^status_line(_use_colors)?[[:space:]]*=/ { next }
+		in_tui && /^(alternate_screen|status_line(_use_colors)?)[[:space:]]*=/ { next }
 		{ print }
 		END {
 			if (!tui_found) {
 				print ""
 				print "[tui]"
+				print "alternate_screen = " alternate_screen
 				print "status_line = " status_line
 				print "status_line_use_colors = " status_line_use_colors
 			}
 		}
-	' status_line="$status_line" status_line_use_colors="$status_line_use_colors" "$config" > "$temp"
+	' alternate_screen="$alternate_screen" status_line="$status_line" status_line_use_colors="$status_line_use_colors" "$config" > "$temp"
 	mv "$temp" "$config"
 }
 
@@ -323,7 +326,7 @@ ensure_codex_config() {
 		codex_config_section "$section" >> "$temp"
 	done
 	ensure_codex_workspace_settings "$temp"
-	ensure_codex_status_line "$temp"
+	ensure_codex_tui_settings "$temp"
 
 	local hooks_temp
 	hooks_temp=$(mktemp)
