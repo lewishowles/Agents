@@ -49,6 +49,8 @@ do-not-use-when:
 
 ## What to avoid
 
+These are recurring offenders, not a complete list. A new wording correction becomes a before-and-after pair in [references/examples.md](references/examples.md); only add a word here if it recurs across separate incidents.
+
 - Em dashes as routine separators
 - Preachy or lecturing tone — state once
 - Padding like "It's worth noting that..." or "As mentioned above..."
@@ -114,6 +116,10 @@ User-facing docs are narrative like longform, but speak for the product, never f
 - **Code-block lead-ins add information, not announce** — keep context; cut lines that only say a snippet follows
 - **Concrete contrast lands abstract ideas** — "Rather than asking for 'purple 800', ask for 'the primary fill'"
 - **Use the docs' components and conventions** — external links via the project's link component, technical names in `<code>`
+
+## Worked examples
+
+For real before-and-after corrections from this repository, grouped by the shape of the mistake, see [references/examples.md](references/examples.md). Read a few pairs before a wording pass over commits, JSDoc, test names, or docs.
 
 ## Attribution
 
