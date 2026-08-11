@@ -334,26 +334,49 @@ def hash_bytes(value: bytes) -> str:
 	return hashlib.sha256(value).hexdigest()
 
 
-def read_rollout(path: Path) -> tuple[list[dict[str, object]], int, str]:
-	"""Read bounded supported JSONL records and return malformed count plus source hash."""
+def read_rollout(path: Path) -> tuple[list[dict[str, object]], int, str, list[dict[str, object]]]:
+	"""Read supported JSONL records and bounded references for malformed records."""
 	contents = path.read_bytes()
 	malformed_count = 0
+	malformed_records = []
+	rollout_id = path.stem.removeprefix("rollout-")
 	records = []
-	for line in contents.splitlines():
-		if not line or len(line) > MAX_RECORD_BYTES:
-			malformed_count += int(bool(line))
+	for record_index, line in enumerate(contents.splitlines()):
+		if not line:
 			continue
-		try:
-			record = json.loads(line)
-		except (TypeError, ValueError):
-			malformed_count += 1
-			continue
-		if not isinstance(record, dict) or record.get("type") not in SUPPORTED_RECORD_TYPES:
-			malformed_count += 1
-			continue
-		records.append(record)
 
-	return records, malformed_count, hash_bytes(contents)
+		malformed_kind = None
+		if len(line) > MAX_RECORD_BYTES:
+			malformed_kind = "oversized_record"
+		else:
+			try:
+				record = json.loads(line)
+			except (TypeError, ValueError):
+				malformed_kind = "invalid_json"
+			else:
+				if not isinstance(record, dict):
+					malformed_kind = "unsupported_shape"
+				elif record.get("type") not in SUPPORTED_RECORD_TYPES:
+					malformed_kind = "unsupported_type"
+				else:
+					records.append(record)
+
+		if malformed_kind is None:
+			continue
+
+		malformed_count += 1
+		if len(malformed_records) < MAX_EVIDENCE_PER_ROLLOUT:
+			malformed_records.append(
+				{
+					"reference": f"{rollout_id}:malformed:r{record_index:06d}",
+					"rollout_id": rollout_id,
+					"record_index": record_index,
+					"kind": "malformed_record",
+					"reason": malformed_kind,
+				}
+			)
+
+	return records, malformed_count, hash_bytes(contents), malformed_records
 
 
 def session_metadata(records: list[dict[str, object]]) -> dict[str, object]:
@@ -412,7 +435,7 @@ def extract_rollout(
 ) -> tuple[dict[str, object] | None, dict[str, object]]:
 	"""Extract bounded behavioural evidence for one rollout in a half-open UTC window."""
 	rollout_id = path.stem.removeprefix("rollout-")
-	records, malformed_count, source_hash = read_rollout(path)
+	records, malformed_count, source_hash, malformed_records = read_rollout(path)
 	metadata = session_metadata(records)
 	timestamps = [parse_timestamp(record.get("timestamp")) for record in records]
 	valid_timestamps = sorted(timestamp for timestamp in timestamps if timestamp is not None)
@@ -422,9 +445,11 @@ def extract_rollout(
 		if in_window(timestamp, start, end)
 	]
 	source = {
+		"path": path.as_posix(),
 		"sha256": source_hash,
 		"record_count": len(records),
 		"malformed_record_count": malformed_count,
+		"malformed_records": malformed_records,
 	}
 	if not window_records:
 		return None, source
@@ -712,6 +737,17 @@ def build_report(
 	}
 	subagent_rollouts = [rollout for rollout in rollouts if rollout["delegation_state"] == "delegated"]
 	malformed_count = sum(source["malformed_record_count"] for source in sources)
+	malformed_records = []
+	for source in sources:
+		for malformed_record in source["malformed_records"]:
+			if len(malformed_records) >= MAX_EVIDENCE_PER_ROLLOUT:
+				break
+			malformed_records.append(
+				{
+					**malformed_record,
+					"source_path": source["path"],
+				}
+			)
 	if not sources:
 		state = "unavailable"
 	elif not rollouts:
@@ -742,7 +778,9 @@ def build_report(
 			"input_file_count": len(sources),
 			"input_record_count": sum(source["record_count"] for source in sources),
 			"malformed_record_count": malformed_count,
+			"malformed_records": malformed_records,
 			"source_hashes": input_hashes,
+			"source_paths": sorted(source["path"] for source in sources),
 		},
 		"status": {"state": state, "activity_state": activity_state},
 		"counts": {
@@ -830,7 +868,12 @@ def write_fixture(path: Path, values: list[dict[str, object]], malformed: bool =
 	"""Write one representative JSONL rollout fixture."""
 	lines = [json.dumps(value, sort_keys=True) for value in values]
 	if malformed:
-		lines.insert(1, "not json")
+		lines[1:1] = [
+			"not json",
+			"x" * (MAX_RECORD_BYTES + 1),
+			"[]",
+			json.dumps({"type": "unsupported"}),
+		]
 	path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -1057,6 +1100,44 @@ def run_selftest() -> None:
 			"subagent_rollout_count": 1,
 			"subagent_role_unavailable_count": 1,
 		}
+		assert first["provenance"]["source_paths"] == sorted(
+			[parent.as_posix(), subagent.as_posix()]
+		)
+		assert first["provenance"]["malformed_record_count"] == 4
+		assert first["provenance"]["malformed_records"] == [
+			{
+				"kind": "malformed_record",
+				"reason": "invalid_json",
+				"record_index": 1,
+				"reference": "parent:malformed:r000001",
+				"rollout_id": "parent",
+				"source_path": parent.as_posix(),
+			},
+			{
+				"kind": "malformed_record",
+				"reason": "oversized_record",
+				"record_index": 2,
+				"reference": "parent:malformed:r000002",
+				"rollout_id": "parent",
+				"source_path": parent.as_posix(),
+			},
+			{
+				"kind": "malformed_record",
+				"reason": "unsupported_shape",
+				"record_index": 3,
+				"reference": "parent:malformed:r000003",
+				"rollout_id": "parent",
+				"source_path": parent.as_posix(),
+			},
+			{
+				"kind": "malformed_record",
+				"reason": "unsupported_type",
+				"record_index": 4,
+				"reference": "parent:malformed:r000004",
+				"rollout_id": "parent",
+				"source_path": parent.as_posix(),
+			},
+		]
 		assert evidence_references_resolve(first)
 		parent_rollout = next(rollout for rollout in first["rollouts"] if rollout["rollout_id"] == "parent")
 		assert parent_rollout["conversation_id"] == "conversation-1"
