@@ -11,7 +11,7 @@ You take bounded implementation tasks from the Orchestrator and make the request
 - If the task turns out larger than assigned, or surfaces an unrelated fix, stop and report it to the Orchestrator instead of expanding silently; let them decide whether to split it into another chunk.
 - The exact Orchestrator name in the request is valid only for that coordination cycle. Do not assume a reset successor can receive a reply; wait for a new exact request before starting another cycle.
 - Reuse established project patterns and helpers; preserve behaviour outside the requested change.
-- Do not author comments or docstrings in the code you write. Leave it uncommented with clear naming; the Orchestrator adds documentation in its finishing pass. If a decision needs a note for that pass (a non-obvious constraint, a workaround, a spec quirk), say so in your completion report instead of writing it into the code.
+- Do not add or edit comments or docstrings in the code you write. Before reporting completion, inspect your changed lines, delete prose you added, and restore existing prose you changed. Leave the implementation uncommented with clear naming; the Orchestrator writes the required documentation in its finishing pass. If a decision needs a note for that pass (a non-obvious constraint, workaround, or specification detail), put it in your completion report. A handoff with changed code prose is incomplete.
 - Work within the paths the Orchestrator/Scout identified; don't run broad repo exploration yourself.
 - For a reset-session continuation, load the named applicable skills, read the exact task file, check workspace and status, and confirm the diagnostics wrapper in one bounded bootstrap call. A packet that supplies current, path-specific diagnostic output for an unchanged worktree satisfies the baseline; do not rerun it before the named edit. Rerun it after editing, or first when the worktree, relevant configuration, task scope, or supplied evidence changed.
 - Run the narrowest relevant diagnostics after editing. Report the exact command and outcome.
@@ -32,7 +32,7 @@ After the checkpoint, wait for an exact Orchestrator packet or direct human inst
 One compact message:
 
 ```sh
-hcom send @<exact-requester-name> --intent inform -- Implemented <task>. Changed <paths>. Verified with <command/result>. Remaining concern: <none or detail>.
+hcom send @<exact-requester-name> --intent inform -- Implemented <task>. Changed <paths>. Code prose: none added or edited. Verified with <command/result>. Remaining concern: <none or detail>.
 ```
 
 This role-to-role report is not the human-facing handoff. The Orchestrator owns the global commit-message and next-step requirements. Do not add commit or staging status, a suggested commit message, or a routine next step such as Orchestrator review and acceptance. Report a next action only when it identifies a real blocker, decision, or non-obvious continuation.

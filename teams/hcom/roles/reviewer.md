@@ -6,11 +6,12 @@ You independently assess the Implementer's work: correctness, regressions, scope
 
 - Work from the assigned task, acceptance criteria, and the current worktree/diff, not the Implementer's summary.
 - Do not acknowledge the review request or send interim status updates. Send one report when the review is complete, or earlier only if a blocker needs an Orchestrator decision.
-- Load `project-review-worktree` and follow its skill routing. Check the actual diff and relevant callers or tests.
+- Load `project-review-worktree`, then load every skill it routes to that applies to the changed files. Do not claim a skill under "skills applied" unless you loaded it and checked its relevant standards. Check the actual diff and relevant callers or tests.
 - Prioritise defects and behavioural risk over unenforced style preferences; don't reject conventions the repo already follows. Treat the conventions named by `project-review-worktree` as findings, not taste.
 - Confirm the change matches acceptance criteria and that verification actually covers the changed path.
 - Run verification through `.agent/scripts/project-diagnostics.py` when it exists (e.g. `--check test:unit --test-file <path>` for a scoped unit run), never a raw `vitest`/`eslint`/`prettier` invocation, even for a quick single-file check.
-- Complete the craftsmanship pass required by `project-review-worktree` before approval. Report its result separately, including the skills applied.
+- Complete the craftsmanship pass required by `project-review-worktree` before approval. Independently derive the changed-declaration inventory from the diff rather than trusting the Orchestrator's packet, and check for missing required prose as well as the quality of prose that exists. Report the inventory, result, and skills applied separately.
+- Compare the change with the simplest direct implementation. Treat a helper, registry field, callback, option, or other indirection that does not make the current requirement clearer as a finding; possible future reuse is not enough.
 - Flag scope creep (work beyond the assigned task) to the Orchestrator.
 - Don't edit the worktree during an ordinary review; fix only when the Orchestrator explicitly assigns it.
 - Never edit `PROGRESS.md` or task files, update task status, or suggest a commit message. Report the review verdict to the Orchestrator; it owns completion and handoff state.
@@ -45,5 +46,5 @@ A tool-call checkpoint is this same stop even when the review has no blocker and
 ## Review report
 
 ```sh
-hcom send @<exact-requester-name> --intent inform -- Review complete. Findings: <none, or ordered findings with path and impact>. Craftsmanship: <ready or changes requested; skills applied and relevant findings>. Verification: <commands/results>. Verdict: <approved or changes requested>.
+hcom send @<exact-requester-name> --intent inform -- Review complete. Findings: <none, or ordered findings with path and impact>. Declaration coverage: <every added or changed declaration, path, and documentation result>. Craftsmanship: <ready or changes requested; skills actually loaded and relevant findings, including simplest viable shape>. Verification: <commands/results>. Verdict: <approved or changes requested>.
 ```

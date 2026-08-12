@@ -16,7 +16,7 @@ Use `code-lookup` for structural questions. Use targeted reads; avoid generated,
 
 ## Skill routing
 
-Apply `code-review`, `code-style`, and relevant language or framework skills. Loading them does not prove their standards were checked.
+Load and apply `code-review`, `code-style`, and relevant language or framework skills. Do not list an unloaded or unchecked skill as applied.
 
 ## Review method
 
@@ -24,10 +24,11 @@ Apply `code-review`, `code-style`, and relevant language or framework skills. Lo
 2. List the load-bearing review claims and the cheapest evidence that could settle each one.
 3. When a safe, focused diagnostic or repro is already known, run it early and use its result to direct later reads. If command discovery is needed, inspect only enough context to identify it. Use `.agent/scripts/project-diagnostics.py --check <name>` when available.
 4. Inspect changed files in context and find current lines, prioritising paths connected to failed, blocked, or uncovered claims. Component tests must mount the component under test, not substitute markup.
-5. Compare implementation and documentation with the plan, risks, verification, and generated-source boundary. Reference documentation must match code; roadmaps may describe future work.
-6. Re-check PROGRESS.md's deferred or forward-looking notes (e.g. "optional hardening", "if a third caller ever needs this") against this diff. If the stated trigger condition is now met, treat it as a finding, not a resolved deferral.
-7. Run any remaining cheap, justified checks raised by source inspection.
-8. Lead with findings and evidence gaps. State when no must-fix issue exists.
+5. From the task-scoped diff, inventory every added or changed `const`/`let` and named function or class, including changed initializers and bodies. Check each against `code-style`; missing prose is a finding. Exclude unrelated user work.
+6. Compare implementation and documentation with the plan, risks, verification, and generated-source boundary. Reference documentation must match code; roadmaps may describe future work.
+7. Re-check PROGRESS.md's deferred or forward-looking notes (e.g. "optional hardening", "if a third caller ever needs this") against this diff. If the stated trigger condition is now met, treat it as a finding, not a resolved deferral.
+8. Run any remaining cheap, justified checks raised by source inspection.
+9. Lead with findings and evidence gaps. State when no must-fix issue exists.
 
 Don't use `git diff` for routine self-review. For independent review, use targeted diffs or file reads when clearest, keeping output narrow.
 
@@ -44,13 +45,14 @@ Check these against changed files and state which were checked:
 - **Helper reuse** — reuse an existing helper, component, or command where it covers this
 - **No switchboard drift** — a reused helper hasn't accumulated a boolean/option flag per new caller; that's a maintainability finding, not reuse
 - **No single-use abstractions** — no composable, helper, or test utility with one caller
+- **Simplest viable shape** — compare with direct code; new helpers, registry fields, callbacks, options, and indirection must make current use clearer, not prepare for possible reuse
 - **Naming and sibling consistency** — matches neighbouring conventions
-- **Comment, JSDoc, prop and test wording** — treat changed prose as a draft. Read each item beside the code it describes: correct tags and grammar are not enough. Preserve required documentation, but rewrite from scratch when it repeats the symbol name or mechanics. State the domain rule, caller contract, or useful distinction in the codebase's plain-English terms; replace robotic or jargon wording
+- **Documentation coverage and wording** — use the inventory to find missing comments or JSDoc. Review changed comments, JSDoc, prop text, and test names beside the code: correct tags and grammar are not enough. Rewrite prose that repeats the symbol name or mechanics; state the domain rule, caller contract, or useful distinction in plain English
 - **No out-of-contract changes** — every line traces to the task; adjacent improvements are findings, not edits
 
 ## Craftsmanship result
 
-Before approval, report skills applied, ready or changes requested, and concrete findings.
+Before approval, report the declaration inventory, skills applied, ready or changes requested, and findings. Do not approve with an incomplete inventory or unchecked convention.
 
 ## Evidence status
 
@@ -79,6 +81,10 @@ Use this shape:
 ## Conventions checked
 
 - <convention> — <pass or finding>.
+
+## Declaration coverage
+
+- `<file>:<line>` `<declaration>` — <required prose present and checked, or finding>.
 
 ## Craftsmanship
 
