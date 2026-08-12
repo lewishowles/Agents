@@ -8,8 +8,8 @@ Review planning quality, not an implementation diff, commit range, existing `PRO
 
 ## Modes
 
-- **Independent review** is the default. Review the task without contacting a planning peer, keep one complete review packet in the live session, and report its resolved path, content hash, verdict, findings, and `Safe to reset: no` while the packet is pending.
-- **Consolidation** is available only when the agent already holds its own completed independent-review packet. Retrieve and reconcile the opposite model's packet through `~/Dev/Configuration/Agents/teams/hcom/roles/planning-peer.md`; do not begin a second independent review, report the result back to the peer, or implement the task.
+- **Independent review** is the default. Review the task without contacting a planning peer, then write the complete packet to `.agent/reviews/<task-stem>.<model>.md` (see Output). Report a one-line verdict summary and the packet path in chat; `Safe to reset: no` only while the review is in progress, `Safe to reset: yes` once the packet file is written.
+- **Consolidation** is available once this model's own packet file exists for the task. Read both models' packet files directly from `.agent/reviews/` — no live contact with the opposite peer is needed. Follow `~/Dev/Configuration/Agents/teams/hcom/roles/planning-peer.md` for the packet-path convention and staleness checks. Do not begin a second independent review, or implement the task.
 
 ## Resolve the task
 
@@ -33,12 +33,12 @@ Include ignored task files in each candidate lookup. If the supplied path is mis
 
 ## Consolidate reviews
 
-1. Confirm the exact task path retained in the independent packet still exists, then calculate a fresh content hash from disk and compare it with the packet hash. Do not repeat task-name resolution or reread the task solely for this check. Stop with a stale-state report if the retained path is missing or its hash differs.
-2. Discover exactly one opposite-model planning peer in the same repository directory with `hcom list -v`, then request its matching packet with the resolved task path and content hash. Follow `~/Dev/Configuration/Agents/teams/hcom/roles/planning-peer.md`; wait for automatic delivery and do not poll.
-3. After the peer packet arrives, calculate another fresh hash at the retained task path. Verify that the delivered packet is complete and that its path and hash match the own packet and current hash. Stop without editing on a missing peer, multiple peers, missing or undelivered packet, or any hash or path drift.
+1. Confirm the exact task path used for your own packet still exists, then calculate a fresh content hash from disk and compare it with the hash recorded in your own packet file. Do not repeat task-name resolution or reread the task solely for this check. Stop with a stale-state report if the path is missing or its hash differs.
+2. Compute the opposite model's packet path from the same task stem (see Output) and read it directly. Stop with a missing-packet report if the file does not exist; do not wait, poll, or contact the peer.
+3. Verify that the opposite packet's recorded task path and content hash match your own packet and the current on-disk hash. Stop without editing on any hash or path drift, or if the opposite packet is incomplete.
 4. For every finding in both packets, choose `accept`, `combine`, `refine`, or `reject` and state the evidence-based reason and source packet. Preserve a strong task unchanged when no finding justifies an edit.
 5. Edit only the resolved task file. Do not edit review packets, planning roles, handoff files, `PROGRESS.md`, or implementation files, and never implement the task during consolidation.
-6. Report every decision and task edit. Do not send the consolidation result, final task hash, or a closure acknowledgement to the peer; successful packet delivery already completed the peer's role.
+6. Report every decision as a one-line summary and the task edits made (see Output). No message to the opposite peer is needed — consolidation only reads its packet file.
 
 ## Quality rubric
 
@@ -63,7 +63,9 @@ Every finding names the task or evidence location where possible, the problem, i
 
 ## Output
 
-Use this shape and keep empty sections explicit with `None.` or `None found.`:
+Packet files live at `.agent/reviews/<task-stem>.<model>.md`, where `<task-stem>` is the resolved task's filename without its extension and `<model>` is `claude` or `codex`. Both models derive this path the same way from the same resolved task, so no discovery step is needed to find the other's packet.
+
+Write the independent-review packet to that file. Keep empty sections explicit with `None.` or `None found.`:
 
 ```markdown
 ## Task review
@@ -99,35 +101,19 @@ Use this shape and keep empty sections explicit with `None.` or `None found.`:
 <If ready, accept the task and begin its approved implementation boundary. If changes are requested, update the task and repeat this review.>
 ```
 
-Use this shape for consolidation. Keep empty sections explicit with `None.` or `None found.`:
+After writing the file, report a one-line-per-item summary in chat instead of repeating the packet content:
 
-```markdown
-## Task consolidation
+```text
+Reviewed `<task path>` (`<sha256>`) → <verdict> — packet: `.agent/reviews/<task-stem>.<model>.md`
+- [M1] <one-line summary>
+- [R1] <one-line summary>
+```
 
-- Resolved task: `<path>`
-- Content hash at consolidation start: `<sha256>`
-- Own packet hash: `<sha256>`
-- Peer packet task: `<path>`
-- Peer packet hash: `<sha256>`
-- Verdict: `Ready as written` | `Changes requested` | `Stopped: stale state`
+Report consolidation results the same way: one line per finding decision, plus the resolved task and the task edits made. No packet file is written for consolidation itself; the edited task is the deliverable.
 
-## Finding decisions
-
-- **[M1]** Source: `own packet` | `peer packet`. Decision: `accept` | `combine` | `refine` | `reject`. Reason: <evidence and effect>.
-- **[R1]** Source: `own packet` | `peer packet`. Decision: `accept` | `combine` | `refine` | `reject`. Reason: <evidence and effect>.
-- None found.
-
-## Task edits
-
-- `<path>:<line>` — <edit made and why>.
-- None.
-
-## Peer packet
-
-- Peer: `<exact name>`.
-- Delivery: `received` | `not delivered`.
-
-## Next step
-
-<If consolidated, accept the edited task and begin its approved implementation boundary. If stale state stopped consolidation, refresh both reviews after resolving the reported condition.>
+```text
+Consolidated `<task path>` (`<sha256>`) — packets: `.agent/reviews/<task-stem>.claude.md`, `.agent/reviews/<task-stem>.codex.md`
+- [M1] <accept|combine|refine|reject> (<own packet|peer packet>) — <one-line reason>
+- [R1] <accept|combine|refine|reject> (<own packet|peer packet>) — <one-line reason>
+Task edits: `<path>:<line>` — <what changed>, or `None.`
 ```
