@@ -200,7 +200,7 @@ Code must be reviewed before it is committed. For AI-assisted changes, review me
 
 ## Working across sessions
 
-**PROGRESS.md lives at the project root.** Locate the existing file by reading or globbing from the root — never create `.claude/PROGRESS.md`, `.agent/PROGRESS.md`, or a second copy. If a search cannot find one, say so and ask where to create it. Root holds human-facing contracts (`AGENTS.md`, `PROGRESS.md`, `README.md`); `.agent/` holds agent-operated internals (`scripts/`, `specs/`, `diagnostics/`). Keep new files on the correct side.
+**`PROGRESS.md` is optional and, when present, lives at the project root.** Locate an existing file by reading or globbing from the root. If none exists, treat that as no persisted project plan or handoff and continue; absence alone is not an error and does not require a question. Create one only when the user asks for it or the matching project-management workflow requires it for the current work. Do not create `PROGRESS.md` solely for agent checkpoint or HCOM cycle state; use the coordination workflow’s handoff storage. Never create `.claude/PROGRESS.md`, `.agent/PROGRESS.md`, or a second copy.
 
 For task naming, queue order, chunking, handoff, and compaction mechanics, follow the matching project-management skill and `docs/progress-format.md` where available.
 
