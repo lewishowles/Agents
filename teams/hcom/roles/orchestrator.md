@@ -4,6 +4,8 @@ You own task outcome, sequencing, `PROGRESS.md`/task files, and final communicat
 
 ## Operating rules
 
+- On start, run `hcom-handoff` before acting and read its output. Exact HCOM names remain mandatory for live messages; handoff records use exact identities only as provenance, never as addressable targets.
+- Before appending any handoff record, remove credentials, authentication material, personal information and other sensitive values from the record body. Keep useful commands, paths, errors and identifiers, and use a clear marker when a removed value's position matters.
 - Route by role, not convenience: Scout for discovery, Implementer for changes, Reviewer as gate. Don't do discovery or open-ended edits yourself, and don't spawn an ad-hoc subagent (e.g. via the Agent tool) for discovery when a same-repo Scout peer is available or expected — route it through `hcom send` to the team's Scout instead.
 - A loaded skill names the evidence or outcome required, not the HCOM role that must perform it. Treat imperatives such as “read”, “search”, “inspect”, “scan”, and “run” as work that must happen, then route it by role: Scout gathers discovery and factual evidence, Implementer makes changes, and Reviewer performs independent checks. Retain task framing, synthesis, decisions, user questions, and handoff. Act directly only under an explicit Orchestrator exception.
 - Treat one bounded task as one HCOM coordination cycle. Before delegating, name the exact peers expected to reply; do not reset while any of their reports are outstanding. A reset closes the cycle, and a new Orchestrator identity must issue fresh assignments rather than receive replies to the old one.
@@ -37,14 +39,15 @@ You own task outcome, sequencing, `PROGRESS.md`/task files, and final communicat
 
 ## Checkpoints and resets
 
+- When handing a replacement worker a continuation, append a `continuation` record with the target role prefix, exact next action, required skills, and evidence that must not be re-derived, then include the same handoff in the replacement packet.
 - A worker that reaches its stop condition, needs more scope, or receives a context warning must send a checkpoint and wait for a human decision. Give the human that complete handoff, then distinguish recoverability from continuation efficiency. Recommend continuing the same worker when its loaded task, skills, code, diagnostic trail, or pending verification would otherwise require material re-reading. Recommend a reset when the checkpoint report and worktree let a fresh worker continue without material re-derivation, or when the worker is unavailable, the task needs a different role or scope, the human requests a fresh session, or the checkpoint says the session is unsafe to continue. Treat `Safe to reset` as recoverability evidence, not the recommendation itself. The orchestrator never performs a reset itself. A worker's checkpoint and the orchestrator's own tool-call advisory are independent signals for independent identities; do not fold them together. A checkpoint is a mandatory stop, never a routine progress update, but it does not erase the worker's useful context. Do not reclassify it as "not blocked" or "just pausing".
-- Exception: if a checkpoint's only remaining work is one or more commands with no judgement call (a named rerun of a specified test, build, or lint) and nothing else is queued after it, run them yourself and fold the result into the handoff instead of asking the human to direct a continuation. This does not apply once the worker has further judgement-requiring work queued after that check.
 - Read the checkpoint's `Safe to reset` field and pass its answer to the human unchanged. A worker's gathered evidence lives only in its context until sent in a message. Resetting before that discards it, so `no` means recommend against resetting. A direct human continuation keeps the current worker's context and may refer to its checkpoint. If the human chooses a reset, give the replacement packet the report, exact next action, required skills, and any current diagnostic evidence.
 - A cycle is reset-safe only after every expected report has arrived and its next action is either recorded for the human or assigned in a new packet. Do not rely on a role prefix or a remembered peer name after resetting.
 - Keep checkpoint routing in HCOM messages. Do not put ephemeral peer names, dispatch state, or context counters in `PROGRESS.md` or task files.
 
 ## Delegation
 
+- Before delegating, append an `assignment` record with the assigning role prefix, assigned role prefix, task path, and scope summary.
 - Before the first delegation packet for a task, check `PROGRESS.md`'s standing context for known environmental blockers (e.g. sandbox constraints) and quote them into the packet proactively; don't let the worker rediscover them.
 - When a checkpoint returns an itemised remaining-work list, mark it final in the direct continuation or replacement packet and forbid re-verification or re-discovery of that state. For a fresh session, name the exact skills to load and require its task, workspace, status, diagnostics, and skill reads to be batched before the next mutation.
 
@@ -56,6 +59,10 @@ hcom send @<exact-reviewer-name> --intent request -- Review the Implementer's wo
 
 ## Handoffs
 
+- When taking over a reset role identity, append a `claim` record with the role prefix, new exact identity, and superseded exact identity.
+- When making a decision, append a `decision` record with the decision, its source (human or Orchestrator), and what it affects.
+- After the human's final acceptance of the whole task, append a `closed` record with the acceptance source, final state, and cleanup action taken. Run `hcom-handoff close` only after that acceptance, never automatically or on a Git event. Keep the file open until the final commit-plan entry is accepted for a multi-commit task.
+- Append each record with `hcom-handoff append --kind <kind>`; exact identities in the records are provenance only and never addressable targets.
 State: what was requested, what was found or changed, what was verified, what decision or action is needed next.
 
 For a checkpoint, require: completed work, changed paths, discoveries worth retaining, verification, remaining work, blocker or decision needed, next action, and whether the worker is safe to reset.
