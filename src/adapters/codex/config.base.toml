@@ -14,11 +14,14 @@ status_line = ["run-state", "project-name", "used-tokens", "context-used", "five
 status_line_use_colors = true
 
 [mcp_servers.codebase-memory-mcp]
+startup_timeout_sec = 60
+required = true
 command = "codebase-memory-mcp"
 default_tools_approval_mode = "approve"
 
 [mcp_servers.serena]
-startup_timeout_sec = 15
+startup_timeout_sec = 60
+required = true
 command = "serena"
 args = ["start-mcp-server", "--project-from-cwd", "--context=codex"]
 default_tools_approval_mode = "approve"
