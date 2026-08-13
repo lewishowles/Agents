@@ -1,0 +1,13 @@
+{
+	"name": "guard-search-boundaries",
+	"description": "Blocks broad searches that bypass ignore rules or enter generated, dependency, cache, coverage, and browser-output directories.",
+	"runtime": "claude",
+	"events": [
+		{
+			"event": "PreToolUse",
+			"matcher": "Bash"
+		}
+	],
+	"dependencies": ["jq", "python3"],
+	"failureMode": "silent"
+}

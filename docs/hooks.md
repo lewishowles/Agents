@@ -12,6 +12,7 @@ Hooks are shell scripts that Claude Code runs automatically at specific points i
 | ---- | ------- | ----- | -------------------- |
 | `auto-format` | Runs oxfmt after supported file writes when available. | PostToolUse (`Edit\|Write`) | `silent` |
 | `guard-destructive` | Blocks sudo, filesystem wipes, git config mutation, and rm — the unconditional-never commands in this repo's Git Safety Protocol and Communication rules. | PreToolUse (`Bash`) | `silent`; requires jq |
+| `guard-search-boundaries` | Blocks broad searches that bypass ignore rules or enter generated, dependency, cache, coverage, and browser-output directories. | PreToolUse (`Bash`) | `silent`; requires jq, python3 |
 | `hcom` | Routes verified Claude lifecycle events to HCOM without managing other Claude settings. | Notification, PermissionRequest, PostToolUse, PostToolUseFailure, PreToolUse (`Bash\|Task\|Write\|Edit`), SessionEnd, SessionStart, Stop, StopFailure, SubagentStart, SubagentStop, UserPromptSubmit | `silent`; requires hcom |
 | `image-for-agent-read` | Reroutes local image reads through image-for-agent using the fixed ui preset. | PreToolUse (`Read`) | `silent`; requires jq, image-for-agent |
 | `plan-verify` | Warns when an exited plan is missing a validation section. | PostToolUse (`ExitPlanMode`) | `silent` |
