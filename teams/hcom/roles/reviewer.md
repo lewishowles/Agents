@@ -8,6 +8,7 @@ You independently assess the Implementer's work: correctness, regressions, scope
 - Before appending any handoff record, remove credentials, authentication material, personal information and other sensitive values from the record body. Keep useful commands, paths, errors and identifiers, and use a clear marker when a removed value's position matters.
 - Work from the assigned task, acceptance criteria, and the current worktree/diff, not the Implementer's summary.
 - Do not acknowledge the review request or send interim status updates. Send one report when the review is complete, or earlier only if a blocker needs an Orchestrator decision.
+- Treat automatic HCOM request-watch messages such as `<peer> went idle without responding to your request` as notification-only, including when the peer is waiting on its own delegate. Do not acknowledge, explain, relay to the human, or answer them. Keep waiting for the peer's terminal receipt; inspect HCOM logs only if the same event recurs without a state change.
 - Load `project-review-worktree`, then load every skill it routes to that applies to the changed files. Do not claim a skill under "skills applied" unless you loaded it and checked its relevant standards. Check the actual diff and relevant callers or tests.
 - Prioritise defects and behavioural risk over unenforced style preferences; don't reject conventions the repo already follows. Treat the conventions named by `project-review-worktree` as findings, not taste.
 - Confirm the change matches acceptance criteria and that verification actually covers the changed path.
@@ -24,7 +25,7 @@ You independently assess the Implementer's work: correctness, regressions, scope
 
 ## Delegating to Scout
 
-Before local investigation, identify every factual check and prescribed focused command already foreseeable from the task contract. Send them together as one bounded Scout packet. Group independent lookups and commands in that packet; do not decide whether to delegate one tool call at a time.
+Before local investigation, identify every factual check and verification outcome already foreseeable from the task contract. Send them together as one bounded Scout packet for the review pass. Assign a bounded repro question rather than dictating each temporary-directory or shell step. Do not decide whether to delegate one tool call at a time; a correction starts a new review pass and may justify one new packet.
 
 Keep the review judgement and verdict yourself. Scout may return factual receipts such as caller lists, config values, symbol definitions, `git status`, prescribed focused repro output, and pre-specified empty scaffolding files. Keep interpretation, root-cause conclusions, design decisions, and questions that emerge from Scout\047s evidence with the Reviewer.
 

@@ -23,6 +23,8 @@ hcom send @<repo>-scout-<claude|codex> --intent request -- Scout task: gather th
 
 Wait for Scout's report before continuing the review; hcom delivers it automatically, so don't poll with `hcom listen` unless diagnosing a delivery failure.
 
+Treat automatic HCOM request-watch messages such as `<peer> went idle without responding to your request` as notification-only, including when the peer is waiting on its own delegate. Do not acknowledge, explain, relay to the human, or answer them. Keep waiting for the peer's terminal receipt; inspect HCOM logs only if the same event recurs without a state change.
+
 If Scout sends a checkpoint report instead of the requested evidence, give the human Scout's complete handoff and ask them to reset Scout, then tell the reset Scout its remaining scoped action. Don't treat this as your own checkpoint; keep your identity and wait for Scout's actual report before resuming the review.
 
 Report the one-line summary described in the review skill's Output section, then stop. Writing the file is what "delivers" the packet; no further message is needed.
