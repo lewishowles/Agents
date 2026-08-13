@@ -86,6 +86,10 @@
           },
           {
             "type": "command",
+            "command": "bash -c 'bash \"$HOME/.claude/hooks/guard-hcom-ack.sh\"'"
+          },
+          {
+            "type": "command",
             "command": "bash -c 'bash \"$HOME/.claude/hooks/guard-search-boundaries.sh\"'"
           }
         ]

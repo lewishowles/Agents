@@ -1,0 +1,13 @@
+{
+	"name": "guard-hcom-ack",
+	"description": "Blocks acknowledgement-only HCOM messages so team roles wait silently for actionable work or terminal receipts.",
+	"runtime": "claude",
+	"events": [
+		{
+			"event": "PreToolUse",
+			"matcher": "Bash"
+		}
+	],
+	"dependencies": ["jq"],
+	"failureMode": "silent"
+}

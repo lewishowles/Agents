@@ -120,3 +120,7 @@ Use this shape:
 ```
 
 Use `None found.` or `None.` for empty sections, unless the user asks for another format.
+
+### HCOM reviewer delivery
+
+When this skill is used by an HCOM Reviewer, keep the complete output above as the durable `review` handoff record. The live HCOM message contains only the verdict, every actionable finding in one sentence, a compact verification summary with the first gap or failure, and the review record reference. Keep the declaration inventory and detailed evidence in the record; do not copy Scout receipts or the full review into the live message.

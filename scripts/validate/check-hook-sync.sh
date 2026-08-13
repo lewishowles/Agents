@@ -30,30 +30,18 @@ while IFS= read -r -d '' manifest; do
 	done
 done < <(find "$REPO_DIR/src/hooks/claude" -name "hook.json" -print0 | sort -z)
 
-shared_hook="$REPO_DIR/src/hooks/shared/tool-call-checkpoint.sh"
-if [ -f "$shared_hook" ]; then
-	for destination in "$REPO_DIR/dist/claude/hooks/tool-call-checkpoint.sh" "$REPO_DIR/dist/codex/hooks/tool-call-checkpoint.sh"; do
-		if [ ! -f "$destination" ]; then
-			validate_fail "${destination#"$REPO_DIR/"} missing (run scripts/sync.sh)"
-			STALE=$((STALE + 1))
-		elif ! diff -q "$shared_hook" "$destination" >/dev/null 2>&1; then
-			validate_fail "${destination#"$REPO_DIR/"} out of sync with source (run scripts/sync.sh)"
-			STALE=$((STALE + 1))
-		fi
-	done
-fi
+while IFS= read -r -d '' shared_file; do
+	shared_name=$(basename "$shared_file")
 
-shared_message="$REPO_DIR/src/hooks/shared/tool-call-checkpoint-message.md"
-if [ -f "$shared_message" ]; then
-	for destination in "$REPO_DIR/dist/claude/hooks/tool-call-checkpoint-message.md" "$REPO_DIR/dist/codex/hooks/tool-call-checkpoint-message.md"; do
+	for destination in "$REPO_DIR/dist/claude/hooks/$shared_name" "$REPO_DIR/dist/codex/hooks/$shared_name"; do
 		if [ ! -f "$destination" ]; then
 			validate_fail "${destination#"$REPO_DIR/"} missing (run scripts/sync.sh)"
 			STALE=$((STALE + 1))
-		elif ! diff -q "$shared_message" "$destination" >/dev/null 2>&1; then
+		elif ! diff -q "$shared_file" "$destination" >/dev/null 2>&1; then
 			validate_fail "${destination#"$REPO_DIR/"} out of sync with source (run scripts/sync.sh)"
 			STALE=$((STALE + 1))
 		fi
 	done
-fi
+done < <(find "$REPO_DIR/src/hooks/shared" -maxdepth 1 -type f \( -name '*.sh' -o -name '*.md' \) -print0 | sort -z)
 
 validate_finish

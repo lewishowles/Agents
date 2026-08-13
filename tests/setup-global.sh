@@ -151,6 +151,7 @@ test_config_replacement_creates_timestamped_backup() {
 	assert_not_contains "$home_dir/.codex/config.toml" '[[hooks.'
 	assert_link "$home_dir/.codex/hooks.json"
 	assert_link "$home_dir/.codex/hooks/tool-call-checkpoint.sh"
+	assert_link "$home_dir/.codex/hooks/guard-hcom-ack.sh"
 }
 
 test_hook_file_is_replaced_with_managed_link() {
