@@ -56,12 +56,12 @@ Check these against changed files and state which were checked:
 - **No single-use abstractions** — no composable, helper, or test utility with one caller
 - **Simplest viable shape** — compare with direct code; new helpers, registry fields, callbacks, options, and indirection must make current use clearer, not prepare for possible reuse
 - **Naming and sibling consistency** — matches neighbouring conventions
-- **Documentation coverage and wording** — use the inventory to find missing comments or JSDoc. Review changed comments, JSDoc, prop text, and test names beside the code: correct tags and grammar are not enough. Rewrite prose that repeats the symbol name or mechanics; state the domain rule, caller contract, or useful distinction in plain English
+- **Documentation coverage and wording** — use the inventory to find missing comments or JSDoc, then review communication separately. Read each changed comment, docstring, prop text, test name, description, metadata value, or documentation passage as a complete unit without relying on the diff or symbol name. Confirm that it is true, says what the thing is or does, gives the reader useful information beyond the identifier or mechanics, and uses the simplest concrete wording. Review repeated sibling wording individually. After a point fix, reread the whole sentence, paragraph, or value
 - **No out-of-contract changes** — every line traces to the task; adjacent improvements are findings, not edits
 
 ## Craftsmanship result
 
-Before approval, report the declaration inventory, skills applied, ready or changes requested, and findings. Do not approve with an incomplete inventory or unchecked convention.
+Before approval, report the declaration inventory, skills applied, ready or changes requested, and findings. Do not approve with an incomplete inventory, unchecked convention, or prose accepted only because it is present.
 
 ## Evidence status
 
@@ -93,7 +93,7 @@ Use this shape:
 
 ## Declaration coverage
 
-- `<file>:<line>` `<declaration>` — <required prose present and checked, or finding>.
+- `<file>:<line>` `<declaration>` — <the useful fact its prose gives the reader, or finding; presence alone does not pass>.
 
 ## Craftsmanship
 

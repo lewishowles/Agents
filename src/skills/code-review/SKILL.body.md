@@ -51,6 +51,12 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 - Surgical: only needed changes?
 - Organisation: each function/visitor owns one concern, no boolean flags swapping the algorithm, no switchboard helpers or logic duplicated across sibling files, clear control flow over clever tricks?
 
+**Prose** (any changed comments, docstrings, test names, descriptions, metadata, or documentation)
+
+- Read each complete prose unit without relying on the diff or symbol name. Confirm that it is true, says what the thing is or does, gives the reader information beyond the identifier or mechanics, and uses the simplest concrete wording.
+- Review repeated sibling wording individually. A shared sentence shape is not evidence that each sentence fits its subject.
+- After a point fix, reread the whole sentence, paragraph, or value. Do not approve a corrected phrase inside prose that remains inaccurate or unclear.
+
 **Simplification** (this diff only)
 
 - Has this change added unnecessary abstraction or machinery?
