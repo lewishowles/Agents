@@ -22,7 +22,7 @@ Load and apply `code-review`, `code-style`, and relevant language or framework s
 
 1. Identify the task from the request, handoff, and changed files. List them with `git status --short`; do not stage or commit.
 2. List the load-bearing review claims and the cheapest evidence that could settle each one.
-3. When a safe, focused diagnostic or repro is already known, run it early and use its result to direct later reads. If command discovery is needed, inspect only enough context to identify it. Use `.agent/scripts/project-diagnostics.py --check <name>` when available.
+3. When a safe, focused diagnostic or repro is already known, run it early and use its result to direct later reads. Run known non-mutating format and lint checks before manually reporting formatting findings. If command discovery is needed, inspect only enough context to identify it. Use `.agent/scripts/project-diagnostics.py --check <name>` when available.
 4. Inspect changed files in context and find current lines, prioritising paths connected to failed, blocked, or uncovered claims. Component tests must mount the component under test, not substitute markup.
 5. From the task-scoped diff, inventory every added or changed `const`/`let` and named function or class, including changed initializers and bodies. Check each against `code-style`; missing prose is a finding. Exclude unrelated user work.
 6. Compare implementation and documentation with the plan, risks, verification, and generated-source boundary. Reference documentation must match code; roadmaps may describe future work.
