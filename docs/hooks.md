@@ -53,11 +53,12 @@ Extension-to-skill mapping:
 | ------- | --------------- |
 | `*.sh` | `bash` |
 | `.boilersuit/generators/**` | `boilersuit-generator-authoring` |
+| `*.js` | `code-style` |
+| `*.py` | `code-style` |
 | `*.swift` | `code-style`, `swift`, `swift-ui`, `accessibility` |
-| `*.vue` | `code-style`, `vue`, `vue-pinia`, `vue-project-stack`, `vue-router`, `vue-use`, `typescript`, `dependencies` |
 | `*.ts` | `code-style`, `typescript` |
 | `*.tsx` | `code-style`, `typescript` |
-| `*.js` | `code-style` |
+| `*.vue` | `code-style`, `vue`, `vue-pinia`, `vue-project-stack`, `vue-router`, `vue-use`, `typescript`, `dependencies` |
 | `latest.json` | `codex-insights`, `writing` |
 | `latest-narrative.json` | `codex-insights`, `writing` |
 | `codex_insights_*.py` | `codex-insights`, `writing` |

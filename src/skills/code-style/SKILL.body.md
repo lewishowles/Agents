@@ -4,15 +4,15 @@
 
 ## Formatting
 
-- Tabs; double quotes; always semicolons
-- No trailing spaces, no mixed tabs/spaces
-- Comma-dangle always multiline; quote props consistent-as-needed
+- Follow the project formatter and language syntax. Do not carry indentation, quote, semicolon, or comma rules between languages.
+- JavaScript, TypeScript, and Vue: tabs; double quotes; semicolons; multi-line trailing commas; consistent property quotes.
+- No trailing spaces or mixed indentation
 - No one-line `if` statements — full block with braces, body on new line
 - Blank lines separate distinct logical steps inside functions and loops. Treat initialisation, guards, parsing, validation, transformation, and return/output as separate steps when each has its own purpose.
 - Add a blank line after a completed control-flow block before the next logical step. Keep connected clauses (`if`/`elif`/`else`, `try`/`except`/`finally`) together.
 - Keep tightly coupled statements together. Don't add blank lines mechanically between every statement.
 - Multi-line variable declarations should have a blank line before and after them
-- Repeated inline logic? Extract named function with JSDoc/equivalent; don't duplicate
+- Treat repetition as a design prompt, not automatic abstraction. Extract only a coherent behaviour that reduces risk and clarifies callers.
 - Prefer line parsing, structured APIs, or small helpers over complex regex. Use regex only when clearest; name complex patterns and explain match.
 - For multi-line generated strings, prefer named values and `["line one", value, "line three"].join("\n")` over dense escaped templates.
 - Split dense template expressions into named intermediate values before interpolation.
@@ -61,16 +61,18 @@ Before primitive operations (length, clamping, type checks, string/array/object 
 
 ## Organisation & abstraction
 
+- Give each module one responsibility. Split mixed concerns, not files merely because they are long; name each new module's job first.
 - A function or visitor owns one concern; split grouping, selection, transformation, and reporting into named steps rather than one dense block
 - Avoid boolean parameters that switch the algorithm entirely; split into named functions instead of one function with divergent branches
 - Avoid shared "switchboard" helpers that accumulate one option per caller; let each caller own its formatting/behaviour, or name distinct modes explicitly
 - Prefer explicit, obviously-correct control flow over clever tricks (sentinel loops, index arithmetic) even when the clever version is correct
-- Repeated structural logic across sibling files, not just repeated lines, is a duplication smell — extract a named shared helper
+- For repeated structural logic, compare explicit code, existing code, a helper, and a shared abstraction. Add one only when the behaviour and callers become clearer.
 
 ## Comments & documentation
 
-- Variable declaration (`const`/`let`, any scope): single-line purpose comment (all languages)
-- Functions: JSDoc/equivalent blocks. Parameters: `@param  {type}  name` format, description indented next line
+- Every variable declaration has a short purpose comment. Every function has JSDoc, a docstring, or the language's equivalent.
+- Documentation explains the declaration's role, purpose, caller contract, external constraint, or surprising behaviour. Never merely restate its name, signature, types, or mechanics.
+- In JSDoc, use `@param  {type}  name` and indent the description on the next line.
 - Use simple TypeScript JSDoc types (e.g. `object[]` not `Array<object>`)
 - Add short purpose comment when intentional behaviour may look like bug/workaround
 - No banner/divider comments; use JSDoc and blank lines

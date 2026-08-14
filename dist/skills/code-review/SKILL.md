@@ -28,6 +28,8 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 - Inspect changes summary-first: start with status, changed file names, and stats or numstat. Read a patch only for the selected file or hunk needed to assess a risk; do not print the entire diff by default.
 - Understand intent: what problem does this solve?
 - Check scope: one thing or several?
+- Before declaration review, name each changed file's responsibility and flag unrelated jobs or unclear boundaries.
+- For repetition, compare explicit code, existing code, a helper, and a shared abstraction. Never accept inheritance or another file for line-count reduction alone.
 - Load relevant language/framework skills.
 - **Risk-aware focus**: high git churn or high fan-in → scrutinise more. Defects cluster in churn-heavy files; high fan-in = wider blast radius.
 
@@ -72,6 +74,7 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 
 **Prose** (any changed comments, docstrings, test names, descriptions, metadata, or documentation)
 
+- Confirm every function and variable declaration has the required prose. Improve comments or docstrings that only repeat the name, signature, types, body, or mechanics; omission is not simplification.
 - Read each complete prose unit without relying on the diff or symbol name. Confirm that it is true, says what the thing is or does, gives the reader information beyond the identifier or mechanics, and uses the simplest concrete wording.
 - Review repeated sibling wording individually. A shared sentence shape is not evidence that each sentence fits its subject.
 - After a point fix, reread the whole sentence, paragraph, or value. Do not approve a corrected phrase inside prose that remains inaccurate or unclear.
@@ -79,6 +82,7 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 **Simplification** (this diff only)
 
 - Has this change added unnecessary abstraction or machinery?
+- Apply this to fixes too: dispatch, inheritance, or indirection must be simpler than visible repetition.
 - Classify each flagged spot with exactly one tag: `[delete]` remove it; `[stdlib]` use the standard library; `[native]` use a platform feature; `[yagni]` avoid an unneeded addition; `[shrink-style]` use simpler code.
 - For whole-repo debt, use `refactoring`'s **Technical debt triage** categories instead; these tags classify only the reviewed diff.
 - For a fuller reuse/simplification/efficiency/altitude pass over a diff with dedicated review agents, use the built-in `/simplify` command instead of hand-rolling that pass here.
