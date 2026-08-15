@@ -267,7 +267,9 @@ def existing_names(project_dir: Path, names: List[str]) -> List[str]:
 	return [name for name in names if (project_dir / name).exists()]
 
 
-def detect_package_manager(project_dir: Path, package: Dict[str, Any]) -> PackageManager:
+def detect_package_manager(
+	project_dir: Path, package: Dict[str, Any]
+) -> PackageManager:
 	for filename, name, run_prefix in PACKAGE_MANAGERS:
 		if (project_dir / filename).exists():
 			return PackageManager(name=name, run_prefix=run_prefix, source=filename)
@@ -278,18 +280,28 @@ def detect_package_manager(project_dir: Path, package: Dict[str, Any]) -> Packag
 		lower_name = name.lower()
 
 		if lower_name == "bun":
-			return PackageManager(name="Bun", run_prefix="bun run", source="package.json")
+			return PackageManager(
+				name="Bun", run_prefix="bun run", source="package.json"
+			)
 		if lower_name == "pnpm":
-			return PackageManager(name="pnpm", run_prefix="pnpm run", source="package.json")
+			return PackageManager(
+				name="pnpm", run_prefix="pnpm run", source="package.json"
+			)
 		if lower_name == "yarn":
 			return PackageManager(name="Yarn", run_prefix="yarn", source="package.json")
 		if lower_name == "npm":
-			return PackageManager(name="npm", run_prefix="npm run", source="package.json")
+			return PackageManager(
+				name="npm", run_prefix="npm run", source="package.json"
+			)
 
-	return PackageManager(name=UNKNOWN, run_prefix="package-manager run", source=UNKNOWN)
+	return PackageManager(
+		name=UNKNOWN, run_prefix="package-manager run", source=UNKNOWN
+	)
 
 
-def detect_runtime_requirements(project_dir: Path, package: Dict[str, Any], manager: PackageManager) -> str:
+def detect_runtime_requirements(
+	project_dir: Path, package: Dict[str, Any], manager: PackageManager
+) -> str:
 	requirements = []
 
 	node = package.get("engines", {}).get("node")
@@ -369,7 +381,9 @@ def detect_source_dirs(project_dir: Path) -> List[str]:
 	for xcode_project in project_dir.glob("*/*.xcodeproj"):
 		container = xcode_project.parent
 		for child in sorted(container.iterdir(), key=lambda item: item.name.lower()):
-			if child.is_dir() and any(grandchild.suffix == ".swift" for grandchild in child.glob("*.swift")):
+			if child.is_dir() and any(
+				grandchild.suffix == ".swift" for grandchild in child.glob("*.swift")
+			):
 				paths.append(relative_path(project_dir, child))
 
 	return sorted(set(paths))
@@ -518,7 +532,9 @@ def script_run_command(script_name: str, manager: PackageManager) -> str:
 	return f"{manager.run_prefix} {script_name}"
 
 
-def detect_local_services(scripts: Dict[str, str], manager: PackageManager) -> List[str]:
+def detect_local_services(
+	scripts: Dict[str, str], manager: PackageManager
+) -> List[str]:
 	services = []
 
 	for name in ["dev", "serve", "preview", "storybook"]:
@@ -528,11 +544,16 @@ def detect_local_services(scripts: Dict[str, str], manager: PackageManager) -> L
 	return services
 
 
-def detect_package_script_generators(scripts: Dict[str, str], manager: PackageManager) -> List[Generator]:
+def detect_package_script_generators(
+	scripts: Dict[str, str], manager: PackageManager
+) -> List[Generator]:
 	generator_names = [
 		name
 		for name in scripts
-		if any(token in name.lower() for token in ["generate", "generator", "scaffold", "create"])
+		if any(
+			token in name.lower()
+			for token in ["generate", "generator", "scaffold", "create"]
+		)
 	]
 
 	return [
@@ -630,7 +651,10 @@ def detect_boilersuit_fields(generator_path: Path) -> List[str]:
 				json_candidates.append(candidate)
 
 		json_candidates.extend(
-			child for child in sorted(generator_path.glob("*.json"), key=lambda item: item.name.lower())
+			child
+			for child in sorted(
+				generator_path.glob("*.json"), key=lambda item: item.name.lower()
+			)
 			if child not in json_candidates
 		)
 
@@ -736,7 +760,10 @@ def classify_script(name: str, command: str = "") -> str:
 def common_checks(scripts: Dict[str, str], manager: PackageManager) -> Dict[str, str]:
 	candidates_by_purpose = [
 		("Lint", ["lint:check", "lint"]),
-		("Unit tests", ["test:unit", "test:unit:run", "test"]),
+		# test:unit:run is checked first: by convention test:unit runs Vitest in
+		# watch mode, and picking it here would make automated checks start a
+		# watcher and exhaust file descriptors (EMFILE) instead of running once.
+		("Unit tests", ["test:unit:run", "test:unit", "test"]),
 		("Component tests", ["test:component", "test:ct", "test:component:cypress"]),
 		("End-to-end tests", ["test:e2e", "e2e"]),
 		("Docs build", ["build:docs", "docs:build"]),
@@ -780,8 +807,17 @@ def config_common_checks(config: Dict[str, Any]) -> Dict[str, str]:
 	return result
 
 
-def common_check_rows(scripts: Dict[str, str], manager: PackageManager, config: Dict[str, Any]) -> List[str]:
-	standard_purposes = ["Lint", "Unit tests", "Component tests", "End-to-end tests", "Docs build", "Build"]
+def common_check_rows(
+	scripts: Dict[str, str], manager: PackageManager, config: Dict[str, Any]
+) -> List[str]:
+	standard_purposes = [
+		"Lint",
+		"Unit tests",
+		"Component tests",
+		"End-to-end tests",
+		"Docs build",
+		"Build",
+	]
 	checks = common_checks(scripts, manager)
 	checks.update(config_common_checks(config))
 
@@ -808,9 +844,7 @@ def package_script_rows(scripts: Dict[str, str], manager: PackageManager) -> Lis
 		run_command = script_run_command(name, manager)
 		classification = classify_script(name, command)
 
-		rows.append(
-			f"| `{name}` | `{command}` | `{run_command}` | {classification} |"
-		)
+		rows.append(f"| `{name}` | `{command}` | `{run_command}` | {classification} |")
 
 	return rows
 
@@ -874,7 +908,9 @@ def render_generator_table(generators: List[Generator]) -> List[str]:
 	return rows
 
 
-def configured_table(values: Dict[str, str], first_heading: str, second_heading: str) -> List[str]:
+def configured_table(
+	values: Dict[str, str], first_heading: str, second_heading: str
+) -> List[str]:
 	return [
 		f"| {first_heading} | {second_heading} |",
 		"| --- | --- |",
@@ -906,11 +942,15 @@ def diagnostics_lines(project_dir: Path) -> List[str]:
 		),
 		(
 			scripts_dir / "generated-file-guard.py",
-			[".agent/scripts/generated-file-guard.py  # invokes project-checks-generated-file-guard"],
+			[
+				".agent/scripts/generated-file-guard.py  # invokes project-checks-generated-file-guard"
+			],
 		),
 		(
 			scripts_dir / "markdown-claims.py",
-			[".agent/scripts/markdown-claims.py  # invokes project-checks-markdown-claims"],
+			[
+				".agent/scripts/markdown-claims.py  # invokes project-checks-markdown-claims"
+			],
 		),
 	]
 
@@ -962,14 +1002,20 @@ def fallback_files(project_dir: Path) -> List[str]:
 	return existing
 
 
-def render_workspace(project_dir: Path, tree_depth: int, tree_excludes: List[str]) -> str:
+def render_workspace(
+	project_dir: Path, tree_depth: int, tree_excludes: List[str]
+) -> str:
 	package = package_json(project_dir)
 	scripts = package.get("scripts", {})
 	config = load_config(project_dir)
 
 	manager = detect_package_manager(project_dir, package)
-	stack = config_string(config, "primaryStack") or detect_primary_stack(project_dir, package)
-	runtime = config_string(config, "runtimeRequirements") or detect_runtime_requirements(project_dir, package, manager)
+	stack = config_string(config, "primaryStack") or detect_primary_stack(
+		project_dir, package
+	)
+	runtime = config_string(
+		config, "runtimeRequirements"
+	) or detect_runtime_requirements(project_dir, package, manager)
 
 	config_tree_excludes = config_list(config, "treeExclude")
 	config_generated_paths = config_list(config, "generatedPaths")
@@ -981,12 +1027,36 @@ def render_workspace(project_dir: Path, tree_depth: int, tree_excludes: List[str
 	key_files = config_dict(config, "keyFiles")
 	lookup = config_dict(config, "lookup")
 
-	source_dirs = sorted(set(detect_source_dirs(project_dir) + existing_names(project_dir, config_source_dirs)))
-	config_paths = sorted(set(existing_names(project_dir, COMMON_CONFIG_FILES) + detect_xcode_paths(project_dir) + existing_names(project_dir, config_config_paths)))
-	doc_paths = sorted(set(existing_names(project_dir, COMMON_DOC_FILES) + existing_names(project_dir, config_doc_paths)))
-	test_paths = sorted(set(detect_test_paths(project_dir) + existing_names(project_dir, config_test_paths)))
+	source_dirs = sorted(
+		set(
+			detect_source_dirs(project_dir)
+			+ existing_names(project_dir, config_source_dirs)
+		)
+	)
+	config_paths = sorted(
+		set(
+			existing_names(project_dir, COMMON_CONFIG_FILES)
+			+ detect_xcode_paths(project_dir)
+			+ existing_names(project_dir, config_config_paths)
+		)
+	)
+	doc_paths = sorted(
+		set(
+			existing_names(project_dir, COMMON_DOC_FILES)
+			+ existing_names(project_dir, config_doc_paths)
+		)
+	)
+	test_paths = sorted(
+		set(
+			detect_test_paths(project_dir)
+			+ existing_names(project_dir, config_test_paths)
+		)
+	)
 	generated_paths = sorted(
-		set(existing_names(project_dir, COMMON_GENERATED_PATHS) + existing_names(project_dir, config_generated_paths))
+		set(
+			existing_names(project_dir, COMMON_GENERATED_PATHS)
+			+ existing_names(project_dir, config_generated_paths)
+		)
 	)
 	progress_files = detect_progress_files(project_dir)
 	local_services = detect_local_services(scripts, manager)
@@ -1010,8 +1080,10 @@ def render_workspace(project_dir: Path, tree_depth: int, tree_excludes: List[str
 		"",
 		f"- Primary stack: {stack}",
 		f"- Package manager: {manager.name if manager.name != UNKNOWN else UNKNOWN}"
-			+ (f" (detected from `{manager.source}`)" if manager.source != UNKNOWN else ""),
-		f"- Script runner: `{manager.run_prefix} <script>`" if manager.name != UNKNOWN else "- Script runner: Not detected",
+		+ (f" (detected from `{manager.source}`)" if manager.source != UNKNOWN else ""),
+		f"- Script runner: `{manager.run_prefix} <script>`"
+		if manager.name != UNKNOWN
+		else "- Script runner: Not detected",
 		f"- Runtime requirements: {runtime}",
 		*bullet_values("Progress files", progress_files),
 		*bullet_values("Agent rules", existing_names(project_dir, ["AGENTS.md"])),
@@ -1069,15 +1141,40 @@ def render_workspace(project_dir: Path, tree_depth: int, tree_excludes: List[str
 		)
 
 	if architecture_notes:
-		lines.extend(["## Architecture notes", "", "Configured in the workspace settings file.", ""])
+		lines.extend(
+			[
+				"## Architecture notes",
+				"",
+				"Configured in the workspace settings file.",
+				"",
+			]
+		)
 		lines.extend(f"- {note}" for note in architecture_notes)
 		lines.append("")
 
 	if lookup:
-		lines.extend(["## Lookup", "", "Configured in the workspace settings file.", "", *configured_table(lookup, "Task", "Path"), ""])
+		lines.extend(
+			[
+				"## Lookup",
+				"",
+				"Configured in the workspace settings file.",
+				"",
+				*configured_table(lookup, "Task", "Path"),
+				"",
+			]
+		)
 
 	if key_files:
-		lines.extend(["## Key files", "", "Configured in the workspace settings file.", "", *configured_table(key_files, "Path", "Purpose"), ""])
+		lines.extend(
+			[
+				"## Key files",
+				"",
+				"Configured in the workspace settings file.",
+				"",
+				*configured_table(key_files, "Path", "Purpose"),
+				"",
+			]
+		)
 
 	if ci_files:
 		lines.extend(["## Continuous integration", ""])
@@ -1095,7 +1192,9 @@ def render_workspace(project_dir: Path, tree_depth: int, tree_excludes: List[str
 			"Run scripts with:",
 			"",
 			"```sh",
-			f"{manager.run_prefix} <script>" if manager.name != UNKNOWN else "<package-manager> run <script>",
+			f"{manager.run_prefix} <script>"
+			if manager.name != UNKNOWN
+			else "<package-manager> run <script>",
 			"```",
 			"",
 			"| Script | package.json command | Run command | Safety |",
@@ -1147,8 +1246,8 @@ def render_workspace(project_dir: Path, tree_depth: int, tree_excludes: List[str
 			"## Generators",
 			"",
 			"Detected generators come from `.boilersuit`."
-				if (project_dir / BOILERSUIT_DIR_NAME).is_dir()
-				else "No `.boilersuit` generators detected.",
+			if (project_dir / BOILERSUIT_DIR_NAME).is_dir()
+			else "No `.boilersuit` generators detected.",
 			"",
 			"| Name | Command | Notes |",
 			"| --- | --- | --- |",
@@ -1180,7 +1279,12 @@ def render_workspace(project_dir: Path, tree_depth: int, tree_excludes: List[str
 			"",
 			"If this file is incomplete, inspect these in order:",
 			"",
-			*[f"{index}. `{name}`" if name != "nearby README/docs files" else f"{index}. {name}" for index, name in enumerate(fallback_files(project_dir), start=1)],
+			*[
+				f"{index}. `{name}`"
+				if name != "nearby README/docs files"
+				else f"{index}. {name}"
+				for index, name in enumerate(fallback_files(project_dir), start=1)
+			],
 			"",
 			"Ask before guessing about expensive, destructive, remote, or history-changing commands.",
 			"",
@@ -1233,11 +1337,31 @@ def preserved_existing_lines(project_dir: Path) -> List[str]:
 
 
 def main() -> None:
-	parser = argparse.ArgumentParser(description="Preview or write WORKSPACE.md for a project.")
-	parser.add_argument("--project-dir", type=Path, default=DEFAULT_PROJECT_DIR, help="Project directory to inspect.")
-	parser.add_argument("--write", action="store_true", help="Write WORKSPACE.md instead of printing a preview.")
-	parser.add_argument("--force", action="store_true", help="Replace an existing WORKSPACE.md without prompting.")
-	parser.add_argument("--tree-depth", type=int, default=0, help="Maximum tree depth to include. Default: 0 (omit tree).")
+	parser = argparse.ArgumentParser(
+		description="Preview or write WORKSPACE.md for a project."
+	)
+	parser.add_argument(
+		"--project-dir",
+		type=Path,
+		default=DEFAULT_PROJECT_DIR,
+		help="Project directory to inspect.",
+	)
+	parser.add_argument(
+		"--write",
+		action="store_true",
+		help="Write WORKSPACE.md instead of printing a preview.",
+	)
+	parser.add_argument(
+		"--force",
+		action="store_true",
+		help="Replace an existing WORKSPACE.md without prompting.",
+	)
+	parser.add_argument(
+		"--tree-depth",
+		type=int,
+		default=0,
+		help="Maximum tree depth to include. Default: 0 (omit tree).",
+	)
 	parser.add_argument(
 		"--tree-exclude",
 		action="append",

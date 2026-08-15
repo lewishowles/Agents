@@ -89,7 +89,7 @@ test_preview_does_not_write() {
 	assert_contains "$output" 'vitest.config.js'
 	assert_contains "$output" 'test/playwright-ct.config.js'
 	assert_contains "$output" '| Lint | `bun run lint:check` |'
-	assert_contains "$output" '| Unit tests | `bun run test:unit` |'
+	assert_contains "$output" '| Unit tests | `bun run test:unit:run` |'
 	assert_contains "$output" '| Component tests | `bun run test:component` |'
 	assert_contains "$output" '| End-to-end tests | `bun run test:e2e` |'
 	assert_contains "$output" '| Build | `bun run build` |'
@@ -104,6 +104,19 @@ test_preview_does_not_write() {
 	assert_contains "$output" "## Continuous integration"
 	assert_contains "$output" '`.github/workflows/ci.yml`'
 	assert_not_contains "$output" "## File tree"
+}
+
+test_unit_script_falls_back_when_run_script_is_missing() {
+	local target_dir="$TEST_ROOT/unit-fallback"
+	local output="$TEST_ROOT/unit-fallback.md"
+	mkdir -p "$target_dir"
+	printf '{"scripts":{"test:unit":"vitest"},"packageManager":"bun@1.2.0"}\n' > "$target_dir/package.json"
+	printf 'lock\n' > "$target_dir/bun.lock"
+
+	run_init "$target_dir" > "$output"
+
+	assert_contains "$output" '| Unit tests | `bun run test:unit` |'
+	assert_not_contains "$output" '| Unit tests | `bun run test:unit:run` |'
 }
 
 test_write_creates_missing_manifest() {
@@ -171,7 +184,7 @@ EOF
 
 	run_init "$target_dir" > "$output"
 
-	assert_contains "$output" '| Unit tests | `bun run test:unit` |'
+	assert_contains "$output" '| Unit tests | `bun run test:unit:run` |'
 	assert_contains "$output" '| Lint | `bun run lint:check` |'
 }
 
@@ -329,6 +342,7 @@ test_repo_preview_uses_progress_file() {
 }
 
 test_preview_does_not_write
+test_unit_script_falls_back_when_run_script_is_missing
 test_write_creates_missing_manifest
 test_existing_manifest_requires_force
 test_force_preserves_known_existing_values
