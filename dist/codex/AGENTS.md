@@ -105,8 +105,9 @@ A confident conclusion is not authorisation to implement. If the last user messa
 - File missing? Symlink broken? Output unexpected? Stop. If a user says a missing file exists, state whether gitignored files were included before concluding it is missing.
 - At session start, check `git status --short` before editing so existing work is not overwritten. Git state is a safety signal, not progress state: do not use it to infer, report, or reconcile task status, and never record commit hashes, branch state, or clean/dirty-tree claims in `PROGRESS.md`.
 - Don't workaround, retry, or dig deeper — state what you expected vs. what you found
-- Two failed attempts at the same symptom is the limit. The second attempt must rest on new evidence rather than a new guess, and if it also fails, stop and hand back: state the symptom, what each attempt changed, and what evidence would separate the remaining explanations. A third attempt needs the user's go-ahead.
-- After a command fails, do not retry equivalent variants when success depends on user-owned environment, credentials, permissions, external state, resource pressure, or a broad or expensive operation. Give the user the exact command to run and request the smallest useful result; resume from that evidence.
+- For a potentially transient failure, one evidence-based retry is the limit. If that retry also fails, stop and hand back: state the symptom, what each attempt changed, and what evidence would separate the remaining explanations. Another attempt needs the user's go-ahead.
+- Treat environment and resource failures, including `EMFILE: too many open files`, as terminal for the current agent run. Do not retry, use a workaround such as polling, reroute the command, or ask another agent to run it. Give the user the exact command and request the smallest useful result; resume from that evidence.
+- If current project evidence already establishes that a command will hit the same blocker, skip it and give the user the command immediately.
 - Recovers faster than chasing wrong paths. You know the system; I don't.
 
 ### Staleness and recall
