@@ -45,6 +45,12 @@ A task file owns a coherent feature or outcome and may contain several ordered c
 
 Before marking a task `ready` or delegating it, name its one outcome and verification bundle. Split it when it combines independent public behaviours, packaging or release work, unrelated documentation, or separate review decisions. Keep documentation with the interface it explains rather than collecting it in a final sweep.
 
+Plan each commit for human comprehension, with one primary question for the reviewer. Before accepting the plan, inventory its substantive concerns, such as data and state, interaction and accessibility, presentation states, framework integration, public API, and delivery documentation. Treat each as a candidate commit and combine them only when reviewing one without the other would be misleading.
+
+Use three substantive files as a soft ceiling for one commit. A substantive file contains logic, tests, or prose the reviewer must understand; for example, an implementation file, its focused test, and its documentation are three substantive files. Small mechanical registration changes may take the count higher. Split a dense file across commits when it contains several behaviour slices. Broad outcomes such as `complete component`, `full public API`, or `all integration` fail this gate unless the underlying change is genuinely small.
+
+An ordered task may use intermediate commits that are not complete features when each commit is internally consistent, has focused verification, and is not presented or released as complete. Unless project guidance explicitly requires the same commit, instructions to update tests, docs, metadata, and examples together mean within the same ordered review series before the feature is complete.
+
 If a task needs more than one commit, add a `## Commit plan` before `## Tasks`. It is a checklist with one reviewable outcome per commit:
 
 ```markdown

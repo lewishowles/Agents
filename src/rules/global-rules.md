@@ -178,6 +178,8 @@ Every changed line traces directly to the request.
 
 Code must be reviewed before it is committed. For AI-assisted changes, review means a human has read and understood the submitted change, not that another AI tool has checked it. Completing work means stopping after edits, checks, and a clear summary.
 
+Plan commits for human comprehension. Technical coherence and shippability do not by themselves make a commit reviewable. Default each commit to one primary review question, its focused tests, and directly required supporting changes. Split whenever a reviewer could reasonably understand, accept, or reject part independently, including when several behaviour slices live in one file. A multi-commit task may use intermediate commits that are not complete features when each is internally consistent, has focused verification, and is not presented or released as complete.
+
 - Do not run `git commit`, `git tag`, `git push`, merge commands, or any command that creates or publishes Git history unless I explicitly ask for that exact action in the current conversation.
 - Do not treat "finish", "wrap up", "ready", "ship it", "commit message", or a suggested commit message as permission to commit.
 - Treat commits already in repository history as user-reviewed and user-created unless the user explicitly says otherwise. Do not infer their provenance, label them unauthorised, or investigate authorship from Git metadata, local identity, reflog entries, or concurrent agents.

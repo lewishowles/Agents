@@ -79,6 +79,12 @@ Before creating or delegating a task, confirm it has one coherent change surface
 
 Split the task when it would need separate review decisions for public behaviour, packaging or release work, documentation unrelated to the changed interface, or another independently verifiable outcome. Keep documentation with the interface it explains, rather than as a final sweep.
 
+Plan each commit around one primary question for the reviewer. Before accepting the plan, inventory its substantive concerns, such as data and state, interaction and accessibility, presentation states, framework integration, public API, and delivery documentation. Treat each as a candidate commit and combine them only when reviewing one without the other would be misleading.
+
+Use three substantive files as a soft ceiling for one commit. A substantive file contains logic, tests, or prose the reviewer must understand; for example, an implementation file, its focused test, and its documentation are three substantive files. Small mechanical registration changes may take the count higher. Split a dense file across commits when it contains several behaviour slices. Broad outcomes such as `complete component`, `full public API`, or `all integration` fail this gate unless the underlying change is genuinely small.
+
+An ordered task may use intermediate commits that are not complete features when each commit is internally consistent, has focused verification, and is not presented or released as complete. Unless project guidance explicitly requires the same commit, instructions to update tests, docs, metadata, and examples together mean within the same ordered review series before the feature is complete.
+
 A feature spec can cover a larger goal or implementation phase. Do not copy its phase boundaries into task files automatically: create the next task only when its scope, acceptance criteria, and verification can stand alone.
 
 For a multi-commit task, add `## Commit plan` before `## Tasks`. Each entry has the exact form `- [ ] Commit N: reviewable outcome`. It tracks interim-commit acceptance, not implementation work: keep detailed steps under `## Tasks`. When implementation starts, change the task from `ready` to `in-progress`. Tick a commit-plan entry only after the user explicitly accepts that commit's handoff; the next pickup starts at the first unchecked entry.
