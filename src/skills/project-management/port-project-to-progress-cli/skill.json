@@ -1,0 +1,21 @@
+{
+	"name": "port-project-to-progress-cli",
+	"title": "Port a project to the progress CLI",
+	"description": "Use this skill when porting an existing PROGRESS.md and .agent/tasks/*.md onto the progress CLI, including releases, tasks, chunks, notes, context, verification, and safe cleanup.",
+	"when": "When replacing a project's PROGRESS.md and task-file state with progress CLI records",
+	"triggers": [
+		"port PROGRESS.md",
+		"migrate PROGRESS.md",
+		"move progress to the CLI",
+		"port task files to progress",
+		"progress CLI migration"
+	],
+	"filePatterns": [],
+	"pathPatterns": [],
+	"dependencies": [],
+	"capabilities": {
+		"promptTriggering": true,
+		"fileTriggering": false
+	},
+	"targets": ["claude", "codex"]
+}

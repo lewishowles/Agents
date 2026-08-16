@@ -50,6 +50,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/human-friendly-cli` | `human-friendly-cli` | When designing, reviewing, or extending CLI commands |
 | `/library-release` | `library-release` | When preparing a release for a supported @lewishowles library |
 | `/library-update` | `library-update` | When checking a project for updates to supported @lewishowles dependencies |
+| `/port-project-to-progress-cli` | `port-project-to-progress-cli` | When replacing a project's PROGRESS.md and task-file state with progress CLI records |
 | `/project-audit` | `project-audit` | When auditing a project for setup drift, stale generated output, missing diagnostics, command-safety gaps, or agent-readiness issues |
 | `/project-backport-review` | `project-backport-review` | When comparing a consumer project against the boilerplate template for backport candidates and boilerplate improvements |
 | `/project-compact-progress` | `project-compact-progress` | When PROGRESS.md has grown noisy or hard to scan; reduces word count while preserving context and meaning |
