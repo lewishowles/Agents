@@ -183,7 +183,7 @@ _Pattern inspired by [mattpocock/skills](https://github.com/mattpocock/skills) (
 
 ## PROGRESS.md schema
 
-For a brand-new project the initial plan is usually small enough to stay inline. Once there's a first concrete unit of ready-to-pick-up work, create it as `.agent/tasks/<task-slug>.md` (see the `project-plan-task` skill's "Task files vs progress sections") rather than growing the `## Active work` section indefinitely. The canonical contract for `PROGRESS.md` and task files is `docs/progress-format.md` in the Configuration/Agents repo — keep the templates below in sync with it.
+For a brand-new project the initial plan is usually small enough to stay inline. Once there's a first concrete unit of ready-to-pick-up work, create it as `.agent/tasks/<task-slug>.md` (see the `project-plan-task` skill's "Task records and chunks") rather than growing the `## Active work` section indefinitely. The canonical contract for `PROGRESS.md` and task files is `docs/progress-format.md` in the Configuration/Agents repo — keep the templates below in sync with it.
 
 ```markdown
 # <Project name>
@@ -239,7 +239,7 @@ Ideas and concerns not belonging to the current section.
 Completed work, one dated line per finished task. This is the sole historical record: task files are deleted on completion, not kept. It's also release-scoped, not permanent — prune entries once their roadmap release ships.
 ```
 
-Task file shape (`.agent/tasks/<task-slug>.md`): stable descriptive kebab-case filename; the human-facing name lives in front matter `title`, and task files do not prescribe branch names. Never rename files to reflect priority or queue position. Existing numeric files are tolerated as legacy and must not be bulk-renamed merely to adopt this convention. Keep in sync with the `project-plan-task` skill's "Section structure" if either changes:
+Task file shape (`.agent/tasks/<task-slug>.md`): stable descriptive kebab-case filename; the human-facing name lives in front matter `title`, and task files do not prescribe branch names. Never rename files to reflect priority or queue position. Existing numeric files are tolerated as legacy and must not be bulk-renamed merely to adopt this convention. Keep in sync with the `project-plan-task` skill's "Task records and chunks" if either changes:
 
 ```markdown
 ---

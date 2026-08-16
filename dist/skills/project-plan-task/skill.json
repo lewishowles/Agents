@@ -1,7 +1,7 @@
 {
 	"name": "project-plan-task",
 	"title": "Project plan task",
-	"description": "Use this skill to introduce new work into an existing plan \u2014 discusses requirements and inserts a new section at the appropriate location, not simply at the end.",
+	"description": "Use this skill when introducing work into an existing plan managed by the progress CLI. Covers deciding placement, adding releases, tasks, chunks, dependencies, and handoff context.",
 	"when": "When introducing new work into an existing plan",
 	"triggers": [
 		"plan task",
