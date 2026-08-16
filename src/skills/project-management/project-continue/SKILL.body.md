@@ -49,6 +49,8 @@ Read only enough to orient. Stale sessions (5+ min idle) restart from scratch.
 
 When user signals readiness ("next please", "let's continue", "what's next") without naming work:
 
+Treat `progress ready` as an ordered queue. When it returns multiple tasks, use the first task. Do not offer the tasks as choices or ask which one to start unless a concrete blocker, dependency conflict, or explicit user request requires reordering.
+
 1. **Name the task** — one sentence: what and where in the plan
 2. **Explain why** — one or two sentences: what it unlocks or why it's next
 3. **Summarise the contract** — include the task file's public behaviour, files, acceptance criteria, and verification in plain language
