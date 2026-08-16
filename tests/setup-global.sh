@@ -147,7 +147,7 @@ test_config_replacement_creates_timestamped_backup() {
 	assert_equals "$(grep -c '^default_tools_approval_mode = \"approve\"$' "$home_dir/.codex/config.toml")" "2"
 	assert_contains "$home_dir/.codex/config.toml" '[features]'
 	assert_contains "$home_dir/.codex/config.toml" 'hooks = true'
-	assert_contains "$home_dir/.codex/config.toml" 'writable_roots = ["'"$home_dir"'/Dev/Configuration/Agents", "'"$home_dir"'/.Trash"]'
+	assert_contains "$home_dir/.codex/config.toml" 'writable_roots = ["'"$home_dir"'/Dev/Configuration/Agents", "'"$home_dir"'/Dev/Configuration/zsh", "'"$home_dir"'/Dev/Repositories/Packages/dev-tools", "'"$home_dir"'/.Trash", "'"$home_dir"'/.cache", "'"$home_dir"'/.agents"]'
 	assert_not_contains "$home_dir/.codex/config.toml" '[[hooks.'
 	assert_link "$home_dir/.codex/hooks.json"
 	assert_link "$home_dir/.codex/hooks/tool-call-checkpoint.sh"
@@ -180,7 +180,7 @@ test_workspace_network_access_is_enabled() {
 	assert_contains "$home_dir/.codex/config.toml" 'network_access = true'
 	assert_not_contains "$home_dir/.codex/config.toml" 'network_access = false'
 	assert_contains "$home_dir/.codex/config.toml" 'exclude_slash_tmp = true'
-	assert_contains "$home_dir/.codex/config.toml" 'writable_roots = ["/tmp/keep", "'"$home_dir"'/Dev/Configuration/Agents", "'"$home_dir"'/.Trash"]'
+	assert_contains "$home_dir/.codex/config.toml" 'writable_roots = ["/tmp/keep", "'"$home_dir"'/Dev/Configuration/Agents", "'"$home_dir"'/Dev/Configuration/zsh", "'"$home_dir"'/Dev/Repositories/Packages/dev-tools", "'"$home_dir"'/.Trash", "'"$home_dir"'/.cache", "'"$home_dir"'/.agents"]'
 }
 
 test_skip_backup_environment_does_not_bypass_backup() {

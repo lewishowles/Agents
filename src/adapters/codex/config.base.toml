@@ -7,7 +7,7 @@ default_mode_request_user_input = true
 
 [sandbox_workspace_write]
 network_access = true
-writable_roots = ["{{HOME}}/Dev/Configuration/Agents", "{{HOME}}/.Trash"]
+writable_roots = ["{{HOME}}/Dev/Configuration/Agents", "{{HOME}}/Dev/Configuration/zsh", "{{HOME}}/Dev/Repositories/Packages/dev-tools", "{{HOME}}/.Trash", "{{HOME}}/.cache", "{{HOME}}/.agents"]
 
 [tui]
 status_line = ["run-state", "project-name", "used-tokens", "context-used", "five-hour-limit", "weekly-limit", "model-with-reasoning"]
