@@ -1,12 +1,13 @@
 # Progress format
 
-Canonical contract for `PROGRESS.md` and `.agent/tasks/` across projects. The `project-setup`, `project-plan-task`, `project-continue`, and `project-compact-progress` skills embed working templates that must stay in sync with this document. External consumers (Boilersuit's progress surface, `boilersuit progress`) parse and write against this contract.
+Canonical reference for the `progress` CLI data model and `.agent/tasks/` across projects. The `project-setup`, `project-plan-task`, `project-continue`, and `project-compact-progress` skills embed task-file templates that must stay in sync with this document. The CLI stores project state in SQLite; `PROGRESS.md` is freeform prose and is not its task-state store.
 
 ## Files
 
-- `<project-root>/PROGRESS.md` — session handoff, roadmap, queue, decisions, discoveries.
-- `<project-root>/.agent/tasks/<task-slug>.md` — one file per concrete task.
-- `<project-root>/.agent/specs/<feature>.md` — durable feature designs, unchanged by this contract.
+- `~/.agents/progress.db`: the default SQLite database used by `progress`; pass `--database PATH` to use another database
+- `<project-root>/PROGRESS.md`: optional freeform backlog prose, such as "Upcoming work" or "Parking lot"; it is not parsed as task, queue, roadmap, note, or handoff state
+- `<project-root>/.agent/tasks/<task-slug>.md`: one file per concrete task
+- `<project-root>/.agent/specs/<feature>.md`: durable feature designs, unchanged by this contract
 
 ## Task files
 
@@ -14,7 +15,7 @@ Canonical contract for `PROGRESS.md` and `.agent/tasks/` across projects. The `p
 
 New task filenames use stable, descriptive kebab-case slugs such as `progress-format-parser.md`. The filename identifies the task; it does not encode priority or queue position. Choose a concise slug from the task's purpose and add a meaningful qualifier if another task already uses it.
 
-Reordering work changes only the physical order of links in `### Upcoming queue`. Do not rename task files when titles, priorities, or queue positions change. Refer to tasks by their human-facing title or path in prose, not by a positional number or bare filename stem. Existing numeric filenames are valid legacy input and must not be bulk-renamed or renumbered merely to adopt this convention. New tasks use descriptive slugs even when existing tasks are numeric. Task files do not prescribe branch names.
+Reordering work changes the ordered task and release records in the progress database. Do not rename task files when titles, priorities, or queue positions change. Refer to tasks by their human-facing title or path in prose, not by a positional number or bare filename stem. Existing numeric filenames are valid legacy input and must not be bulk-renamed or renumbered merely to adopt this convention. New tasks use descriptive slugs even when existing tasks are numeric. Task files do not prescribe branch names.
 
 ### Front matter
 
@@ -34,10 +35,10 @@ release: phase-5
 - `overview` — the at-a-glance reminder; one or two sentences.
 - `status` — `ready`, `in-progress`, `blocked`, or `needs-decision`. Use `needs-decision` when an open risk needs the user's input before an agent should implement; don't resolve it by guessing. Use `blocked` when the task isn't actionable yet, whether from an external block or an unresolved prerequisite listed in `depends` — the task file explains which, so the queue never needs to enumerate it. `ready` means actionable now: well-specified, with no unresolved `depends`. `done` is tolerated only in legacy task files that were left mid-archive.
 - `depends` — task filename stems that must land first, e.g. `[progress-format-parser, metadata-validation]`, or `[]`. Use it only for real prerequisites; queue order already expresses the intended sequence. A non-empty, unresolved `depends` means `status` should be `blocked`, not `ready`. Legacy numeric stems remain valid references to existing numeric task files.
-- `release` — a roadmap ID from the `## Roadmap` table. Omit for backlog tasks.
+- `release` — a roadmap ID from the CLI's ordered release records. Omit for backlog tasks.
 - `completed` — legacy date field, tolerated when present but not written by current task producers.
 
-Front matter is the source of truth for status. An agent leaves a verified implementation `in-progress` until the user signals acceptance with “committed”, “continue”, “next”, or equivalent; it must not infer completion from Git state. Inline annotations elsewhere (the upcoming queue) are convenience and may lag.
+Front matter is the source of truth for status. An agent leaves a verified implementation `in-progress` until the user signals acceptance with “committed”, “continue”, “next”, or equivalent; it must not infer completion from Git state.
 
 ### Execution boundary
 
@@ -66,7 +67,7 @@ A feature spec may describe a larger goal, investigation, or phase sequence. Its
 
 ### Clear planning language
 
-Write task files, inline `PROGRESS.md` entries, and feature specs for a reader who does not share the investigation context. Before marking a task `ready`:
+Write task files and feature specs for a reader who does not share the investigation context. Before marking a task `ready`:
 
 - State the concrete problem before the proposed work.
 - Use direct statements with a clear subject and action. Where shorthand could be ambiguous, name the actor, input, behaviour, and result.
@@ -141,46 +142,38 @@ Order steps by how likely they are to change on review: decisions likely to be r
 
 After the user explicitly accepts a commit-plan handoff, tick that entry. If another entry remains unchecked, keep the task `in-progress` and resume there next. After the final entry is accepted, or after the user accepts a single-commit task:
 
-1. Add a one-line, dated outcome to `PROGRESS.md`'s `## Archived milestones`: what landed and how it was verified.
-2. Remove the task from the upcoming queue and promote the next entry into the active slot.
-3. Trash the task file after the `PROGRESS.md` update is complete.
-
-`## Archived milestones` is the sole historical record, and it is release-scoped, not permanent: once a roadmap release's Status is `done` and the release has shipped, remove its milestone entries too.
+1. Mark each accepted chunk `done` with the supported `progress chunk` command, then mark the task `done` with the supported `progress task` command when no pending or active chunks remain.
+2. Update release and queue state through the progress CLI, including starting the next ready task when appropriate and refreshing handoff context with `progress context set`.
+3. If the project removes completed task files, do so after the CLI records are complete. Do not use `PROGRESS.md` as a completion archive or queue.
 
 ## PROGRESS.md
 
+`PROGRESS.md` is optional. Keep it at the project root when a project needs freeform backlog prose, such as an "Upcoming work" or "Parking lot" section. Write and read that prose directly. Do not put task status, active chunk, release roadmap, queue order, discoveries, decisions, or handoff context there; those records belong in the `progress` database.
+
 ### Session handoff
 
-Unchanged from the handoff-first convention: `## Session handoff` first (current goal, active task link, previous/next step, standing context, verify with, stop marker). Verify the active task's front matter before starting it rather than trusting the handoff alone. `git status --short` is a separate safety check before editing, and does not change progress status.
+The CLI stores one handoff context record per project. It contains `current_goal`, `previous_step`, `next_step`, `standing_context`, `verify_with`, and `stop_marker`. Set it with `progress context set`; the session-start hook reads `progress next --json`, and `progress current --json` provides the current task and chunk. Do not recreate this context in `PROGRESS.md`.
 
-### Roadmap
-
-One canonical table. Row order is the timeline; `ID` is what task `release:` fields reference.
-
-```markdown
 ## Roadmap
 
-| ID      | Title                  | Overview                                              | Status |
-| ------- | ---------------------- | ----------------------------------------------------- | ------ |
-| phase-5 | MCP automation surface | In-process MCP server mirroring the CLI JSON contract | active |
-| phase-6 | Generator app health   | Doctor results, empty states, create-generator flows  |        |
-```
+Releases are the ordered roadmap, stored in the CLI's `release` records rather than in `PROGRESS.md`. A release has an ID, slug, title, overview, status, and position. Its status is `planned`, `active`, or `done`; tasks can refer to a release ID. Use `progress release` commands to inspect and change releases instead of maintaining a roadmap table in `PROGRESS.md`.
 
-`Status` is `planned` (or blank), `active`, or `done`. Anything needing more than a sentence of overview gets a spec, not a longer cell.
+## CLI data model
 
-### Upcoming queue
+The database is scoped to the project bound to the current Git repository. Its data model has seven record types:
 
-Table under the session handoff, non-done tasks only. Rows are grouped by Release, in roadmap order; within a release, physical row order is priority and the intended pickup sequence. A flat priority order across releases is harder to scan than the Release column suggests — group first, then order within the group:
+| Record      | Role                                                        | State or links                                                                                            |
+| ----------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `project`   | Identifies the current repository and project.              | Has a stable ID, slug, and name.                                                                          |
+| `release`   | Groups related tasks in roadmap order.                      | `planned`, `active`, or `done`; tasks may refer to it.                                                    |
+| `task`      | Stores one reviewable outcome and its planning fields.      | `ready`, `in-progress`, `blocked`, `needs-decision`, or `done`; may have dependencies, chunks, and notes. |
+| `chunk`     | Stores one unit of work within a task.                      | `pending`, `active`, `done`, or `skipped`; at most one is active per task.                                |
+| `discovery` | Stores a verified finding that helps future work.           | A note attached to the project and optionally a task.                                                     |
+| `decision`  | Stores a decision and, when needed, the note it supersedes. | A note attached to the project and optionally a task.                                                     |
+| `context`   | Stores the current handoff for one project.                 | One record per project, replaced by `progress context set`.                                               |
 
-```markdown
-| Task | Release | Status |
-| --- | --- | --- |
-| [Progress format parser service](.agent/tasks/progress-format-parser.md) | phase-5 | ready |
-| [Progress CLI command](.agent/tasks/progress-cli-command.md) | phase-5 | blocked |
-```
-
-Release and Status are a convenience so agents (and external consumers like Boilersuit's progress surface) can group, skim pickability, and reorder without opening every file; front matter wins on conflict, and drift is a doctor finding, not a parse error. A `blocked` row does not enumerate what it is waiting on — that can be a long list once a task has several prerequisites, and it is already recorded in the task file's `depends`. Reordering rows or moving a task to a different release ID (rewriting its `release:` front matter) is how a consumer like Boilersuit re-plans the queue; it never needs a duplicate release marker inside the row text itself.
+Use `progress next`, `progress current`, and `progress ready` for bounded read surfaces. Use `progress --help`, then `progress <noun> --help`, for the exact command and flag syntax. Use `--json` when another tool or hook needs the stable agent response envelope. The active task is the project's single `in-progress` task. Its active chunk is the next unit of work. `progress next --json` returns that task and chunk; `progress ready --json` lists tasks whose dependencies allow them to start. Task position, release position, dependency edges, and lifecycle status are stored in the database, so no queue table is needed in `PROGRESS.md`.
 
 ## Tolerance
 
-Consumers parse tolerantly: numeric legacy task filenames, numbered legacy queues, a legacy bulleted queue (a title link to a task file, followed by `(status; depends on ...)`), missing sections, legacy heading-based task files (`## Status` / `## Depends on`), or absent front matter degrade to partial results plus warnings, never errors. Producers (skills, agents) always write the current contract.
+The CLI database is authoritative for project state. Missing or uninitialised project bindings are reported as explicit errors, so agents can fall back to `WORKSPACE.md`, `AGENTS.md`, package scripts, and nearby docs without guessing. `PROGRESS.md` may be absent because its freeform backlog prose is outside the CLI data model. Task-file consumers remain tolerant of numeric legacy filenames, missing sections, legacy heading-based task files (`## Status` / `## Depends on`), or absent front matter; producers always write the current task-file contract.
