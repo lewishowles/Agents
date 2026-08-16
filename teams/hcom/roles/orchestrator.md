@@ -67,8 +67,8 @@ These are the floor, not a template to pad. Add scope, exclusions, or acceptance
 
 - When taking over a reset role identity, append a `claim` record with the role prefix, new exact identity, and superseded exact identity.
 - When making a decision, append a `decision` record with the decision, its source (human or Orchestrator), and what it affects.
-- After the human's final acceptance of the whole task, append a `closed` record with the acceptance source, final state, and cleanup action taken. Run `hcom-handoff close` only after that acceptance, never automatically or on a Git event. Keep the file open until the final commit-plan entry is accepted for a multi-commit task.
+- Append a `closed` record with the acceptance source, final state, and cleanup action taken whenever a task's closure is confirmed: either the human gives explicit final acceptance within the session, or a new session's orientation (via `progress` task/chunk state showing no active or pending chunks, or the human's own account) shows the task the handoff covers is already finished. Run `hcom-handoff close` right after appending that record; never close automatically, on a Git event, or without one of these two confirmations. Keep the file open while a multi-commit task still has an unaccepted final chunk.
 - Append each record with `hcom-handoff append --kind <kind>`; exact identities in the records are provenance only and never addressable targets.
-State: what was requested, what was found or changed, what was verified, what decision or action is needed next.
+  State: what was requested, what was found or changed, what was verified, what decision or action is needed next.
 
 For a checkpoint, require: completed work, changed paths, discoveries worth retaining, verification, remaining work, blocker or decision needed, next action, and whether the worker is safe to reset.
