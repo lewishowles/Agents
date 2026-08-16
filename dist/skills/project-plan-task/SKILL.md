@@ -11,25 +11,24 @@ Add new work to an existing project plan managed by the `progress` CLI. Decide w
 
 ## Progress CLI
 
-Run these read commands from the project root before planning:
+The CLI has these top-level nouns:
 
-```sh
-progress project current --json
-progress current --json
-progress task list --json
-progress release list --json
-progress ready --json
-```
+- `next`
+- `current`
+- `project`
+- `release`
+- `task`
+- `chunk`
+- `ready`
+- `discovery`
+- `decision`
+- `context`
 
-The JSON response is the stable agent-facing format. Use IDs from those responses in later commands. Do not open `PROGRESS.md` as a substitute for the task, queue, release, or handoff records.
+Run `progress --help` for top-level syntax, then `progress <noun> --help` for the exact syntax before acting. Use JSON output where the command provides it. Do not open `PROGRESS.md` as a substitute for the task, queue, release, or handoff records.
 
 If `progress` is not installed, or the command reports an uninitialised project, inspect `WORKSPACE.md`, `AGENTS.md`, package scripts, and nearby project docs to understand the repository. Do not create a markdown plan or guess a project identity as a fallback. Ask the user to initialise or install `progress` before writing plan records.
 
-Initialise a project only when its identity is confirmed:
-
-```sh
-progress project init --slug <project-slug> --name "<project name>" --json
-```
+Initialise a project only when its identity is confirmed, using the syntax shown by `progress project --help`.
 
 Do not write the progress database directly or use a second task store.
 
@@ -57,42 +56,12 @@ Run it only when the user asks and it exists in the current shell.
    - **Fan-in**: use Serena for an exact symbol or codebase-memory for a broad multi-hop impact question.
    - Flag files high on two or more signals in `--risks`.
    - Skip this step for routine, single-file, or familiar work.
-3. **Locate**: use `progress current --json`, `progress task list --json`, and `progress release list --json` to identify the current task and the new task's position. Use `progress task get <task-id> --json` for a selected record.
+3. **Locate**: use the `project`, `task`, and `release` records to identify the current task and the new task's position. Fetch only the selected task record when needed.
 4. **Approach exploration** (opt-in): for complex tasks, surface two or three approaches with tradeoffs and wait for the user's choice before writing records. Skip this for single-file, obvious, or already-decided work.
-5. **Reorganise**: if the new work changes later dependencies or ordering, use `progress task dependency add <task-id> <depends-on-task-id> --json` and set `--position` when adding the task. Add a release first when the work belongs to a new release:
-   ```sh
-   progress release add --slug <release-slug> --title "<release title>" --overview "<overview>" --status planned --json
-   ```
-6. **Insert**: create one task record with the confirmed plan fields, then add its work chunks in decisions-first, mechanical-last order:
-   ```sh
-   progress task add \
-     --slug <task-slug> \
-     --title "<task title>" \
-     --overview "<overview>" \
-     --purpose "<purpose>" \
-     --contract "<observable contract>" \
-     --files "<likely files>" \
-     --acceptance-criteria "<observable acceptance criteria>" \
-     --verification "<focused checks>" \
-     --risks "<known risks>" \
-     --release <release-id> \
-     --position <position> \
-     --json
-   progress chunk add --task <task-id> --title "<chunk title>" --description "<chunk description>" --position <position> --json
-   ```
-   Add one chunk per independently reviewable implementation step. Record verified discoveries with `progress discovery add --task <task-id> ...` and decisions with `progress decision add --task <task-id> ...`.
-7. **Review checkpoint**: after creating one task, stop for review. Report the task ID, created chunks, verification commands, and suggested commit message without copying the whole record into chat. If the user challenges a record or answers an open decision, fetch only that task with `progress task get <task-id> --json`, apply the available CLI change, and wait for approval before implementation. If the CLI cannot represent the requested change, stop and ask instead of editing the database or inventing a parallel file.
-8. **Update handoff**: keep the current goal and next action in the CLI context record:
-   ```sh
-   progress context set \
-     --current-goal "<goal>" \
-     --previous-step "<completed step>" \
-     --next-step "<next step>" \
-     --standing-context "<stable context>" \
-     --verify-with "<verification command>" \
-     --stop-marker "<reason to stop>" \
-     --json
-   ```
+5. **Reorganise**: if the new work changes later dependencies or ordering, update the task dependency and position. Add a release first when the work belongs to a new release.
+6. **Insert**: create one task record with the confirmed plan fields, then add its work chunks in decisions-first, mechanical-last order. Add one chunk per independently reviewable implementation step. Record verified discoveries and decisions in their matching records.
+7. **Review checkpoint**: after creating one task, stop for review. Report the task ID, created chunks, verification commands, and suggested commit message without copying the whole record into chat. If the user challenges a record or answers an open decision, fetch only that task record, apply the available CLI change, and wait for approval before implementation. If the CLI cannot represent the requested change, stop and ask instead of editing the database or inventing a parallel file.
+8. **Update handoff**: keep the current goal and next action in the `context` record.
 
 ## Planning for learning
 
@@ -104,14 +73,7 @@ For non-routine or consequential work, establish only the prompts that apply:
 - Smallest usable end-to-end path, including deliberate manual steps
 - For production-affecting work, deployment, observation, support, and reversal needs
 
-Record the resulting durable facts against the task rather than adding them to an unstructured plan file:
-
-```sh
-progress discovery add --task <task-id> "<verified discovery>" --json
-progress decision add --task <task-id> "<decision>" --json
-```
-
-Use `--supersedes <decision-id>` when a decision replaces an earlier one.
+Record the resulting durable facts against the task in `discovery` and `decision` records rather than adding them to an unstructured plan file. When a decision replaces an earlier one, link it as superseding that decision.
 
 ## Cross-repo work
 
@@ -167,30 +129,8 @@ A spec explains why now, the problem, goals, non-goals, approach, entry point an
 
 ## Task records and chunks
 
-Use one `progress task add` record for the work and use its fields for the stable contract:
+Use one `task` record for the work and its stable contract: identity, overview, purpose, contract, model tier when needed, files and linked specs, acceptance criteria, verification, risks, release, and position.
 
-- `--slug` and `--title` identify the task.
-- `--overview` explains why the task exists.
-- `--purpose` names the problem, beneficiary, and observable result.
-- `--contract` records public behaviour, data shape, UI states, or API surface.
-- `--model-tier` records a required model tier only when the default is not suitable.
-- `--files` lists likely paths and linked specs.
-- `--acceptance-criteria` records observable completion conditions.
-- `--verification` records focused checks, manual review, and required evidence.
-- `--risks` records known risks and recovery concerns.
-- `--release` and `--position` place the task in the release roadmap and queue.
-
-Use `progress chunk add` for detailed implementation steps, including decisions-first ordering and mechanical-last work. Use discovery and decision records for durable findings rather than changing the task history by hand.
-
-Use the CLI lifecycle commands for status changes:
-
-```sh
-progress task start <task-id> --json
-progress task block <task-id> --reason "<blocker>" --json
-progress task block <task-id> --reason "<decision needed>" --needs-decision --json
-progress task unblock <task-id> --json
-progress chunk complete <chunk-id> --json
-progress task complete <task-id> --json
-```
+Use `chunk` records for detailed implementation steps, including decisions-first ordering and mechanical-last work. Use `discovery` and `decision` records for durable findings rather than changing the task history by hand.
 
 Start a task when implementation begins. Block it when an external blocker or unresolved decision makes it unsafe to continue, and unblock it only when that condition is resolved. Complete chunks as they are accepted. Complete the task only after the user accepts the final reviewable outcome. Never infer status from Git state.
