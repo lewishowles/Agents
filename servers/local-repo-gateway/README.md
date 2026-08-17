@@ -36,9 +36,9 @@ Edit `servers/local-repo-gateway/repos.json` so each entry points at a local rep
 {
 	"repos": [
 		{
-			"id": "agents-config",
+			"id": "agents",
 			"name": "Agent configuration",
-			"path": "/Users/lewis/Dev/Configuration/Agents",
+			"path": "~/Dev/Configuration/Agents",
 			"description": "Shared Claude, Codex, and ChatGPT configuration source",
 			"operations": ["read", "git_status", "git_diff"]
 		}
@@ -46,17 +46,17 @@ Edit `servers/local-repo-gateway/repos.json` so each entry points at a local rep
 }
 ```
 
-Start the server in foreground stdio mode:
+For a foreground stdio MCP connection, run:
 
 ```sh
 scripts/local-repo-gateway-mcp.sh
 ```
 
-The script checks for `repos.json`, creates a Python 3.12 virtual environment at `servers/local-repo-gateway/.venv` if one does not exist, installs requirements via `uv`, then starts `servers/local-repo-gateway/server.py`. Stop it with `Ctrl+C`. Requires `uv` on `PATH`.
+This is useful for a one-off local connection. The normal setup runs the HTTP gateway in the background through macOS LaunchAgents.
 
-## ChatGPT setup (Custom GPT with Actions)
+## Background HTTP gateway
 
-ChatGPT connects via an HTTP server exposed through a Cloudflare tunnel. You need a Cloudflare account with a domain managed by Cloudflare DNS, and `cloudflared` installed (`brew install cloudflare/cloudflare/cloudflared`).
+The background setup runs the HTTP server and Cloudflare tunnel as macOS LaunchAgents. ChatGPT connects to the HTTP server through the tunnel. You need a Cloudflare account with a domain managed by Cloudflare DNS, and `cloudflared` installed (`brew install cloudflare/cloudflare/cloudflared`).
 
 Run the setup script from the repo root:
 
@@ -74,7 +74,9 @@ The script will:
 6. Install and start the LaunchAgents
 7. Print the ChatGPT Custom GPT wiring instructions
 
-Re-running the script is safe — existing tunnels and tokens are detected and preserved.
+Re-running the script is safe, existing tunnels and tokens are detected and preserved.
+
+### Connect ChatGPT
 
 After the script finishes, follow the printed instructions to create a Custom GPT in ChatGPT with the generated schema and token. Paste the contents of `servers/local-repo-gateway/openapi.json` directly into the schema editor rather than importing by URL.
 
@@ -85,18 +87,35 @@ tail -f /tmp/local-repo-gateway-http.log
 tail -f /tmp/local-repo-gateway-tunnel.log
 ```
 
+### Refresh after changing `repos.json`
+
+The HTTP server reads `repos.json` when it starts. After changing the allowlist, validate the JSON and restart the HTTP LaunchAgent:
+
+```sh
+python3 -m json.tool servers/local-repo-gateway/repos.json >/dev/null
+
+launchctl unload "$HOME/Library/LaunchAgents/com.lewis.local-repo-gateway-http.plist" 2>/dev/null || true
+launchctl load "$HOME/Library/LaunchAgents/com.lewis.local-repo-gateway-http.plist"
+```
+
+The Cloudflare tunnel and ChatGPT Action schema do not need to be restarted or updated for an allowlist change. Check the configured repository count with:
+
+```sh
+bash scripts/local-repo-gateway-status.sh
+```
+
 ## Available tools
 
-| Tool                          | Returns                                                                                                                                   |
-| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `local_repo_health`           | JSON with server version, mode, configured repo count, and available operations.                                                          |
-| `local_repo_list`             | JSON list of allowlisted repos with `id`, `name`, and `description`.                                                                      |
-| `local_repo_get_instructions` | `AGENTS.md`, `WORKSPACE.md` or legacy `AGENT_CAPABILITIES.md`, and the `PROGRESS.md` handoff section when present.                       |
-| `local_repo_tree`             | Bounded directory listing for a repo-relative path, excluding Git data, dependencies, generated output, caches, and secret-looking paths. |
-| `local_repo_search`           | Bounded `rg` results for a pattern, with paths made relative to the repo root.                                                            |
-| `local_repo_read_file`        | Bounded UTF-8 file contents for one repo-relative path, or a message when the file is missing, excluded, binary, or too large.            |
-| `local_repo_git_status`       | Compact `git status --short --branch` output, or `Working tree clean.`                                                                    |
-| `local_repo_git_diff`         | Bounded `git diff HEAD` output, optionally scoped to one repo-relative path.                                                              |
+| Tool                          | Returns                                                                                                                                                                |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `local_repo_health`           | JSON with server version, mode, configured repo count, and available operations.                                                                                       |
+| `local_repo_list`             | JSON list of allowlisted repos with `id`, `name`, and `description`.                                                                                                   |
+| `local_repo_get_instructions` | `AGENTS.md`, `WORKSPACE.md` or legacy `AGENT_CAPABILITIES.md`, and the `PROGRESS.md` handoff section when present.                                                     |
+| `local_repo_tree`             | Bounded directory listing for a repo-relative path, excluding Git data, dependencies, generated output, caches, and secret-looking paths.                              |
+| `local_repo_search`           | Bounded `rg` results for a pattern, with paths made relative to the repo root.                                                                                         |
+| `local_repo_read_file`        | Bounded UTF-8 file contents for one repo-relative path, or a message when the file is missing, excluded, binary, or too large.                                         |
+| `local_repo_git_status`       | Compact `git status --short --branch` output, or `Working tree clean.`                                                                                                 |
+| `local_repo_git_diff`         | Bounded `git diff HEAD` output, optionally scoped to one repo-relative path.                                                                                           |
 | `local_repo_propose_patch`    | Unified diff for a single-file text change (max 400 diff lines). Computed only — never written to disk. Requires `propose_patch` in the repo's `operations` allowlist. |
 
 ## Schema design

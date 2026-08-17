@@ -1,7 +1,7 @@
 {
 	"repos": [
 		{
-			"id": "agents-config",
+			"id": "agents",
 			"name": "Agent configuration",
 			"path": "/Users/lewis/Dev/Configuration/Agents",
 			"description": "Shared Claude, Codex, and ChatGPT configuration source",
