@@ -23,18 +23,19 @@ The invariant is: every roadmap release, task-file field, chunk, dependency, dis
 2. Check `git status --short` before editing. Keep `PROGRESS.md` and every task file until the final comparison has passed.
 3. Confirm the project identity and database. Use the database path documented by the project, or pass it explicitly with `--database <path>` on every command. `progress` otherwise resolves `$AGENTS_PROGRESS_DATABASE`, then `~/.agents/progress.db`.
 4. Run `progress --help` and the relevant noun help if the installed CLI differs from this skill. The CLI is the contract; do not reconstruct its schema from the Markdown.
-5. Initialise only an uninitialised project:
+5. `project init` and `project attach` bind the project by writing `progress.project-id` into `.git/config`. A sandboxed agent (a Codex session, or any HCOM peer) can be denied this write, failing with `could not lock config file .git/config: Operation not permitted`. That's a permission restriction, not a transient lock, so retrying from the same session fails every time. Check `progress project current --json` first. If it shows `uninitialised-project`, ask the human to run the bind themselves, from their own terminal, rather than attempting it from the agent:
 
    ```sh
    progress project init --slug <project-slug> --name "<project name>" --json [--database <path>]
    ```
 
-   If the project already exists but is not attached to this Git repository, use the existing project ID:
+   If the project already exists but is not attached to this Git repository, ask the human to run the attach instead:
 
    ```sh
    progress project attach <project-id> --json [--database <path>]
-   progress project current --json [--database <path>]
    ```
+
+   Once the human confirms the bind (or `progress project current --json` already shows the repo bound), the rest of the port can run from any agent: only the bind write touches `.git/config`. If an agent attempts the bind and hits this error, do not retry from the same session; hand the exact command back to the human, or route that step to a peer that can write `.git/config`.
 
    Never initialise blindly or write the database directly. If SQLite cannot open the configured database, stop and report the exact command, exit status, and first error. Do not copy the database or silently switch to a scratch database.
 
@@ -218,5 +219,6 @@ For destructive repair, remember that release and task removal are hard deletes 
 
 - If a command fails, record the exact command, exit status, and first relevant error. Inspect the affected record with `get` or `list` before deciding whether a supported correction exists.
 - Treat an automatic `blocked` status caused by an unfinished dependency as expected. Treat a position collision, a duplicate identity, a stale source field, or a second in-progress task as a porting problem to resolve explicitly.
+- A failed `project init`/`project attach` bind can leave the server-side project deleted (a later `attach` on that ID returns not-found) while still leaving a stale `progress.project-id` key in `.git/config`. Clear that key with `git config --local --unset-all progress.project-id` before the next attempt, but if the underlying cause is a `.git/config` write permission denial, clearing the key alone won't fix it: see the sandbox note in step 1.
 - Never use direct SQLite writes, an unreviewed bulk importer, or a copied database to make the inventory appear complete.
 - Never delete source files to hide an unresolved mismatch. Leave the source intact and hand back the smallest decision or CLI capability that is missing.
