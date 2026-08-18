@@ -18,11 +18,11 @@ backup_path() {
 	local backup_dir
 
 	case "$path" in
-		"$HOME/.claude/skills/"*)   backup_dir="$HOME/.claude/backups/skills" ;;
-		"$HOME/.claude/hooks/"*)    backup_dir="$HOME/.claude/backups/hooks" ;;
-		"$HOME/.claude/commands/"*) backup_dir="$HOME/.claude/backups/commands" ;;
-		"$HOME/.agents/skills/"*)   backup_dir="$HOME/.agents/backups/skills" ;;
-		*)                          backup_dir="$(dirname "$path")" ;;
+		"$HOME"/.claude*/skills/*)   backup_dir="$(dirname "$(dirname "$path")")/backups/skills" ;;
+		"$HOME"/.claude*/hooks/*)    backup_dir="$(dirname "$(dirname "$path")")/backups/hooks" ;;
+		"$HOME"/.claude*/commands/*) backup_dir="$(dirname "$(dirname "$path")")/backups/commands" ;;
+		"$HOME/.agents/skills/"*)    backup_dir="$HOME/.agents/backups/skills" ;;
+		*)                           backup_dir="$(dirname "$path")" ;;
 	esac
 
 	local backup_base

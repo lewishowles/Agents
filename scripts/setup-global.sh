@@ -10,37 +10,37 @@ REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 source "$REPO_DIR/scripts/lib/setup-links.sh"
 
 usage() {
-	printf 'Usage: %s [--claude|--codex|--both] [--skip-external]\n' "$(basename "$0")"
+	printf 'Usage: %s [--claude|--codex|--both] [--claude-dir <path>] [--codex-dir <path>] [--skip-external]\n' "$(basename "$0")"
 }
 
 setup_claude() {
-	cli_section "Claude global setup"
+	cli_section "Claude global setup ($(display_path "$CLAUDE_DIR"))"
 
 	cli_group_begin "Claude directories"
-	ensure_container_dir "$HOME/.claude" "~/.claude"
-	ensure_container_dir "$HOME/.claude/skills" "skills"
-	ensure_container_dir "$HOME/.claude/hooks" "hooks"
-	ensure_container_dir "$HOME/.claude/commands" "commands"
+	ensure_container_dir "$CLAUDE_DIR" "$(display_path "$CLAUDE_DIR")"
+	ensure_container_dir "$CLAUDE_DIR/skills" "skills"
+	ensure_container_dir "$CLAUDE_DIR/hooks" "hooks"
+	ensure_container_dir "$CLAUDE_DIR/commands" "commands"
 	cli_group_end
 
 	cli_group_begin "Claude files"
-	link_path "$REPO_DIR/dist/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md" "CLAUDE.md"
-	link_path "$REPO_DIR/dist/claude/settings.json" "$HOME/.claude/settings.json" "settings.json"
-	link_path "$REPO_DIR/dist/claude/.mcp.json" "$HOME/.claude/.mcp.json" ".mcp.json"
-	link_path "$REPO_DIR/dist/claude/statusline.sh" "$HOME/.claude/statusline.sh" "statusline.sh"
+	link_path "$REPO_DIR/dist/claude/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md" "CLAUDE.md"
+	link_path "$REPO_DIR/dist/claude/settings.json" "$CLAUDE_DIR/settings.json" "settings.json"
+	link_path "$REPO_DIR/dist/claude/.mcp.json" "$CLAUDE_DIR/.mcp.json" ".mcp.json"
+	link_path "$REPO_DIR/dist/claude/statusline.sh" "$CLAUDE_DIR/statusline.sh" "statusline.sh"
 	cli_group_end
 
 	cli_group_begin "Claude skills"
-	prune_stale_repo_links "$HOME/.claude/skills" "$REPO_DIR" "skills"
-	link_skills "$HOME/.claude/skills"
+	prune_stale_repo_links "$CLAUDE_DIR/skills" "$REPO_DIR" "skills"
+	link_skills "$CLAUDE_DIR/skills"
 	cli_group_end
 
 	cli_group_begin "Claude hooks"
-	prune_stale_repo_links "$HOME/.claude/hooks" "$REPO_DIR/dist/claude/hooks" "hooks"
+	prune_stale_repo_links "$CLAUDE_DIR/hooks" "$REPO_DIR/dist/claude/hooks" "hooks"
 	local hook
 	for hook in "$REPO_DIR"/dist/claude/hooks/*; do
 		[ -f "$hook" ] || continue
-		link_path "$hook" "$HOME/.claude/hooks/$(basename "$hook")" "hooks/$(basename "$hook")"
+		link_path "$hook" "$CLAUDE_DIR/hooks/$(basename "$hook")" "hooks/$(basename "$hook")"
 	done
 	cli_group_end
 
@@ -48,35 +48,35 @@ setup_claude() {
 	local command
 	for command in "$REPO_DIR"/dist/claude/commands/*; do
 		[ -f "$command" ] || continue
-		link_path "$command" "$HOME/.claude/commands/$(basename "$command")" "commands/$(basename "$command")"
+		link_path "$command" "$CLAUDE_DIR/commands/$(basename "$command")" "commands/$(basename "$command")"
 	done
 	cli_group_end
 }
 
 setup_codex() {
-	cli_section "Codex global setup"
+	cli_section "Codex global setup ($(display_path "$CODEX_DIR"))"
 
 	cli_group_begin "Codex directories"
 	ensure_container_dir "$HOME/.agents" "~/.agents"
 	ensure_container_dir "$HOME/.agents/skills" "~/.agents/skills"
-	ensure_container_dir "$HOME/.codex" "~/.codex"
-	ensure_container_dir "$HOME/.codex/hooks" "~/.codex/hooks"
+	ensure_container_dir "$CODEX_DIR" "$(display_path "$CODEX_DIR")"
+	ensure_container_dir "$CODEX_DIR/hooks" "hooks"
 	cli_group_end
 
 	cli_group_begin "Codex files"
 	link_path "$REPO_DIR/dist/codex/AGENTS.md" "$HOME/.agents/AGENTS.md" "AGENTS.md"
-	link_path "$REPO_DIR/dist/codex/AGENTS.md" "$HOME/.codex/AGENTS.md" "Codex AGENTS.md"
-	link_path "$REPO_DIR/dist/codex/hooks.json" "$HOME/.codex/hooks.json" "Codex hooks"
-	link_path "$REPO_DIR/dist/codex/hooks/tool-call-checkpoint.sh" "$HOME/.codex/hooks/tool-call-checkpoint.sh" "Codex tool-call checkpoint"
-	link_path "$REPO_DIR/dist/codex/hooks/guard-destructive.sh" "$HOME/.codex/hooks/guard-destructive.sh" "Codex guard-destructive"
-	link_path "$REPO_DIR/dist/codex/hooks/guard-hcom-ack.sh" "$HOME/.codex/hooks/guard-hcom-ack.sh" "Codex HCOM acknowledgement guard"
-	link_path "$REPO_DIR/dist/codex/hooks/guard-search-boundaries.sh" "$HOME/.codex/hooks/guard-search-boundaries.sh" "Codex search-boundary guard"
+	link_path "$REPO_DIR/dist/codex/AGENTS.md" "$CODEX_DIR/AGENTS.md" "Codex AGENTS.md"
+	link_path "$REPO_DIR/dist/codex/hooks.json" "$CODEX_DIR/hooks.json" "Codex hooks"
+	link_path "$REPO_DIR/dist/codex/hooks/tool-call-checkpoint.sh" "$CODEX_DIR/hooks/tool-call-checkpoint.sh" "Codex tool-call checkpoint"
+	link_path "$REPO_DIR/dist/codex/hooks/guard-destructive.sh" "$CODEX_DIR/hooks/guard-destructive.sh" "Codex guard-destructive"
+	link_path "$REPO_DIR/dist/codex/hooks/guard-hcom-ack.sh" "$CODEX_DIR/hooks/guard-hcom-ack.sh" "Codex HCOM acknowledgement guard"
+	link_path "$REPO_DIR/dist/codex/hooks/guard-search-boundaries.sh" "$CODEX_DIR/hooks/guard-search-boundaries.sh" "Codex search-boundary guard"
 	ensure_codex_config
 	cli_group_end
 
 	cli_group_begin "Codex skills"
 	prune_stale_repo_links "$HOME/.agents/skills" "$REPO_DIR" "skills"
-	prune_stale_repo_links "$HOME/.codex/skills" "$REPO_DIR" "legacy skills" "1"
+	prune_stale_repo_links "$CODEX_DIR/skills" "$REPO_DIR" "legacy skills" "1"
 	link_skills "$HOME/.agents/skills"
 	cli_group_end
 }
@@ -299,11 +299,11 @@ remove_inline_codex_hooks() {
 	' "$source" > "$destination"
 }
 
-# Ensures ~/.codex/config.toml contains the managed defaults, MCP server
+# Ensures $CODEX_DIR/config.toml contains the managed defaults, MCP server
 # entries, hooks feature flag, and TUI status line. Legacy inline hooks are
 # removed so Codex uses the managed hooks.json file.
 ensure_codex_config() {
-	local config="$HOME/.codex/config.toml"
+	local config="$CODEX_DIR/config.toml"
 	local defaults_temp temp
 
 	defaults_temp=$(mktemp)
@@ -393,12 +393,16 @@ prompt_target() {
 
 target=""
 sync_external=true
+CLAUDE_DIR="$HOME/.claude"  # Overridable so a second account can install alongside the default one.
+CODEX_DIR="$HOME/.codex"    # Overridable so a second account can install alongside the default one.
 
 while [ $# -gt 0 ]; do
 	case "$1" in
 		--claude)        target="claude" ;;
 		--codex)         target="codex" ;;
 		--both)          target="both" ;;
+		--claude-dir)    CLAUDE_DIR="$2"; shift ;;
+		--codex-dir)     CODEX_DIR="$2"; shift ;;
 		--skip-external) sync_external=false ;;
 		--help)          usage; exit 0 ;;
 		*)               usage >&2; exit 1 ;;
