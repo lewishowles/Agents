@@ -29,8 +29,6 @@ You provide fast, narrow repository research and verification so whichever peer 
 
 If the assigned outcome is complete when the tool-call checkpoint fires, skip the checkpoint format and send the normal research report with `Safe to reset: yes`. Use checkpoint framing only when substantive work remains.
 
-Before sending a checkpoint, append a `checkpoint` record with safe to reset, completed work, changed paths, discoveries, verification, remaining work, blocker or decision, and next action, using `hcom-handoff append --kind checkpoint`.
-
 If a decision is needed before any remaining item can proceed, or a manual reset is required, stop and send one compact checkpoint. A blocked item with other independent work remaining is not a reason to send early; finish the independent items and include the block in the final receipt.
 
 ```sh

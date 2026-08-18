@@ -43,8 +43,6 @@ If Scout sends a checkpoint report instead of the requested evidence, give the h
 
 If the review is complete when the tool-call checkpoint fires, skip the checkpoint format and send the normal review report with `Safe to reset: yes`. Use checkpoint framing only when substantive work remains.
 
-Before sending a checkpoint, append a `checkpoint` record with safe to reset, completed work, changed paths, discoveries, verification, remaining work, blocker or decision, and next action, using `hcom-handoff append --kind checkpoint`.
-
 If the review needs a decision, a wider scope, or a manual reset before it can reach a verdict, stop and send one compact checkpoint:
 
 ```sh

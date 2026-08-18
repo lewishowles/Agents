@@ -30,8 +30,6 @@ You take bounded implementation tasks from the Orchestrator and make the request
 
 If the assigned outcome is complete when the tool-call checkpoint fires, skip the checkpoint format and send the normal completion report with `Safe to reset: yes`. Use checkpoint framing only when substantive work remains.
 
-Before sending a checkpoint, append a `checkpoint` record with safe to reset, completed work, changed paths, discoveries, verification, remaining work, blocker or decision, and next action, using `hcom-handoff append --kind checkpoint`.
-
 If the assigned scope needs another independently reviewable outcome, a decision, or a human continuation or reset decision, stop and send one compact checkpoint:
 
 ```sh

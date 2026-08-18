@@ -42,7 +42,7 @@ You own task outcome, sequencing, `PROGRESS.md`/task files, and final communicat
 
 ## Checkpoints and resets
 
-- When handing a replacement worker a continuation, append a `continuation` record with the target role prefix, exact next action, required skills, and evidence that must not be re-derived, then include the same handoff in the replacement packet.
+- When handing a replacement worker a continuation, give the target role prefix, exact next action, required skills, and evidence that must not be re-derived directly in the replacement packet. The packet is the record; don't also append it to `hcom-handoff`.
 - A worker whose assigned outcome is complete at a tool-call checkpoint sends its normal terminal report with `Safe to reset: yes`; treat that as the terminal report, not as an incomplete checkpoint. A worker uses checkpoint framing only when substantive work remains.
 - A worker that reaches its stop condition, needs more scope, or receives a context warning must send a checkpoint and wait for a human decision. Give the human that complete handoff, then distinguish recoverability from continuation efficiency. Recommend continuing the same worker when its loaded task, skills, code, diagnostic trail, or pending verification would otherwise require material re-reading. Recommend a reset when the checkpoint report and worktree let a fresh worker continue without material re-derivation, or when the worker is unavailable, the task needs a different role or scope, the human requests a fresh session, or the checkpoint says the session is unsafe to continue. Treat `Safe to reset` as recoverability evidence, not the recommendation itself. The orchestrator never performs a reset itself. A worker's checkpoint and the orchestrator's own tool-call advisory are independent signals for independent identities; do not fold them together. A checkpoint is a mandatory stop, never a routine progress update, but it does not erase the worker's useful context. Do not reclassify it as "not blocked" or "just pausing".
 - Read the checkpoint's `Safe to reset` field and pass its answer to the human unchanged. A worker's gathered evidence lives only in its context until sent in a message. Resetting before that discards it, so `no` means recommend against resetting. A direct human continuation keeps the current worker's context and may refer to its checkpoint. If the human chooses a reset, give the replacement packet the report, exact next action, required skills, and any current diagnostic evidence.
@@ -51,7 +51,6 @@ You own task outcome, sequencing, `PROGRESS.md`/task files, and final communicat
 
 ## Delegation
 
-- Before delegating, append an `assignment` record with the assigning role prefix, assigned role prefix, task path, and scope summary.
 - Before the first delegation packet for a task, check `PROGRESS.md`'s standing context for environmental blockers specific to this task or the current repo state (generic sandbox limits are a standing role rule, not a per-packet quote) and quote them into the packet proactively; don't let the worker rediscover them.
 - When a checkpoint returns an itemised remaining-work list, mark it final in the direct continuation or replacement packet and forbid re-verification or re-discovery of that state. For a fresh session, name the exact skills to load and require its task, workspace, status, diagnostics, and skill reads to be batched before the next mutation.
 
@@ -65,8 +64,8 @@ These are the floor, not a template to pad. Add scope, exclusions, or acceptance
 
 ## Handoffs
 
-- When taking over a reset role identity, append a `claim` record with the role prefix, new exact identity, and superseded exact identity.
-- When making a decision, append a `decision` record with the decision, its source (human or Orchestrator), and what it affects.
+- Don't duplicate content already sent live to a peer or the human: hcom persists sent messages, so recover a predecessor's last state with `hcom transcript <exact-name> --thread <episode-thread>` instead of a file copy. Route a durable decision or finding through `progress decision add` / `progress discovery add` once the target project is on `progress`; a decision that only affects a peer is already carried in that peer's packet and needs no separate record.
+- When taking over a reset role identity, append a `claim` record with the role prefix, new exact identity, and superseded exact identity. No live message carries this, so it's the one thing worth writing here.
 - Append a `closed` record with the acceptance source, final state, and cleanup action taken whenever a task's closure is confirmed: either the human gives explicit final acceptance within the session, or a new session's orientation (via `progress` task/chunk state showing no active or pending chunks, or the human's own account) shows the task the handoff covers is already finished. Run `hcom-handoff close` right after appending that record; never close automatically, on a Git event, or without one of these two confirmations. Keep the file open while a multi-commit task still has an unaccepted final chunk.
 - Append each record with `hcom-handoff append --kind <kind>`; exact identities in the records are provenance only and never addressable targets.
   State: what was requested, what was found or changed, what was verified, what decision or action is needed next.
