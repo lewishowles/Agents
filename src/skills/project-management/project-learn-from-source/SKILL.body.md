@@ -30,6 +30,8 @@ Establish the user's intended learning level before source extraction or local r
 
 If the request supports materially different interpretations that would change the evidence gathered or the form of the answer, ask one concise question before proceeding. Do not ask when the user's context already resolves the ambiguity.
 
+When the user asks an open-ended learning question such as "anything we can learn?", do not use the recommendation-readiness gate as an output filter. Assess every verified, relevant lesson, then separate ready repository changes from useful practices that require no repository change and from covered, rejected, or blocked ideas. The bottom-line counts cover only ready repository changes. A lesson can still be useful without meeting the local-gap requirement, so surface relevant user practices in the first response rather than waiting for a follow-up.
+
 Every assessment starts with this exact shape, before any other heading or explanation:
 
 ```markdown
@@ -86,7 +88,7 @@ Apply the `code-lookup` routing skill for structural questions. Use targeted rea
 4. Check every candidate against the full readiness gate. Drop candidates with no plausible local gap or with evidence that rules them out. Keep only genuinely unresolved load-bearing evidence as an explicit blocker.
 5. Assign each ready candidate a tier: Must, Recommended, or Nice-to-have.
 6. Choose the bottom-line outcome. Use the source directly when that route is in scope and fits; apply specific lessons when verified ideas or principles fit the local repository; take no local action when neither route has a ready recommendation.
-7. Write the shortest response that communicates the verdict, ready actions grouped by tier, covered or rejected material, and any genuine blocked evidence.
+7. Write the shortest response that communicates the verdict, ready actions grouped by tier, useful user practices, covered or rejected material, and any genuine blocked evidence.
 
 Do not treat the external source as authoritative. The goal is better local judgement, not imitation.
 
@@ -154,6 +156,10 @@ After the required first line, use only the sections that contain evidence:
 
 1. <same shape as Must>
 
+## Useful practices
+
+- <verified action the user can take without a repository change, why it fits their stated workflow, and whether it complements or replaces current practice>
+
 ## Covered, confirmed, or rejected
 
 <Already-covered principles, confirmations of the current approach, and rejected ideas with their evidence.>
@@ -170,7 +176,7 @@ After the required first line, use only the sections that contain evidence:
 - Local context: <files, docs, commands, or none>
 ```
 
-Include `Direct use` only when direct adoption was in scope. For `Take no local action`, keep the response short: the required first line, the local evidence showing no gap or sufficient coverage, and any decisive source evidence. Include the direct-use reason only when that route was assessed. Do not emit empty template sections. Do not add a routine investigation or deferral list. If evidence is genuinely unavailable, use only the blocked-evidence section and do not call the candidate a recommendation.
+Include `Direct use` only when direct adoption was in scope. Include `Useful practices` only for relevant actions the user can take directly without a repository change; do not count them as ready recommendations. For `Take no local action`, keep the response short: the required first line, any useful practices, the local evidence showing no gap or sufficient coverage, and any decisive source evidence. Include the direct-use reason only when that route was assessed. Do not emit empty template sections. Do not add a routine investigation or deferral list. If evidence is genuinely unavailable, use only the blocked-evidence section and do not call the candidate a recommendation.
 
 ## Attribution
 
