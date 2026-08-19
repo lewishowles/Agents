@@ -292,7 +292,7 @@ test_analyser_groups_log_entries() {
 	assert_contains "$output_file" "1	check-fail	/project-b	test:unit:run: unit tests exploded"
 }
 
-test_analyser_groups_tool_error_entries_by_default() {
+test_analyser_excludes_tool_error_entries_by_default() {
 	local home_dir="$TEST_ROOT/tool-error-analyse-home"
 	local log_file="$home_dir/.claude/logs/friction.log"
 	local output_file="$TEST_ROOT/tool-error-analyse.out"
@@ -302,6 +302,10 @@ test_analyser_groups_tool_error_entries_by_default() {
 	printf '2026-05-15T19:01:00Z\ttool-error\t/project-a\tBash: cat missing.txt — cat: missing.txt: No such file or directory\n' >> "$log_file"
 
 	HOME="$home_dir" "$REPO_DIR/src/skills/friction-review/scripts/analyse-friction.sh" > "$output_file"
+
+	assert_not_contains "$output_file" "tool-error"
+
+	HOME="$home_dir" FRICTION_INCLUDE_TOOL_ERRORS=1 "$REPO_DIR/src/skills/friction-review/scripts/analyse-friction.sh" > "$output_file"
 
 	assert_contains "$output_file" "2	tool-error	/project-a	Bash: cat missing.txt — cat: missing.txt: No such file or directory"
 }
@@ -526,7 +530,7 @@ test_unchanged_passing_worktree_skips_checks
 test_changed_worktree_reruns_checks
 test_failing_worktree_is_never_cached
 test_analyser_groups_log_entries
-test_analyser_groups_tool_error_entries_by_default
+test_analyser_excludes_tool_error_entries_by_default
 test_analyser_tolerates_legacy_lines
 test_analyser_excludes_resolved_pattern
 test_analyser_resurfaces_pattern_after_resolution

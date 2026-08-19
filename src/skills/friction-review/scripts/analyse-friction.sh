@@ -2,9 +2,15 @@
 # Summarises friction log entries by aggregating counts per unique
 # (category, cwd, detail) combination, sorted most frequent first. By default,
 # it merges the central log with project-local fallback logs under $HOME/Dev
-# and excludes automated check-fail rows. Set FRICTION_INCLUDE_CHECK_FAILS=1
-# to include them when reviewing verification debt.
-# Entries are written by pre-stop-checks.sh, the Codex Stop hook, and
+# and excludes automated check-fail and tool-error rows. Set
+# FRICTION_INCLUDE_CHECK_FAILS=1 to include check-fail rows when reviewing
+# verification debt, or FRICTION_INCLUDE_TOOL_ERRORS=1 to include tool-error
+# rows. tool-error detail text (a raw command plus its exact error) is almost
+# never identical between occurrences, so the count column undercounts real
+# patterns there - cluster by error-message substring or command shape by
+# hand instead of trusting count >= 2.
+# Entries are written by pre-stop-checks.sh, the Codex Stop hook,
+# tool-failure-log.sh (auto-logged tool-error rows), and
 # scripts/agent-tools/log-friction.sh as tab-separated lines.
 
 set -euo pipefail
@@ -50,6 +56,7 @@ run_selftest() {
 	local grouped_log
 	local grouped_output
 	local grouped_with_check_fails
+	local grouped_with_tool_errors
 	local home_dir
 	local dev_root
 	local fallback_log
@@ -65,16 +72,21 @@ run_selftest() {
 	printf '2026-05-15T19:00:00Z\trule-ignored\t/project-a\tskipped review gate\n' > "$grouped_log"
 	printf '2026-05-15T19:01:00Z\trule-ignored\t/project-a\tskipped review gate\n' >> "$grouped_log"
 	printf '2026-05-15T19:02:00Z\tcheck-fail\t/project-b\ttest:unit:run: unit tests exploded\n' >> "$grouped_log"
+	printf '2026-05-15T19:02:30Z\ttool-error\t/project-c\tbash: command failed: permission denied\n' >> "$grouped_log"
 	printf '2026-05-15T19:03:00Z\t/legacy-project\tlint\tlint exploded\n' >> "$grouped_log"
 	printf '2026-05-15T19:04:00Z\t/legacy-project\tlint\tlint exploded\n' >> "$grouped_log"
 
 	grouped_output=$(bash "$script_path" "$grouped_log")
 	selftest_assert_contains "$grouped_output" $'2\trule-ignored\t/project-a\tskipped review gate'
 	selftest_assert_not_contains "$grouped_output" $'check-fail'
+	selftest_assert_not_contains "$grouped_output" $'tool-error'
 
 	grouped_with_check_fails=$(FRICTION_INCLUDE_CHECK_FAILS=1 bash "$script_path" "$grouped_log")
 	selftest_assert_contains "$grouped_with_check_fails" $'1\tcheck-fail\t/project-b\ttest:unit:run: unit tests exploded'
 	selftest_assert_contains "$grouped_with_check_fails" $'2\tcheck-fail\t/legacy-project\tlint\tlint exploded'
+
+	grouped_with_tool_errors=$(FRICTION_INCLUDE_TOOL_ERRORS=1 bash "$script_path" "$grouped_log")
+	selftest_assert_contains "$grouped_with_tool_errors" $'1\ttool-error\t/project-c\tbash: command failed: permission denied'
 
 	home_dir="$SELFTEST_ROOT/home"
 	dev_root="$SELFTEST_ROOT/dev"
@@ -103,6 +115,7 @@ fi
 canonical_log_file="$HOME/.claude/logs/friction.log"
 dev_root="${FRICTION_DEV_ROOT:-$HOME/Dev}"
 include_check_fails="${FRICTION_INCLUDE_CHECK_FAILS:-0}"
+include_tool_errors="${FRICTION_INCLUDE_TOOL_ERRORS:-0}"
 log_files=()
 
 if [ "$#" -gt 0 ]; then
@@ -154,7 +167,7 @@ cat "${existing_log_files[@]}" > "$merged_log_file"
 # a later occurrence of the same pattern still counts, signalling the fix
 # didn't hold. The file is read twice (NR == FNR) to know the marker's line
 # position before filtering the second pass.
-awk -F '\t' -v include_check_fails="$include_check_fails" '
+awk -F '\t' -v include_check_fails="$include_check_fails" -v include_tool_errors="$include_tool_errors" '
 	BEGIN {
 		split("rule-ignored wrong-approach token-waste tool-misuse check-fail tool-error missing-guidance", cats, " ")
 		for (i in cats) known[cats[i]] = 1
@@ -184,6 +197,9 @@ awk -F '\t' -v include_check_fails="$include_check_fails" '
 		}
 
 		if (category == "check-fail" && include_check_fails != "1") {
+			next
+		}
+		if (category == "tool-error" && include_tool_errors != "1") {
 			next
 		}
 
