@@ -23,8 +23,17 @@ green=$(printf '\033[38;5;114m')
 orange=$(printf '\033[38;5;215m')
 white=$(printf '\033[1;97m')
 grey=$(printf '\033[38;5;240m')
+magenta=$(printf '\033[1;38;5;170m')
 reset=$(printf '\033[0m')
 sep=" ${grey}·${reset} "
+
+# Marks which account this session is running under, e.g. CLAUDE_CONFIG_DIR
+# ~/.claude-2 renders as [2]. Unset or the default ~/.claude renders nothing.
+account_tag=""
+if [[ -n "$CLAUDE_CONFIG_DIR" ]]; then
+	base=$(basename "$CLAUDE_CONFIG_DIR")
+	[[ "$base" =~ ^\.claude-(.+)$ ]] && account_tag="${BASH_REMATCH[1]}"
+fi
 
 now=$(date +%s)
 
@@ -115,6 +124,7 @@ join_parts() {
 
 # Line 1: identity and context usage — always short and never wraps.
 line1_parts=()
+[[ -n "$account_tag" ]] && line1_parts+=("${magenta}[${account_tag}]${reset}")
 [[ -n "$dir" ]] && line1_parts+=("${green}${dir}${reset}")
 [[ -n "$tokensfmt" ]] && line1_parts+=("${orange}${tokensfmt} used${reset}")
 
