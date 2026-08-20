@@ -31,6 +31,12 @@ If `PROGRESS.md` conflicts with `WORKSPACE.md`, surface the conflict and trust t
 
 When `<project-root>/.agent/scripts/project-diagnostics.py` exists, use `--list` for check discovery and `--check <name>` for verification. Use `--all` only when asked for broad verification.
 
+## HCOM orchestration
+
+When acting as an HCOM Orchestrator, use `hcom list -v` only to identify a same-repository Scout. Send that Scout one bounded request for every factual resume receipt needed, including task or chunk state, outstanding peer reports, and worktree safety. Wait for the Scout's terminal report before deciding and presenting the next task.
+
+Do not inspect source, task state, Git state, peer transcripts, or CLI syntax directly to reconstruct the session. The Scout reports facts; the Orchestrator keeps the decision and human-facing handoff.
+
 ## Workflow
 
 1. **Read** — `## Session handoff` first; stop unless next step is unclear or task needs deeper context
