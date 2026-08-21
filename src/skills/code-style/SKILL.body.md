@@ -72,7 +72,7 @@ Before primitive operations (length, clamping, type checks, string/array/object 
 
 - Every variable declaration has a short purpose comment. Every function has JSDoc, a docstring, or the language's equivalent.
 - Documentation explains the declaration's role, purpose, caller contract, external constraint, or surprising behaviour. Never merely restate its name, signature, types, or mechanics.
-- In JSDoc, use `@param  {type}  name` and indent the description on the next line.
+- In JSDoc, use `@param  {type}  name` and indent the description on the next line. Every `@param` needs that description; a bare `@param {type} name` with nothing on the next line is incomplete, even when the name looks self-evident.
 - Use simple TypeScript JSDoc types (e.g. `object[]` not `Array<object>`)
 - Add short purpose comment when intentional behaviour may look like bug/workaround
 - No banner/divider comments; use JSDoc and blank lines
