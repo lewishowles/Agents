@@ -34,4 +34,4 @@ Turns recurring friction-log patterns into specific, minimal, human-reviewed ame
 ## Skip conditions
 
 - Friction log is empty or has no entries with count ≥ 2: report that; don't force a proposal
-- Recurring pattern already covered by existing guidance and agent simply didn't follow once: flag as possible one-off, not a guidance gap; suggest logging one more before amending
+- Recurring pattern already covered by existing guidance and agent simply didn't follow once: flag as possible one-off, not a guidance gap; suggest logging one more before amending. Stops applying at count ≥ 3: the guidance exists and is still being missed, so ask why rather than dismissing it. Is it ambiguous, scattered across files, or in the wrong place for when it's needed? Propose the fix that answers that; often clarifying or consolidating existing wording, not adding more.
