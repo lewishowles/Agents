@@ -110,7 +110,7 @@ ln -s /path/to/repository/src/skills/vue ~/.agents/skills/vue
 
 This keeps Codex skill discovery under `~/.agents` while `~/.codex` holds app config and hooks.
 
-If external skill sync fails because the network is unavailable, keep the existing local `src/skills/<name>` copy and continue setup. `scripts/setup-global.sh --both` does this automatically; pass `--skip-external` to bypass the sync step intentionally.
+Repository refresh is optional during global setup. Pass `--refresh` to sync external skills, regenerate repository output, and validate it before linking. If external skill sync fails because the network is unavailable, the existing local `src/skills/<name>` copy is kept; pass `--refresh --skip-external` to bypass the sync step intentionally.
 
 ## Project setup
 

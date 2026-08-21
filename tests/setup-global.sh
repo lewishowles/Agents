@@ -20,10 +20,13 @@ create_command_stubs() {
 
 	mkdir -p "$bin_dir"
 
-	cat > "$bin_dir/bash" <<'EOF'
+cat > "$bin_dir/bash" <<'EOF'
 #!/bin/sh
 case "$1" in
-	"$SETUP_GLOBAL_INSTALLER"|"$SETUP_GLOBAL_SYNC") exit 0 ;;
+	"$SETUP_GLOBAL_INSTALLER"|"$SETUP_GLOBAL_SYNC"|"$SETUP_GLOBAL_VALIDATE")
+		printf '%s\n' "$1" >> "$SETUP_GLOBAL_CALL_LOG"
+		exit 0
+		;;
 esac
 exec /bin/bash "$@"
 EOF
@@ -96,6 +99,8 @@ run_setup() {
 	CLI_STYLE_BIN="$bin_dir/cli-style" \
 	SETUP_GLOBAL_INSTALLER="$REPO_DIR/scripts/install-cli-style.sh" \
 	SETUP_GLOBAL_SYNC="$REPO_DIR/scripts/sync.sh" \
+	SETUP_GLOBAL_VALIDATE="$REPO_DIR/scripts/validate.sh" \
+	SETUP_GLOBAL_CALL_LOG="$home_dir/setup-global-calls.log" \
 	SETUP_GLOBAL_TEST_ADAPTER="$bin_dir/cli-style-adapter.sh" \
 	SETUP_GLOBAL_TEST_FAIL_BACKUP_MOVE="$fail_backup_move" \
 	bash "$REPO_DIR/scripts/setup-global.sh" --codex --skip-external "$@"
@@ -132,6 +137,28 @@ test_public_backup_bypass_is_rejected() {
 
 	assert_contains "$output" "Usage:"
 	assert_equals "$(cat "$home_dir/.codex/config.toml")" 'custom_setting = "keep"'
+}
+
+test_default_setup_skips_repository_refresh() {
+	local home_dir="$TEST_ROOT/default-setup"
+	local calls="$home_dir/setup-global-calls.log"
+
+	create_existing_config "$home_dir"
+	run_setup "$home_dir" > /dev/null
+
+	assert_not_contains "$calls" "$REPO_DIR/scripts/sync.sh"
+	assert_not_contains "$calls" "$REPO_DIR/scripts/validate.sh"
+}
+
+test_refresh_runs_repository_sync() {
+	local home_dir="$TEST_ROOT/refresh"
+	local calls="$home_dir/setup-global-calls.log"
+
+	create_existing_config "$home_dir"
+	run_setup "$home_dir" --refresh > /dev/null
+
+	assert_contains "$calls" "$REPO_DIR/scripts/sync.sh"
+	assert_contains "$calls" "$REPO_DIR/scripts/validate.sh"
 }
 
 test_config_replacement_creates_timestamped_backup() {
@@ -209,6 +236,8 @@ create_command_stubs "$TEST_ROOT/bin"
 
 test_help_hides_backup_bypass
 test_public_backup_bypass_is_rejected
+test_default_setup_skips_repository_refresh
+test_refresh_runs_repository_sync
 test_config_replacement_creates_timestamped_backup
 test_hook_file_is_replaced_with_managed_link
 test_workspace_network_access_is_enabled

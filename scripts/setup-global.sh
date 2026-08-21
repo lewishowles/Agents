@@ -10,7 +10,7 @@ REPO_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
 source "$REPO_DIR/scripts/lib/setup-links.sh"
 
 usage() {
-	printf 'Usage: %s [--claude|--codex|--both] [--claude-dir <path>] [--codex-dir <path>] [--skip-external]\n' "$(basename "$0")"
+	printf 'Usage: %s [--claude|--codex|--both] [--claude-dir <path>] [--codex-dir <path>] [--refresh] [--skip-external]\n' "$(basename "$0")"
 }
 
 setup_claude() {
@@ -392,6 +392,7 @@ prompt_target() {
 }
 
 target=""
+refresh=false
 sync_external=true
 CLAUDE_DIR="$HOME/.claude"  # Overridable so a second account can install alongside the default one.
 CODEX_DIR="$HOME/.codex"    # Overridable so a second account can install alongside the default one.
@@ -403,6 +404,7 @@ while [ $# -gt 0 ]; do
 		--both)          target="both" ;;
 		--claude-dir)    CLAUDE_DIR="$2"; shift ;;
 		--codex-dir)     CODEX_DIR="$2"; shift ;;
+		--refresh)       refresh=true ;;
 		--skip-external) sync_external=false ;;
 		--help)          usage; exit 0 ;;
 		*)               usage >&2; exit 1 ;;
@@ -417,13 +419,16 @@ fi
 bash "$REPO_DIR/scripts/install-cli-style.sh"
 source "$REPO_DIR/scripts/lib/cli-style-output.sh"
 
-if [ "$sync_external" = true ]; then
-	if ! bash "$REPO_DIR/scripts/sync-external-skills.sh"; then
-		cli_status warning "external skill sync failed" "continuing with existing local skills"
+if [ "$refresh" = true ]; then
+	if [ "$sync_external" = true ]; then
+		if ! bash "$REPO_DIR/scripts/sync-external-skills.sh"; then
+			cli_status warning "external skill sync failed" "continuing with existing local skills"
+		fi
 	fi
-fi
 
-bash "$REPO_DIR/scripts/sync.sh"
+	bash "$REPO_DIR/scripts/sync.sh"
+	bash "$REPO_DIR/scripts/validate.sh"
+fi
 
 case "$target" in
 	claude) setup_claude ;;

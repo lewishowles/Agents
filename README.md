@@ -43,7 +43,7 @@ scripts/setup-global.sh --both
 
 Use `--claude` or `--codex` to configure one runtime only. With no flag, the script asks which agent(s) to configure.
 
-The global setup script syncs official external skills, runs `scripts/sync.sh`, then links:
+The global setup script links:
 
 - `~/.claude/CLAUDE.md` to `dist/claude/CLAUDE.md`
 - `~/.claude/settings.json` to `dist/claude/settings.json`
@@ -58,10 +58,16 @@ It also ensures `~/.codex/config.toml` has the `codebase-memory-mcp` MCP server 
 
 Existing files are backed up instead of overwritten.
 
-If you need to run setup without network access, use:
+Pass `--refresh` to sync official external skills, regenerate the repository output, and validate it before linking:
 
 ```bash
-scripts/setup-global.sh --both --skip-external
+scripts/setup-global.sh --both --refresh
+```
+
+To refresh without network access, use:
+
+```bash
+scripts/setup-global.sh --both --refresh --skip-external
 ```
 
 ## ChatGPT setup
