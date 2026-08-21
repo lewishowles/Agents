@@ -52,4 +52,4 @@ Do not resume after the checkpoint unless the requester sends a new packet. A di
 
 ## Completion
 
-Return the project-learn-from-source response, with `**Bottom line:**` as its first line. The response must answer the user's stated learning question, count only gate-passing recommendations, and cite the source receipt indexes and local evidence used. Include a direct-adoption decision only when it was in scope. Do not edit the repository unless the user explicitly requests the resulting change. Do not edit `PROGRESS.md` or task files, update task status, or suggest commit messaging.
+Return the project-learn-from-source response, with `**Bottom line:**` as its first line. The response must answer the user's stated learning question, count only gate-passing recommendations, and cite the source receipt indexes and local evidence used. Include a direct-adoption decision only when it was in scope. Unless the user explicitly asks for it, do not change the repository, edit `PROGRESS.md` or task files, update task status, or suggest commit messaging.
