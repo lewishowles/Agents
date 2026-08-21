@@ -109,6 +109,8 @@ Split the task when it would need separate review decisions for public behaviour
 
 Plan each task around one primary question for the reviewer. Before creating it, inventory its substantive concerns, such as data and state, interaction and accessibility, presentation states, framework integration, public API, and delivery documentation. Treat each as a candidate chunk and combine them only when reviewing one without the other would be misleading.
 
+Sibling chunks must not overlap. When splitting a coarse chunk, narrow or replace it so its scope does not subsume the new chunks. Do not leave the original broad chunk active beside the finer review boundaries.
+
 Use three substantive files as a soft ceiling for one task. A substantive file contains logic, tests, or prose the reviewer must understand; an implementation file, its focused test, and its documentation are three substantive files. Small mechanical registration changes may take the count higher. Split a dense file across tasks when it contains several behaviour slices. Broad outcomes such as `complete component`, `full public API`, or `all integration` fail this gate unless the underlying change is genuinely small.
 
 An ordered task may use intermediate chunks that are not a complete feature when each is internally consistent, has focused verification, and is not presented or released as complete. Keep the task active until all required chunks and the final acceptance have landed.
@@ -131,6 +133,6 @@ A spec explains why now, the problem, goals, non-goals, approach, entry point an
 
 Use one `task` record for the work and its stable contract: identity, overview, purpose, contract, model tier when needed, files and linked specs, acceptance criteria, verification, risks, release, and position.
 
-Use `chunk` records for detailed implementation steps, including decisions-first ordering and mechanical-last work. Use `discovery` and `decision` records for durable findings rather than changing the task history by hand.
+Use `chunk` records for detailed implementation steps, including decisions-first ordering and mechanical-last work. Work discovered during a chunk stays in that chunk only when it answers the same primary review question. Put cross-cutting or unrelated implementation in its own chunk, or in a separate task when it is independently schedulable. Use `discovery` and `decision` records for durable findings rather than changing the task history by hand.
 
 Start a task when implementation begins. Block it when an external blocker or unresolved decision makes it unsafe to continue, and unblock it only when that condition is resolved. Complete chunks as they are accepted. Complete the task only after the user accepts the final reviewable outcome. Never infer status from Git state.

@@ -206,6 +206,8 @@ Plan commits for human comprehension. Technical coherence and shippability do no
 
 **`progress` is the source of truth for project state.** When it is installed and the repository is initialised, use `progress next --json` at session start for the active task and chunk. Use the CLI's project, release, task, chunk, discovery, decision, and context records for task, queue, roadmap, notes, and handoff state; check `progress --help` and `progress <noun> --help` before acting. If `progress` is unavailable or the project is uninitialised, inspect `WORKSPACE.md`, `AGENTS.md`, package scripts, and nearby project docs. Do not create a markdown plan or guess a project identity as a fallback; ask the user to initialise or install `progress` before writing progress records.
 
+**`progress next` selects the current item; it does not validate its scope.** Before resumed or delegated implementation begins, compare the active chunk with its incomplete siblings and stop if it overlaps or subsumes later work.
+
 **`PROGRESS.md` is optional and, when present, lives at the project root.** Use it only for freeform backlog prose, such as an "Upcoming work" or "Parking lot" section. Read and write that prose directly, but do not use the file for task status, queue order, roadmap, discoveries, decisions, or handoff context. If it is absent, treat that as expected and do not create it for agent checkpoint or HCOM cycle state. Never create `.claude/PROGRESS.md`, `.agent/PROGRESS.md`, or a second copy.
 
 For task naming, queue order, chunking, handoff, and compaction mechanics, follow the matching project-management skill and `docs/progress-format.md` where available.
