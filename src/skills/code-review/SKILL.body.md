@@ -31,6 +31,14 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 - Edge cases handled (empty, null, 0, large input)?
 - Error states at boundaries (user input, API)?
 - Race conditions, off-by-one, unbounded loops, leaks?
+- Is the same rule enforced in two places, such as client validation and a server schema, or a frontend option list and a backend enum? Do they still agree, or can the interface accept what the API rejects?
+
+**Blast radius** (any change to shared code)
+
+- What else calls or consumes the changed function, component, or type, and is every one of them updated?
+- Do sibling paths handling the same concern get the same change, or does one quietly keep the old behaviour?
+- Which cached values, stored IDs, error paths, or fallbacks still assume the behaviour that just changed?
+- Say so explicitly when a change's blast radius could not be traced.
 
 **Accessibility** (any UI change)
 
@@ -99,6 +107,7 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 - Prefix with severity: `[blocker]`, `[important]`, `[suggestion]`, `[nit]`.
 - State what, why, ideally alternative.
 - Ask before flagging unclear things as issues.
+- Findings are for problems. When the change is clean, say so in one line, give the verdict, and stop. Do not invent small issues or record "this part is good" as a finding.
 
 ---
 
@@ -122,3 +131,7 @@ Read all feedback before responding; items may depend on each other.
 **If wrong:** state factually and proceed. _"You're right — it does [X]. Fixing now."_
 
 **Implement one at a time.** Verify it works before next.
+
+---
+
+Blast radius, cross-boundary rule consistency, and the no-padding rule adapt ideas from `alamops/skills` (`skills/code-review`), MIT licensed.

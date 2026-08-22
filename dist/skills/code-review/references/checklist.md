@@ -7,6 +7,8 @@ Paste into a PR description or use as a review gate. For severity levels and giv
 - [ ] Does what it claims; edge cases handled (empty, null, 0, large input)
 - [ ] Errors handled at system boundaries (user input, API responses) only — not internally
 - [ ] No behaviour changes beyond the stated scope
+- [ ] Callers, sibling paths, and stale cached values traced for every change to shared code
+- [ ] A rule enforced in two places (client and server) still agrees on both sides
 
 ## Accessibility — required for any UI change
 
