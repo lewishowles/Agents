@@ -52,6 +52,8 @@ for line in contents.splitlines():
 
 Before primitive operations (length, clamping, type checks, string/array/object guards, deep copy/merge): search project helper library. Don't reimplement with raw `Array.isArray`, `Math.min`, `typeof x === "string"`, etc. when helpers exist. Existing helpers carry edge-case hardening and are single source of truth.
 
+Before writing new logic for a problem a sibling module already solves (prop detection, dedup, debounce, ref normalisation, etc.), read that sibling's implementation and reuse or match its approach. An independently reinvented mechanism is a second source of truth to keep in sync and a likely regression.
+
 ## Query selectors & predicates
 
 - **Simplicity over repetition**: group similar elements with `:is()` and use single negations
@@ -84,5 +86,6 @@ Before primitive operations (length, clamping, type checks, string/array/object 
 - Lead with one line, present tense, no boilerplate. Put options in `@note`; keep `@example` short. Match surrounding tone
 - Plain-language voice; no unexplained jargon or "etc". Purpose over cleverness
 - Avoid inflated phrasing like "positioning context" or "caller-provided X"; don't invent a term for a concept the codebase doesn't already name (e.g. "wide panel"): reuse existing naming or ask
+- Before presenting, run new comments and markdown docs against the "AI prose tells" checklist in the writing skill (announcement phrases, formulaic contrast, vague significance, false agency, punch-line endings) — code comments are not exempt from sounding AI-generated
 - Prefer the codebase's concrete verb or noun over abstract process terms such as "classification" or "invocation" when a plain description of the behaviour is available
 - This also covers swapping an existing name for a more formal-sounding synonym, not just novel terms: if the code calls `useStorage`, describe it as storing/stored, not "persist"/"persistence"/"reactive". Match the API's own verb.

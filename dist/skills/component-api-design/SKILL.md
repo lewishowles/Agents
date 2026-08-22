@@ -19,18 +19,20 @@ Design public contract before internals: props, slots, emits, `v-model`, `define
 
 ## Before implementation
 
+When the component shares a concern with an approved sibling or family member (a similar field type, a shared prop, a parallel emit), read that sibling's actual API first, not just the nearest visually similar component. Fill the table from that precedent; only diverge with a stated reason.
+
 Write a compact contract table before editing component internals. Include:
 
-| Area | Decision |
-| --- | --- |
-| Job | The user-visible responsibility of the component |
-| Model | The value shape and single/multiple states |
-| Props | Consumer configuration and defaults |
-| Slots | Caller-owned content, slot names, and slot props |
-| Emits/expose | Domain events and narrow imperative methods |
-| Copy | Default user-facing text and translation/override points |
-| Accessibility | Labels, descriptions, focus, keyboard, and errors |
-| Styling | Root hooks, parts, states, and visual constraints |
+| Area          | Decision                                                 |
+| ------------- | -------------------------------------------------------- |
+| Job           | The user-visible responsibility of the component         |
+| Model         | The value shape and single/multiple states               |
+| Props         | Consumer configuration and defaults                      |
+| Slots         | Caller-owned content, slot names, and slot props         |
+| Emits/expose  | Domain events and narrow imperative methods              |
+| Copy          | Default user-facing text and translation/override points |
+| Accessibility | Labels, descriptions, focus, keyboard, and errors        |
+| Styling       | Root hooks, parts, states, and visual constraints        |
 
 Use the table to resolve competing interpretations before implementation. If a decision is still material or ambiguous, present the alternatives and wait for the user before editing.
 

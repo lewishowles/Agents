@@ -89,7 +89,7 @@ Skill files, reference docs, and inline code docs differ from longform:
 - Document only caller-facing parameters
 - No placeholder docs — avoid `{*}`, `any`, "see types" when contract can be stated
 - Describe what a thing is and where it sits, not framework mechanics
-- Match sibling scope and guidance
+- Before writing docs, comments, or markdown for anything borrowed from or shared with an already-approved sibling (component, module, prop), open that sibling's existing wording first and match it. New prose for an already-solved concept is a likely regression, not a fresh writing task
 - Imperative instructions in reference/JSDoc: "Pass a getter function", not "You should pass"
 
 ## Product documentation
