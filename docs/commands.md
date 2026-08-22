@@ -69,7 +69,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/swift` | `swift` | When writing Swift, style, SwiftUI patterns, concurrency |
 | `/swift-ui` | `swift-ui` | When writing/reviewing SwiftUI code, views, state management |
 | `/test` | `test` | When deciding what to test and at which layer — strategy above test-unit and test-e2e |
-| `/test-e2e` | `test-e2e` | When writing end-to-end tests with Playwright |
+| `/test-e2e` | `test-e2e` | When writing end-to-end tests with Playwright or planning a browser bug hunt |
 | `/test-unit` | `test-unit` | When writing unit tests, Vitest, philosophy, what to skip |
 | `/typescript` | `typescript` | When using TypeScript, type safety, escape hatches |
 | `/vue` | `vue` | When writing Vue code, formatting, patterns, composables, components |

@@ -64,12 +64,12 @@ Extension-to-skill mapping:
 | `codex_insights_*.py` | `codex-insights`, `writing` |
 | `**/.codex/usage-data/**` | `codex-insights`, `writing` |
 | `src/skills/codex-insights/**` | `codex-insights`, `writing` |
-| `*.e2e.ts` | `test-e2e`, `code-style`, `test-unit`, `vue-project-stack` |
-| `*.e2e.js` | `test-e2e`, `code-style`, `test-unit`, `vue-project-stack` |
-| `*.cy.ts` | `test-e2e`, `code-style`, `test-unit`, `vue-project-stack` |
-| `*.cy.js` | `test-e2e`, `code-style`, `test-unit`, `vue-project-stack` |
-| `/e2e/` | `test-e2e`, `code-style`, `test-unit`, `vue-project-stack` |
-| `/tests/cypress/` | `test-e2e`, `code-style`, `test-unit`, `vue-project-stack` |
+| `*.e2e.ts` | `test-e2e`, `code-style`, `debugging`, `test-unit`, `vue-project-stack` |
+| `*.e2e.js` | `test-e2e`, `code-style`, `debugging`, `test-unit`, `vue-project-stack` |
+| `*.cy.ts` | `test-e2e`, `code-style`, `debugging`, `test-unit`, `vue-project-stack` |
+| `*.cy.js` | `test-e2e`, `code-style`, `debugging`, `test-unit`, `vue-project-stack` |
+| `/e2e/` | `test-e2e`, `code-style`, `debugging`, `test-unit`, `vue-project-stack` |
+| `/tests/cypress/` | `test-e2e`, `code-style`, `debugging`, `test-unit`, `vue-project-stack` |
 | `*.test.ts` | `test-unit`, `code-style`, `vue-pinia`, `vue`, `typescript` |
 | `*.test.js` | `test-unit`, `code-style`, `vue-pinia`, `vue`, `typescript` |
 | `*.spec.ts` | `test-unit`, `code-style`, `vue-pinia`, `vue`, `typescript` |

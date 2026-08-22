@@ -9,6 +9,17 @@ E2E and component tests verify real-browser user experience. Playwright is stand
 - Use `.agent/scripts/project-diagnostics.py --list` to discover the command when available. If there is no diagnostics script, derive it from the documented project setup or package scripts.
 - Name tests in plain active voice ("keeps a long chain on one line and scrolls to its end"), not a passive or clever restatement of the mechanism.
 
+## Browser bug hunts
+
+Use this mode to find browser failures before there is a confirmed bug.
+
+1. **Set boundaries:** confirm the environment, flow, accounts, data, and actions that are off limits. Do not send real messages, move real money, modify shared data, or use destructive or security probes without explicit permission.
+2. **Inspect the existing setup:** check diagnostics, browser-test configuration, fixtures, and seeded accounts. Use the established harness. Do not add or migrate browser tooling unless the user asks.
+3. **Plan focused cases:** derive unhappy paths from the interface and code. Consider invalid or boundary input, rapid or repeated actions, navigation and reloads, authentication and permission changes, network failure, concurrent state, viewport changes, keyboard use, and assistive technology where relevant.
+4. **Collect browser evidence:** give the user the narrowest exact command to run. Ask for the failing flow or test, visible outcome, relevant console, network, or server error, and resulting data state. Do not claim a finding without user-provided browser evidence.
+5. **Triage before fixing:** reproduce from a clean state, distinguish a bug from intended behaviour or an environment problem, and judge severity by its consequence. Once a bug is confirmed, use the `debugging` skill for root-cause analysis, a failing regression test, and the smallest fix.
+6. **Report coverage:** name confirmed bugs, unresolved anomalies, paths checked without a finding, untested surfaces, and the browser-suite status. A no-bugs result applies only to the checked scope.
+
 ## Which tool to use
 
 - **Playwright** — preferred for new projects/suites. Supports full e2e and component testing
