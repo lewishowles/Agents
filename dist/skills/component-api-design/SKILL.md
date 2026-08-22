@@ -55,7 +55,7 @@ Use the table to resolve competing interpretations before implementation. If a d
 - Avoid prop pairs that can drift apart; use one structured prop when values belong together.
 - Do not add props for content that belongs in slots.
 
-For prop JSDoc, metadata, and user-facing docs, describe what the prop accepts and why a user would set it, not its internal mechanism. When the expected value is not obvious, include one concrete example.
+For prop JSDoc, metadata, and user-facing docs, describe what the prop accepts and why a user would set it, not its internal mechanism. Include one concrete example for any prop whose shape is an object, callback, or config DSL, not only when the value is otherwise unclear.
 
 ## Slots
 
@@ -90,6 +90,13 @@ Require explicit `<template #name>` for named slots, as covered by Vue skill.
 - Do not expose internal refs, stores, query state, or implementation helpers.
 - Document why imperative exists when declarative seems plausible.
 
+## Documenting the API
+
+- State precedence and merge or dedup order explicitly whenever multiple sources feed the same output, such as combined error sources or an overridable default.
+- For an opt-out boolean, give one concrete scenario where the non-default value is the right call.
+- Document every slot's scope props in a table, even when the slot seems minor. An undocumented slot prop is an undocumented part of the API.
+- Redefine a recurring cross-cutting term at each place it's used, rather than once and assumed.
+
 ## Review checklist
 
 - Can consumers understand the API without reading internals?
@@ -97,6 +104,7 @@ Require explicit `<template #name>` for named slots, as covered by Vue skill.
 - Is there one obvious way to complete the common workflow?
 - Are names consistent with neighbouring components?
 - Does UI text that may need translation live in slots with enough slot props?
+- Does the written documentation give an example for every prop or slot shaped as an object, callback, or config DSL, and tabulate every slot's scope props?
 - Does the API preserve accessibility needs: labels, descriptions, focus, and error messaging?
 - For UI components, has [the accessibility checklist](../../accessibility/references/checklist.md) been run before handoff?
 - Does the API expose generic identifiers/refs rather than hardcoding component-specific knowledge?
