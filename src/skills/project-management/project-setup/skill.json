@@ -1,8 +1,8 @@
 {
 	"name": "project-setup",
 	"title": "Project setup",
-	"description": "Use this skill to start a new project or feature \u2014 explores the repo, asks clarifying questions, and creates an initial PROGRESS.md before any implementation begins.",
-	"when": "When starting a new project or feature; explores repo, asks questions, creates PROGRESS.md before coding",
+	"description": "Use this skill to start a new project or feature \u2014 explores the repo, asks clarifying questions, and creates the initial plan as progress CLI records before any implementation begins.",
+	"when": "When starting a new project or feature; explores the repo, asks questions, and creates progress CLI records before coding",
 	"triggers": [
 		"new project",
 		"setup project",

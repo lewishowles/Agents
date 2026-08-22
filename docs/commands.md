@@ -60,7 +60,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/project-review-progress` | `project-review-progress` | When reviewing an existing PROGRESS.md plan or project roadmap |
 | `/project-review-task` | `project-review-task` | When assessing or consolidating a task contract before implementation |
 | `/project-review-worktree` | `project-review-worktree` | When reviewing uncommitted work before commit |
-| `/project-setup` | `project-setup` | When starting a new project or feature; explores repo, asks questions, creates PROGRESS.md before coding |
+| `/project-setup` | `project-setup` | When starting a new project or feature; explores the repo, asks questions, and creates progress CLI records before coding |
 | `/project-synthesise-feedback` | `project-synthesise-feedback` | When critically synthesising another agent's suggestions with current recommendations |
 | `/refactoring` | `refactoring` | When refactoring existing code or triaging technical debt |
 | `/session-retrospective` | `session-retrospective` | When extracting lessons from a difficult agent session |

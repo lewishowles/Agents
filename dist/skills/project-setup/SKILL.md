@@ -3,15 +3,17 @@
 name: project-setup
 displayName: Project setup
 description: >
-  Use this skill to start a new project or feature — explores the repo, asks clarifying questions, and creates an initial PROGRESS.md before any implementation begins.
+  Use this skill to start a new project or feature — explores the repo, asks clarifying questions, and creates the initial plan as progress CLI records before any implementation begins.
 ---
 # Project setup
 
-Start a new project or feature. Create initial `PROGRESS.md` after exploration and discussion; do not implement until plan is reviewed.
+Start a new project or feature. Create the initial plan as `progress` CLI release, task, and chunk records after exploration and discussion; do not implement until the plan is reviewed.
 
-## File location
+## Progress records
 
-`PROGRESS.md` lives at **project root**, not `.claude/`. Create/read `<project-root>/PROGRESS.md`.
+The `progress` CLI stores project state in SQLite. Use release, task, chunk, discovery, decision, and context records for plan, status, queue, roadmap, and handoff state.
+
+Concrete task files live at `<project-root>/.agent/tasks/<task-slug>.md`.
 
 ## Workspace file
 
@@ -31,11 +33,11 @@ If no generator exists, don't create manually. Inspect `AGENTS.md`, package scri
 
 ## Workflow
 
-1. **Explore** — read repo, identify patterns, tech, relevant files; check `PROGRESS.md`, `AGENTS.md`, `WORKSPACE.md`, `CONTEXT.md`, `README.md`
+1. **Explore** — read repo, identify patterns, tech, relevant files; check project state with `progress next --json` and inspect `AGENTS.md`, `WORKSPACE.md`, `CONTEXT.md`, `README.md`, `PROGRESS.md` (if present), and the task file named by the progress record
 2. **Ask** — identify all known decision-blocking ambiguities, constraints, tradeoffs, and alternatives, then ask them together. Do not cap this initial set. Ask further questions only when an answer reveals a material new unknown.
    - For ambiguous or consequential work, group questions by dependency. In each round, ask every question whose prerequisites are settled, give a recommended default, then reassess after the reply. Do not ask downstream questions that assume an answer still open.
 3. **Discuss** — if multiple approaches exist, present them; don't pick silently
-4. **Plan** — create initial `PROGRESS.md` using standard schema below
+4. **Plan** — create the initial release, task, and chunk records with the `progress` CLI
 5. **Wait** — do not start until plan is reviewed and approved. For a task file, point to it rather than duplicating it in chat; the user quotes a passage to challenge it or answers an inline `## Open questions` entry. A genuinely trivial inline section can just be shown directly.
 
 ## Subagent delegation (optional)
@@ -59,7 +61,7 @@ Delegate exactly one implementation chunk at a time. Do not delegate or begin a 
 
 For each delegated task:
 
-1. **Delegate** — give the subagent the goal, rationale, constraints, acceptance criteria, and relevant file paths from `PROGRESS.md`
+1. **Delegate** — give the subagent the goal, rationale, constraints, acceptance criteria, and relevant file paths from the task record
 2. **Review** — inspect the subagent's output against acceptance criteria; do not trust blindly
 3. **Approve or request changes** — if output is correct, proceed; if not, send specific feedback
 4. **Hand off** — after approval, present the verified result and wait for the user's acceptance before delegating the next task
@@ -79,19 +81,19 @@ Enables autonomous multi-hour execution while keeping the main agent as architec
 - Multiple small sections over one large one; each independently reviewable
 - "Files likely to change" reduces re-exploration in future sessions
 - Plan 2–3 sections ahead; detailed planning happens when work starts
-- Keep session handoff at top. Agents read from top and stop after handoff when adequate.
+- Store session handoff in the progress CLI context record with `progress context set`; start with `progress next --json` and stop after the returned task and chunk unless deeper context is genuinely needed.
 
 ### Planning-quality gate
 
 Before asking for approval on any substantive task or feature contract, self-check it against: repository truth, contract, boundary, altitude, failure and recovery states, acceptance evidence, and verification. Leave a strong contract unchanged. Invoke `project-review-task` explicitly when a high-risk or high-ambiguity contract warrants an independent pass, or once a genuine second reviewer is available — a solo self-check by the authoring model is not a substitute.
 
-Apply the clear planning language gate from `docs/progress-format.md` to task files, inline `PROGRESS.md` entries, and feature specs. Write for a reader who does not share the investigation context: state the problem first, use direct statements with a clear subject and action, keep one requirement, decision, recommendation, or question per bullet, explain unfamiliar terms, separate confirmed requirements from recommended defaults and unresolved questions, and make acceptance criteria observable. Preserve exact APIs, paths, commands, edge cases, constraints, failure behaviour, verification requirements, and technical decisions. If clarification would require a new product or architecture decision, leave it unresolved and use `needs-decision` instead of guessing.
+Apply the clear planning language gate from `docs/progress-format.md` to task files, task records and chunks, and feature specs. Write for a reader who does not share the investigation context: state the problem first, use direct statements with a clear subject and action, keep one requirement, decision, recommendation, or question per bullet, explain unfamiliar terms, separate confirmed requirements from recommended defaults and unresolved questions, and make acceptance criteria observable. Preserve exact APIs, paths, commands, edge cases, constraints, failure behaviour, verification requirements, and technical decisions. If clarification would require a new product or architecture decision, leave it unresolved and use `needs-decision` instead of guessing.
 
 ## Feature specs
 
 Use linked specs only for larger spikes or ambiguous features. Skip small changes, bug fixes, routine docs, or single-section work.
 
-Specs are per-feature/spike under `.agent/specs/<feature>.md`, linked from `PROGRESS.md`. `PROGRESS.md` stays operational. Spec carries heavier context, read only when active.
+Specs are per-feature/spike under `.agent/specs/<feature>.md`, linked from the task record. The spec carries heavier context, read only when its task is active.
 
 Use this outline when a spec is warranted:
 
@@ -163,7 +165,7 @@ Optional; omit if none. What's still unresolved.
 Focused checks, manual review, or evidence needed before handoff.
 ```
 
-When permanent decisions emerge, move them to `AGENTS.md`'s `## Need to know` section, architecture docs, user docs, or ADR only when ADR criteria are met. `AGENTS.md` is read every session and never gets compacted, so it's the right home for a fact once it proves durable, rather than waiting for it to survive several rounds of `PROGRESS.md` compaction.
+When permanent decisions emerge, move them to `AGENTS.md`'s `## Need to know` section, architecture docs, user docs, or ADR only when ADR criteria are met. `AGENTS.md` is read every session and never gets compacted, so it's the right home for a fact once it proves durable.
 
 ## CONTEXT.md — domain glossary
 
@@ -181,50 +183,9 @@ Use vocabulary from `CONTEXT.md` in code, comments, issue titles, ADRs. Surface 
 
 _Pattern inspired by [mattpocock/skills](https://github.com/mattpocock/skills) (MIT)._
 
-## PROGRESS.md schema
+## PROGRESS.md prose
 
-For a brand-new project the initial plan is usually small enough to stay inline. Once there's a first concrete unit of ready-to-pick-up work, create it as `.agent/tasks/<task-slug>.md` (see the `project-plan-task` skill's "Task records and chunks") rather than growing the `## Active work` section indefinitely. The canonical contract for `PROGRESS.md` and task files is `docs/progress-format.md` in the Configuration/Agents repo — keep the templates below in sync with it.
-
-```markdown
-# <Project name>
-
-## Session handoff
-
-Read this section first. Only open the active task file. Stop after this section unless it's unclear or deeper context is genuinely needed.
-
-### Active task
-
-`.agent/tasks/<task-slug>.md`, or, for a brand-new plan with no task file yet, a one-sentence current goal plus next step. Use a stable descriptive kebab-case slug; it identifies the task rather than its position. Verify the active task's front matter status before starting. Check Git separately for safety, but never use Git state as progress state.
-
-### Upcoming queue
-
-A `Task | Release | Status` table, non-done tasks only, rows grouped by Release in roadmap order with priority as the order within each group. Reorder rows without renaming task files; move a task between releases by editing its `release:` front matter and its row's group, not by annotating the row text. Front matter wins over the table's Status column on conflict. A `blocked` row doesn't say what it's waiting on — that's in the task file's `depends`, which can be long.
-
-### Standing context
-
-Verification commands and recurring gotchas that apply regardless of which task is active.
-
-### Stop here
-
-Only continue reading if the active task is unclear, or you're picking up backlog work not yet in `.agent/tasks/`.
-
-## Roadmap
-
-One table; row order is the timeline. Task front matter references the `ID` column via `release:`. `Status` is `planned` (or blank), `active`, or `done`. Anything needing more than a sentence of overview gets a spec, not a longer cell.
-
-| ID      | Title           | Overview                        | Status |
-| ------- | --------------- | ------------------------------- | ------ |
-| phase-1 | <Release title> | One sentence on what it means.  | active |
-
-Purpose, tech, and constraints belong in `AGENTS.md`, not a `## Project overview` section here — don't duplicate it.
-
-## Decisions
-
-Key architectural or process decisions still relevant to active or upcoming work. Date-stamped entries. Not a permanent log: promote a decision to `AGENTS.md` once it's durable and cross-session, or drop it once it's superseded or moot, and remove it from here either way.
-
-## Discoveries
-
-Unexpected findings that affect the work. Date-stamped entries. Not a permanent log: promote a discovery to `AGENTS.md`'s `## Need to know` section once it proves durable rather than task-specific, or drop it once it's stale or already visible in shipped code/docs, and remove it from here either way.
+`PROGRESS.md` is optional and lives at the project root. It contains only freeform prose under `## Upcoming work` and `## Parking lot`. Do not use it for task status, active chunks, release roadmaps, queue order, decisions, discoveries, or session handoff. Those records belong to the `progress` CLI. See `docs/progress-format.md` for the CLI data model and task-file contract.
 
 ## Upcoming work
 
@@ -233,11 +194,6 @@ Brief bullets for backlog items with no task or spec file yet. Detailed planning
 ## Parking lot
 
 Ideas and concerns not belonging to the current section.
-
-## Archived milestones
-
-Completed work, one dated line per finished task. This is the sole historical record: task files are deleted on completion, not kept. It's also release-scoped, not permanent — prune entries once their roadmap release ships.
-```
 
 Task file shape (`.agent/tasks/<task-slug>.md`): stable descriptive kebab-case filename; the human-facing name lives in front matter `title`, and task files do not prescribe branch names. Never rename files to reflect priority or queue position. Existing numeric files are tolerated as legacy and must not be bulk-renamed merely to adopt this convention. Keep in sync with the `project-plan-task` skill's "Task records and chunks" if either changes:
 
