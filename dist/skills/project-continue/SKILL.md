@@ -3,23 +3,21 @@
 name: project-continue
 displayName: Project continue
 description: >
-  Use this skill to resume work from an existing PROGRESS.md — compacts stale notes, verifies completed work, and picks up from where the last session left off.
+  Use this skill to resume work from the progress CLI's task, chunk, and handoff records; compacts stale context, verifies completed work, and picks up where the last session left off.
 related-skills:
   - project-compact-progress
 ---
 # Project continue
 
-Resume from the existing `PROGRESS.md`.
+Resume from the `progress` CLI records, with optional root-level `PROGRESS.md` freeform prose when present.
 
-## File location
+## Progress records
 
-The canonical location is `<project-root>/PROGRESS.md`. Read from the root first. For legacy or other-tool setups, fall back to these in order and use the first match:
+The `progress` CLI stores the current project, release, task, chunk, discovery, decision, and handoff records. Run `progress next --json` at startup to identify the active task and chunk. Use `progress context get --json` when the current handoff needs more detail.
 
-1. `<project-root>/PROGRESS.md`
-2. `<project-root>/.claude/PROGRESS.md`
-3. `<project-root>/.agents/PROGRESS.md`
+Concrete task files live at `<project-root>/.agent/tasks/<task-slug>.md`.
 
-Only ever create a new file at the project root — never create a `.claude/` or `.agent/` copy. If none exist, say so and ask where to create one, defaulting to the root.
+`PROGRESS.md`, when present, is optional root-level freeform backlog prose. Do not use it as a fallback for task, chunk, queue, release, discovery, decision, or handoff state. If the `progress` project binding is missing or uninitialised, report the explicit error, inspect `AGENTS.md`, `WORKSPACE.md`, package scripts, and nearby docs for safe local context, and ask the user to initialise or install `progress` before writing progress records. See `docs/progress-format.md` for the CLI data model and task-file contract.
 
 ## Workspace file
 
@@ -27,7 +25,7 @@ Read `<project-root>/WORKSPACE.md` during startup when present. Treat it as fact
 
 Do not generate a missing workspace file during resume unless the user asks for repo setup. If missing, inspect `AGENTS.md`, package scripts, and nearby docs.
 
-If `PROGRESS.md` conflicts with `WORKSPACE.md`, surface the conflict and trust the workspace file for command safety and generated-file facts. Update `PROGRESS.md` to reflect those facts.
+If project guidance conflicts with `WORKSPACE.md`, surface the conflict and trust the workspace file for command safety and generated-file facts. Keep progress state in the CLI records.
 
 When `<project-root>/.agent/scripts/project-diagnostics.py` exists, use `--list` for check discovery and `--check <name>` for verification. Use `--all` only when asked for broad verification.
 
@@ -41,26 +39,26 @@ On continuation, and before the active chunk is delegated for the first time, ob
 
 ## Workflow
 
-1. **Read** — `## Session handoff` first; stop unless next step is unclear or task needs deeper context
-2. **Compact** — repair stale/missing handoff; remove duplicate notes and obsolete TODOs; compress completed sub-tasks to one line
+1. **Read** — `progress context get --json` first; stop unless the next step is unclear or the task needs deeper context
+2. **Compact** — repair stale or missing handoff context; remove duplicate notes and obsolete TODOs; compress completed sub-tasks to one line
 3. **Verify** — spot-check recently-completed work landed
 4. **Reorient** — confirm active work still fits; move to upcoming if priorities changed
 5. **Present** — digest the active task file into the confirmed contract, current repository state, intended files, verification, and unknowns; the user should not need to open the task file. Apply the `project-plan-task` review-size gate to the first unchecked commit entry. If it exceeds one primary review question or the soft ceiling of three substantive files, propose smaller entries and wait for confirmation before implementation. Wait for confirmation before editing when the task has material API, behaviour, or interpretation decisions
-6. **Continue** — work through confirmed task; note discoveries as they emerge, write them to `PROGRESS.md` once at handoff. If the task file has a `## Commit plan`, start at the first unchecked entry. Change `ready` to `in-progress` before its first implementation step, then stop for review (changed files, verification, commit message) before the next entry. Tick the commit-plan entry only after the user explicitly accepts that handoff; do not implement multiple entries in one pass without the user asking for all of them
-7. **Wrap up** — refresh handoff before stopping
+6. **Continue** — work through the confirmed task; record verified discoveries and decisions with `progress discovery add` and `progress decision add` at handoff. If the task file has a `## Commit plan`, start at the first unchecked entry. Change `ready` to `in-progress` before its first implementation step, then stop for review (changed files, verification, commit message) before the next entry. Tick the commit-plan entry only after the user explicitly accepts that handoff; do not implement multiple entries in one pass without the user asking for all of them
+7. **Wrap up** — set the progress handoff context before stopping
 
 ## Session startup
 
 Read only enough to orient. Stale sessions (5+ min idle) restart from scratch.
 
-- Read full `## Session handoff` (all subsections above `### Stop here`, including `### Context` and `### Verify with`)
-- Verify the active task file's front matter before starting it: `status` is the source of truth. If a legacy task is already `done`, finish its archive directly in `PROGRESS.md` before removing it; if the queue annotation disagrees with front matter, trust front matter and fix the queue line.
-- Continue to `## Active work`, `## Decisions`, `## Discoveries`, `## Risks` only when needed
+- Read the handoff from `progress context get --json`, including `current_goal`, `previous_step`, `next_step`, `standing_context`, `verify_with`, and `stop_marker`
+- Verify the active task record and task file before starting it: the CLI status is the source of truth. If the task file's front matter says `done` but the CLI record does not, mark its accepted chunks and task complete through the CLI, update release and queue state, then remove its task file only after those records are complete.
+- Read active task, chunk, discovery, decision, and risk details only when needed
 - Read linked feature specs only when active; skip unrelated specs
-- Skip completed or archived sections unless current task depends on their history
+- Skip completed tasks and old records unless the current task depends on their history
 - Run `git status --short` before editing to avoid overwriting work the user has not handled. Do not put its result in `PROGRESS.md`, or use it to infer task completion. Branch creation or switching is not part of task setup unless the user requests it.
 - Read `WORKSPACE.md` if present before running local commands
-- Verify unfinished tasks belong to current section
+- Verify incomplete tasks and chunks still fit the current scope
 
 ## Starting the next task
 
@@ -90,30 +88,30 @@ If the previous session used subagent delegation:
 
 ## During the session
 
-- Keep discoveries and decisions in mind as the session runs; write them to `## Discoveries` / `## Decisions` once at the handoff update, not as separate edits while work is ongoing
+- Keep discoveries and decisions in mind as the session runs; add them with `progress discovery add` / `progress decision add` once at the handoff update, not as separate edits while work is ongoing
 - Exception: a durable interruption — material scope change, blocker, or user decision that changes the next session's safe action — is worth recording immediately, since it prevents a future session from repeating costly investigation
 - Treat the active task file as a prospective execution contract, not a session log. Update it only when a material decision changes its outcome, affected files, verification, status, or risk. Replace the affected bullet instead of appending history.
-- Keep investigation notes, failed attempts, command output, reviewer receipts, and completion recaps out of the task file. Record final evidence once in the `PROGRESS.md` handoff; its `## Archived milestones` entry is the task's historical record.
+- Keep investigation notes, failed attempts, command output, reviewer receipts, and completion recaps out of the task file. Record final evidence in the progress handoff with `progress context set`; keep durable discoveries and decisions in their CLI records.
 - Update "files likely to change" if the scope shifts
 - If a task reveals unexpected complexity, add a risk entry before continuing
 
 ## Finishing work
 
-Finishing work includes updating `PROGRESS.md` and giving handoff. Do not leave either to next session.
+Finishing work includes completing the accepted progress CLI records and setting the handoff context. Do not leave either to the next session.
 
 Make one Edit/Write call covering every section below, not a separate call per bullet.
 
-- Tick completed `## Tasks` checkboxes in the active task file (or completed tasks in an inline `## Active work` section). These record implementation detail, not interim-commit acceptance.
-- When implementation for a commit-plan entry is finished, refresh the handoff with what changed and how it was verified. Leave the entry unchecked and the task `in-progress` until the user explicitly accepts it with “committed”, “continue”, “next”, or equivalent. Then tick that entry. If another entry is unchecked, resume from it later. Only after the final entry is accepted, or after a single-commit task is accepted, add that evidence as a one-line, dated entry in `PROGRESS.md`'s `## Archived milestones`, remove the task from the upcoming queue, promote the next entry, and trash the task file.
-- Update `### Previous step` with what just changed and any verification performed
-- Update `### Next step` with the first concrete follow-up action
-- Update the `## Roadmap` row Status when a release becomes active or its last task lands as done
+- Tick completed `## Tasks` checkboxes in the active task file. These record implementation detail, not interim-commit acceptance.
+- When implementation for a commit-plan entry is finished, refresh the handoff with what changed and how it was verified. Leave the entry unchecked and the task `in-progress` until the user explicitly accepts it with “committed”, “continue”, “next”, or equivalent. Then tick that entry. If another entry is unchecked, resume from it later. After the final entry is accepted, or after a single-commit task is accepted, mark each accepted chunk done with `progress chunk complete <chunk-id>`, then mark the task done with `progress task complete <task-id>` when no pending or active chunks remain. Update release and queue state through `progress release` and `progress task move` as needed, then remove the task file only after the CLI records are complete. Do not archive completion in `PROGRESS.md`.
+- Set `previous_step` with what just changed and how it was verified using `progress context set`
+- Set `next_step` with the first concrete follow-up action using `progress context set`
+- Update release status and queue order through `progress release` and `progress task move` when a release's last task lands as done
 - If nothing remains for the current goal, say that clearly in the handoff instead of leaving stale TODOs
-- Compact now if `PROGRESS.md` has grown significantly; current context makes it cheaper
+- Compact now if the project keeps root-level `PROGRESS.md` prose and it has grown significantly; current context makes it cheaper
 
-Before updating `PROGRESS.md`, distil what was learned: what belongs in `## Discoveries` (facts about the codebase or environment), what belongs in `## Decisions` (choices made and why), and whether any dead ends should be recorded in `### Failed approaches` under the current section. Add only what isn't already captured.
+Before setting the handoff context, distil what was learned: add verified facts with `progress discovery add --task <task-id> "<note>"`, choices with `progress decision add --task <task-id> "<note>"`, and keep failed approaches in the task file or linked spec only when they will help future work. Add only what isn't already captured.
 
-After updating `PROGRESS.md`, show the handoff before offering to continue:
+After running `progress context set`, show the handoff before offering to continue:
 
 1. **What changed** — 1–3 sentences: what was done and what was verified (or skipped and why)
 2. **What's next** — if a task is already queued with a task file, give its full contract now, not just its name: what it is, why it's next, files, acceptance criteria, and verification, the same detail as "Starting the next task" step 3. If nothing is queued yet, name the open question or say so.
@@ -123,7 +121,7 @@ Never say "ready to move on to X" without this context. User needs enough to red
 
 ## Wrapping up
 
-- Update `## Session handoff` — current goal, previous step, next step, and stop guidance
-- Complete user-accepted tasks per the flow above (archive entry, queue, task removal); move completed inline sections toward `## Archived milestones`
-- Add `### Failed approaches` under the current section when a dead end occurred — one line per entry: `Approach X failed because Y; don't retry`. Omit when nothing failed.
-- Do not leave `PROGRESS.md` in a half-updated state
+- Set the progress handoff context with the current goal, previous step, next step, verification, and stop guidance using `progress context set`
+- Complete user-accepted tasks per the flow above: mark CLI chunks and tasks done, update release and queue state, and remove completed task files only after those records are complete. Do not recreate an archive section in `PROGRESS.md`.
+- If a dead end needs preserving, add one line to the active task file or linked spec: `Approach X failed because Y; don't retry`. Omit it when nothing failed.
+- Do not leave the progress CLI records or handoff context half-updated

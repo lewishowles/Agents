@@ -53,7 +53,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/project-audit` | `project-audit` | When auditing a project for setup drift, stale generated output, missing diagnostics, command-safety gaps, or agent-readiness issues |
 | `/project-backport-review` | `project-backport-review` | When comparing a consumer project against the boilerplate template for backport candidates and boilerplate improvements |
 | `/project-compact-progress` | `project-compact-progress` | When PROGRESS.md has grown noisy or hard to scan; reduces word count while preserving context and meaning |
-| `/project-continue` | `project-continue` | When resuming work from an existing PROGRESS.md |
+| `/project-continue` | `project-continue` | When resuming work from progress CLI records; checks optional root PROGRESS.md freeform prose only when needed |
 | `/project-learn-from-source` | `project-learn-from-source` | When extracting repo-specific lessons from an external artefact |
 | `/project-plan-task` | `project-plan-task` | When introducing new work into an existing plan |
 | `/project-review-commits` | `project-review-commits` | When reviewing committed work across a Git range or since the last tag |
