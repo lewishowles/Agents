@@ -152,7 +152,7 @@ After the user explicitly accepts a commit-plan handoff, tick that entry. If ano
 
 ### Session handoff
 
-The CLI stores one handoff context record per project. It contains `current_goal`, `previous_step`, `next_step`, `standing_context`, `verify_with`, and `stop_marker`. Set it with `progress context set`; the session-start hook reads `progress next --json`, and `progress current --json` provides the current task and chunk. Do not recreate this context in `PROGRESS.md`.
+The CLI stores one handoff context record per project. It contains `current_goal`, `previous_step`, `next_step`, `standing_context`, `verify_with`, and `stop_marker`. Set it with `progress context set`; read it with `progress context get --json`. The session-start hook reads `progress next --json` for the current task and chunk. Do not recreate this context in `PROGRESS.md`.
 
 ## Roadmap
 
@@ -172,7 +172,7 @@ The database is scoped to the project bound to the current Git repository. Its d
 | `decision`  | Stores a decision and, when needed, the note it supersedes. | A note attached to the project and optionally a task.                                                     |
 | `context`   | Stores the current handoff for one project.                 | One record per project, replaced by `progress context set`.                                               |
 
-Use `progress next`, `progress current`, and `progress ready` for bounded read surfaces. Use `progress --help`, then `progress <noun> --help`, for the exact command and flag syntax. Use `--json` when another tool or hook needs the stable agent response envelope. The active task is the project's single `in-progress` task. Its active chunk is the next unit of work. `progress next --json` returns that task and chunk; `progress ready --json` lists tasks whose dependencies allow them to start. Task position, release position, dependency edges, and lifecycle status are stored in the database, so no queue table is needed in `PROGRESS.md`.
+Use `progress next`, `progress context get`, and `progress ready` for bounded read surfaces. Use `progress --help`, then `progress <noun> --help`, for the exact command and flag syntax. Use `--json` when another tool or hook needs the stable agent response envelope. The active task is the project's single `in-progress` task. Its active chunk is the next unit of work. `progress next --json` returns that task and chunk; `progress ready --json` lists tasks whose dependencies allow them to start. Task position, release position, dependency edges, and lifecycle status are stored in the database, so no queue table is needed in `PROGRESS.md`.
 
 ## Tolerance
 
