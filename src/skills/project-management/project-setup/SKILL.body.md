@@ -6,8 +6,6 @@ Start a new project or feature. Create the initial plan as `progress` CLI releas
 
 The `progress` CLI stores project state in SQLite. Use release, task, chunk, discovery, decision, and context records for plan, status, queue, roadmap, and handoff state.
 
-Concrete task files live at `<project-root>/.agent/tasks/<task-slug>.md`.
-
 ## Workspace file
 
 Check `<project-root>/WORKSPACE.md` before planning. Factual source for commands, generated files, diagnostics, progress locations, expensive checks, forbidden operations.
@@ -26,12 +24,12 @@ If no generator exists, don't create manually. Inspect `AGENTS.md`, package scri
 
 ## Workflow
 
-1. **Explore** — read repo, identify patterns, tech, relevant files; check project state with `progress next --json` and inspect `AGENTS.md`, `WORKSPACE.md`, `CONTEXT.md`, `README.md`, `PROGRESS.md` (if present), and the task file named by the progress record
+1. **Explore** — read repo, identify patterns, tech, relevant files; check project state with `progress next --json` and inspect `AGENTS.md`, `WORKSPACE.md`, `CONTEXT.md`, `README.md`, and optional `PROGRESS.md`. Use the returned task and chunk records as the full contract.
 2. **Ask** — identify all known decision-blocking ambiguities, constraints, tradeoffs, and alternatives, then ask them together. Do not cap this initial set. Ask further questions only when an answer reveals a material new unknown.
    - For ambiguous or consequential work, group questions by dependency. In each round, ask every question whose prerequisites are settled, give a recommended default, then reassess after the reply. Do not ask downstream questions that assume an answer still open.
 3. **Discuss** — if multiple approaches exist, present them; don't pick silently
 4. **Plan** — create the initial release, task, and chunk records with the `progress` CLI
-5. **Wait** — do not start until plan is reviewed and approved. For a task file, point to it rather than duplicating it in chat; the user quotes a passage to challenge it or answers an inline `## Open questions` entry. A genuinely trivial inline section can just be shown directly.
+5. **Wait** — do not start until the plan is reviewed and approved. Present the returned task and chunk contract in chat so the user can challenge its fields or answer its open questions. A genuinely trivial backlog item can just be shown directly.
 
 ## Subagent delegation (optional)
 
@@ -67,10 +65,10 @@ Enables autonomous multi-hour execution while keeping the main agent as architec
 
 ## Planning principles
 
-- A task file owns a coherent feature or outcome and may contain several ordered commit sections. Each commit section has one reviewable outcome, coherent files, and focused verification. Create a separate task file only for independently schedulable feature work, decisions, dependencies, or release boundaries, not merely because the feature needs multiple commits.
-- Apply the `project-plan-task` task-boundary gate before creating a standalone task file.
-- For a multi-commit task, add a `## Commit plan` checklist using `- [ ] Commit N: outcome`; work only on the first unchecked entry unless the user asks for all.
-- Apply the `project-plan-task` review-size gate to every commit entry: one primary review question and a soft ceiling of three substantive files.
+- A task record owns a coherent feature or outcome and may contain several ordered chunks. Each chunk has one reviewable outcome, coherent files, and focused verification. Create a separate task only for independently schedulable feature work, decisions, dependencies, or release boundaries, not merely because the feature needs multiple chunks.
+- Apply the `project-plan-task` task-boundary gate before creating a standalone task.
+- For a multi-chunk task, create one progress chunk per reviewable outcome; work only on the first incomplete chunk unless the user asks for all.
+- Apply the `project-plan-task` review-size gate to every chunk: one primary review question and a soft ceiling of three substantive files.
 - Multiple small sections over one large one; each independently reviewable
 - "Files likely to change" reduces re-exploration in future sessions
 - Plan 2–3 sections ahead; detailed planning happens when work starts
@@ -80,7 +78,7 @@ Enables autonomous multi-hour execution while keeping the main agent as architec
 
 Before asking for approval on any substantive task or feature contract, self-check it against: repository truth, contract, boundary, altitude, failure and recovery states, acceptance evidence, and verification. Leave a strong contract unchanged. Invoke `project-review-task` explicitly when a high-risk or high-ambiguity contract warrants an independent pass, or once a genuine second reviewer is available — a solo self-check by the authoring model is not a substitute.
 
-Apply the clear planning language gate from `docs/progress-format.md` to task files, task records and chunks, and feature specs. Write for a reader who does not share the investigation context: state the problem first, use direct statements with a clear subject and action, keep one requirement, decision, recommendation, or question per bullet, explain unfamiliar terms, separate confirmed requirements from recommended defaults and unresolved questions, and make acceptance criteria observable. Preserve exact APIs, paths, commands, edge cases, constraints, failure behaviour, verification requirements, and technical decisions. If clarification would require a new product or architecture decision, leave it unresolved and use `needs-decision` instead of guessing.
+Apply the clear planning language gate from `docs/progress-format.md` to task records, chunks, and feature specs. Write for a reader who does not share the investigation context: state the problem first, use direct statements with a clear subject and action, keep one requirement, decision, recommendation, or question per bullet, explain unfamiliar terms, separate confirmed requirements from recommended defaults and unresolved questions, and make acceptance criteria observable. Preserve exact APIs, paths, commands, edge cases, constraints, failure behaviour, verification requirements, and technical decisions. If clarification would require a new product or architecture decision, leave it unresolved and use `needs-decision` instead of guessing.
 
 ## Feature specs
 
@@ -178,80 +176,12 @@ _Pattern inspired by [mattpocock/skills](https://github.com/mattpocock/skills) (
 
 ## PROGRESS.md prose
 
-`PROGRESS.md` is optional and lives at the project root. It contains only freeform prose under `## Upcoming work` and `## Parking lot`. Do not use it for task status, active chunks, release roadmaps, queue order, decisions, discoveries, or session handoff. Those records belong to the `progress` CLI. See `docs/progress-format.md` for the CLI data model and task-file contract.
+`PROGRESS.md` is optional and lives at the project root. It contains only freeform prose under `## Upcoming work` and `## Parking lot`. Do not use it for task status, active chunks, release roadmaps, queue order, decisions, discoveries, or session handoff. Those records belong to the `progress` CLI. See `docs/progress-format.md` for the CLI data model.
 
 ## Upcoming work
 
-Brief bullets for backlog items with no task or spec file yet. Detailed planning, and a task file, happen when work starts.
+Brief bullets for backlog items with no task or spec record yet. Detailed planning, and a task record, happen when work starts.
 
 ## Parking lot
 
 Ideas and concerns not belonging to the current section.
-
-Task file shape (`.agent/tasks/<task-slug>.md`): stable descriptive kebab-case filename; the human-facing name lives in front matter `title`, and task files do not prescribe branch names. Never rename files to reflect priority or queue position. Existing numeric files are tolerated as legacy and must not be bulk-renamed merely to adopt this convention. Keep in sync with the `project-plan-task` skill's "Task records and chunks" if either changes:
-
-```markdown
----
-title: Human-readable task name
-overview: One or two sentences reminding a human what this task is and why it exists.
-status: ready            # ready | in-progress | blocked | needs-decision
-depends: []              # task filename stems that must land first, e.g. [metadata-validation]
-release: phase-1         # roadmap ID; omit for backlog
----
-
-## Purpose
-
-State the user, business, or operational problem being solved, who experiences it, and the observable result that would show the work succeeded. For routine maintenance, one concise sentence is enough.
-
-## Contract
-
-Public behaviour, data shape, UI states, or API surface affected. Required for public or user-visible work.
-
-For public, user-visible, or behaviourally significant work, name only applicable failure and recovery states, such as loading, empty, denied, error, partial, stale, interrupted, or recovery. Keep the contract observable and invariant-focused, not implementation or testing steps; route accessibility, security, error-handling, and testing mechanics to specialist skills. Example: a UI flow might define loading, empty, denied, and error; an API or CLI flow might define partial, stale, interrupted, or recovery.
-
-See docs/progress-format.md for the Contract, Tasks, and Verification boundary, including the skill and rule split.
-
-## Model tier
-
-Optional. Note if this task needs a specific tier (Haiku for mechanical/high-volume work, Sonnet for implementation, Opus for planning or cross-file synthesis) — skip if the session default is fine.
-
-## Files likely to change
-
-## Related files to inspect
-
-Optional.
-
-## Spec
-
-Optional. Link to `.agent/specs/<feature>.md` only when this task needs heavier feature context.
-
-## Commit plan
-
-- [ ] Commit 1: reviewable outcome
-- [ ] Commit 2: follow-up outcome
-
-## Tasks
-
-- [ ] item
-
-## Acceptance criteria
-
-- Observable condition that proves the work is done
-
-## Verification
-
-Focused checks, manual review, or evidence required before handoff.
-
-## Risks
-
-## Open questions
-
-Optional. Unresolved decisions the user needs to weigh in on, kept next to the bullet they affect. Omit once resolved.
-
-## Notes
-
-Optional. Use only for durable execution constraints; do not use it as a running session log.
-
-```
-
-Front matter is a deliberately flat subset of YAML: plain `key: value` pairs treated as strings, inline `[a, b]` lists, no nesting, no quoting, unknown keys ignored. Consumers never need a YAML library.

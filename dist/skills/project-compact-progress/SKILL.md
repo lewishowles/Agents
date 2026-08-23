@@ -16,8 +16,8 @@ Reduce noisy or hard-to-scan `PROGRESS.md`. Cut words aggressively without losin
 ## What to preserve
 
 - `## Session handoff` — keep at top, make accurate
-- `## Roadmap` table — keep intact; task front matter references its IDs. Update row Status rather than deleting rows.
-- Upcoming queue — reconcile the table's Release/Status columns against task front matter (front matter wins); drop done tasks from the queue
+- `## Roadmap` table, when present as freeform prose — keep intact. Update row Status rather than deleting rows.
+- Upcoming queue, when present as freeform prose — keep its context and remove completed items; do not treat it as task state
 - Decisions still relevant to active or upcoming work, with rationale (prevent re-debate)
 - Discoveries still affecting current or future work
 - Completed milestones: brief summary; move detail to `## Archived milestones`
@@ -99,9 +99,9 @@ Spec files should keep this outline:
 ## Verification
 ```
 
-## Extracting inline sections into task files
+## Moving substantial planning out of inline prose
 
-Inline `PROGRESS.md` sections exist only for genuinely trivial work: a single item, nothing left to decide. During compaction, move any inline section that has grown past that, multiple tasks, unresolved decisions, or its own file list, into `.agent/tasks/<task-slug>.md` (see `project-plan-task`'s "Task records and chunks"). Point the queue entry at the new file; don't leave both an inline section and a task file describing the same work. Leave a genuinely trivial section inline; don't create a file just to satisfy this rule.
+Inline `PROGRESS.md` sections exist only for genuinely trivial work: a single item, nothing left to decide. During compaction, move any section that has grown past that, includes multiple tasks, unresolved decisions, or its own file list, into the `progress` task and chunk records. Do not duplicate the same work in inline prose and progress records. Leave a genuinely trivial section inline; do not create a contract in Markdown just to satisfy this rule.
 
 ## Handoff-first format
 
@@ -149,11 +149,11 @@ If scope changed, update "files likely to change" in the current section.
 
 ## Finishing work
 
-After work finishes, refresh the handoff: tick verified implementation steps, update `### Previous step`, and state that the task awaits the user's acceptance. Mark a task complete, promote the queue, or archive it only after the user says “committed”, “continue”, “next”, or equivalent.
+After work finishes, refresh the handoff with verified implementation steps, update `### Previous step`, and state that the task awaits the user's acceptance. Mark a task complete, promote the queue, or archive it only after the user says “committed”, “continue”, “next”, or equivalent.
 
 ## Archive mode
 
-Archive when completed work makes active work hard to find. Task files are deleted at completion time (see `project-plan-task`), so archiving here mostly applies to inline sections and pre-task-file history; a milestone-level summary line in `## Archived milestones` is still worth adding when a whole release lands, and should itself be pruned once that release ships.
+Archive when completed work makes active work hard to find. Progress records hold task state, so archiving here mostly applies to inline prose and milestone history; a milestone-level summary line in `## Archived milestones` is still worth adding when a whole release lands, and should itself be pruned once that release ships.
 
 Archive completed sections when:
 
