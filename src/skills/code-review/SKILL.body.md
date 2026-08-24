@@ -63,7 +63,7 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 
 **Prose** (any changed comments, docstrings, test names, descriptions, metadata, or documentation)
 
-- Confirm every function and variable declaration has the required prose. Improve comments or docstrings that only repeat the name, signature, types, body, or mechanics; omission is not simplification.
+- Confirm every value, callable, and type declaration has the required prose. Improve comments or docstrings that only repeat the name, signature, types, body, or mechanics; clear naming does not make omission acceptable.
 - Read each complete prose unit without relying on the diff or symbol name. Confirm that it is true, says what the thing is or does, gives the reader information beyond the identifier or mechanics, and uses the simplest concrete wording.
 - Review repeated sibling wording individually. A shared sentence shape is not evidence that each sentence fits its subject.
 - After a point fix, reread the whole sentence, paragraph, or value. Do not approve a corrected phrase inside prose that remains inaccurate or unclear.

@@ -40,7 +40,7 @@ Every function: purpose comment + JSDoc-style `@param` lines. Use format `# @par
 # @param  {string}  path
 #     The file or symlink to back up.
 backup_path() {
-	local path="$1"
+	local path="$1"  # File or symlink to move to its backup location.
 	…
 }
 ```
@@ -54,11 +54,11 @@ def load_manifest(skill_dir: Path) -> dict:
 	…
 ```
 
-Only comment when purpose is not obvious from name/signature. One-line file reader needs none; side effects/constraints need comment.
+Every function needs this documentation, including one-line functions and functions whose name or signature is clear.
 
-## Top-level variables
+## Variables
 
-Use trailing `#` comment when variable purpose is not obvious from name.
+Every top-level and local variable needs a short purpose comment. Use a trailing `#` comment for a short declaration or a preceding `#` comment when it reads more clearly.
 
 ```bash
 MANIFEST="$REPO_DIR/external-skills.json"  # List of skills to sync, with URLs and metadata.
@@ -88,9 +88,9 @@ If pattern appears more than once, extract named function. Name after what it re
 # @param  {string}  ...
 #     Allowed values passed as remaining arguments.
 is_valid() {
-	local value="$1"
+	local value="$1"  # Value to compare with the allowed values.
 	shift
-	local allowed
+	local allowed  # Current allowed value being compared.
 	for allowed in "$@"; do
 		[ "$value" = "$allowed" ] && return 0
 	done
@@ -121,7 +121,7 @@ if ! command -v jq &>/dev/null; then
 	exit 1
 fi
 
-config_path="${1:-/path/to/config.json}"
+config_path="${1:-/path/to/config.json}"  # Configuration file to validate and read.
 
 if [[ ! -f "$config_path" ]]; then
 	printf 'Config file not found: %s\n' "$config_path" >&2
@@ -149,6 +149,6 @@ Use the Read tool in preference to a shell check when the goal is to act on a fi
 
 ## Config files
 
-- Minimal comments, no headers
+- Every variable or setting has a short purpose comment; no headers
 - `.env`/`.conf` concise, scannable
 - Config organised cleanly
