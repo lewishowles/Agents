@@ -1,6 +1,6 @@
 # Commands
 
-Commands are typed directly into Claude Code with a `/` prefix. They fall into three categories: built-in Claude Code commands, skills (which double as commands), and plugin skills.
+Type commands in Claude Code with a `/` prefix. The built-in commands and skills you can invoke this way are listed below.
 
 ## Built-in Claude Code commands
 
@@ -101,7 +101,3 @@ The file name becomes the command: `new-command.md` → `/new-command`.
 | Command        | What it does                                                  |
 | -------------- | ------------------------------------------------------------- |
 | `/new-command` | Scaffold a new slash command file with the standard structure |
-
-## Plugin commands
-
-No plugin commands are currently documented by this repo.
