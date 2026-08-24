@@ -104,4 +104,4 @@ The file name becomes the command: `new-command.md` → `/new-command`.
 
 ## Plugin commands
 
-No plugin commands are currently documented by this repo. See [docs/plugins.md](plugins.md) if plugin management is added later.
+No plugin commands are currently documented by this repo.

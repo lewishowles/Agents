@@ -1,8 +1,8 @@
 # Skills
 
-Skills are focused instruction sets that tell Claude or Codex how to behave in a specific context: what patterns to follow, what to avoid, and what the conventions are.
+Skills are focused instruction sets that tell Claude or Codex how to behave in a specific context: what patterns to follow, what to avoid, and which conventions to use.
 
-Claude loads these from `~/.claude/skills/` and can be nudged by the Claude trigger hooks. Codex loads this repo's user skills from `~/.agents/skills/` in this setup. It relies more heavily on each skill's frontmatter description for discovery.
+Claude loads skills from `~/.claude/skills/` and its trigger hooks can nudge the current session. Codex loads this repo's user skills from `~/.agents/skills/` in this setup.
 
 ## User skills
 

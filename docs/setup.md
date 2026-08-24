@@ -21,6 +21,8 @@ ln -s /path/to/repository/dist/claude/commands/new-command.md ~/.claude/commands
 
 Repeat for each skill, hook, and command. Per-item links allow plugin-installed items to coexist.
 
+This repo does not ship or manage plugins. Add a Claude Code plugin with `/plugins install <marketplace>/<plugin-name>`; plugins install globally and coexist with this repo's linked skills and hooks.
+
 ## Global Codex setup
 
 Run `scripts/sync-external-skills.sh`, then `scripts/sync.sh`, then link:
@@ -29,6 +31,8 @@ Run `scripts/sync-external-skills.sh`, then `scripts/sync.sh`, then link:
 ln -s /path/to/repository/dist/codex/AGENTS.md ~/.agents/AGENTS.md
 ln -s /path/to/repository/dist/codex/AGENTS.md ~/.codex/AGENTS.md
 ```
+
+Merge `src/adapters/codex/config.base.toml` into `~/.codex/config.toml` so existing desktop preferences, trusted projects, hook trust, plugins, and unrelated servers stay intact. `scripts/sync.sh` generates the `dist/codex/AGENTS.md` target used by both links above.
 
 Ensure `~/.codex/config.toml` includes:
 

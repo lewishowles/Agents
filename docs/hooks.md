@@ -1,6 +1,6 @@
 # Hooks
 
-These hooks are Claude-only. Codex has its own hook system, documented in [docs/codex.md](codex.md), but parity is out of scope for the current repo phase. For Codex, skill descriptions and `AGENTS.md` carry the discovery weight.
+These hooks are Claude-only. Claude uses trigger hooks to inject skill reminders, while Codex matches skills from their descriptions and has a separate hook system. This repo's Codex hook configuration is generated at `dist/codex/hooks.json`; parity is out of scope for this repo phase.
 
 Hooks are shell scripts that Claude Code runs automatically at specific points in a session. They're registered in `dist/claude/settings.json` under the `hooks` key and live in `dist/claude/hooks/`.
 
@@ -32,6 +32,8 @@ Hooks are shell scripts that Claude Code runs automatically at specific points i
 ## HCOM ownership
 
 The repository manages only the verified HCOM commands in `src/hooks/claude/hcom/hook.json`. Global setup links the generated `settings.json` and does not import existing Claude preferences, so unrelated local settings stay outside this source tree.
+
+If `hcom hooks add codex` replaces `~/.codex/hooks.json`, rerun `scripts/sync.sh` and `scripts/setup-global.sh --codex`. Setup moves the replacement to a timestamped backup and restores the managed link.
 
 ### tool-failure-log
 

@@ -20,17 +20,17 @@ The included scripts generate the target files each tool expects for global and 
 - `external-skills.json` - official upstream skills synced into `src/skills/`
 - `scripts/` - sync and setup scripts
 - `templates/` - project templates for Claude, Codex, or both
-- `docs/` - deeper reference: [setup](docs/setup.md), [Codex](docs/codex.md), [hooks](docs/hooks.md), [skills](docs/skills.md), [commands](docs/commands.md), [agents](docs/agents.md), [plugins](docs/plugins.md)
+- `docs/` - reference: [setup](docs/setup.md), [hooks](docs/hooks.md), [skills](docs/skills.md), [commands](docs/commands.md)
 
 ## Runtime target capabilities
 
 | Target      | Global rules                                    | Project rules                                                      | Skills                               | Hooks / tooling                           | Setup                           | Main limitation     |
 | ----------- | ----------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------ | ----------------------------------------- | ------------------------------- | ------------------- |
 | Claude Code | `dist/claude/CLAUDE.md` → `~/.claude/CLAUDE.md` | `AGENTS.md` at project root                                        | `~/.claude/skills/<name>` symlinks   | [Claude hooks](docs/hooks.md); Serena MCP | `setup-global.sh --claude`      | —                   |
-| Codex CLI   | `dist/codex/AGENTS.md` → `~/.agents/AGENTS.md`  | `AGENTS.md` at project root                                        | `~/.agents/skills/<name>` symlinks   | [Codex hooks](docs/codex.md); Serena MCP  | `setup-global.sh --codex`       | No subagent parity  |
+| Codex CLI   | `dist/codex/AGENTS.md` → `~/.agents/AGENTS.md`  | `AGENTS.md` at project root                                        | `~/.agents/skills/<name>` symlinks   | [Codex hooks](docs/hooks.md); Serena MCP  | `setup-global.sh --codex`       | No subagent parity  |
 | ChatGPT     | `dist/chatgpt/INSTRUCTIONS.md` as system prompt | [Gateway](servers/local-repo-gateway/README.md) `get_instructions` | Gateway `list_skills` / `read_skill` | None                                      | [ChatGPT setup](#chatgpt-setup) | Read-only; no hooks |
 
-See [docs/setup.md](docs/setup.md) for manual wiring, [docs/codex.md](docs/codex.md) for Codex details, and [docs/hooks.md](docs/hooks.md) for the Claude hook reference.
+See [docs/setup.md](docs/setup.md) for manual wiring and Codex details, and [docs/hooks.md](docs/hooks.md) for the Claude hook reference.
 
 ## Initial setup
 
@@ -129,7 +129,7 @@ Claude skill-trigger hooks require `jq`:
 brew install jq
 ```
 
-Codex hooks are separate from the Claude hooks in this repo. See [docs/codex.md](docs/codex.md) for the current Codex behaviour.
+Codex hooks are separate from the Claude hooks in this repo. See [docs/hooks.md](docs/hooks.md) for the current hook behaviour.
 
 ## Shell aliases
 
@@ -158,9 +158,6 @@ tests/setup-project.sh
 ## Going deeper
 
 - [docs/setup.md](docs/setup.md) - manual setup steps if the scripts are not suitable
-- [docs/codex.md](docs/codex.md) - Codex-specific files, config, skills, and hook notes
 - [docs/hooks.md](docs/hooks.md) - Claude-only hook reference
 - [docs/skills.md](docs/skills.md) - skills reference and trigger behaviour
 - [docs/commands.md](docs/commands.md) - built-in, skill, and plugin commands
-- [docs/agents.md](docs/agents.md) - Claude agent types
-- [docs/plugins.md](docs/plugins.md) - Claude plugin notes

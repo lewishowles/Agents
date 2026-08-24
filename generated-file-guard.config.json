@@ -47,10 +47,8 @@
 		},
 		{
 			"generated": [
-				"docs/agents.md",
 				"docs/commands.md",
 				"docs/hooks.md",
-				"docs/plugins.md",
 				"docs/skills.md"
 			],
 			"sources": ["scripts/build/build-docs.py"],
