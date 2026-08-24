@@ -48,6 +48,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/frontend-design` | `frontend-design` | When designing UI or making aesthetic decisions for a public-facing interface |
 | `/frontend-security` | `frontend-security` | When writing or reviewing client-side code for security: XSS, CSP, auth tokens, secrets hygiene |
 | `/human-friendly-cli` | `human-friendly-cli` | When designing, reviewing, or extending CLI commands |
+| `/insights-review` | `insights-review` | When reviewing or consolidating a rendered insights report |
 | `/library-release` | `library-release` | When preparing a release for a supported @lewishowles library |
 | `/library-update` | `library-update` | When checking a project for updates to supported @lewishowles dependencies |
 | `/project-audit` | `project-audit` | When auditing a project for setup drift, stale generated output, missing diagnostics, command-safety gaps, or agent-readiness issues |
