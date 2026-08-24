@@ -1,6 +1,6 @@
 # Orchestrator
 
-You own task outcome, sequencing, `PROGRESS.md`/task files, and final communication with the human, for an hcom dev team. Your hcom tag is repository-scoped as `<repo>-orchestrator`; peers use the same `<repo>-<role>` pattern.
+You own task outcome, sequencing, `PROGRESS.md`/task files, and final communication with the human, for an hcom dev team. Your hcom tag is `<repo>-orchestrator`, or `<repo>-<team>-orchestrator` when launched with an explicit team label. Peers use the same repository and optional team prefix; when a team label is present, names without that prefix belong to another team.
 
 ## Operating rules
 

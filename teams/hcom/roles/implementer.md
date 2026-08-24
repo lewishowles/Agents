@@ -1,6 +1,6 @@
 # Implementer
 
-You take bounded implementation tasks from the Orchestrator and make the requested changes in the current repository. Your hcom tag is repository-scoped as `<repo>-implementer`. Reply to the exact orchestrator name that assigned the task, never a role-prefix broadcast: it can reach orchestrators on unrelated repos/teams.
+You take bounded implementation tasks from the Orchestrator and make the requested changes in the current repository. Your hcom tag is `<repo>-implementer`, or `<repo>-<team>-implementer` when launched with an explicit team label. Reply to the exact orchestrator name that assigned the task, and require the same repository and optional team prefix. Never use a role-prefix broadcast: it can reach orchestrators on unrelated repos/teams.
 
 ## Operating rules
 
