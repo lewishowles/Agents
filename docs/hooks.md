@@ -1,6 +1,6 @@
 # Hooks
 
-These hooks are Claude-only. Claude uses trigger hooks to inject skill reminders, while Codex matches skills from their descriptions and has a separate hook system. This repo's Codex hook configuration is generated at `dist/codex/hooks.json`; parity is out of scope for this repo phase.
+The generated hook table, file-trigger mapping, and detailed hook guidance on this page describe Claude Code. They come from the Claude hook manifests in `src/hooks/claude/`. Codex discovers skills from their descriptions and has a separate hook system. HCOM wiring covers both runtimes, as described below.
 
 Hooks are shell scripts that Claude Code runs automatically at specific points in a session. They're registered in `dist/claude/settings.json` under the `hooks` key and live in `dist/claude/hooks/`.
 
@@ -31,21 +31,24 @@ Hooks are shell scripts that Claude Code runs automatically at specific points i
 
 ## HCOM ownership
 
-The repository manages only the verified HCOM commands in `src/hooks/claude/hcom/hook.json`. Global setup links the generated `settings.json` and does not import existing Claude preferences, so unrelated local settings stay outside this source tree.
+HCOM wiring is managed for both Claude Code and Codex:
 
-If `hcom hooks add codex` replaces `~/.codex/hooks.json`, rerun `scripts/sync.sh` and `scripts/setup-global.sh --codex`. Setup moves the replacement to a timestamped backup and restores the managed link.
+- Claude lifecycle events use the commands declared in `src/hooks/claude/hcom/hook.json`.
+- Codex uses the HCOM commands declared in `src/adapters/codex/hooks.json` for pre-tool use, post-tool use, session start, user prompt submit, and stop.
+- Global setup links the generated Claude settings (`dist/claude/settings.json`) and the generated Codex hook file (`dist/codex/hooks.json`). It leaves unrelated local settings outside this repository alone.
+- If `hcom hooks add codex` replaces `~/.codex/hooks.json`, rerun `scripts/sync.sh` and `scripts/setup-global.sh --codex`. Setup moves the replacement to a timestamped backup and restores the managed link.
 
 ### tool-failure-log
 
-Logs failed Claude tool calls for recurring friction analysis.
+Records failed Claude tool calls in the friction log so recurring problems can be reviewed.
 
-**Limitation:** Edit `old_string`-mismatch failures never reach `PostToolUse` or `PostToolUseFailure`. This is a known harness-level gap, deferred to a future `audit-metrics-harness` transcript-mining pass. This single-observation finding was not independently reproduced.
+**Limitation:** An `old_string` mismatch during an edit does not reach `PostToolUse` or `PostToolUseFailure`. This known harness gap is deferred to a future `audit-metrics-harness` transcript-mining pass and has not been independently reproduced.
 
 ### skill-file-trigger.sh
 
-Fires whenever Claude is about to write or edit a file. Checks the file extension and path and injects a skill reminder.
+Before Claude writes or edits a file, checks its path and extension and injects a matching skill reminder.
 
-**Limitation:** by the time this hook fires, the file content is already planned in Claude's tool call. The reminder primarily affects subsequent edits in the same turn, not the current write.
+**Limitation:** Claude has already planned the file content when this hook fires, so the reminder mainly affects later edits in the same turn.
 
 Extension-to-skill mapping:
 
@@ -92,13 +95,15 @@ Extension-to-skill mapping:
 | `README.md` | `writing-readme`, `writing` |
 <!-- END GENERATED: file-trigger-mapping -->
 
-**Requires:** `jq` — silently skips if missing.
+**Requires:** `jq`; silently skips if missing.
 
 ### test-skeleton-reminder.sh
 
-Fires whenever Claude is about to write or edit an implementation file. If the project has a recognised test setup and no plausible matching test file exists, it injects a reminder to add or update a test alongside the implementation.
+Before Claude changes an implementation file, checks for a recognised test setup and a plausible matching test file.
 
-The hook suggests rather than blocks. It skips test files, docs, scripts without a detected test stack, and non-code files.
+- If no matching test file exists, it suggests adding or updating one.
+- It never blocks the edit.
+- It skips test files, docs, scripts without a detected test stack, and non-code files.
 
 Recognised test stacks:
 
@@ -107,80 +112,85 @@ Recognised test stacks:
 | JS / TS / Vue | `package.json` mentions Vitest, Jest, Playwright, or Cypress in scripts or dependencies |
 | Swift         | `Tests/` exists or `Package.swift` exists                                               |
 
-**Requires:** `jq` — silently skips if missing.
+**Requires:** `jq`; silently skips if missing.
 
 ### progress-resume.sh
 
-Fires on every user message. Detects continue-intent phrases ("continue", "pick up", "resume", "next step", "carry on", "where were we", "what's next") and injects the contents of root `PROGRESS.md` from the current working directory into Claude's context. This lets Claude resume in-progress work without the user needing to paste the file manually.
+On every user message, looks for continue-intent phrases such as "continue", "resume", and "what's next". When one matches, it adds the root `PROGRESS.md` from the current working directory to Claude's context.
 
-Silent if the phrase doesn't match, if no `PROGRESS.md` exists in the project, or if `jq` is missing.
+It stays silent when the phrase does not match, when the project has no `PROGRESS.md`, or when `jq` is missing.
 
-**Requires:** `jq` — silently skips if missing.
+**Requires:** `jq`; silently skips if missing.
 
 ### plan-verify.sh
 
-Fires after `ExitPlanMode`. Finds the most recently modified `.md` file in `~/.claude/plans/` and checks for a `## Validation` section. If absent, injects a warning into Claude's context. Silent if the section is present, or if no plan files exist.
+After `ExitPlanMode`, finds the newest `.md` file in `~/.claude/plans/` and checks for a `## Validation` section.
 
-The hook warns rather than blocks — plans for small tasks are valid without a Validation section.
+- If the section is missing, it adds a warning to Claude's context.
+- It stays silent when the section is present or no plan file exists.
+- It warns rather than blocks, so small plans can omit a Validation section.
 
-**Requires:** `jq` — silently skips if missing.
+**Requires:** `jq`; silently skips if missing.
 
 ### auto-format.sh
 
-Fires after every Write or Edit. Reads the file path from the tool input, checks the extension (`.js`, `.mjs`, `.vue`, `.css`, `.json`, `.md`, `.html`), and runs `oxfmt` if it's in PATH. Skips silently if oxfmt isn't installed — so it only activates in projects that have opted in by installing it.
+After every Write or Edit, checks the file extension (`.js`, `.mjs`, `.vue`, `.css`, `.json`, `.md`, or `.html`) and runs `oxfmt` when it is available on `PATH`.
 
-Always exits 0. The hook can never block a write.
+- It skips silently when `oxfmt` is not installed.
+- It always exits 0, so it cannot block a write.
 
-**Requires:** `oxfmt` — install per project with `bun add -D oxfmt`. No effect if absent.
+**Requires:** `oxfmt`; install it per project with `bun add -D oxfmt`. No effect if absent.
 
 ### .env protection (inline)
 
-Defined directly in `settings.json` rather than as a separate script. Fires before every Read call. If the file path matches `.env` (using `grep -q '\.env'`), exits with code 2, which Claude Code treats as a block. Prevents Claude from reading secrets files that could appear in context.
+This check is defined directly in `settings.json`. Before every Read call, it checks the path for `.env` and exits with code 2 when it matches. Claude Code treats that exit code as a block, preventing secrets files from entering the context.
 
-**No dependencies.** Inline `jq` + shell pipe — runs in any environment.
+**No dependencies:** an inline `jq` and shell pipeline runs in any environment.
 
 ### serena-activate
 
-Fires on Claude session startup, resume, clear, and compact. Prompts the agent to activate the current project with Serena and read Serena's initial instructions. This ensures the Serena language server is initialised and the project is ready for symbolic operations.
+At Claude session startup, resume, clear, and compact, prompts the agent to activate the current project with Serena and read its initial instructions. This prepares the language server for symbolic operations.
 
-**Requires:** `serena-hooks` — silently skips if not on PATH.
+**Requires:** `serena-hooks`; silently skips if not on PATH.
 
 ### serena-remind
 
-Fires before every tool use. Tracks consecutive `grep`/`read_file` calls and nudges the agent to use Serena's symbolic tools (find_symbol, get_symbol_details, find_references) instead of brute-force text search. The nudge only fires after several consecutive non-Serena code-discovery calls, so it doesn't interfere with normal workflow.
+Before every tool use, tracks consecutive `grep` and `read_file` calls. After several non-Serena code-discovery calls, it nudges the agent towards Serena's symbolic tools instead.
 
-**Requires:** `serena-hooks` — silently skips if not on PATH.
+**Requires:** `serena-hooks`; silently skips if not on PATH.
 
 ### serena-auto-approve
 
-Fires before Serena MCP tool calls (`mcp__serena__*`). Auto-approves Serena's destructive tools (e.g. `replace_symbol_body`, `rename_symbol`) when Claude Code is in a permissive permission mode (`acceptEdits` or `auto`). In default mode, Serena tools still prompt for approval as normal.
+Before Serena MCP tool calls (`mcp__serena__*`), auto-approves Serena's destructive tools when Claude Code uses `acceptEdits` or `auto` permission mode. In the default mode, Serena tools still ask for approval.
 
-**Requires:** `serena-hooks` — silently skips if not on PATH.
+**Requires:** `serena-hooks`; silently skips if not on PATH.
 
 ### serena-cleanup
 
-Fires when the Claude Code session ends. Cleans up per-session hook data stored by `serena-remind` and `serena-activate`. Non-destructive — if the session data is already gone, the hook exits silently.
+When the Claude Code session ends, removes the session data used by `serena-remind` and `serena-activate`. If the data is already gone, it exits silently.
 
-**Requires:** `serena-hooks` — silently skips if not on PATH.
+**Requires:** `serena-hooks`; silently skips if not on PATH.
 
 ### pre-stop-checks.sh
 
-Runs when Claude finishes a response. Checks for a `package.json` (skips silently if absent — not all projects are frontend projects). If present, it runs `npm run lint` and `npm run test:unit:run` if those scripts are defined. On failure, outputs a JSON pause signal with the error output, preventing Claude from stopping until the issues are resolved.
+When Claude finishes a response, checks for a `package.json`. If it exists, runs `npm run lint` and `npm run test:unit:run` when those scripts are defined.
 
-Failures are appended to `~/.claude/logs/friction.log` as tab-separated lines: timestamp, category (`check-fail` for this hook), project path, and a detail string folding the failed check names and first error line. Use `src/skills/friction-review/scripts/analyse-friction.sh` to group the most common category/project/detail combinations; it still aggregates log lines written before the category field existed.
+- A failed check outputs a JSON pause signal with the error, so Claude must resolve it before stopping.
+- Failures are appended to `~/.claude/logs/friction.log` with the timestamp, `check-fail` category, project path, failed check names, and first error line.
+- Use `src/skills/friction-review/scripts/analyse-friction.sh` to group recurring failures. It also reads older log lines without a category field.
 
-Behavioural friction (rule ignored, wrong approach, token waste, tool misuse, missing guidance) can be logged manually with `.agent/scripts/log-friction.sh "<category>" "<detail>"`, sharing the same log and schema.
+Log other friction manually with `.agent/scripts/log-friction.sh "<category>" "<detail>"`. It uses the same log and format for ignored rules, wrong approaches, wasted work, tool misuse, and missing guidance.
 
 ## How skill triggering works
 
-Skills aren't invoked automatically by Claude Code — they need an explicit `Skill` tool call. The trigger hooks bridge that gap by injecting a strong instruction into Claude's context at the right moment.
+Claude Code does not invoke skills automatically. Trigger hooks add a skill reminder to the context at the relevant point in the session.
 
-`skill-file-trigger` fires after the file path is planned, so the reminder primarily affects subsequent edits in the same turn. To invoke a skill manually: type `/skill-name` in Claude Code (e.g. `/vue`, `/typescript`).
+`skill-file-trigger` runs after Claude has planned the file path, so its reminder mainly affects later edits in the same turn. To invoke a skill manually, type `/skill-name` in Claude Code, for example `/vue` or `/typescript`.
 
 ## Adding a new hook
 
-1. Create the script in `src/hooks/claude/<name>/` — make it executable (`chmod +x`)
-2. Add `src/hooks/claude/<name>/hook.json` with event, matcher, dependencies, and failure mode
-3. Run `scripts/sync.sh` to copy the hook into `dist/claude/hooks/`, regenerate `dist/claude/settings.json`, and update the hook table above
+1. Create an executable script in `src/hooks/claude/<name>/` (`chmod +x`)
+2. Add `src/hooks/claude/<name>/hook.json` with the event, matcher, dependencies, and failure mode
+3. Run `scripts/sync.sh` to copy the hook to `dist/claude/hooks/`, regenerate `dist/claude/settings.json`, and update the generated hook table
 
 Event types supported by Claude Code: `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `Stop`, `SessionStart`, `SessionEnd`.
