@@ -8,8 +8,11 @@
 		"Codex usage report",
 		"Codex session report",
 		"latest-narrative.json",
+		"latest-authoring-bundle.json",
+		"latest-authored-draft.json",
 		"codex_insights_extract.py",
 		"codex_insights_facets.py",
+		"codex_insights_author.py",
 		"codex_insights_render.py"
 	],
 	"do-not-use-when": [
