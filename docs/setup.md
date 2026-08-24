@@ -186,3 +186,19 @@ Add `.agent-workspace.json` for reviewed facts that cannot be detected safely:
 ```
 
 Configured notes are labelled in `WORKSPACE.md`. They should state repository facts, not recommendations or temporary plans.
+
+## Checking token usage
+
+To inspect Claude and Codex token use for the last seven days:
+
+```bash
+python3 scripts/audit/token_usage_report.py --days 7
+```
+
+For repeatable historical output, pass an inclusive UTC date range:
+
+```bash
+python3 scripts/audit/token_usage_report.py --since 2026-08-01 --until 2026-08-06
+```
+
+Both commands replace `.agent/audits/usage/latest.md` and `latest.json`. Reports contain token counts, not model pricing or monetary cost.
