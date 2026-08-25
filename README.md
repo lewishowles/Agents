@@ -1,165 +1,37 @@
 # Global agent configuration
 
-Shared configuration for Claude Code and OpenAI Codex, and ChatGPT.
+Shared configuration for Claude Code and Codex, this repository keeps common agent rules, skills, hooks, and project templates in one place.
 
-This repository keeps common agent rules, skills, hooks, and project templates in one place. The setup is based on how I work as a designer and developer: small reviewable changes, accessible interfaces, maintainable code, clear communication, and tools that make repeated work easier.
+## Set up global configuration
 
-The included scripts generate the target files each tool expects for global and per-project setup.
-
-## What's inside
-
-- `src/rules/` - source fragments used by both Claude and Codex
-- `src/fragments/` - per-tool preamble fragments (`claude/`, `codex/`, `chatgpt/`) assembled into each generated target
-- `src/skills/` - authored skill manifests and bodies, either flat (`src/skills/<name>/`) or grouped (`src/skills/<group>/<name>/`)
-- `src/hooks/` - hook source (`claude/`) and this repo's own git hooks (`git/`)
-- `src/adapters/` - editable settings/config sources for each tool's generated output
-- `dist/claude/` - generated `CLAUDE.md`, Claude settings, and hooks
-- `dist/codex/` - generated `AGENTS.md`
-- `dist/chatgpt/` - generated `INSTRUCTIONS.md` system prompt for a ChatGPT Custom GPT (skills are served live via the gateway, not uploaded)
-- `dist/skills/` - generated, flattened runtime skill directories
-- `external-skills.json` - official upstream skills synced into `src/skills/`
-- `scripts/` - sync and setup scripts
-- `templates/` - project templates for Claude, Codex, or both
-- `docs/` - reference: [setup](docs/setup.md), [hooks](docs/hooks.md), [skills](docs/skills.md), [commands](docs/commands.md)
-
-## Runtime target capabilities
-
-| Target      | Global rules                                    | Project rules                                                      | Skills                               | Hooks / tooling                           | Setup                           | Main limitation     |
-| ----------- | ----------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------ | ----------------------------------------- | ------------------------------- | ------------------- |
-| Claude Code | `dist/claude/CLAUDE.md` → `~/.claude/CLAUDE.md` | `AGENTS.md` at project root                                        | `~/.claude/skills/<name>` symlinks   | [Claude hooks](docs/hooks.md); Serena MCP | `setup-global.sh --claude`      | —                   |
-| Codex CLI   | `dist/codex/AGENTS.md` → `~/.agents/AGENTS.md`  | `AGENTS.md` at project root                                        | `~/.agents/skills/<name>` symlinks   | [Codex hooks](docs/hooks.md); Serena MCP  | `setup-global.sh --codex`       | No subagent parity  |
-| ChatGPT     | `dist/chatgpt/INSTRUCTIONS.md` as system prompt | [Gateway](servers/local-repo-gateway/README.md) `get_instructions` | Gateway `list_skills` / `read_skill` | None                                      | [ChatGPT setup](#chatgpt-setup) | Read-only; no hooks |
-
-See [docs/setup.md](docs/setup.md) for manual wiring and Codex details, and [docs/hooks.md](docs/hooks.md) for the Claude hook reference.
-
-## Initial setup
-
-Replace `/path/to/repository` with the path to this repository.
+This links the rules, skills, and hooks in this repo into your Claude and Codex home configuration, so every project you open picks them up automatically. Run it from the repository root:
 
 ```bash
-cd /path/to/repository
 scripts/setup-global.sh --both
 ```
 
-Use `--claude` or `--codex` to configure one runtime only. With no flag, the script asks which agent(s) to configure.
+Claude uses skill-trigger hooks to automatically load the right skill for what you're doing, and those hooks need `jq` to run. Install it with `brew install jq` before running the command if you use Claude.
 
-The global setup script links:
+## Set up a project
 
-- `~/.claude/CLAUDE.md` to `dist/claude/CLAUDE.md`
-- `~/.claude/settings.json` to `dist/claude/settings.json`
-- `~/.claude/.mcp.json` to `dist/claude/.mcp.json`
-- `~/.claude/skills/<name>` to `dist/skills/<name>`
-- `~/.claude/hooks/<file>` to `dist/claude/hooks/<file>`
-- `~/.agents/AGENTS.md` to `dist/codex/AGENTS.md`
-- `~/.codex/AGENTS.md` to `dist/codex/AGENTS.md`
-- `~/.agents/skills/<name>` to `dist/skills/<name>`
-
-It also ensures `~/.codex/config.toml` has the `codebase-memory-mcp` MCP server entry.
-
-Existing files are backed up instead of overwritten.
-
-Pass `--refresh` to sync official external skills, regenerate the repository output, and validate it before linking:
-
-```bash
-scripts/setup-global.sh --both --refresh
-```
-
-To refresh without network access, use:
-
-```bash
-scripts/setup-global.sh --both --refresh --skip-external
-```
-
-## ChatGPT setup
-
-ChatGPT reads skills live through the [Local Repo Gateway](servers/local-repo-gateway/README.md) rather than an uploaded knowledge base — set that up first.
-
-**System prompt** — paste the contents of `dist/chatgpt/INSTRUCTIONS.md` (regenerated by `scripts/sync.sh`) into your Custom GPT's system prompt, or into ChatGPT's custom instructions.
-
-Once the gateway is connected, you can reference skills explicitly or let ChatGPT retrieve them automatically:
-
-- _"Use my vue and code-style skills."_ — explicit, most reliable
-- _"Use my skills."_ — ChatGPT calls `list_skills`, determines which are relevant, and calls `read_skill` for each
-
-Re-paste the system prompt after running `scripts/sync.sh` if `src/fragments/chatgpt/system.md` changes.
-
-## Project setup
-
-From a project root:
+This creates the project's `AGENTS.md` and other per-project config. Run it from the project root:
 
 ```bash
 /path/to/repository/scripts/setup-project.sh --both
 ```
 
-Use `--claude`, `--codex`, or `--both`:
+## Read next
 
-- `--claude` creates `AGENTS.md`, a root `CLAUDE.md` import, `.claude/settings.json`, and `.claude/.claudeignore`
-- `--codex` creates `AGENTS.md`
-- `--both` creates shared `AGENTS.md`, a root `CLAUDE.md` import, and the Claude `.claude/` files
-
-Every mode also creates `WORKSPACE.md` when absent and links the six shared agent tools into
-`.agent/scripts/`. The links point to the maintained scripts in this repository, so fixes are
-available to every configured project without copying their implementations.
-
-Project setup skips existing project files. If a shared tool exists as a divergent local copy, it
-asks before replacing that copy with the central symlink.
-
-## Token usage report
-
-Generate a seven-day Claude and Codex token report:
-
-```bash
-python3 scripts/audit/token_usage_report.py --days 7
-```
-
-Use explicit inclusive UTC dates when you need repeatable historical output:
-
-```bash
-python3 scripts/audit/token_usage_report.py --since 2026-08-01 --until 2026-08-06
-```
-
-Both commands overwrite `.agent/audits/usage/latest.md` (compact session summary),
-`.agent/audits/usage/latest-detail.md` (full driver-ledger detail), and
-`.agent/audits/usage/latest.json`. The report contains token counts rather than model pricing or
-monetary cost.
-
-## Hook dependency
-
-Claude skill-trigger hooks require `jq`:
-
-```bash
-brew install jq
-```
-
-Codex hooks are separate from the Claude hooks in this repo. See [docs/hooks.md](docs/hooks.md) for the current hook behaviour.
+- [Setup](docs/setup.md): manual wiring, troubleshooting, and token usage reports
+- [Skills](docs/skills.md): available skills and trigger behaviour
+- [Commands](docs/commands.md): built-in and skill commands
+- [Hooks](docs/hooks.md): Claude and Codex hook behaviour
+- [ChatGPT](docs/chatgpt.md): optional gateway setup and system instructions
 
 ## Shell aliases
 
-Add aliases to `~/.zshrc` if you run setup often:
+I recommend adding an alias to `~/.zshrc` if you run global setup often:
 
 ```bash
 alias setup:agents:global="/path/to/repository/scripts/setup-global.sh --both"
-alias setup:claude:global="/path/to/repository/scripts/setup-global.sh --claude"
-alias setup:codex:global="/path/to/repository/scripts/setup-global.sh --codex"
-alias setup:agents="/path/to/repository/scripts/setup-project.sh --both"
-alias setup:claude="/path/to/repository/scripts/setup-project.sh --claude"
-alias setup:codex="/path/to/repository/scripts/setup-project.sh --codex"
 ```
-
-## Common commands
-
-```bash
-scripts/sync.sh
-scripts/sync-external-skills.sh
-scripts/setup-global.sh --both
-scripts/setup-project.sh --both
-python3 scripts/audit/token_usage_report.py --days 7
-tests/setup-project.sh
-```
-
-## Going deeper
-
-- [docs/setup.md](docs/setup.md) - manual setup steps if the scripts are not suitable
-- [docs/hooks.md](docs/hooks.md) - Claude-only hook reference
-- [docs/skills.md](docs/skills.md) - skills reference and trigger behaviour
-- [docs/commands.md](docs/commands.md) - built-in, skill, and plugin commands
