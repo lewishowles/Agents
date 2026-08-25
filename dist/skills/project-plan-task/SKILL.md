@@ -24,11 +24,11 @@ The CLI has these top-level nouns:
 - `decision`
 - `context`
 
-Run `progress --help` for top-level syntax, then `progress <noun> --help` for the exact syntax before acting. Use JSON output where the command provides it. Do not open `PROGRESS.md` as a substitute for the task, queue, release, or handoff records.
+When the available operation or syntax is unclear, run `progress commands` once before using command-specific help. Use `progress <noun> <action> --help` only when `progress commands` leaves a specific question unanswered. Use JSON output where the command provides it. Do not open `PROGRESS.md` as a substitute for the task, queue, release, or handoff records.
 
 If `progress` is not installed, or the command reports an uninitialised project, inspect `WORKSPACE.md`, `AGENTS.md`, package scripts, and nearby project docs to understand the repository. Do not create a markdown plan or guess a project identity as a fallback. Ask the user to initialise or install `progress` before writing plan records.
 
-Initialise a project only when its identity is confirmed, using the syntax shown by `progress project --help`.
+Initialise a project only when its identity is confirmed, using the exact project command signature from `progress commands`.
 
 Do not write the progress database directly or use a second task store.
 
