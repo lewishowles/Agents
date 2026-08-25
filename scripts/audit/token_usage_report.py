@@ -8,7 +8,7 @@ the per-event delta. This script sums the latter and derives a delta from the
 former only when the per-event value is absent.
 
 All values produced by this script are tokens, not cost. The script reads
-transcripts and the optional hcom database, then overwrites two fixed report
+transcripts and the optional hcom database, then overwrites three fixed report
 paths under the repository's ``.agent/audits/usage`` directory.
 """
 
@@ -32,43 +32,33 @@ if str(AUDIT_DIRECTORY) not in sys.path:
 	sys.path.insert(0, str(AUDIT_DIRECTORY))
 
 from tool_call_attribution import DRIVER_METHOD  # noqa: E402
-from token_usage_parsing import (  # noqa: E402
+from token_usage_parsing import (  # noqa: E402, F401
 	CLAUDE_RECORD_TYPES,
-	CODEX_RECORD_TYPES,
 	add_totals,
-	aggregate_codex_usage,
-	codex_usage_event,
-	decode_codex_tool_call,
-	embedded_tool_call,
 	empty_totals,
-	new_session,
 	number,
-	object_input,
 	parse_claude_session,
 	parse_codex_session,
-	parse_timestamp,
-	process_codex_response_item,
 	records,
-	update_codex_metadata,
 	usage_totals,
 )
-from token_usage_rendering import render_markdown  # noqa: E402
+from token_usage_rendering import (  # noqa: E402
+	render_detail_markdown,
+	render_markdown,
+)
 from token_usage_types import (  # noqa: E402
 	AggregateRow,
 	DriverLedgerRow,
 	DriverReconciliation,
 	Group,
 	HcomLabel,
-	PartialData,
 	RatioData,
 	Report,
-	Sections,
 	Session,
 	SessionReport,
 	TokenTotals,
 	TOOLS,
 	Window,
-	WindowReport,
 )
 
 CLAUDE_ROOT = (
@@ -517,26 +507,28 @@ def transcript_paths() -> tuple[list[Path], list[Path]]:
 	return claude_paths, sorted(codex_paths)
 
 
-def write_report(report: Report) -> tuple[Path, Path]:
-	"""Overwrite the fixed Markdown and JSON report paths.
+def write_report(report: Report) -> tuple[Path, Path, Path]:
+	"""Overwrite the fixed summary, detail, and JSON report paths.
 
 	Args:
 		report: Serialised report to write.
 
 	Returns:
-		Markdown path followed by JSON path.
+		Summary Markdown path, detail Markdown path, and JSON path.
 	"""
 	REPORT_DIRECTORY.mkdir(parents=True, exist_ok=True)
 	json_path = REPORT_DIRECTORY / "latest.json"
 	markdown_path = REPORT_DIRECTORY / "latest.md"
+	detail_markdown_path = REPORT_DIRECTORY / "latest-detail.md"
 
 	json_path.write_text(
 		json.dumps(report, indent=2, sort_keys=True) + "\n",
 		encoding="utf-8",
 	)
 	markdown_path.write_text(render_markdown(report), encoding="utf-8")
+	detail_markdown_path.write_text(render_detail_markdown(report), encoding="utf-8")
 
-	return markdown_path, json_path
+	return markdown_path, detail_markdown_path, json_path
 
 
 def main() -> None:
@@ -566,10 +558,10 @@ def main() -> None:
 		apply_hcom_label(session, by_session_id, by_path)
 
 	report = make_report(sessions, window)
-	markdown_path, json_path = write_report(report)
+	markdown_path, detail_markdown_path, json_path = write_report(report)
 	print(
 		f"Wrote {report['session_count']} sessions, tokens not cost, "
-		f"to {markdown_path} and {json_path}"
+		f"to {markdown_path}, {detail_markdown_path}, and {json_path}"
 	)
 
 

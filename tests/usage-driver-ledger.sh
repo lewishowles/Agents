@@ -23,6 +23,7 @@ from pathlib import Path
 report_directory = Path(".agent/audits/usage")
 report = json.loads((report_directory / "latest.json").read_text(encoding="utf-8"))
 markdown = (report_directory / "latest.md").read_text(encoding="utf-8")
+detail_markdown = (report_directory / "latest-detail.md").read_text(encoding="utf-8")
 
 assert report["session_count"] == 2
 assert report["driver_reconciliation"]["reconciles"] is True
@@ -83,11 +84,13 @@ for forbidden in (
 	"SYNTHETIC_CODEX_MCP_RESULT_5E8D",
 ):
 	assert forbidden not in markdown
+	assert forbidden not in detail_markdown
 	assert forbidden not in json.dumps(report)
 
-assert "/fixture/claude/project/src/app.py" in markdown
-assert "## Driver ledger (ranked aggregate)" in markdown
-assert "## Driver ledger by session" in markdown
+assert "| Session | Tool calls | Total tokens |" in markdown
+assert "/fixture/claude/project/src/app.py" in detail_markdown
+assert "## Driver ledger (ranked aggregate)" in detail_markdown
+assert "## Driver ledger by session" in detail_markdown
 print("usage driver ledger Case 1: PASS")
 PY
 
@@ -183,6 +186,7 @@ from pathlib import Path
 report_directory = Path(".agent/audits/usage")
 report = json.loads((report_directory / "latest.json").read_text(encoding="utf-8"))
 markdown = (report_directory / "latest.md").read_text(encoding="utf-8")
+detail_markdown = (report_directory / "latest-detail.md").read_text(encoding="utf-8")
 
 assert report["session_count"] == 4
 assert report["partial_data"] == {
@@ -200,22 +204,27 @@ assert sessions[("Claude", "claude-case-3-skipped-only")]["tokens"]["total_token
 assert sessions[("Claude", "claude-case-3-skipped-only")]["skipped_record_count"] == 2
 assert sessions[("Codex", "codex-case-3-skipped-only")]["tokens"]["total_tokens"] == 0
 assert sessions[("Codex", "codex-case-3-skipped-only")]["skipped_record_count"] == 2
-assert "## Partial data" in markdown
-assert "Skipped records: **8**" in markdown
-assert "| Claude | 4 |" in markdown
-assert "| Codex | 4 |" in markdown
+assert "## Partial data" in detail_markdown
+assert "Skipped records: **8**" in detail_markdown
+assert "| Claude | 4 |" in detail_markdown
+assert "| Codex | 4 |" in detail_markdown
 print("usage partial-data Case 3: PASS")
 PY
 
 printf '%s\n' 'Running usage correctness regressions'
 cd "$REPO_DIR"
 python3 - <<'PY'
+from copy import deepcopy
 import json
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
 from scripts.audit import token_usage_report
+from scripts.audit.token_usage_rendering import (
+	render_detail_markdown,
+	render_markdown,
+)
 
 
 with tempfile.TemporaryDirectory() as temporary_directory:
@@ -282,6 +291,86 @@ with tempfile.TemporaryDirectory() as temporary_directory:
 		assert error_connection.closed
 	finally:
 		token_usage_report.HCOM_DATABASE = previous_database
+
+report_directory = Path(".agent/audits/usage")
+report = json.loads((report_directory / "latest.json").read_text(encoding="utf-8"))
+no_driver_report = deepcopy(report)
+no_driver_session = deepcopy(report["sessions"][0])
+no_driver_session["session_id"] = "codex-no-driver"
+no_driver_session["tool"] = "Codex"
+no_driver_session["tokens"] = {"total_tokens": 123}
+no_driver_session["tool_call_count"] = 0
+no_driver_session["unattributed_count"] = 0
+no_driver_session["unattributed"] = {
+	"count": 0,
+	"payload_estimate_tokens": 0,
+	"method": "chars/4",
+}
+no_driver_session["driver_ledger"] = []
+no_driver_report["sessions"] = [no_driver_session]
+
+summary = render_markdown(no_driver_report)
+detail = render_detail_markdown(no_driver_report)
+expected_no_driver_line = (
+	"Codex `codex-no-driver`: 123 tokens, no attributed tool-call driver."
+)
+assert expected_no_driver_line not in summary
+assert expected_no_driver_line in detail
+assert "### Codex `codex-no-driver`" not in detail
+
+zero_activity_report = deepcopy(no_driver_report)
+zero_activity_session = deepcopy(report["sessions"][0])
+zero_activity_session["session_id"] = "codex-zero-activity"
+zero_activity_session["tool"] = "Codex"
+zero_activity_session["tokens"] = {"total_tokens": 0}
+zero_activity_session["tool_call_count"] = 0
+zero_activity_session["unattributed_count"] = 0
+zero_activity_session["unattributed"] = {
+	"count": 0,
+	"payload_estimate_tokens": 0,
+	"method": "chars/4",
+}
+zero_activity_session["driver_ledger"] = []
+zero_activity_report["sessions"] = [no_driver_session, zero_activity_session]
+zero_activity_report["top_sessions"] = []
+
+zero_activity_summary = render_markdown(zero_activity_report)
+zero_activity_detail = render_detail_markdown(zero_activity_report)
+expected_omitted_line = (
+	"1 session had no attributable activity in the selected window and is omitted."
+)
+assert "| Codex `codex-zero-activity` |" not in zero_activity_summary
+assert "### Codex `codex-zero-activity`" not in zero_activity_detail
+assert expected_omitted_line in zero_activity_summary
+assert expected_omitted_line in zero_activity_detail
+
+ordered_report = deepcopy(zero_activity_report)
+ordered_visible_session = deepcopy(report["sessions"][0])
+ordered_visible_session["session_id"] = "claude-visible"
+ordered_visible_session["tool"] = "Claude"
+ordered_visible_session["tokens"] = {"total_tokens": 456}
+ordered_visible_session["tool_call_count"] = 1
+ordered_visible_session["unattributed_count"] = 0
+ordered_visible_session["unattributed"] = {
+	"count": 0,
+	"payload_estimate_tokens": 0,
+	"method": "chars/4",
+}
+ordered_visible_session["driver_ledger"] = []
+ordered_report["sessions"] = [
+	no_driver_session,
+	ordered_visible_session,
+	zero_activity_session,
+]
+
+ordered_summary = render_markdown(ordered_report)
+ordered_detail = render_detail_markdown(ordered_report)
+assert ordered_summary.index("| Codex `codex-no-driver` |") < ordered_summary.index(
+	"| Claude `claude-visible` |"
+)
+assert ordered_detail.index("Codex `codex-no-driver`:") < ordered_detail.index(
+	"### Claude `claude-visible`"
+)
 
 print("usage correctness regressions: PASS")
 PY

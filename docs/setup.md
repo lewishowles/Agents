@@ -201,4 +201,4 @@ For repeatable historical output, pass an inclusive UTC date range:
 python3 scripts/audit/token_usage_report.py --since 2026-08-01 --until 2026-08-06
 ```
 
-Both commands replace `.agent/audits/usage/latest.md` and `latest.json`. Reports contain token counts, not model pricing or monetary cost.
+Both commands replace `.agent/audits/usage/latest.md` (compact session summary), `.agent/audits/usage/latest-detail.md` (full driver-ledger detail), and `.agent/audits/usage/latest.json`. Reports contain token counts, not model pricing or monetary cost.

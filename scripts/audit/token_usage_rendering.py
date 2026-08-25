@@ -2,14 +2,29 @@
 
 from __future__ import annotations
 
+from typing import Literal, TypedDict
+
 from token_usage_types import (
 	DriverLedgerRow,
 	Group,
 	RatioData,
 	Report,
+	SessionReport,
 	TOOLS,
 	Unattributed,
 )
+
+
+class SessionGroups(TypedDict):
+	"""Group sessions by the activity shown in each report view."""
+
+	visible: list[SessionReport]
+	no_driver: list[SessionReport]
+	zero_activity: list[SessionReport]
+
+
+# Identifies how one session is rendered in the report.
+SessionCategory = Literal["visible", "no_driver", "zero_activity"]
 
 
 def display_token_count(tokens: int) -> str:
@@ -34,6 +49,74 @@ def display_path(value: object) -> str:
 		A string with Markdown table separators escaped.
 	"""
 	return str(value).replace("|", "\\|").replace("\n", " ")
+
+
+def classify_session(session: SessionReport) -> SessionCategory:
+	"""Return the rendering category for one session.
+
+	Args:
+		session: Session row selected for the report window.
+
+	Returns:
+		The category used by the compact and detail renderers.
+	"""
+	if session["tool_call_count"] > 0:
+		return "visible"
+
+	if session["tokens"]["total_tokens"] > 0:
+		return "no_driver"
+
+	return "zero_activity"
+
+
+def classify_sessions(sessions: list[SessionReport]) -> SessionGroups:
+	"""Split sessions into rendered, no-driver, and omitted groups.
+
+	Args:
+		sessions: Session rows selected for the report window.
+
+	Returns:
+		Sessions with tool calls, sessions with tokens but no tool calls, and
+		zero-activity sessions whose rows are omitted.
+	"""
+	visible: list[SessionReport] = []
+	no_driver: list[SessionReport] = []
+	zero_activity: list[SessionReport] = []
+
+	for session in sessions:
+		category = classify_session(session)
+		if category == "visible":
+			visible.append(session)
+		elif category == "no_driver":
+			no_driver.append(session)
+		else:
+			zero_activity.append(session)
+
+	return {
+		"visible": visible,
+		"no_driver": no_driver,
+		"zero_activity": zero_activity,
+	}
+
+
+def zero_activity_note_lines(session_groups: SessionGroups) -> list[str]:
+	"""Render the shared note for omitted zero-activity sessions.
+
+	Args:
+		session_groups: Sessions grouped by rendered activity.
+
+	Returns:
+		A Markdown note, or no lines when no session was omitted.
+	"""
+	zero_activity_count = len(session_groups["zero_activity"])
+	if not zero_activity_count:
+		return []
+
+	label = "session" if zero_activity_count == 1 else "sessions"
+	verb = "is" if zero_activity_count == 1 else "are"
+	return [
+		f"{zero_activity_count} {label} had no attributable activity in the selected window and {verb} omitted."
+	]
 
 
 def format_ratio(data: RatioData) -> str:
@@ -284,8 +367,28 @@ def render_driver_views_section(report: Report) -> list[str]:
 	)
 
 	lines.extend(["", "## Driver ledger by session", ""])
+	session_groups = classify_sessions(report["sessions"])
 	if report["sessions"]:
 		for session in report["sessions"]:
+			category = classify_session(session)
+			if category == "zero_activity":
+				continue
+
+			if category == "no_driver":
+				total_tokens = session["tokens"]["total_tokens"]
+				lines.extend(
+					[
+						f"{session['tool']} `{session['session_id']}`: "
+						f"{display_token_count(total_tokens)} tokens, "
+						"no attributed tool-call driver.",
+						"",
+					]
+				)
+				continue
+
+			driver_table = markdown_driver_table(
+				session["driver_ledger"], session["unattributed"]
+			)
 			lines.extend(
 				[
 					f"### {session['tool']} `{session['session_id']}`",
@@ -298,12 +401,46 @@ def render_driver_views_section(report: Report) -> list[str]:
 					"",
 				]
 			)
-			lines.extend(
-				markdown_driver_table(session["driver_ledger"], session["unattributed"])
-			)
+			lines.extend(driver_table)
 			lines.append("")
 	else:
 		lines.append("No data in the selected window.")
+
+	lines.extend(zero_activity_note_lines(session_groups))
+
+	return lines
+
+
+def render_session_summary_section(report: Report) -> list[str]:
+	"""Render compact rows and the count of omitted zero-activity sessions.
+
+	Args:
+		report: Serialised report containing session token and driver totals.
+
+	Returns:
+		Markdown lines for the compact session summary and omitted-session note.
+	"""
+	session_groups = classify_sessions(report["sessions"])
+	lines = [
+		"## Sessions (tokens, not cost)",
+		"",
+		"| Session | Tool calls | Total tokens |",
+		"| --- | ---: | ---: |",
+	]
+
+	for session in report["sessions"]:
+		if classify_session(session) == "zero_activity":
+			continue
+
+		total_tokens = session["tokens"]["total_tokens"]
+		lines.append(
+			f"| {session['tool']} `{session['session_id']}` | "
+			f"{session['tool_call_count']} | {display_token_count(total_tokens)} |"
+		)
+
+	zero_activity_lines = zero_activity_note_lines(session_groups)
+	if zero_activity_lines:
+		lines.extend(["", *zero_activity_lines])
 
 	return lines
 
@@ -360,7 +497,7 @@ def render_semantic_notes_section() -> list[str]:
 
 
 def render_markdown(report: Report) -> str:
-	"""Render the machine-readable report as concise Markdown.
+	"""Render the compact Markdown summary.
 
 	Args:
 		report: Serialised report to render.
@@ -369,7 +506,27 @@ def render_markdown(report: Report) -> str:
 		The complete Markdown report with a trailing newline.
 	"""
 	lines = [
-		"# Token usage report",
+		"# Token usage summary",
+		"",
+		"All figures below are tokens, not cost. The report contains no price or dollar estimate.",
+		"",
+	]
+	lines.extend(render_session_summary_section(report))
+
+	return "\n".join(lines) + "\n"
+
+
+def render_detail_markdown(report: Report) -> str:
+	"""Render the complete Markdown report with per-session driver tables.
+
+	Args:
+		report: Serialised report to render.
+
+	Returns:
+		The complete Markdown report with a trailing newline.
+	"""
+	lines = [
+		"# Token usage report detail",
 		"",
 		"All figures below are tokens, not cost. The report contains no price or dollar estimate.",
 		"",

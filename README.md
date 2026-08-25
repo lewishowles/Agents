@@ -118,8 +118,10 @@ Use explicit inclusive UTC dates when you need repeatable historical output:
 python3 scripts/audit/token_usage_report.py --since 2026-08-01 --until 2026-08-06
 ```
 
-Both commands overwrite `.agent/audits/usage/latest.md` and `latest.json`. The report contains
-token counts rather than model pricing or monetary cost.
+Both commands overwrite `.agent/audits/usage/latest.md` (compact session summary),
+`.agent/audits/usage/latest-detail.md` (full driver-ledger detail), and
+`.agent/audits/usage/latest.json`. The report contains token counts rather than model pricing or
+monetary cost.
 
 ## Hook dependency
 

@@ -1,7 +1,7 @@
 # Session audit scripts
 
 Read-only analysis over Claude Code and Codex transcripts. The scripts never write to transcripts.
-Generated reports and working data belong under `.agent/audits/`; `token_usage_report.py` overwrites its two
+Generated reports and working data belong under `.agent/audits/`; `token_usage_report.py` overwrites its three
 fixed report files under `.agent/audits/usage/`.
 
 Transcripts live at `~/.claude/projects/<encoded-project-path>/<session-id>.jsonl`, one JSON record
@@ -31,7 +31,8 @@ python3 scripts/audit/token_usage_report.py --since 2026-08-01 --until 2026-08-0
 Set `CLAUDE_CONFIG_DIR` or `CODEX_HOME` to read transcripts from a non-default location; both
 fall back to `~/.claude` and `~/.codex` respectively.
 
-Both runs overwrite `.agent/audits/usage/latest.md` and
+Both runs overwrite `.agent/audits/usage/latest.md` (compact session summary),
+`.agent/audits/usage/latest-detail.md` (full driver-ledger detail), and
 `.agent/audits/usage/latest.json`. The explicit date form uses inclusive UTC calendar dates and
 is byte-stable when repeated with the same bounds, provided the window has fully elapsed — a
 window that includes the current moment (e.g. today, or `--days 1`) will differ between runs as
