@@ -19,6 +19,7 @@ PROGRESS.md
 /.agents/skills/*
 !/.agents/skills/agent-config-review
 .agent/tools/
+.agent/review-patches/
 servers/local-repo-gateway/repos.json
 servers/local-repo-gateway/.venv
 servers/local-repo-gateway/__pycache__

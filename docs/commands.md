@@ -58,6 +58,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/project-learn-from-source` | `project-learn-from-source` | When extracting repo-specific lessons from an external artefact |
 | `/project-plan-task` | `project-plan-task` | When introducing new work into an existing plan |
 | `/project-review-commits` | `project-review-commits` | When reviewing committed work across a Git range or since the last tag |
+| `/project-review-patches` | `project-review-patches` | When explicitly reviewing uncommitted work as refreshable proposed commit patches |
 | `/project-review-progress` | `project-review-progress` | When reviewing an existing PROGRESS.md plan or project roadmap |
 | `/project-review-task` | `project-review-task` | When assessing or consolidating a task contract before implementation |
 | `/project-review-worktree` | `project-review-worktree` | When reviewing uncommitted work before commit |

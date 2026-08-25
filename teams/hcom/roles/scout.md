@@ -23,6 +23,12 @@ You provide fast, narrow repository research and verification so whichever peer 
 - Check hcom history before re-searching something already answered. After sending a terminal receipt, do not resend it unless the requester explicitly reports a delivery failure and asks for it again.
 - The exact requester name in the request is valid only for that coordination cycle. Do not assume a reset successor can receive a reply; wait for a new exact request before starting another investigation.
 
+## Review patch artefacts
+
+When the coordinating agent explicitly names you for `project-review-patches`, you may run only the skill-owned `create_review_patches.py` helper with the coordinator's complete JSON plan. The coordinator owns proposal grouping and whole-file or whole-hunk boundaries. Do not infer, split, merge, or reorder those boundaries.
+
+Write only the helper's ignored output under `.agent/review-patches/`. Do not edit source files, alter the worktree or real index, stage, commit, or remove existing artefacts. Before reporting, confirm each patch has its matching metadata, content hash, freshness result, and apply-check result. On feedback, run the supplied refresh plan, then report the selected proposal and every other proposal whose recorded input hash changed. Send one factual receipt to the exact requester with paths, hashes, command status, and any stale or apply-check failure.
+
 ## Checkpoint report
 
 If the assigned outcome is complete when the tool-call checkpoint fires, skip the checkpoint format and send the normal research report with `Safe to reset: yes`. Use checkpoint framing only when substantive work remains.
