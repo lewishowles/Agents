@@ -1,14 +1,15 @@
 {
 	"name": "project-plan-task",
 	"title": "Project plan task",
-	"description": "Use this skill when introducing work into an existing plan managed by the progress CLI. Covers deciding placement, adding releases, tasks, chunks, dependencies, and handoff context.",
-	"when": "When introducing new work into an existing plan",
+	"description": "Use this skill when introducing work into an existing progress CLI plan or splitting a planned task into chunks. Covers placement, releases, tasks, chunks, dependencies, and handoff context.",
+	"when": "When adding planned work or splitting a task into chunks",
 	"triggers": [
 		"plan task",
 		"new task",
 		"add task",
 		"plan new work",
-		"plan this feature"
+		"plan this feature",
+		"split task"
 	],
 	"filePatterns": [],
 	"pathPatterns": [],

@@ -3,7 +3,7 @@
 name: project-plan-task
 displayName: Project plan task
 description: >
-  Use this skill when introducing work into an existing plan managed by the progress CLI. Covers deciding placement, adding releases, tasks, chunks, dependencies, and handoff context.
+  Use this skill when introducing work into an existing progress CLI plan or splitting a planned task into chunks. Covers placement, releases, tasks, chunks, dependencies, and handoff context.
 ---
 # Project plan task
 
@@ -59,7 +59,7 @@ Run it only when the user asks and it exists in the current shell.
 3. **Locate**: use the `project`, `task`, and `release` records to identify the current task and the new task's position. Fetch only the selected task record when needed.
 4. **Approach exploration** (opt-in): for complex tasks, surface two or three approaches with tradeoffs and wait for the user's choice before writing records. Skip this for single-file, obvious, or already-decided work.
 5. **Reorganise**: if the new work changes later dependencies or ordering, update the task dependency and position. Add a release first when the work belongs to a new release.
-6. **Insert**: create one task record with the confirmed plan fields, then add its work chunks in decisions-first, mechanical-last order. Add one chunk per independently reviewable implementation step. Record verified discoveries and decisions in their matching records.
+6. **Insert**: create one task record with the confirmed plan fields, then add every known work chunk in decisions-first, mechanical-last order. Add one chunk per independently reviewable implementation step. Record verified discoveries and decisions in their matching records.
 7. **Review checkpoint**: after creating one task, stop for review. Report the task ID, created chunks, verification commands, and suggested commit message without copying the whole record into chat. If the user challenges a record or answers an open decision, fetch only that task record, apply the available CLI change, and wait for approval before implementation. If the CLI cannot represent the requested change, stop and ask instead of editing the database or inventing a parallel file.
 8. **Update handoff**: keep the current goal and next action in the `context` record.
 
@@ -134,5 +134,7 @@ A spec explains why now, the problem, goals, non-goals, approach, entry point an
 Use one `task` record for the work and its stable contract: identity, overview, purpose, contract, model tier when needed, files and linked specs, acceptance criteria, verification, risks, release, and position.
 
 Use `chunk` records for detailed implementation steps, including decisions-first ordering and mechanical-last work. Work discovered during a chunk stays in that chunk only when it answers the same primary review question. Put cross-cutting or unrelated implementation in its own chunk, or in a separate task when it is independently schedulable. Use `discovery` and `decision` records for durable findings rather than changing the task history by hand.
+
+Once a task's chunk split is known, create or update every known chunk in the same planning pass. Do not keep known chunks only in chat, handoff text, or a spec, and do not wait until implementation or delegation to add them. Later chunks may stay concise until work starts, but each record must name its reviewable outcome and order. Add a chunk later only when its boundary was genuinely unknown earlier.
 
 Start a task when implementation begins. Block it when an external blocker or unresolved decision makes it unsafe to continue, and unblock it only when that condition is resolved. Complete chunks as they are accepted. Complete the task only after the user accepts the final reviewable outcome. Never infer status from Git state.

@@ -32,7 +32,7 @@ Skills are focused instruction sets for a specific kind of work. Each combines `
 | `project-compact-progress` | When PROGRESS.md has grown noisy or hard to scan; reduces word count while preserving context and meaning | (manual only) |
 | `project-continue` | When resuming work from progress CLI records; checks optional root PROGRESS.md freeform prose only when needed | (manual only) |
 | `project-learn-from-source` | When extracting repo-specific lessons from an external artefact | `learn from this`, `learn anything from this`, `anything useful from this`, `what should we copy`, `what can we adopt`, `review this AGENTS.md`, `review this skill repo`, `review this blog post`, `ground this in the repo`, `useful to this repo` |
-| `project-plan-task` | When introducing new work into an existing plan | (manual only) |
+| `project-plan-task` | When adding planned work or splitting a task into chunks | (manual only) |
 | `project-review-commits` | When reviewing committed work across a Git range or since the last tag | `review commits`, `review every commit`, `review since last tag`, `check commits since last tag`, `sanity check commits`, `review commit range`, `review history`, `release sanity check` |
 | `project-review-patches` | When explicitly reviewing uncommitted work as refreshable proposed commit patches | `review as patches`, `review patch by patch`, `review proposed commits`, `create review patches`, `split review into patches`, `refresh review patch` |
 | `project-review-progress` | When reviewing an existing PROGRESS.md plan or project roadmap | `review progress`, `review progress.md`, `check progress`, `check the plan`, `review the plan`, `is this a good plan`, `progress plan`, `what is missing from the plan`, `improve the plan` |
