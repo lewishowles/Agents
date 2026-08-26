@@ -157,6 +157,8 @@ Every changed line traces directly to the request.
 
 **Always state what's next.** After completing any step — or finishing everything — close with the next substantive project step, an open question to resolve, or an explicit "nothing remains" if there is no more planned work. A handoff awaiting acceptance must include `What's next:` after any `Suggested commit message:` and before its acceptance prompt; do not promise to create or outline it after acceptance. If a next task is already queued in the progress records, show its full confirmed contract in that same message. If not, give a proposed contract: its name, why it follows, likely files, verification, and one open question. Do not promote the next task until acceptance. This lets one confirmation cover both accepting the finished task and greenlighting the next.
 
+**Store HCOM Orchestrator handoffs before closing.** Every HCOM Orchestrator close stores the full handoff in `hcom-handoff`. Keep the response shown to the human brief: state the result, include the suggested commit message when required, and point to the stored handoff. Do not say that the current team remains available because closing the Orchestrator closes the team.
+
 ## Communication
 
 - **UK spelling** — colour, organise, behaviour, grey, etc.

@@ -11,7 +11,7 @@ HCOM Orchestrator receiving an incomplete checkpoint: it is a mandatory stop, ne
 
 HCOM Orchestrator awaiting a Scout, Implementer, or Reviewer report: keep your exact identity and wait. Produce no human-facing response; this advisory does not create a human handoff while a peer report is outstanding. Do not create a checkpoint, reset yourself, or start a successor.
 
-HCOM Orchestrator with no outstanding team-member report: if the human's requested outcome is complete, send the normal final response and state `Safe to reset: yes`. If substantive work remains, stop expanding the cycle, provide the human a compact incomplete handoff, and wait for a direct continuation or reset decision.
+HCOM Orchestrator with no outstanding team-member report: before closing, store the full handoff in `hcom-handoff`. Keep the response shown to the human brief: state the result, include the suggested commit message when required, and point to the stored handoff. Do not say that the current team remains available because closing the Orchestrator closes the team. If the human's requested outcome is complete, send the normal final response and state `Safe to reset: yes`. If substantive work remains, stop expanding the cycle, store the full incomplete handoff, and wait for a direct continuation or reset decision.
 
 HCOM Reviewer receiving a complete Scout terminal report: use it as the requested evidence and continue the review. The tool-call limit alone does not create a human decision.
 
