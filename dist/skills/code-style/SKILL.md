@@ -74,6 +74,7 @@ Before writing new logic for a problem a sibling module already solves (prop det
 ## Organisation & abstraction
 
 - Give each module one responsibility. Split mixed concerns, not files merely because they are long; name each new module's job first.
+- Put a concept in the module that owns it, not the lowest module that happens to hold the data. A lower-level module may expose its own facts or capabilities; it must not gain a caller's feature vocabulary, policy, or output shape.
 - A function or visitor owns one concern; split grouping, selection, transformation, and reporting into named steps rather than one dense block
 - Avoid boolean parameters that switch the algorithm entirely; split into named functions instead of one function with divergent branches
 - Avoid shared "switchboard" helpers that accumulate one option per caller; let each caller own its formatting/behaviour, or name distinct modes explicitly

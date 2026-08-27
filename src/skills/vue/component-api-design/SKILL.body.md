@@ -18,6 +18,7 @@ Write a compact contract table before editing component internals. Include:
 | Copy          | Default user-facing text and translation/override points |
 | Accessibility | Labels, descriptions, focus, keyboard, and errors        |
 | Styling       | Root hooks, parts, states, and visual constraints        |
+| Ownership     | Facts the component owns and interpretation left outside |
 
 Use the table to resolve competing interpretations before implementation. If a decision is still material or ambiguous, present the alternatives and wait for the user before editing.
 
@@ -30,7 +31,7 @@ Use the table to resolve competing interpretations before implementation. If a d
 - Treat renaming or removing a prop, slot, event, model, or exposed method as breaking only after release. Before release, choose the best final API and update every in-scope caller, test, example, and document instead of preserving a weaker contract or adding a compatibility shim.
 - Public option needs real outside caller. If only current wrapper can supply it, keep it internal or redesign.
 - Write minimal caller example first. If example needs framework internals, it is not public API.
-- **Prefer generic, composable-exposed APIs over hardcoded special-casing.** Expose identifiers/refs (e.g. `focusId`) not component-specific knowledge (field names, element types). Push back on drafts that hardcode behaviour in favour of caller control.
+- Expose only facts or capabilities the component itself owns. Do not add a parent feature's vocabulary, callback, resolver, or output shape to a child merely because the parent needs its data. Let the parent interpret the smallest child contract that belongs there.
 
 ## Props
 
@@ -93,4 +94,4 @@ Require explicit `<template #name>` for named slots, as covered by Vue skill.
 - Does the written documentation give an example for every prop or slot shaped as an object, callback, or config DSL, and tabulate every slot's scope props?
 - Does the API preserve accessibility needs: labels, descriptions, focus, and error messaging?
 - For UI components, has [the accessibility checklist](../../accessibility/references/checklist.md) been run before handoff?
-- Does the API expose generic identifiers/refs rather than hardcoding component-specific knowledge?
+- Does every API entry describe a concept this component owns, rather than one current parent or consumer?

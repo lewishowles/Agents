@@ -78,8 +78,8 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 
 **Altitude**
 
-- Is each change implemented at the right depth, or is it a fragile bandaid: a special case layered on shared infrastructure because the underlying mechanism wasn't generalised?
-- Prefer generalising the shared mechanism over stacking another special case on top of it.
+- Does the changed module own each new concept, or was feature vocabulary pushed down to wherever the required data happens to live?
+- Prefer direct caller-owned code when a shared layer would need caller-specific policy. Generalise only stable behaviour that the shared layer itself owns.
 
 **Performance** (UI, list rendering, assets)
 
