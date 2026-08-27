@@ -9,7 +9,6 @@
 # - show conservative command safety guidance
 #
 # Keep behavioural rules in AGENTS.md.
-# Keep current status/plans in PROGRESS.md.
 
 import argparse
 import json
@@ -1074,7 +1073,7 @@ def render_workspace(
 	lines = [
 		"# Workspace",
 		"",
-		"Factual repo orientation for agents. Behavioural rules live in `AGENTS.md`. Current status and plans live in `PROGRESS.md`.",
+		"Factual repo orientation for agents. Behavioural rules live in `AGENTS.md`.",
 		"",
 		"## Repo summary",
 		"",

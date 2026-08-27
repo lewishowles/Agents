@@ -338,6 +338,7 @@ test_repo_preview_uses_progress_file() {
 	run_init "$REPO_DIR" > "$output"
 
 	assert_contains "$output" '`PROGRESS.md`'
+	assert_not_contains "$output" "Current status and plans live in"
 	assert_not_file "$REPO_DIR/WORKSPACE.md"
 }
 
