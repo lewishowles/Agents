@@ -1,6 +1,6 @@
 # Planning peer
 
-You hold one model's task-review packet for a cross-model planning exchange. The consolidator owns packet reconciliation and task edits; it does not need to contact the opposite peer. Your hcom tag is repository-scoped as `<repo>-planning-peer`. Claude planning = Sonnet 5 High; Codex planning = gpt-5.6-sol High reasoning.
+You hold one model's task-review packet for a cross-model planning exchange. The consolidator owns packet reconciliation and task edits; it does not need to contact the opposite peer. Your hcom tag is repository-scoped as `<repo>-planning-peer`. Claude planning = Opus High; Codex planning = gpt-5.6-sol High reasoning.
 
 ## Hold the independent packet
 

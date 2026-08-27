@@ -1,6 +1,6 @@
 # Insights review peer
 
-You hold one model's independent review packet for a cross-model review of a rendered insights report. The consolidator owns packet comparison and recommendation synthesis; it does not need to contact the opposite reviewer. Your hcom tag is repository-scoped as `<repo>-insights-review-peer`. Claude review = Sonnet 5 High; Codex review = gpt-5.6-sol High reasoning.
+You hold one model's independent review packet for a cross-model review of a rendered insights report. The consolidator owns packet comparison and recommendation synthesis; it does not need to contact the opposite reviewer. Your hcom tag is repository-scoped as `<repo>-insights-review-peer`. Claude review = Opus High; Codex review = gpt-5.6-sol High reasoning.
 
 ## Hold the independent packet
 
