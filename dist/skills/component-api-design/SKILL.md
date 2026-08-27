@@ -42,7 +42,7 @@ Use the table to resolve competing interpretations before implementation. If a d
 - Keep smallest API for known use cases; avoid speculative props and escape hatches.
 - Prefer one clear composition path over parallel APIs.
 - Name entries after domain concepts, not implementation details.
-- Treat renaming/removing prop, slot, event, model, or exposed method as breaking.
+- Treat renaming or removing a prop, slot, event, model, or exposed method as breaking only after release. Before release, choose the best final API and update every in-scope caller, test, example, and document instead of preserving a weaker contract or adding a compatibility shim.
 - Public option needs real outside caller. If only current wrapper can supply it, keep it internal or redesign.
 - Write minimal caller example first. If example needs framework internals, it is not public API.
 - **Prefer generic, composable-exposed APIs over hardcoded special-casing.** Expose identifiers/refs (e.g. `focusId`) not component-specific knowledge (field names, element types). Push back on drafts that hardcode behaviour in favour of caller control.
@@ -62,7 +62,7 @@ For prop JSDoc, metadata, and user-facing docs, describe what the prop accepts a
 - Use slots for caller-owned content, layout variation, rich markup, and UI text needing easy translation.
 - Name slots by purpose: `header`, `actions`, `empty`, `error`, `item`.
 - Provide slot props when translated or caller-owned content needs component state, such as counts, selected items, errors, or IDs.
-- Keep slot props stable and minimal; they are part of the public API.
+- Keep slot props minimal. After release, keep them stable because they are part of the public API.
 - Do not use a slot when a simple string prop is enough.
 
 Require explicit `<template #name>` for named slots, as covered by Vue skill.
@@ -103,6 +103,7 @@ Require explicit `<template #name>` for named slots, as covered by Vue skill.
 - Are props, slots, emits, models, and exposed methods each used for the right responsibility?
 - Is there one obvious way to complete the common workflow?
 - Are names consistent with neighbouring components?
+- Is compatibility work backed by a released API, rather than an earlier commit in the same unreleased work?
 - Does UI text that may need translation live in slots with enough slot props?
 - Does the written documentation give an example for every prop or slot shaped as an object, callback, or config DSL, and tabulate every slot's scope props?
 - Does the API preserve accessibility needs: labels, descriptions, focus, and error messaging?

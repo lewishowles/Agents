@@ -182,6 +182,8 @@ Code must be reviewed before it is committed. For AI-assisted changes, review me
 
 Plan commits for human comprehension. Technical coherence and shippability do not by themselves make a commit reviewable. Default each commit to one primary review question, its focused tests, and directly required supporting changes. Split whenever a reviewer could reasonably understand, accept, or reject part independently, including when several behaviour slices live in one file. A multi-commit task may use intermediate commits that are not complete features when each is internally consistent, has focused verification, and is not presented or released as complete.
 
+A commit boundary is a review boundary, not a release boundary. An API introduced in an earlier commit remains provisional until release. Improve it when later work reveals a better final contract, and update every in-scope caller, test, example, and document instead of preserving it or adding a compatibility shim.
+
 - Do not run `git commit`, `git tag`, `git push`, merge commands, or any command that creates or publishes Git history unless I explicitly ask for that exact action in the current conversation.
 - Do not treat "finish", "wrap up", "ready", "ship it", "commit message", or a suggested commit message as permission to commit.
 - Treat commits already in repository history as user-reviewed and user-created unless the user explicitly says otherwise. Do not infer their provenance, label them unauthorised, or investigate authorship from Git metadata, local identity, reflog entries, or concurrent agents.
