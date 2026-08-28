@@ -81,7 +81,7 @@ If the previous session used subagent delegation:
 - Keep discoveries and decisions in mind as the session runs; add them with `progress discovery add` / `progress decision add` once at the handoff update, not as separate edits while work is ongoing
 - Exception: a durable interruption — material scope change, blocker, or user decision that changes the next session's safe action — is worth recording immediately, since it prevents a future session from repeating costly investigation
 - Treat the active task record as a prospective execution contract, not a session log. Change it through the progress CLI only when a material decision changes its outcome, affected files, verification, status, or risk.
-- Keep investigation notes, failed attempts, command output, reviewer receipts, and completion recaps out of the task record. Record final evidence in the progress handoff with `progress context set`; keep durable discoveries and decisions in their CLI records.
+- Keep investigation notes, failed attempts, command output, reviewer receipts, and completion recaps out of the task record. Put only the latest result needed to resume in the compact progress handoff; keep durable discoveries and decisions in their CLI records.
 - Update "files likely to change" if the scope shifts
 - If a task reveals unexpected complexity, add a risk entry before continuing
 
@@ -92,8 +92,8 @@ Finishing work includes completing the accepted progress CLI records and setting
 Make one Edit/Write call covering every section below, not a separate call per bullet.
 
 - Keep implementation detail in the progress chunk records. These records capture implementation detail, not interim-commit acceptance.
-- When implementation for a chunk is finished, refresh the handoff with what changed and how it was verified. Leave the chunk and task `in-progress` until the user explicitly accepts it with “committed”, “continue”, “next”, or equivalent. Then complete the chunk with `progress chunk complete <chunk-id>`. If another chunk remains, resume from it later. After the final chunk is accepted, mark the task done with `progress task complete <task-id>` when no pending or active chunks remain. Update release and queue state through `progress release` and `progress task move` as needed. Do not archive completion in `PROGRESS.md`.
-- Set `previous_step` with what just changed and how it was verified using `progress context set`
+- When implementation for a chunk is finished, refresh the compact handoff with the last state change, the verification outcome in one clause, and the first next action. Do not list implementation details or individual checks. Leave the chunk and task `in-progress` until the user explicitly accepts it with “committed”, “continue”, “next”, or equivalent. Then complete the chunk with `progress chunk complete <chunk-id>`. If another chunk remains, resume from it later. After the final chunk is accepted, mark the task done with `progress task complete <task-id>` when no pending or active chunks remain. Update release and queue state through `progress release` and `progress task move` as needed. Do not archive completion in `PROGRESS.md`.
+- Set `previous_step` to the last state change and, when it affects continuation, a concise verification outcome using `progress context set`
 - Set `next_step` with the first concrete follow-up action using `progress context set`
 - Update release status and queue order through `progress release` and `progress task move` when a release's last task lands as done
 - If nothing remains for the current goal, say that clearly in the handoff instead of leaving stale TODOs
@@ -101,7 +101,7 @@ Make one Edit/Write call covering every section below, not a separate call per b
 
 Before setting the handoff context, distil what was learned: add verified facts with `progress discovery add --task <task-id> "<note>"`, choices with `progress decision add --task <task-id> "<note>"`, and record failed approaches in the task record or linked spec only when they will help future work. Add only what isn't already captured.
 
-After running `progress context set`, show the handoff before offering to continue:
+After running `progress context set`, do not print or paraphrase its fields. Outside a tool-call checkpoint, present this acceptance packet before offering to continue:
 
 1. **What changed** — 1–3 sentences: what was done and what was verified (or skipped and why)
 2. **What's next** — if a task is already queued in the progress records, give its full contract now, not just its name: what it is, why it's next, files, acceptance criteria, and verification, the same detail as "Starting the next task" step 3. If nothing is queued yet, name the open question or say so.
