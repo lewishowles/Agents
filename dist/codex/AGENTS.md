@@ -196,7 +196,7 @@ A commit boundary is a review boundary, not a release boundary. An API introduce
 - Do not stage files with `git add` unless I explicitly ask you to prepare a staged commit.
 - If asked to stage or commit, show the files and exact Conventional Commit message first, then wait for confirmation. Without an active task/chunk state in the progress CLI, do this before any staging.
 - Update docs when changes require documentation
-- After a coherent step that changes tracked source files, provide a scoped Conventional Commit message as plain text, labelled `Suggested commit message:`. Do not execute it. Skip for PROGRESS.md updates, planning, analysis, or responses with no file changes.
+- After a coherent step that changes tracked source files, provide a scoped Conventional Commit message as plain text, labelled `Suggested commit message:`. In an HCOM team, only the Orchestrator provides it. Do not execute it. Skip for PROGRESS.md updates, planning, analysis, or responses with no file changes.
 - When the only remaining gate is verification the user must run themselves (e.g. a browser or CT suite), give the commit message in that same message rather than promising it after they report back — the message doesn't depend on the result.
 - Suggested commit messages should lead with what the commit achieves and why it matters. Mention implementation details only when they explain user-visible behaviour, compatibility, review risk, or a non-obvious tradeoff.
 - Use concrete nouns and verbs from the changed behaviour. Avoid compressed umbrella wording such as "preserve evidence and provenance" when the commit can name the records or actions involved.
