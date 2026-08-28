@@ -433,21 +433,6 @@ test_analyser_discovers_project_fallback_logs() {
 	assert_contains "$output_file" "1	missing-guidance	/project-b	central log was sandboxed"
 }
 
-# Extracts the Codex Stop hook's check-run command from dist/codex/hooks.json.
-codex_stop_command() {
-	python3 - "$REPO_DIR/dist/codex/hooks.json" <<'PY'
-import json
-import sys
-
-with open(sys.argv[1], encoding="utf-8") as hooks_file:
-	for hook_group in json.load(hooks_file)["hooks"]["Stop"]:
-		for hook in hook_group["hooks"]:
-			command = hook["command"]
-			if command.startswith("if [ -f package.json"):
-				print(command)
-PY
-}
-
 test_codex_hcom_hooks_bootstrap_homebrew_path() {
 	local hcom_command_count
 	local bootstrapped_command_count
@@ -458,67 +443,6 @@ test_codex_hcom_hooks_bootstrap_homebrew_path() {
 
 	[ "$hcom_command_count" -eq 5 ] || fail "Expected five HCOM Codex hooks, found $hcom_command_count"
 	[ "$bootstrapped_command_count" -eq "$hcom_command_count" ] || fail "HCOM Codex hooks do not all bootstrap Homebrew PATH"
-}
-
-test_codex_hook_logs_check_failure() {
-	local project_dir="$TEST_ROOT/codex-failing-project"
-	local home_dir="$TEST_ROOT/codex-home"
-	local bin_dir="$TEST_ROOT/codex-bin-fail"
-	local log_file="$home_dir/.claude/logs/friction.log"
-
-	mkdir -p "$project_dir" "$home_dir"
-	write_package "$project_dir"
-	write_npm_stub "$bin_dir" 1 1
-
-	(
-		cd "$project_dir"
-		HOME="$home_dir" PATH="$bin_dir:$PATH" sh -c "$(codex_stop_command)" >/dev/null 2>/dev/null
-	)
-
-	assert_file "$log_file"
-	assert_contains "$log_file" "check-fail"
-	assert_contains "$log_file" "$project_dir"
-	assert_contains "$log_file" "lint,test:unit:run"
-	assert_contains "$log_file" "lint exploded"
-}
-
-test_codex_hook_does_not_log_on_pass() {
-	local project_dir="$TEST_ROOT/codex-passing-project"
-	local home_dir="$TEST_ROOT/codex-pass-home"
-	local bin_dir="$TEST_ROOT/codex-bin-pass"
-	local log_file="$home_dir/.claude/logs/friction.log"
-
-	mkdir -p "$project_dir" "$home_dir"
-	write_package "$project_dir"
-	write_npm_stub "$bin_dir" 0 0
-
-	(
-		cd "$project_dir"
-		HOME="$home_dir" PATH="$bin_dir:$PATH" sh -c "$(codex_stop_command)" >/dev/null 2>/dev/null
-	)
-
-	assert_not_file "$log_file"
-}
-
-test_codex_hook_falls_back_to_project_log() {
-	local project_dir="$TEST_ROOT/codex-fallback-project"
-	local blocked_home="$TEST_ROOT/codex-blocked-home"
-	local bin_dir="$TEST_ROOT/codex-bin-fallback"
-	local log_file="$project_dir/.agent/logs/friction.log"
-
-	mkdir -p "$project_dir"
-	printf 'not a directory\n' > "$blocked_home"
-	write_package "$project_dir"
-	write_npm_stub "$bin_dir" 1 1
-
-	(
-		cd "$project_dir"
-		HOME="$blocked_home" PATH="$bin_dir:$PATH" sh -c "$(codex_stop_command)" >/dev/null 2>/dev/null
-	)
-
-	assert_file "$log_file"
-	assert_contains "$log_file" "check-fail"
-	assert_contains "$log_file" "lint,test:unit:run"
 }
 
 test_failed_checks_are_logged
@@ -540,8 +464,5 @@ test_tool_failure_hook_falls_back_to_project_log
 test_analyser_discovers_project_fallback_logs
 test_analyser_selftest_passes
 test_codex_hcom_hooks_bootstrap_homebrew_path
-test_codex_hook_logs_check_failure
-test_codex_hook_does_not_log_on_pass
-test_codex_hook_falls_back_to_project_log
 
 printf '✓ friction logging tests passed\n'

@@ -109,10 +109,6 @@
           {
             "type": "command",
             "command": "serena-hooks cleanup --client=codex"
-          },
-          {
-            "type": "command",
-            "command": "if [ -f package.json ]; then\n\tfail=\"\"\n\terr=\"\"\n\tif grep -q \"\\\"lint\\\"\" package.json 2>/dev/null; then\n\t\tout=$(npm run lint 2>&1) || { fail=\"lint\"; err=\"$out\"; }\n\tfi\n\tif grep -q \"\\\"test:unit:run\\\"\" package.json 2>/dev/null; then\n\t\tout=$(npm run test:unit:run 2>&1) || { fail=\"${fail:+$fail,}test:unit:run\"; err=\"${err:+$err\\n}$out\"; }\n\tfi\n\tif [ -n \"$fail\" ]; then\n\t\tbody=$(printf \"%s\\n\" \"$err\" | grep -vE \"^[[:space:]]*$|^[[:space:]]*>\")\n\t\tsummary=$(printf \"%s\\n\" \"$body\" | grep -m1 -E \"error|Error|ERROR|FAIL|failed|\u2716|\u2717|\u00d7\" || printf \"%s\\n\" \"$body\" | head -1)\n\t\tsummary=$(printf \"%s\" \"$summary\" | tr \"\\t\" \" \" | cut -c1-300)\n\t\ttimestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)\n\t\tlog_file=\"$HOME/.claude/logs/friction.log\"\n\t\tfallback_log_file=\"$PWD/.agent/logs/friction.log\"\n\t\tif ! { mkdir -p \"$(dirname \"$log_file\")\" 2>/dev/null && printf \"%s\\t%s\\t%s\\t%s\\n\" \"$timestamp\" \"check-fail\" \"$PWD\" \"$fail: $summary\" >> \"$log_file\" 2>/dev/null; }; then\n\t\t\tmkdir -p \"$(dirname \"$fallback_log_file\")\" 2>/dev/null && printf \"%s\\t%s\\t%s\\t%s\\n\" \"$timestamp\" \"check-fail\" \"$PWD\" \"$fail: $summary\" >> \"$fallback_log_file\" 2>/dev/null || true\n\t\tfi\n\tfi\nfi"
           }
         ]
       },
