@@ -21,6 +21,7 @@ from codex_insights_facets_common import (
 	require_mapping,
 )
 
+
 def derive_turns(
 	rollout: dict[str, object], evidence_index: dict[str, dict[str, object]]
 ) -> list[dict[str, object]]:
@@ -30,21 +31,37 @@ def derive_turns(
 		return []
 
 	authored_indexes = [
-		index for index, entry in enumerate(evidence) if entry.get("kind") == "authored_user_message"
+		index
+		for index, entry in enumerate(evidence)
+		if entry.get("kind") == "authored_user_message"
 	]
 	turns = []
-	for turn_index, start_index in enumerate(authored_indexes[:MAX_TURNS_PER_ROLLOUT], start=1):
-		end_index = authored_indexes[turn_index] if turn_index < len(authored_indexes) else len(evidence)
+	for turn_index, start_index in enumerate(
+		authored_indexes[:MAX_TURNS_PER_ROLLOUT], start=1
+	):
+		end_index = (
+			authored_indexes[turn_index]
+			if turn_index < len(authored_indexes)
+			else len(evidence)
+		)
 		entries = evidence[start_index:end_index]
-		references = [entry["reference"] for entry in entries if entry.get("reference") in evidence_index]
+		references = [
+			entry["reference"]
+			for entry in entries
+			if entry.get("reference") in evidence_index
+		]
 		if not references:
 			continue
 
 		turns.append(
 			{
 				"turn_index": turn_index,
-				"evidence_references": references[:MAX_EVIDENCE_REFERENCES_PER_CITATION * 4],
-				"start_timestamp": format_timestamp(evidence_index[references[0]].get("timestamp")),
+				"evidence_references": references[
+					: MAX_EVIDENCE_REFERENCES_PER_CITATION * 4
+				],
+				"start_timestamp": format_timestamp(
+					evidence_index[references[0]].get("timestamp")
+				),
 				"classification": {
 					"label": "authored_turn",
 					"method": "ordered_retained_evidence",
@@ -88,7 +105,10 @@ def ledger_event(
 	"""Convert one bounded tool ledger entry into a facet observation."""
 	references = [
 		reference
-		for reference in (ledger_entry.get("call_reference"), ledger_entry.get("result_reference"))
+		for reference in (
+			ledger_entry.get("call_reference"),
+			ledger_entry.get("result_reference"),
+		)
 		if isinstance(reference, str)
 	]
 	return {
@@ -98,7 +118,9 @@ def ledger_event(
 		"status": ledger_entry.get("status"),
 		"expected_probe": ledger_entry.get("expected_probe"),
 		"evidence_references": references,
-		"timestamp": earliest_timestamp([{"evidence_references": references}], evidence_index),
+		"timestamp": earliest_timestamp(
+			[{"evidence_references": references}], evidence_index
+		),
 		"conversation_id": available_conversation_id(rollout),
 		"rollout_id": rollout.get("rollout_id"),
 		"classification": event_classification(kind, ledger_entry.get("status")),
@@ -116,7 +138,11 @@ def derive_observations(
 		"""Keep one observation per kind and evidence set within the conversation bound."""
 		references = tuple(observation["evidence_references"])
 		identity = (observation["kind"], references)
-		if not references or identity in seen or len(observations) >= MAX_EVENTS_PER_CONVERSATION:
+		if (
+			not references
+			or identity in seen
+			or len(observations) >= MAX_EVENTS_PER_CONVERSATION
+		):
 			return
 
 		seen.add(identity)
@@ -124,18 +150,28 @@ def derive_observations(
 
 	for field_name, kind in CANDIDATE_FIELDS.items():
 		for candidate_value in rollout.get("candidates", {}).get(field_name, []):
-			add_observation(candidate_event(rollout, candidate_value, kind, evidence_index))
+			add_observation(
+				candidate_event(rollout, candidate_value, kind, evidence_index)
+			)
 
 	for ledger_value in rollout.get("tool_ledger", []):
 		ledger_entry = require_mapping(ledger_value, "rollout.tool_ledger[]")
 		status = ledger_entry.get("status")
 		expected_probe = ledger_entry.get("expected_probe")
 		if status == "failure" and expected_probe != "explicit":
-			add_observation(ledger_event(rollout, ledger_entry, "tool_failure", evidence_index))
+			add_observation(
+				ledger_event(rollout, ledger_entry, "tool_failure", evidence_index)
+			)
 		if status == "success":
-			add_observation(ledger_event(rollout, ledger_entry, "successful_behaviour", evidence_index))
+			add_observation(
+				ledger_event(
+					rollout, ledger_entry, "successful_behaviour", evidence_index
+				)
+			)
 		if status == "unknown" and expected_probe != "explicit":
-			add_observation(ledger_event(rollout, ledger_entry, "verification_gap", evidence_index))
+			add_observation(
+				ledger_event(rollout, ledger_entry, "verification_gap", evidence_index)
+			)
 
 	return observations
 
@@ -175,7 +211,9 @@ def conversation_facet(
 			entry for entry in rollout.get("evidence", []) if isinstance(entry, dict)
 		)
 		all_observations.extend(derive_observations(rollout, evidence_index))
-	authored_messages = [entry for entry in all_evidence if entry.get("kind") == "authored_user_message"]
+	authored_messages = [
+		entry for entry in all_evidence if entry.get("kind") == "authored_user_message"
+	]
 	goal_entry = authored_messages[0] if authored_messages else None
 	goal = (
 		{
@@ -284,7 +322,11 @@ def conversation_facet(
 	for rollout in rollouts:
 		for unavailable in rollout.get("unavailable", []):
 			limitations.append(
-				limitation("unavailable", str(unavailable), rollout.get("uncertain_user_message_references", []))
+				limitation(
+					"unavailable",
+					str(unavailable),
+					rollout.get("uncertain_user_message_references", []),
+				)
 			)
 		truncation = rollout.get("truncation", {})
 		if isinstance(truncation, dict) and any(value for value in truncation.values()):
@@ -307,16 +349,28 @@ def conversation_facet(
 			*all_observations,
 		]
 	)
-	start_timestamps = [parse_timestamp(rollout.get("start_timestamp")) for rollout in rollouts]
-	end_timestamps = [parse_timestamp(rollout.get("end_timestamp")) for rollout in rollouts]
-	start_timestamps = [timestamp for timestamp in start_timestamps if timestamp is not None]
-	end_timestamps = [timestamp for timestamp in end_timestamps if timestamp is not None]
+	start_timestamps = [
+		parse_timestamp(rollout.get("start_timestamp")) for rollout in rollouts
+	]
+	end_timestamps = [
+		parse_timestamp(rollout.get("end_timestamp")) for rollout in rollouts
+	]
+	start_timestamps = [
+		timestamp for timestamp in start_timestamps if timestamp is not None
+	]
+	end_timestamps = [
+		timestamp for timestamp in end_timestamps if timestamp is not None
+	]
 	facet = {
 		"conversation_id": conversation_id,
-		"conversation_id_state": "available" if conversation_id is not None else "unavailable",
+		"conversation_id_state": "available"
+		if conversation_id is not None
+		else "unavailable",
 		"rollout_ids": [rollout.get("rollout_id") for rollout in rollouts],
 		"time_span": {
-			"since": format_timestamp(min(start_timestamps)) if start_timestamps else None,
+			"since": format_timestamp(min(start_timestamps))
+			if start_timestamps
+			else None,
 			"until": format_timestamp(max(end_timestamps)) if end_timestamps else None,
 			"state": "observed" if start_timestamps else "unavailable",
 		},

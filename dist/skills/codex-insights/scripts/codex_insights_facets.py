@@ -54,7 +54,10 @@ __all__ = (
 
 def fixture_extraction(project_path: Path) -> dict[str, object]:
 	"""Build a small Commit 1-shaped extraction with repeated and bounded evidence."""
-	def rollout(rollout_id: str, conversation_id: str, offset: int) -> dict[str, object]:
+
+	def rollout(
+		rollout_id: str, conversation_id: str, offset: int
+	) -> dict[str, object]:
 		def reference(index: int) -> str:
 			return f"{rollout_id}:r{index:06d}"
 
@@ -105,13 +108,25 @@ def fixture_extraction(project_path: Path) -> dict[str, object]:
 		]
 		candidate_values = {
 			"approach_changes": [
-				{"kind": "approach_change", "source": "authored_user_message", "evidence_references": [reference(0)]}
+				{
+					"kind": "approach_change",
+					"source": "authored_user_message",
+					"evidence_references": [reference(0)],
+				}
 			],
 			"configuration_touches": [
-				{"kind": "configuration_touch", "target": "cat AGENTS.md", "evidence_references": [reference(2)]}
+				{
+					"kind": "configuration_touch",
+					"target": "cat AGENTS.md",
+					"evidence_references": [reference(2)],
+				}
 			],
 			"corrections": [
-				{"kind": "correction", "source": "authored_user_message", "evidence_references": [reference(0)]}
+				{
+					"kind": "correction",
+					"source": "authored_user_message",
+					"evidence_references": [reference(0)],
+				}
 			],
 			"interruptions": [],
 			"retries": [
@@ -166,11 +181,18 @@ def fixture_extraction(project_path: Path) -> dict[str, object]:
 			"tool_ledger": ledger,
 			"evidence": evidence,
 			"candidates": candidate_values,
-			"truncation": {"candidate_count": 0, "evidence_count": 0, "tool_event_count": 0},
+			"truncation": {
+				"candidate_count": 0,
+				"evidence_count": 0,
+				"tool_event_count": 0,
+			},
 			"unavailable": [],
 		}
 
-	rollouts = [rollout("rollout-a", "conversation-a", 10), rollout("rollout-b", "conversation-b", 20)]
+	rollouts = [
+		rollout("rollout-a", "conversation-a", 10),
+		rollout("rollout-b", "conversation-b", 20),
+	]
 	return {
 		"schema_version": EXTRACTION_SCHEMA_VERSION,
 		"window": {
@@ -200,7 +222,9 @@ def run_selftest() -> None:
 		project = root / "project"
 		project.mkdir()
 		observed_pattern = "configuration_touch: cat AGENTS.md"
-		marker = configuration_markers_for_pattern("configuration_touch", observed_pattern)[0]
+		marker = configuration_markers_for_pattern(
+			"configuration_touch", observed_pattern
+		)[0]
 		other_marker = configuration_markers_for_pattern(
 			"configuration_touch", "configuration_touch: cat WORKSPACE.md"
 		)[0]
@@ -224,17 +248,31 @@ def run_selftest() -> None:
 		validate_narrative(narrative, extraction_info, facets_from_disk, facets_sha256)
 
 		assert len(facets["conversations"]) == 2
-		assert all(facet["task_goal"]["evidence_references"] for facet in facets["conversations"])
+		assert all(
+			facet["task_goal"]["evidence_references"]
+			for facet in facets["conversations"]
+		)
 		assert all(facet["turns"] for facet in facets["conversations"])
 		assert facets["repeated_patterns"]
-		assert all(pattern["unique_conversation_count"] >= 2 for pattern in facets["repeated_patterns"])
+		assert all(
+			pattern["unique_conversation_count"] >= 2
+			for pattern in facets["repeated_patterns"]
+		)
 		agents_pattern = next(
-			pattern for pattern in facets["repeated_patterns"] if pattern["kind"] == "configuration_touch"
+			pattern
+			for pattern in facets["repeated_patterns"]
+			if pattern["kind"] == "configuration_touch"
 		)
 		assert len(agents_pattern["supporting_evidence"]) >= 2
-		assert agents_pattern["configuration_statuses"][0]["status"] == "already_remediated"
+		assert (
+			agents_pattern["configuration_statuses"][0]["status"]
+			== "already_remediated"
+		)
 		assert narrative["findings"]
-		assert all(finding["frequency"]["unique_conversations"] >= 2 for finding in narrative["findings"])
+		assert all(
+			finding["frequency"]["unique_conversations"] >= 2
+			for finding in narrative["findings"]
+		)
 
 		missing = configuration_status("cat WORKSPACE.md", project)
 		assert missing["status"] == "missing"
@@ -244,7 +282,9 @@ def run_selftest() -> None:
 			"cat AGENTS.md", project, required_markers=("read this project guidance",)
 		)
 		assert remediated["status"] == "already_remediated"
-		ignored = configuration_status("cat AGENTS.md", project, required_markers=(other_marker,))
+		ignored = configuration_status(
+			"cat AGENTS.md", project, required_markers=(other_marker,)
+		)
 		assert ignored["status"] == "present_but_ignored"
 		missing_pattern = {
 			"kind": "configuration_touch",
@@ -262,7 +302,9 @@ def run_selftest() -> None:
 		tampered_extraction_path = root / "tampered-extraction.json"
 		write_json(tampered_extraction_path, tampered_extraction)
 		try:
-			validate_binding(facets, validate_extraction(tampered_extraction_path), "facets")
+			validate_binding(
+				facets, validate_extraction(tampered_extraction_path), "facets"
+			)
 		except ProvenanceError:
 			pass
 		else:
@@ -280,7 +322,9 @@ def run_selftest() -> None:
 		tampered_narrative = json.loads(json.dumps(narrative))
 		tampered_narrative["provenance"]["extraction_sha256"] = "d" * 64
 		try:
-			validate_narrative(tampered_narrative, extraction_info, facets_from_disk, facets_sha256)
+			validate_narrative(
+				tampered_narrative, extraction_info, facets_from_disk, facets_sha256
+			)
 		except ProvenanceError:
 			pass
 		else:

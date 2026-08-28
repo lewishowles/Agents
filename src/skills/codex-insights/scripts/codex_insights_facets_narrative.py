@@ -43,27 +43,69 @@ def proposed_change(pattern: dict[str, object]) -> tuple[str, str, str]:
 	statuses = pattern.get("configuration_statuses", [])
 	if kind == "configuration_touch" and statuses:
 		status = statuses[0]
-		path = status.get("path") or status.get("surface") or "named configuration surface"
+		path = (
+			status.get("path") or status.get("surface") or "named configuration surface"
+		)
 		layer = layer_for_surface(status.get("surface"))
 		if status.get("status") == "missing":
-			return layer, str(path), f"Add guidance for {observed} to {path} after confirming its owning project."
+			return (
+				layer,
+				str(path),
+				f"Add guidance for {observed} to {path} after confirming its owning project.",
+			)
 		if status.get("status") == "already_remediated":
-			return layer, str(path), f"Do not add duplicate guidance; investigate why the observed behaviour bypassed {path}."
+			return (
+				layer,
+				str(path),
+				f"Do not add duplicate guidance; investigate why the observed behaviour bypassed {path}.",
+			)
 		if status.get("status") == "present_but_ignored":
-			return layer, str(path), f"Do not duplicate prose; investigate deterministic enforcement for the observed use of {path}."
-		return layer, str(path), f"Resolve access to {path} before choosing a configuration change."
+			return (
+				layer,
+				str(path),
+				f"Do not duplicate prose; investigate deterministic enforcement for the observed use of {path}.",
+			)
+		return (
+			layer,
+			str(path),
+			f"Resolve access to {path} before choosing a configuration change.",
+		)
 
 	if kind == "successful_behaviour":
-		return "workflow", "team workflow", f"Standardise the successful bounded behaviour shown by {observed} and measure repeat success."
+		return (
+			"workflow",
+			"team workflow",
+			f"Standardise the successful bounded behaviour shown by {observed} and measure repeat success.",
+		)
 	if kind == "correction":
-		return "skill", "codex-insights workflow", f"Add a focused check for the corrected behaviour represented by {observed}."
+		return (
+			"skill",
+			"codex-insights workflow",
+			f"Add a focused check for the corrected behaviour represented by {observed}.",
+		)
 	if kind in {"tool_failure", "verification_gap"}:
-		return "workflow", "verification step", f"Add a bounded verification step for {observed}, then measure whether the failure recurs."
+		return (
+			"workflow",
+			"verification step",
+			f"Add a bounded verification step for {observed}, then measure whether the failure recurs.",
+		)
 	if kind == "retry":
-		return "workflow", "retry path", f"Document or instrument the bounded retry path represented by {observed}."
+		return (
+			"workflow",
+			"retry path",
+			f"Document or instrument the bounded retry path represented by {observed}.",
+		)
 	if kind in {"interruption", "rollback"}:
-		return "workflow", "interruption recovery", f"Add a bounded recovery check for {observed}."
-	return "workflow", "approach-selection workflow", f"Investigate the approach change represented by {observed} before adding guidance."
+		return (
+			"workflow",
+			"interruption recovery",
+			f"Add a bounded recovery check for {observed}.",
+		)
+	return (
+		"workflow",
+		"approach-selection workflow",
+		f"Investigate the approach change represented by {observed} before adding guidance.",
+	)
 
 
 def narrative_finding(pattern: dict[str, object]) -> dict[str, object]:
@@ -85,9 +127,13 @@ def narrative_finding(pattern: dict[str, object]) -> dict[str, object]:
 
 	limitations = list(pattern.get("counterevidence_or_limitations", []))
 	if pattern["kind"] == "successful_behaviour":
-		limitations.append("Successful tool status does not alone prove that the user accepted the result.")
+		limitations.append(
+			"Successful tool status does not alone prove that the user accepted the result."
+		)
 	else:
-		limitations.append("The deterministic pass does not infer intent beyond the retained candidate evidence.")
+		limitations.append(
+			"The deterministic pass does not infer intent beyond the retained candidate evidence."
+		)
 	return {
 		"finding_id": pattern["pattern_id"],
 		"kind": pattern["kind"],
@@ -125,7 +171,9 @@ def make_facets(
 	all_observations = []
 	for key, conversation_rollouts in sorted(by_conversation.items()):
 		conversation_id = available_conversation_id(conversation_rollouts[0])
-		facet, observations = conversation_facet(conversation_id, conversation_rollouts, evidence_index)
+		facet, observations = conversation_facet(
+			conversation_id, conversation_rollouts, evidence_index
+		)
 		conversation_facets.append(facet)
 		for observation in observations:
 			observation["project_path"] = conversation_rollouts[0].get("project_path")
@@ -186,7 +234,9 @@ def validate_facets(
 		raise ProvenanceError("facets.conversations must be an array")
 	for facet in conversations:
 		facet_value = require_mapping(facet, "facets.conversations[]")
-		validate_references(facet_value.get("evidence_references", []), evidence_index, "facet")
+		validate_references(
+			facet_value.get("evidence_references", []), evidence_index, "facet"
+		)
 		for field_name in (
 			"turns",
 			"friction_events",
@@ -200,14 +250,22 @@ def validate_facets(
 				raise ProvenanceError(f"facet.{field_name} must be an array")
 			for entry in entries:
 				entry_value = require_mapping(entry, f"facet.{field_name}[]")
-				validate_references(entry_value.get("evidence_references", []), evidence_index, field_name)
+				validate_references(
+					entry_value.get("evidence_references", []),
+					evidence_index,
+					field_name,
+				)
 
 	for pattern in facets.get("patterns", []):
 		pattern_value = require_mapping(pattern, "facets.patterns[]")
-		validate_references(pattern_value.get("evidence_references", []), evidence_index, "pattern")
+		validate_references(
+			pattern_value.get("evidence_references", []), evidence_index, "pattern"
+		)
 		if pattern_value.get("recurrence_state") == "repeated":
 			if pattern_value.get("unique_conversation_count", 0) < 2:
-				raise ProvenanceError("repeated pattern must cite at least two conversations")
+				raise ProvenanceError(
+					"repeated pattern must cite at least two conversations"
+				)
 			citations = pattern_value.get("supporting_evidence", [])
 			citation_ids = {
 				citation.get("conversation_id")
@@ -215,14 +273,24 @@ def validate_facets(
 				if isinstance(citation, dict) and citation.get("conversation_id")
 			}
 			if len(citation_ids) < 2:
-				raise ProvenanceError("repeated pattern is missing unique conversation citations")
+				raise ProvenanceError(
+					"repeated pattern is missing unique conversation citations"
+				)
 			for citation in citations:
-				citation_value = require_mapping(citation, "pattern.supporting_evidence[]")
-				validate_references(citation_value.get("evidence_references", []), evidence_index, "citation")
+				citation_value = require_mapping(
+					citation, "pattern.supporting_evidence[]"
+				)
+				validate_references(
+					citation_value.get("evidence_references", []),
+					evidence_index,
+					"citation",
+				)
 
 	for pattern in facets.get("repeated_patterns", []):
 		if pattern not in facets.get("patterns", []):
-			raise ProvenanceError("facets.repeated_patterns contains an unknown pattern")
+			raise ProvenanceError(
+				"facets.repeated_patterns contains an unknown pattern"
+			)
 
 
 def validate_narrative(
@@ -240,7 +308,9 @@ def validate_narrative(
 		raise ProvenanceError("narrative facets schema version does not match")
 	if provenance.get("facets_sha256") != facets_sha256:
 		raise ProvenanceError("narrative facets SHA-256 does not match")
-	if provenance.get("facets_pattern_count") != facets.get("counts", {}).get("pattern_count"):
+	if provenance.get("facets_pattern_count") != facets.get("counts", {}).get(
+		"pattern_count"
+	):
 		raise ProvenanceError("narrative facets pattern count does not match")
 
 	evidence_index = extraction_info["evidence_index"]
@@ -250,8 +320,16 @@ def validate_narrative(
 	for finding in findings:
 		finding_value = require_mapping(finding, "narrative.findings[]")
 		frequency = require_mapping(finding_value.get("frequency"), "finding.frequency")
-		if require_count(frequency.get("unique_conversations"), "finding.frequency.unique_conversations") < 2:
-			raise ProvenanceError("narrative finding must cite at least two conversations")
+		if (
+			require_count(
+				frequency.get("unique_conversations"),
+				"finding.frequency.unique_conversations",
+			)
+			< 2
+		):
+			raise ProvenanceError(
+				"narrative finding must cite at least two conversations"
+			)
 		supporting_evidence = finding_value.get("supporting_evidence")
 		if not isinstance(supporting_evidence, list):
 			raise ProvenanceError("finding.supporting_evidence must be an array")
@@ -261,7 +339,11 @@ def validate_narrative(
 			conversation_id = citation_value.get("conversation_id")
 			if isinstance(conversation_id, str) and conversation_id:
 				conversation_ids.add(conversation_id)
-			validate_references(citation_value.get("evidence_references", []), evidence_index, "finding citation")
+			validate_references(
+				citation_value.get("evidence_references", []),
+				evidence_index,
+				"finding citation",
+			)
 		if len(conversation_ids) < 2:
 			raise ProvenanceError("finding must cite two unique conversation IDs")
 
@@ -271,7 +353,9 @@ def make_narrative(
 ) -> dict[str, object]:
 	"""Build the decision-oriented narrative document from validated repeated patterns."""
 	repeated_patterns = facets.get("repeated_patterns", [])
-	findings = [narrative_finding(pattern) for pattern in repeated_patterns[:MAX_FINDINGS]]
+	findings = [
+		narrative_finding(pattern) for pattern in repeated_patterns[:MAX_FINDINGS]
+	]
 	return {
 		"schema_version": NARRATIVE_SCHEMA_VERSION,
 		"generated_at": format_timestamp(datetime.datetime.now(UTC)),

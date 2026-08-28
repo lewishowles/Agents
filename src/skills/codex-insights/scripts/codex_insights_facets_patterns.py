@@ -32,7 +32,13 @@ def pattern_id(kind: str, key: str) -> str:
 def pattern_key(observation: dict[str, object]) -> str:
 	"""Return the grouping key that keeps unrelated observations separate."""
 	kind = observation["kind"]
-	if kind in {"tool_failure", "successful_behaviour", "retry", "configuration_touch", "verification_gap"}:
+	if kind in {
+		"tool_failure",
+		"successful_behaviour",
+		"retry",
+		"configuration_touch",
+		"verification_gap",
+	}:
 		return normalise_pattern_key(observation.get("target"))
 	if kind == "correction":
 		return "user-authored-correction"
@@ -60,13 +66,17 @@ def configuration_tokens(target: str) -> list[str]:
 	candidates = []
 	for token in tokens:
 		cleaned = token.strip("()[]{}<>,;:\"'")
-		if CONFIGURATION_TOKEN_PATTERN.search(cleaned) or CONFIGURATION_BASENAME_PATTERN.match(cleaned):
+		if CONFIGURATION_TOKEN_PATTERN.search(
+			cleaned
+		) or CONFIGURATION_BASENAME_PATTERN.match(cleaned):
 			candidates.append(cleaned)
 
 	return list(dict.fromkeys(candidates))
 
 
-def configuration_markers_for_pattern(kind: str, observed_pattern: str) -> tuple[str, ...]:
+def configuration_markers_for_pattern(
+	kind: str, observed_pattern: str
+) -> tuple[str, ...]:
 	"""Return the observed pattern detail used to check one configuration surface."""
 	prefix = f"{kind}:"
 	marker = observed_pattern.strip()
@@ -101,17 +111,37 @@ def configuration_status(
 	try:
 		surface_path = surface_path.resolve()
 	except OSError:
-		return {"status": "unavailable", "surface": surface, "path": None, "read": False}
+		return {
+			"status": "unavailable",
+			"surface": surface,
+			"path": None,
+			"read": False,
+		}
 
 	if not surface_path.exists():
-		return {"status": "missing", "surface": surface, "path": surface_path.as_posix(), "read": False}
+		return {
+			"status": "missing",
+			"surface": surface,
+			"path": surface_path.as_posix(),
+			"read": False,
+		}
 	if not surface_path.is_file():
-		return {"status": "ambiguous", "surface": surface, "path": surface_path.as_posix(), "read": False}
+		return {
+			"status": "ambiguous",
+			"surface": surface,
+			"path": surface_path.as_posix(),
+			"read": False,
+		}
 
 	try:
 		contents = surface_path.read_bytes()
 	except OSError:
-		return {"status": "unavailable", "surface": surface, "path": surface_path.as_posix(), "read": False}
+		return {
+			"status": "unavailable",
+			"surface": surface,
+			"path": surface_path.as_posix(),
+			"read": False,
+		}
 	if len(contents) > MAX_CONFIGURATION_BYTES:
 		return {
 			"status": "unavailable",
@@ -163,7 +193,9 @@ def configuration_status_for_pattern(
 		project_path = observation.get("project_path")
 		cache_key = (str(project_path or ""), str(target or ""), required_markers)
 		if cache_key not in cache:
-			cache[cache_key] = configuration_status(target, project_path, required_markers)
+			cache[cache_key] = configuration_status(
+				target, project_path, required_markers
+			)
 		status = cache[cache_key]
 		if status not in statuses:
 			statuses.append(status)
@@ -193,7 +225,9 @@ def build_patterns(
 		citations = []
 		for conversation_id in conversation_ids:
 			conversation_group = [
-				observation for observation in group if observation.get("conversation_id") == conversation_id
+				observation
+				for observation in group
+				if observation.get("conversation_id") == conversation_id
 			]
 			first = conversation_group[0]
 			references = references_for_entries(conversation_group)
@@ -202,31 +236,44 @@ def build_patterns(
 					"conversation_id": conversation_id,
 					"rollout_id": first.get("rollout_id"),
 					"timestamp": first.get("timestamp"),
-					"evidence_references": references[:MAX_EVIDENCE_REFERENCES_PER_CITATION],
+					"evidence_references": references[
+						:MAX_EVIDENCE_REFERENCES_PER_CITATION
+					],
 					"detail": event_summary(first),
 				}
 			)
 		for observation in group:
-			if observation.get("conversation_id") is None and len(citations) < MAX_PATTERN_CITATIONS:
+			if (
+				observation.get("conversation_id") is None
+				and len(citations) < MAX_PATTERN_CITATIONS
+			):
 				citations.append(
 					{
 						"conversation_id": None,
 						"rollout_id": observation.get("rollout_id"),
 						"timestamp": observation.get("timestamp"),
-						"evidence_references": observation["evidence_references"][:MAX_EVIDENCE_REFERENCES_PER_CITATION],
+						"evidence_references": observation["evidence_references"][
+							:MAX_EVIDENCE_REFERENCES_PER_CITATION
+						],
 						"detail": event_summary(observation),
 					}
 				)
 
-		first_timestamps = [parse_timestamp(observation.get("timestamp")) for observation in group]
-		first_timestamps = [timestamp for timestamp in first_timestamps if timestamp is not None]
+		first_timestamps = [
+			parse_timestamp(observation.get("timestamp")) for observation in group
+		]
+		first_timestamps = [
+			timestamp for timestamp in first_timestamps if timestamp is not None
+		]
 		labels = {
 			observation.get("classification", {}).get("label")
 			for observation in group
 			if isinstance(observation.get("classification"), dict)
 		}
 		labels.discard(None)
-		classification_label = next(iter(labels)) if len(labels) == 1 else "mixed_causes"
+		classification_label = (
+			next(iter(labels)) if len(labels) == 1 else "mixed_causes"
+		)
 		observed_pattern = event_summary(group[0])
 		configuration_statuses = configuration_status_for_pattern(
 			group, configuration_cache, kind, observed_pattern
@@ -246,8 +293,12 @@ def build_patterns(
 				if conversation_ids
 				else "unavailable",
 				"time_span": {
-					"since": format_timestamp(min(first_timestamps)) if first_timestamps else None,
-					"until": format_timestamp(max(first_timestamps)) if first_timestamps else None,
+					"since": format_timestamp(min(first_timestamps))
+					if first_timestamps
+					else None,
+					"until": format_timestamp(max(first_timestamps))
+					if first_timestamps
+					else None,
 					"state": "observed" if first_timestamps else "unavailable",
 				},
 				"classification": {
@@ -267,7 +318,9 @@ def build_patterns(
 			}
 		)
 
-	repeated_patterns = [pattern for pattern in patterns if pattern["recurrence_state"] == "repeated"]
+	repeated_patterns = [
+		pattern for pattern in patterns if pattern["recurrence_state"] == "repeated"
+	]
 	return patterns, repeated_patterns
 
 

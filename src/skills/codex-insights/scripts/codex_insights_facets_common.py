@@ -31,12 +31,12 @@ MAX_FINDINGS = 64
 MAX_CONFIGURATION_BYTES = 64 * 1024
 CONFIGURATION_SURFACE_PATTERN = re.compile(
 	r"(?:^|[/\\.])(?:AGENTS\.md|WORKSPACE\.md|SKILL(?:\.body)?\.md|skill\.json)"
-	 r"$|(?:^|[/\\])(?:hooks?|scripts?)(?:[/\\]|$)",
+	r"$|(?:^|[/\\])(?:hooks?|scripts?)(?:[/\\]|$)",
 	re.IGNORECASE,
 )
 CONFIGURATION_TOKEN_PATTERN = re.compile(
 	r"(?:^|[/\\])(?:AGENTS\.md|WORKSPACE\.md|SKILL(?:\.body)?\.md|skill\.json)(?:$|[/\\])"
-	 r"|(?:^|[/\\])(?:hooks?|scripts?)(?:[/\\]|$)",
+	r"|(?:^|[/\\])(?:hooks?|scripts?)(?:[/\\]|$)",
 	re.IGNORECASE,
 )
 CONFIGURATION_BASENAME_PATTERN = re.compile(
@@ -168,7 +168,9 @@ def extraction_provenance(
 		"extraction_path": extraction_path.as_posix(),
 		"extraction_schema_version": extraction["schema_version"],
 		"extraction_sha256": extraction_sha256,
-		"input_sha256": require_string(provenance.get("input_sha256"), "extraction.provenance.input_sha256"),
+		"input_sha256": require_string(
+			provenance.get("input_sha256"), "extraction.provenance.input_sha256"
+		),
 		"source_hashes": list(provenance.get("source_hashes", [])),
 		"window": {
 			"since": window.get("since"),
@@ -215,16 +217,26 @@ def evidence_reference_index(
 		for field_name in CANDIDATE_FIELDS:
 			candidates = rollout.get("candidates", {}).get(field_name, [])
 			if not isinstance(candidates, list):
-				raise ProvenanceError(f"rollout {rollout_id}.candidates.{field_name} must be an array")
+				raise ProvenanceError(
+					f"rollout {rollout_id}.candidates.{field_name} must be an array"
+				)
 			for candidate in candidates:
-				candidate_value = require_mapping(candidate, f"rollout {rollout_id}.{field_name}[]")
-				validate_references(candidate_value.get("evidence_references"), evidence_index, field_name)
+				candidate_value = require_mapping(
+					candidate, f"rollout {rollout_id}.{field_name}[]"
+				)
+				validate_references(
+					candidate_value.get("evidence_references"),
+					evidence_index,
+					field_name,
+				)
 
 		ledger = rollout.get("tool_ledger", [])
 		if not isinstance(ledger, list):
 			raise ProvenanceError(f"rollout {rollout_id}.tool_ledger must be an array")
 		for ledger_value in ledger:
-			ledger_entry = require_mapping(ledger_value, f"rollout {rollout_id}.tool_ledger[]")
+			ledger_entry = require_mapping(
+				ledger_value, f"rollout {rollout_id}.tool_ledger[]"
+			)
 			for field_name in ("call_reference", "result_reference"):
 				reference = ledger_entry.get(field_name)
 				if reference is not None:
@@ -243,7 +255,9 @@ def validate_references(
 	validated = []
 	for reference in references:
 		if not isinstance(reference, str) or reference not in evidence_index:
-			raise ProvenanceError(f"{location} contains dangling evidence reference: {reference!r}")
+			raise ProvenanceError(
+				f"{location} contains dangling evidence reference: {reference!r}"
+			)
 		validated.append(reference)
 
 	return validated
@@ -254,7 +268,9 @@ def validate_extraction(path: Path) -> dict[str, object]:
 	try:
 		contents = path.read_bytes()
 	except OSError as error:
-		raise ProvenanceError(f"cannot read extraction artefact {path}: {error}") from error
+		raise ProvenanceError(
+			f"cannot read extraction artefact {path}: {error}"
+		) from error
 
 	extraction = load_json(path)
 	if extraction.get("schema_version") != EXTRACTION_SCHEMA_VERSION:
@@ -266,17 +282,25 @@ def validate_extraction(path: Path) -> dict[str, object]:
 	window = require_mapping(extraction.get("window"), "extraction.window")
 	for field_name in ("since", "until", "end_utc_exclusive"):
 		if format_timestamp(window.get(field_name)) is None:
-			raise ProvenanceError(f"extraction.window.{field_name} is not a UTC timestamp")
+			raise ProvenanceError(
+				f"extraction.window.{field_name} is not a UTC timestamp"
+			)
 	if window["until"] != window["end_utc_exclusive"]:
 		raise ProvenanceError("extraction.window.end_utc_exclusive must equal until")
 	if parse_timestamp(window["until"]) <= parse_timestamp(window["since"]):
-		raise ProvenanceError("extraction window must be half-open with until after since")
+		raise ProvenanceError(
+			"extraction window must be half-open with until after since"
+		)
 
 	provenance = require_mapping(extraction.get("provenance"), "extraction.provenance")
 	require_string(provenance.get("input_sha256"), "extraction.provenance.input_sha256")
 	source_hashes = provenance.get("source_hashes")
-	if not isinstance(source_hashes, list) or not all(isinstance(value, str) for value in source_hashes):
-		raise ProvenanceError("extraction.provenance.source_hashes must be a string array")
+	if not isinstance(source_hashes, list) or not all(
+		isinstance(value, str) for value in source_hashes
+	):
+		raise ProvenanceError(
+			"extraction.provenance.source_hashes must be a string array"
+		)
 
 	counts = require_mapping(extraction.get("counts"), "extraction.counts")
 	for field_name in (
@@ -293,12 +317,18 @@ def validate_extraction(path: Path) -> dict[str, object]:
 	conversation_ids = {
 		rollout.get("conversation_id")
 		for rollout in rollouts
-		if isinstance(rollout.get("conversation_id"), str) and rollout.get("conversation_id")
+		if isinstance(rollout.get("conversation_id"), str)
+		and rollout.get("conversation_id")
 	}
-	subagent_count = sum(rollout.get("delegation_state") == "delegated" for rollout in rollouts)
-	conversation_unavailable_count = sum(rollout.get("conversation_id") is None for rollout in rollouts)
+	subagent_count = sum(
+		rollout.get("delegation_state") == "delegated" for rollout in rollouts
+	)
+	conversation_unavailable_count = sum(
+		rollout.get("conversation_id") is None for rollout in rollouts
+	)
 	role_unavailable_count = sum(
-		rollout.get("delegation_state") == "delegated" and rollout.get("subagent_role") is None
+		rollout.get("delegation_state") == "delegated"
+		and rollout.get("subagent_role") is None
 		for rollout in rollouts
 	)
 	expected_counts = {
@@ -337,7 +367,11 @@ def conversation_key(rollout: dict[str, object]) -> str:
 def available_conversation_id(rollout: dict[str, object]) -> str | None:
 	"""Return a conversation ID only when Codex supplied one explicitly."""
 	conversation_id = rollout.get("conversation_id")
-	return conversation_id if isinstance(conversation_id, str) and conversation_id else None
+	return (
+		conversation_id
+		if isinstance(conversation_id, str) and conversation_id
+		else None
+	)
 
 
 def references_for_entries(entries: Iterable[dict[str, object]]) -> list[str]:
@@ -384,7 +418,11 @@ def event_classification(kind: str, status: object = None) -> dict[str, object]:
 	else:
 		label = "mixed_causes"
 
-	confidence = "high" if kind in {"correction", "tool_failure", "successful_behaviour"} else "medium"
+	confidence = (
+		"high"
+		if kind in {"correction", "tool_failure", "successful_behaviour"}
+		else "medium"
+	)
 	return {
 		"label": label,
 		"method": "deterministic_candidate",

@@ -46,9 +46,16 @@ CORRECTION_PATTERN = re.compile(
 	r"that(?:'s| is) wrong|do not |don't |instead of|i asked)\b",
 	re.IGNORECASE,
 )
-VERIFICATION_PATTERN = re.compile(r"\b(?:test|tests|lint|typecheck|validate|check)\b", re.IGNORECASE)
-APPROACH_CHANGE_PATTERN = re.compile(r"\b(?:instead|rather than|switch(?:ing)? to|change(?:d)? approach)\b", re.IGNORECASE)
-EXPECTED_PROBE_PATTERN = re.compile(r"(?:^|\s)--(?:help|version)(?:\s|$)", re.IGNORECASE)
+VERIFICATION_PATTERN = re.compile(
+	r"\b(?:test|tests|lint|typecheck|validate|check)\b", re.IGNORECASE
+)
+APPROACH_CHANGE_PATTERN = re.compile(
+	r"\b(?:instead|rather than|switch(?:ing)? to|change(?:d)? approach)\b",
+	re.IGNORECASE,
+)
+EXPECTED_PROBE_PATTERN = re.compile(
+	r"(?:^|\s)--(?:help|version)(?:\s|$)", re.IGNORECASE
+)
 CANDIDATE_KIND_NAMES = {
 	"approach_changes": "approach_change",
 	"configuration_touches": "configuration_touch",
@@ -169,7 +176,10 @@ def message_text(payload: dict[str, object]) -> str | None:
 
 def is_authored_user_message(record: dict[str, object]) -> bool:
 	"""Return whether a record is Codex's explicit authored-user event shape."""
-	return record.get("type") == "event_msg" and record_event_type(record) == "user_message"
+	return (
+		record.get("type") == "event_msg"
+		and record_event_type(record) == "user_message"
+	)
 
 
 def response_user_fallback(record: dict[str, object]) -> bool:
@@ -213,7 +223,13 @@ def exit_code_from_value(value: object, depth: int = 0) -> int | None:
 	if depth > 3:
 		return None
 	if isinstance(value, dict):
-		for key in ("exit_code", "exitCode", "returncode", "return_code", "status_code"):
+		for key in (
+			"exit_code",
+			"exitCode",
+			"returncode",
+			"return_code",
+			"status_code",
+		):
 			candidate = value.get(key)
 			if isinstance(candidate, int) and not isinstance(candidate, bool):
 				return candidate
@@ -257,7 +273,9 @@ def result_exit_code(result_payload: dict[str, object] | None) -> int | None:
 	return None
 
 
-def tool_status(call_payload: dict[str, object], result_payload: dict[str, object] | None) -> tuple[str, int | None, str]:
+def tool_status(
+	call_payload: dict[str, object], result_payload: dict[str, object] | None
+) -> tuple[str, int | None, str]:
 	"""Resolve tool status from structured error/status/exit evidence, else unknown."""
 	result_output = None if result_payload is None else result_payload.get("output")
 	exit_code = result_exit_code(result_payload)
@@ -268,7 +286,10 @@ def tool_status(call_payload: dict[str, object], result_payload: dict[str, objec
 	if explicit_error(call_payload):
 		return "failure", exit_code, "explicit_error"
 
-	for value, source in ((result_output, "structured_exit_code"), (result_payload, "structured_exit_code")):
+	for value, source in (
+		(result_output, "structured_exit_code"),
+		(result_payload, "structured_exit_code"),
+	):
 		structured_exit_code = exit_code_from_value(value)
 		if structured_exit_code is not None:
 			return (
@@ -277,17 +298,25 @@ def tool_status(call_payload: dict[str, object], result_payload: dict[str, objec
 				source,
 			)
 
-	result_output_status = result_output.get("status") if isinstance(result_output, dict) else None
+	result_output_status = (
+		result_output.get("status") if isinstance(result_output, dict) else None
+	)
 	for value, source in (
 		(result_output_status, "result_output_status"),
-		(None if result_payload is None else result_payload.get("status"), "result_status"),
+		(
+			None if result_payload is None else result_payload.get("status"),
+			"result_status",
+		),
 		(call_payload.get("status"), "call_status"),
 	):
 		status = status_from_value(value)
 		if status is not None:
 			return status, None, source
 
-	for value, source in ((result_output, "parsed_exit_code"), (result_payload, "parsed_exit_code")):
+	for value, source in (
+		(result_output, "parsed_exit_code"),
+		(result_payload, "parsed_exit_code"),
+	):
 		parsed_code = parsed_exit_code(value)
 		if parsed_code is not None:
 			return "success" if parsed_code == 0 else "failure", parsed_code, source
@@ -316,7 +345,9 @@ def call_target(payload: dict[str, object]) -> str | None:
 				parsed_value = json.loads(raw_value)
 			except (TypeError, ValueError):
 				parsed_value = None
-			if isinstance(parsed_value, dict) and isinstance(parsed_value.get("command"), str):
+			if isinstance(parsed_value, dict) and isinstance(
+				parsed_value.get("command"), str
+			):
 				return bounded_text(parsed_value["command"], 280)
 		value = bounded_text(raw_value, 280)
 		if value is not None:
@@ -334,7 +365,9 @@ def hash_bytes(value: bytes) -> str:
 	return hashlib.sha256(value).hexdigest()
 
 
-def read_rollout(path: Path) -> tuple[list[dict[str, object]], int, str, list[dict[str, object]]]:
+def read_rollout(
+	path: Path,
+) -> tuple[list[dict[str, object]], int, str, list[dict[str, object]]]:
 	"""Read supported JSONL records and bounded references for malformed records."""
 	contents = path.read_bytes()
 	malformed_count = 0
@@ -411,7 +444,9 @@ def session_metadata(records: list[dict[str, object]]) -> dict[str, object]:
 						thread_spawn.get("parent_thread_id")
 					)
 				if metadata["subagent_role"] is None:
-					metadata["subagent_role"] = string_value(thread_spawn.get("agent_role"))
+					metadata["subagent_role"] = string_value(
+						thread_spawn.get("agent_role")
+					)
 		if metadata["project_path"] is None:
 			metadata["project_path"] = string_value(payload.get("cwd"))
 		git = payload.get("git")
@@ -425,7 +460,10 @@ def session_metadata(records: list[dict[str, object]]) -> dict[str, object]:
 
 def is_delegated_rollout(metadata: dict[str, object]) -> bool:
 	"""Return whether explicit thread-source or source-subagent provenance marks delegation."""
-	return metadata["thread_source"] == "subagent" or metadata["source_subagent"] is not None
+	return (
+		metadata["thread_source"] == "subagent"
+		or metadata["source_subagent"] is not None
+	)
 
 
 def extract_rollout(
@@ -438,7 +476,9 @@ def extract_rollout(
 	records, malformed_count, source_hash, malformed_records = read_rollout(path)
 	metadata = session_metadata(records)
 	timestamps = [parse_timestamp(record.get("timestamp")) for record in records]
-	valid_timestamps = sorted(timestamp for timestamp in timestamps if timestamp is not None)
+	valid_timestamps = sorted(
+		timestamp for timestamp in timestamps if timestamp is not None
+	)
 	window_records = [
 		(record_index, record, timestamp)
 		for record_index, (record, timestamp) in enumerate(zip(records, timestamps))
@@ -489,7 +529,9 @@ def extract_rollout(
 		if len(candidates[kind]) >= MAX_CANDIDATES_PER_KIND:
 			truncated["candidate_count"] += 1
 			return
-		candidates[kind].append(candidate(CANDIDATE_KIND_NAMES[kind], references, **details))
+		candidates[kind].append(
+			candidate(CANDIDATE_KIND_NAMES[kind], references, **details)
+		)
 
 	for record_index, record, timestamp in window_records:
 		reference = record_reference(rollout_id, record_index)
@@ -509,9 +551,13 @@ def extract_rollout(
 			if add_evidence(entry):
 				authored_messages.append(entry)
 				if CORRECTION_PATTERN.search(text):
-					add_candidate("corrections", [reference], source="authored_user_message")
+					add_candidate(
+						"corrections", [reference], source="authored_user_message"
+					)
 				if APPROACH_CHANGE_PATTERN.search(text):
-					add_candidate("approach_changes", [reference], source="authored_user_message")
+					add_candidate(
+						"approach_changes", [reference], source="authored_user_message"
+					)
 			continue
 
 		if response_user_fallback(record):
@@ -528,7 +574,11 @@ def extract_rollout(
 				uncertain_user_messages.append(reference)
 			continue
 
-		if record.get("type") == "response_item" and payload.get("type") == "message" and payload.get("role") == "assistant":
+		if (
+			record.get("type") == "response_item"
+			and payload.get("type") == "message"
+			and payload.get("role") == "assistant"
+		):
 			text = message_text(payload)
 			if text is not None and add_evidence(
 				{
@@ -541,7 +591,10 @@ def extract_rollout(
 				assistant_messages.append(reference)
 			continue
 
-		if record.get("type") == "response_item" and payload.get("type") in TOOL_CALL_TYPES:
+		if (
+			record.get("type") == "response_item"
+			and payload.get("type") in TOOL_CALL_TYPES
+		):
 			if len(tool_ledger) >= MAX_TOOL_EVENTS_PER_ROLLOUT:
 				truncated["tool_event_count"] += 1
 				continue
@@ -577,7 +630,10 @@ def extract_rollout(
 			calls_by_id[call_id] = (len(tool_ledger) - 1, payload)
 			continue
 
-		if record.get("type") == "response_item" and payload.get("type") in TOOL_RESULT_TYPES:
+		if (
+			record.get("type") == "response_item"
+			and payload.get("type") in TOOL_RESULT_TYPES
+		):
 			call_id = string_value(payload.get("call_id"))
 			matched = calls_by_id.get(call_id or "")
 			result_entry = {
@@ -631,7 +687,11 @@ def extract_rollout(
 
 		event_type = record_event_type(record)
 		if record.get("type") == "event_msg" and event_type in LIFECYCLE_EVENT_TYPES:
-			evidence_kind = "rollback_event" if event_type == "thread_rolled_back" else "lifecycle_event"
+			evidence_kind = (
+				"rollback_event"
+				if event_type == "thread_rolled_back"
+				else "lifecycle_event"
+			)
 			if add_evidence(
 				{
 					"reference": reference,
@@ -646,12 +706,23 @@ def extract_rollout(
 					add_candidate("rollbacks", [reference], source="thread_rolled_back")
 
 	for entry in tool_ledger:
-		references = [reference for reference in (entry["call_reference"], entry["result_reference"]) if reference is not None]
+		references = [
+			reference
+			for reference in (entry["call_reference"], entry["result_reference"])
+			if reference is not None
+		]
 		target = entry["target"] if isinstance(entry["target"], str) else ""
 		if entry["status"] == "failure" and entry["expected_probe"] != "explicit":
-			add_candidate("verification", references, source="failed_tool_event", status=entry["status"])
+			add_candidate(
+				"verification",
+				references,
+				source="failed_tool_event",
+				status=entry["status"],
+			)
 		if VERIFICATION_PATTERN.search(target):
-			add_candidate("verification", references, source="tool_target", status=entry["status"])
+			add_candidate(
+				"verification", references, source="tool_target", status=entry["status"]
+			)
 		if CONFIG_TARGET_PATTERN.search(target):
 			add_candidate("configuration_touches", references, target=target)
 
@@ -692,7 +763,9 @@ def extract_rollout(
 	return {
 		"rollout_id": rollout_id,
 		"conversation_id": metadata["conversation_id"],
-		"conversation_id_state": "available" if metadata["conversation_id"] is not None else "unavailable",
+		"conversation_id_state": "available"
+		if metadata["conversation_id"] is not None
+		else "unavailable",
 		"thread_source": metadata["thread_source"],
 		"delegation_state": "delegated" if is_delegated else "parent",
 		"subagent_parent_thread_id": parent_thread_id,
@@ -701,8 +774,14 @@ def extract_rollout(
 		"subagent_role_state": role_state,
 		"project_path": metadata["project_path"],
 		"git": metadata["git"],
-		"start_timestamp": format_timestamp(valid_timestamps[0]) if valid_timestamps else None,
-		"end_timestamp": None if is_active else format_timestamp(valid_timestamps[-1]) if valid_timestamps else None,
+		"start_timestamp": format_timestamp(valid_timestamps[0])
+		if valid_timestamps
+		else None,
+		"end_timestamp": None
+		if is_active
+		else format_timestamp(valid_timestamps[-1])
+		if valid_timestamps
+		else None,
 		"activity_state": "live" if is_active else "elapsed",
 		"authored_user_message_count": len(authored_messages),
 		"uncertain_user_message_references": uncertain_user_messages,
@@ -729,13 +808,17 @@ def build_report(
 		if rollout is not None:
 			rollouts.append(rollout)
 
-	rollouts.sort(key=lambda rollout: (rollout["start_timestamp"] or "", rollout["rollout_id"]))
+	rollouts.sort(
+		key=lambda rollout: (rollout["start_timestamp"] or "", rollout["rollout_id"])
+	)
 	conversation_ids = {
 		rollout["conversation_id"]
 		for rollout in rollouts
 		if isinstance(rollout["conversation_id"], str)
 	}
-	subagent_rollouts = [rollout for rollout in rollouts if rollout["delegation_state"] == "delegated"]
+	subagent_rollouts = [
+		rollout for rollout in rollouts if rollout["delegation_state"] == "delegated"
+	]
 	malformed_count = sum(source["malformed_record_count"] for source in sources)
 	malformed_records = []
 	for source in sources:
@@ -756,7 +839,13 @@ def build_report(
 		state = "partial"
 	else:
 		state = "available"
-	activity_state = "unavailable" if not rollouts else "live" if any(rollout["activity_state"] == "live" for rollout in rollouts) else "elapsed"
+	activity_state = (
+		"unavailable"
+		if not rollouts
+		else "live"
+		if any(rollout["activity_state"] == "live" for rollout in rollouts)
+		else "elapsed"
+	)
 	input_hashes = sorted(source["sha256"] for source in sources)
 	input_sha256 = hash_bytes("\n".join(input_hashes).encode("utf-8"))
 	return {
@@ -821,7 +910,10 @@ def evidence_references_resolve(report: dict[str, object]) -> bool:
 					return False
 		for candidates in rollout["candidates"].values():
 			for entry in candidates:
-				if not all(reference in references for reference in entry["evidence_references"]):
+				if not all(
+					reference in references
+					for reference in entry["evidence_references"]
+				):
 					return False
 	return True
 
@@ -859,12 +951,16 @@ def parse_arguments() -> argparse.Namespace:
 	return arguments
 
 
-def fixture_record(timestamp: str, record_kind: str, payload: dict[str, object]) -> dict[str, object]:
+def fixture_record(
+	timestamp: str, record_kind: str, payload: dict[str, object]
+) -> dict[str, object]:
 	"""Wrap a fixture payload in the real timestamp/type/payload envelope."""
 	return {"timestamp": timestamp, "type": record_kind, "payload": payload}
 
 
-def write_fixture(path: Path, values: list[dict[str, object]], malformed: bool = False) -> None:
+def write_fixture(
+	path: Path, values: list[dict[str, object]], malformed: bool = False
+) -> None:
 	"""Write one representative JSONL rollout fixture."""
 	lines = [json.dumps(value, sort_keys=True) for value in values]
 	if malformed:
@@ -901,17 +997,28 @@ def run_selftest() -> None:
 				fixture_record(
 					"2026-08-08T10:01:00Z",
 					"response_item",
-					{"type": "message", "role": "developer", "content": "Injected AGENTS.md context"},
+					{
+						"type": "message",
+						"role": "developer",
+						"content": "Injected AGENTS.md context",
+					},
 				),
 				fixture_record(
 					"2026-08-08T10:01:10Z",
 					"response_item",
-					{"type": "message", "role": "user", "content": "Please stop editing files."},
+					{
+						"type": "message",
+						"role": "user",
+						"content": "Please stop editing files.",
+					},
 				),
 				fixture_record(
 					"2026-08-08T10:01:20Z",
 					"event_msg",
-					{"type": "user_message", "message": "That was not what I asked. Run validation instead."},
+					{
+						"type": "user_message",
+						"message": "That was not what I asked. Run validation instead.",
+					},
 				),
 				fixture_record(
 					"2026-08-08T10:01:30Z",
@@ -921,47 +1028,88 @@ def run_selftest() -> None:
 				fixture_record(
 					"2026-08-08T10:02:00Z",
 					"response_item",
-					{"type": "custom_tool_call", "call_id": "success", "name": "exec", "input": "validate"},
+					{
+						"type": "custom_tool_call",
+						"call_id": "success",
+						"name": "exec",
+						"input": "validate",
+					},
 				),
 				fixture_record(
 					"2026-08-08T10:02:10Z",
 					"response_item",
-					{"type": "custom_tool_call_output", "call_id": "success", "output": "error word, Process exited with code 0"},
+					{
+						"type": "custom_tool_call_output",
+						"call_id": "success",
+						"output": "error word, Process exited with code 0",
+					},
 				),
 				fixture_record(
 					"2026-08-08T10:02:20Z",
 					"response_item",
-					{"type": "function_call", "call_id": "failure", "name": "exec", "arguments": "{\"command\": \"validate\"}"},
+					{
+						"type": "function_call",
+						"call_id": "failure",
+						"name": "exec",
+						"arguments": '{"command": "validate"}',
+					},
 				),
 				fixture_record(
 					"2026-08-08T10:02:30Z",
 					"response_item",
-					{"type": "function_call_output", "call_id": "failure", "output": {"exit_code": 1}},
+					{
+						"type": "function_call_output",
+						"call_id": "failure",
+						"output": {"exit_code": 1},
+					},
 				),
 				fixture_record(
 					"2026-08-08T10:02:40Z",
 					"response_item",
-					{"type": "custom_tool_call", "call_id": "retry", "name": "exec", "input": "{\"command\": \"validate\"}"},
+					{
+						"type": "custom_tool_call",
+						"call_id": "retry",
+						"name": "exec",
+						"input": '{"command": "validate"}',
+					},
 				),
 				fixture_record(
 					"2026-08-08T10:02:50Z",
 					"response_item",
-					{"type": "custom_tool_call_output", "call_id": "retry", "output": {"status": "success"}},
+					{
+						"type": "custom_tool_call_output",
+						"call_id": "retry",
+						"output": {"status": "success"},
+					},
 				),
 				fixture_record(
 					"2026-08-08T10:03:00Z",
 					"response_item",
-					{"type": "custom_tool_call", "call_id": "unknown", "name": "exec", "input": "scripts/run.sh"},
+					{
+						"type": "custom_tool_call",
+						"call_id": "unknown",
+						"name": "exec",
+						"input": "scripts/run.sh",
+					},
 				),
 				fixture_record(
 					"2026-08-08T10:03:10Z",
 					"response_item",
-					{"type": "custom_tool_call_output", "call_id": "missing", "output": "validation error text only"},
+					{
+						"type": "custom_tool_call_output",
+						"call_id": "missing",
+						"output": "validation error text only",
+					},
 				),
 				fixture_record(
 					"2026-08-08T10:03:20Z",
 					"response_item",
-					{"type": "custom_tool_call", "call_id": "config", "name": "exec", "input": "cat AGENTS.md"},
+					{
+						"type": "custom_tool_call",
+						"call_id": "config",
+						"name": "exec",
+						"input": "cat AGENTS.md",
+					},
 				),
 				fixture_record(
 					"2026-08-08T10:04:00Z",
@@ -1014,7 +1162,9 @@ def run_selftest() -> None:
 						},
 					},
 				),
-				fixture_record("2026-08-08T10:01:00Z", "event_msg", {"type": "task_complete"}),
+				fixture_record(
+					"2026-08-08T10:01:00Z", "event_msg", {"type": "task_complete"}
+				),
 			],
 		)
 		source_only = root / "rollout-source-only.jsonl"
@@ -1047,7 +1197,11 @@ def run_selftest() -> None:
 			fixture_record(
 				"2026-08-08T10:00:00Z",
 				"session_meta",
-				{"id": "rollout-bounded", "session_id": "conversation-bounded", "thread_source": "user"},
+				{
+					"id": "rollout-bounded",
+					"session_id": "conversation-bounded",
+					"thread_source": "user",
+				},
 			)
 		]
 		for index in range(MAX_TOOL_EVENTS_PER_ROLLOUT):
@@ -1139,7 +1293,11 @@ def run_selftest() -> None:
 			},
 		]
 		assert evidence_references_resolve(first)
-		parent_rollout = next(rollout for rollout in first["rollouts"] if rollout["rollout_id"] == "parent")
+		parent_rollout = next(
+			rollout
+			for rollout in first["rollouts"]
+			if rollout["rollout_id"] == "parent"
+		)
 		assert parent_rollout["conversation_id"] == "conversation-1"
 		assert parent_rollout["delegation_state"] == "parent"
 		assert parent_rollout["subagent_role"] is None
@@ -1150,7 +1308,10 @@ def run_selftest() -> None:
 		assert parent_rollout["authored_user_message_count"] == 1
 		assert len(parent_rollout["uncertain_user_message_references"]) == 1
 		assert len(parent_rollout["candidates"]["corrections"]) == 1
-		assert all("Injected AGENTS.md" not in entry.get("excerpt", "") for entry in parent_rollout["evidence"])
+		assert all(
+			"Injected AGENTS.md" not in entry.get("excerpt", "")
+			for entry in parent_rollout["evidence"]
+		)
 		ledger = {entry["call_id"]: entry for entry in parent_rollout["tool_ledger"]}
 		assert ledger["success"]["status"] == "success"
 		assert ledger["success"]["exit_code"] == 0
@@ -1178,7 +1339,11 @@ def run_selftest() -> None:
 			("lifecycle_event", "turn_aborted"),
 			("rollback_event", "thread_rolled_back"),
 		]
-		subagent_rollout = next(rollout for rollout in first["rollouts"] if rollout["rollout_id"] == "subagent")
+		subagent_rollout = next(
+			rollout
+			for rollout in first["rollouts"]
+			if rollout["rollout_id"] == "subagent"
+		)
 		assert subagent_rollout["delegation_state"] == "delegated"
 		assert subagent_rollout["subagent_parent_thread_id"] == "conversation-1"
 		assert subagent_rollout["subagent_link_state"] == "available"
@@ -1195,7 +1360,10 @@ def run_selftest() -> None:
 			datetime.datetime(2026, 8, 8, 11, tzinfo=UTC),
 			datetime.datetime(2026, 8, 8, 12, tzinfo=UTC),
 		)
-		assert empty_report["status"] == {"state": "empty", "activity_state": "unavailable"}
+		assert empty_report["status"] == {
+			"state": "empty",
+			"activity_state": "unavailable",
+		}
 		assert empty_report["unavailable"] == ["no_selected_rollouts"]
 		assert build_report([], window_start, window_end)["status"] == {
 			"state": "unavailable",
@@ -1208,7 +1376,9 @@ def run_selftest() -> None:
 		assert all(entry["status"] == "success" for entry in bounded_ledger)
 		assert bounded_report["rollouts"][0]["truncation"]["tool_event_count"] == 1
 		assert evidence_references_resolve(bounded_report)
-		assert tool_status({}, {"is_error": True, "output": {"exit_code": 0, "status": "success"}}) == (
+		assert tool_status(
+			{}, {"is_error": True, "output": {"exit_code": 0, "status": "success"}}
+		) == (
 			"failure",
 			0,
 			"explicit_error",
@@ -1218,12 +1388,16 @@ def run_selftest() -> None:
 			1,
 			"structured_exit_code",
 		)
-		assert tool_status({}, {"status": "success", "output": "Process exited with code 1"}) == (
+		assert tool_status(
+			{}, {"status": "success", "output": "Process exited with code 1"}
+		) == (
 			"success",
 			None,
 			"result_status",
 		)
-		assert tool_status({}, {"status": "failure", "output": "Process exited with code 0"}) == (
+		assert tool_status(
+			{}, {"status": "failure", "output": "Process exited with code 0"}
+		) == (
 			"failure",
 			None,
 			"result_status",
