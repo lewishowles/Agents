@@ -17,7 +17,6 @@ Hooks are shell scripts that Claude Code runs automatically at specific points i
 | `hcom` | Routes verified Claude lifecycle events to HCOM without managing other Claude settings. | Notification, PermissionRequest, PostToolUse, PostToolUseFailure, PreToolUse (`Bash\|Task\|Write\|Edit`), SessionEnd, SessionStart, Stop, StopFailure, SubagentStart, SubagentStop, UserPromptSubmit | `silent`; requires hcom |
 | `image-for-agent-read` | Reroutes local image reads through image-for-agent using the fixed ui preset. | PreToolUse (`Read`) | `silent`; requires jq, image-for-agent |
 | `plan-verify` | Warns when an exited plan is missing a validation section. | PostToolUse (`ExitPlanMode`) | `silent` |
-| `pre-stop-checks` | Runs configured lint and unit checks before Claude stops. | Stop | `silent` |
 | `progress-resume` | Injects project progress context when the prompt asks to resume work. | UserPromptSubmit | `silent` |
 | `serena-activate` | Prompts the agent to activate the project with Serena and read its instructions at session start. | SessionStart | `silent`; requires serena-hooks |
 | `serena-auto-approve` | Auto-approves Serena tool calls in permissive permission modes (acceptEdits or auto). | PreToolUse (`mcp__serena__*`) | `silent`; requires serena-hooks |
@@ -171,15 +170,7 @@ When the Claude Code session ends, removes the session data used by `serena-remi
 
 **Requires:** `serena-hooks`; silently skips if not on PATH.
 
-### pre-stop-checks.sh
-
-When Claude finishes a response, checks for a `package.json`. If it exists, runs `npm run lint` and `npm run test:unit:run` when those scripts are defined.
-
-- A failed check outputs a JSON pause signal with the error, so Claude must resolve it before stopping.
-- Failures are appended to `~/.claude/logs/friction.log` with the timestamp, `check-fail` category, project path, failed check names, and first error line.
-- Use `src/skills/friction-review/scripts/analyse-friction.sh` to group recurring failures. It also reads older log lines without a category field.
-
-Log other friction manually with `.agent/scripts/log-friction.sh "<category>" "<detail>"`. It uses the same log and format for ignored rules, wrong approaches, wasted work, tool misuse, and missing guidance.
+Log friction manually with `.agent/scripts/log-friction.sh "<category>" "<detail>"`. It uses the same log and format for ignored rules, wrong approaches, wasted work, tool misuse, and missing guidance. `tool-failure-log` auto-logs failed Claude tool calls the same way; use `src/skills/friction-review/scripts/analyse-friction.sh` to group recurring entries.
 
 ## How skill triggering works
 

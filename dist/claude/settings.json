@@ -255,12 +255,6 @@
             "type": "command",
             "command": "cmd=${HCOM:-hcom}; command -v \"${cmd%% *}\" >/dev/null 2>&1 && exec $cmd poll || exit 0",
             "timeout": 86400
-          },
-          {
-            "type": "command",
-            "command": "bash -c 'bash \"$HOME/.claude/hooks/pre-stop-checks.sh\"'",
-            "timeout": 60,
-            "statusMessage": "Checking lint and tests\u2026"
           }
         ]
       }

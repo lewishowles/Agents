@@ -9,9 +9,9 @@
 # never identical between occurrences, so the count column undercounts real
 # patterns there - cluster by error-message substring or command shape by
 # hand instead of trusting count >= 2.
-# Entries are written by pre-stop-checks.sh, the Codex Stop hook,
-# tool-failure-log.sh (auto-logged tool-error rows), and
-# scripts/agent-tools/log-friction.sh as tab-separated lines.
+# Entries are written by tool-failure-log.sh (auto-logged tool-error rows)
+# and scripts/agent-tools/log-friction.sh as tab-separated lines. Older logs
+# may still carry check-fail rows from the retired lint/unit-test Stop hooks.
 
 set -euo pipefail
 

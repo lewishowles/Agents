@@ -41,9 +41,14 @@ EXIT_CODE_PATTERN = re.compile(
 	r"\b(?:exit(?:ed)?(?:\s+with)?(?:\s+code)?|exit[_\s]?code|return(?:ed)?|status[_\s]?code)\D{0,12}(-?\d+)\b",
 	re.IGNORECASE,
 )
+# Phrasings that signal the user is correcting the agent. The "actually" branch
+# requires a following article or pronoun so filler "actually" on its own does
+# not match; the leading "no" branch is anchored so mid-sentence "no" is ignored.
 CORRECTION_PATTERN = re.compile(
-	r"\b(?:not what i asked|please stop|you (?:ignored|missed|should not)|"
-	r"that(?:'s| is) wrong|do not |don't |instead of|i asked)\b",
+	r"(?:^no[,.!:]|\b(?:not what i asked|please stop|you (?:ignored|missed|should not)|"
+	r"that(?:'s| is) wrong|do not |don't |instead of|i asked|i meant|"
+	r"revert back to|roll back|undo that|undo the|(?:please )?try again|"
+	r"actually,?\s+(?:it|the|that|this|i|we|you))\b)",
 	re.IGNORECASE,
 )
 VERIFICATION_PATTERN = re.compile(
@@ -1000,7 +1005,7 @@ def run_selftest() -> None:
 					{
 						"type": "message",
 						"role": "developer",
-						"content": "Injected AGENTS.md context",
+						"content": "Injected AGENTS.md says do not use this approach instead.",
 					},
 				),
 				fixture_record(
@@ -1013,11 +1018,43 @@ def run_selftest() -> None:
 					},
 				),
 				fixture_record(
+					"2026-08-08T10:01:15Z",
+					"event_msg",
+					{
+						"type": "user_message",
+						"message": "I meant the other file.",
+					},
+				),
+				fixture_record(
 					"2026-08-08T10:01:20Z",
 					"event_msg",
 					{
 						"type": "user_message",
 						"message": "That was not what I asked. Run validation instead.",
+					},
+				),
+				fixture_record(
+					"2026-08-08T10:01:25Z",
+					"event_msg",
+					{
+						"type": "user_message",
+						"message": "No, that is the wrong file.",
+					},
+				),
+				fixture_record(
+					"2026-08-08T10:01:27Z",
+					"event_msg",
+					{
+						"type": "user_message",
+						"message": "There is no rush on this.",
+					},
+				),
+				fixture_record(
+					"2026-08-08T10:01:29Z",
+					"event_msg",
+					{
+						"type": "user_message",
+						"message": "Actually the tests pass now.",
 					},
 				),
 				fixture_record(
@@ -1305,11 +1342,12 @@ def run_selftest() -> None:
 		assert parent_rollout["subagent_role_state"] == "not_applicable"
 		assert parent_rollout["activity_state"] == "live"
 		assert parent_rollout["end_timestamp"] is None
-		assert parent_rollout["authored_user_message_count"] == 1
+		assert parent_rollout["authored_user_message_count"] == 5
 		assert len(parent_rollout["uncertain_user_message_references"]) == 1
-		assert len(parent_rollout["candidates"]["corrections"]) == 1
+		assert len(parent_rollout["candidates"]["corrections"]) == 4
 		assert all(
-			"Injected AGENTS.md" not in entry.get("excerpt", "")
+			"Injected AGENTS.md says do not use this approach instead."
+			not in entry.get("excerpt", "")
 			for entry in parent_rollout["evidence"]
 		)
 		ledger = {entry["call_id"]: entry for entry in parent_rollout["tool_ledger"]}

@@ -140,12 +140,11 @@ Verification for any change in this repo:
 
 - `bash scripts/sync.sh` — regenerates all `dist/` output; run after editing anything under `src/`
 - `bash scripts/validate.sh` — must exit 0; pipes are misleading, check `$?` directly rather than a `tail`ed exit
-- `bash tests/friction-logging.sh` — covers both Stop hooks, the friction writer, and the analyser
+- `bash tests/friction-logging.sh` — covers the tool-failure hook, the friction writer, and the analyser
 - `src/skills/friction-review/scripts/analyse-friction.sh` — recurring-friction summary; excludes `check-fail` unless `FRICTION_INCLUDE_CHECK_FAILS=1`
 
 Gotchas:
 
 - `.agent/` is ignored by the global gitignore (`~/.config/git/ignore`), so task files, specs, audits and logs are all untracked. `PROGRESS.md` at the root is the only tracked planning record.
-- The Claude and Codex Stop hooks duplicate their check-running logic. `src/hooks/claude/pre-stop-checks/` is a shell script; the Codex copy is an escaped shell string inside `src/adapters/codex/hooks.json`. A fix to one usually needs the other.
 - Editing `src/rules/global-rules.md` grows a file loaded on every turn in every project. `scripts/validate.sh` enforces an instruction budget; check it before adding prose.
 - `scripts/audit/token_usage_report.py` supports two invocation styles: direct script execution (`python3 scripts/audit/token_usage_report.py`) and package import (`from scripts.audit import token_usage_report`, used by `tests/usage-driver-ledger.sh`). Sibling modules (`metrics.py`, `redundancy.py`, and `token_usage_types.py`, `tool_call_attribution.py`, `token_usage_parsing.py`, `token_usage_rendering.py`) must be imported with plain absolute imports after the file's `sys.path.insert(0, str(AUDIT_DIRECTORY))` shim, never relative imports (`from . import ...`) because direct execution runs the report module as `__main__`. This broke twice during the 2026-08-08 craftsmanship refactor.
