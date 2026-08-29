@@ -200,9 +200,9 @@ A commit boundary is a review boundary, not a release boundary. An API introduce
 - When the only remaining gate is verification the user must run themselves (e.g. a browser or CT suite), give the commit message in that same message rather than promising it after they report back — the message doesn't depend on the result.
 - Suggested commit messages should lead with what the commit achieves and why it matters. Mention implementation details only when they explain user-visible behaviour, compatibility, review risk, or a non-obvious tradeoff.
 - Use concrete nouns and verbs from the changed behaviour. Avoid compressed umbrella wording such as "preserve evidence and provenance" when the commit can name the records or actions involved.
-- Commit subjects should name the behavioural outcome, not the refactor step. Prefer "track dirty state across record loads" over "extract mapFormData".
+- Commit subjects should name the behavioural outcome, not the refactor step, using the plain verb for what happened (fix, add, remove, rename), not an abstract or softer synonym (resolve, address, correct, streamline). Prefer "track dirty state across record loads" over "extract mapFormData"; prefer "fix the broken import" over "resolve the import issue".
 - Name chunks and planned commits by their behavioural outcome. Do not prefix names with sequence numbers such as `Commit 8`, `Chunk 3`, or `5a` unless the user explicitly requests numbered grouping.
-- Commit bodies should usually be one or two sentences: outcome first, reason or constraint second.
+- Default to a subject line only. Add one short body sentence only when the reason or constraint isn't obvious from the subject: no second sentence, and no walkthrough of the mechanism or code path.
 - One chunk produces one commit message. If more are warranted, the chunk should have been split — do not offer multiple messages after the fact.
 - When I specify a number or grouping of commits (e.g. "four commits", "one per file"), produce exactly that — confirm the grouping plan before staging, and do not collapse multiple requested commits into fewer.
 - Never add a `Co-Authored-By` trailer or any attribution line to commit messages.
