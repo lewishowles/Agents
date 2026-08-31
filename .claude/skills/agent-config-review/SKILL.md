@@ -126,6 +126,10 @@ Findings
 - [Medium] <area>: <problem>. Matters: <effect>. Fix: <action>.
 - [Low] <area>: <problem>. Matters: <effect>. Fix: <action>.
 
+Removals
+
+- <file and exact guidance to cut> — <what it duplicates, or why it is stale>.
+
 Checks run
 
 - `<command>` — <result>
@@ -134,6 +138,8 @@ Recommended next step
 
 <one concrete action>
 ```
+
+`Removals` is required, not optional. Name each cut with the evidence for it, or state plainly that nothing should be cut and why. Never omit the element: a review that only adds and adjusts is how always-loaded guidance grows past its budget unnoticed. When `check-instruction-budgets.sh` reports growth, this element carries that review's outcome, including a decision to keep the content and re-baseline instead.
 
 No findings: say so plainly and list supporting checks.
 
