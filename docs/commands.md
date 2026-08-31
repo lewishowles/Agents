@@ -36,7 +36,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/boilersuit` | `boilersuit` | When using Boilersuit generators for repeatable file generation |
 | `/boilersuit-generator-authoring` | `boilersuit-generator-authoring` | When creating or editing a Boilersuit generator definition |
 | `/code-lookup` | `code-lookup` | When choosing a code discovery, tracing, health analysis, or semantic editing tool |
-| `/code-review` | `code-review` | When reviewing a PR or diff, or receiving review feedback |
+| `/code-review` | `code-review` | When reviewing a PR, a diff, existing code at a named path, or receiving review feedback |
 | `/code-style` | `code-style` | When formatting or organising code, naming things, or writing code comments |
 | `/codex-insights` | `codex-insights` | When generating a Codex usage or interaction report |
 | `/component-api-design` | `component-api-design` | When creating a component or changing its public props, slots, emits, models, expose, or contract |

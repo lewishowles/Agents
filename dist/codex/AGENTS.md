@@ -238,6 +238,7 @@ When a PreToolUse hook injects a skill requirement, treat it as binding. Stop be
 - Load the smallest matching set; do not speculatively load adjacent skills. For analysis, review, or planning, do not load implementation skills (see Scope default in global-rules).
 - Summarise constraints in your own words — do not quote skill sections back.
 - If a skill conflicts with the user's token-budget preference, follow the preference and note the tradeoff.
+- Two loaded skills disagree? The more specific skill wins for the part it owns. Say which guidance you set aside and why. Record lasting ownership splits in the two skills' own files, not here.
 
 ## File discovery
 
