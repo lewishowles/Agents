@@ -2,10 +2,10 @@
 # Generated — edit skill.json and SKILL.body.md instead.
 name: code-review
 description: >
-  Use this skill when reviewing code — a PR, a diff, or an individual file — or when receiving review feedback. Applies your conventions (accessibility, code-style, error-handling, frontend-security, web-performance) as a checklist, and covers how to give and receive feedback.
+  Use this skill when reviewing code — a PR, a diff, an individual file, or existing code at a named path — or when receiving review feedback. Applies your conventions (accessibility, code-style, error-handling, frontend-security, web-performance) as a checklist, and covers how to give and receive feedback.
 do-not-use-when:
   - Writing new code (apply the relevant stack skills instead)
-  - A general question about code quality with no specific diff to review
+  - A general question about code quality with no specific code or path to review
   - Reviewing recurring friction-log patterns, not a code diff — use friction-review instead
   - Reviewing an external artefact such as a website, blog post, or docs page — use project-learn-from-source instead
   - Synthesising another agent's suggestions or plan rather than reviewing a diff — use project-synthesise-feedback instead
@@ -26,6 +26,7 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 ### Before reviewing
 
 - Inspect changes summary-first: start with status, changed file names, and stats or numstat. Read a patch only for the selected file or hunk needed to assess a risk; do not print the entire diff by default.
+- Reviewing existing code at a named path rather than a change? Skip the diff steps, take that path as the scope, and apply the same checklists to the code as it stands. Say what you covered, since there is no diff to bound it.
 - Understand intent: what problem does this solve?
 - Check scope: one thing or several?
 - Before declaration review, name each changed file's responsibility and flag unrelated jobs or unclear boundaries.

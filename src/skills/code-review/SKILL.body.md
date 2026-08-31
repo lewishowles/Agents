@@ -7,6 +7,7 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 ### Before reviewing
 
 - Inspect changes summary-first: start with status, changed file names, and stats or numstat. Read a patch only for the selected file or hunk needed to assess a risk; do not print the entire diff by default.
+- Reviewing existing code at a named path rather than a change? Skip the diff steps, take that path as the scope, and apply the same checklists to the code as it stands. Say what you covered, since there is no diff to bound it.
 - Understand intent: what problem does this solve?
 - Check scope: one thing or several?
 - Before declaration review, name each changed file's responsibility and flag unrelated jobs or unclear boundaries.
