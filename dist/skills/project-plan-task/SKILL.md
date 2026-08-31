@@ -75,6 +75,8 @@ For non-routine or consequential work, establish only the prompts that apply:
 
 Record the resulting durable facts against the task in `discovery` and `decision` records rather than adding them to an unstructured plan file. When a decision replaces an earlier one, link it as superseding that decision.
 
+End each `decision` body with the condition that would reopen it: a dependency release, a measurement, a product change, or an explicit statement that nothing would. Compaction checks that stated condition to decide whether the entry still earns its place, instead of re-judging every decision from scratch.
+
 ## Cross-repo work
 
 When a task may span more than one repository, make the repo boundary explicit before adding the task. This gives us most of the coordination benefit of a synthetic monorepo without requiring a hosted tool or account.
@@ -133,8 +135,10 @@ A spec explains why now, the problem, goals, non-goals, approach, entry point an
 
 Use one `task` record for the work and its stable contract: identity, overview, purpose, contract, model tier when needed, files and linked specs, acceptance criteria, verification, risks, release, and position.
 
+End the `--contract` value with an explicit out-of-scope statement naming the adjacent work a reader could reasonably assume is included. There is no separate non-goals field, and every delegation packet has to state explicit non-scope, so a task without this makes each handoff redraw the boundary from memory. Name a specific exclusion or leave the statement out; a generic "nothing else is in scope" line adds nothing.
+
 Use `chunk` records for detailed implementation steps, including decisions-first ordering and mechanical-last work. Work discovered during a chunk stays in that chunk only when it answers the same primary review question. Put cross-cutting or unrelated implementation in its own chunk, or in a separate task when it is independently schedulable. Use `discovery` and `decision` records for durable findings rather than changing the task history by hand.
 
 Once a task's chunk split is known, create or update every known chunk in the same planning pass. Do not keep known chunks only in chat, handoff text, or a spec, and do not wait until implementation or delegation to add them. Later chunks may stay concise until work starts, but each record must name its reviewable outcome and order. Add a chunk later only when its boundary was genuinely unknown earlier.
 
-Start a task when implementation begins. Block it when an external blocker or unresolved decision makes it unsafe to continue, and unblock it only when that condition is resolved. Complete chunks as they are accepted. Complete the task only after the user accepts the final reviewable outcome. Never infer status from Git state.
+Start a task when implementation begins. Block it when an external blocker or unresolved decision makes it unsafe to continue, and unblock it only when that condition is resolved. When an unresolved decision affects only some chunks, record the open question and its recommended default in those chunks' descriptions and leave the rest workable; block the whole task only when the answer could change work across all of it. Complete chunks as they are accepted. Complete the task only after the user accepts the final reviewable outcome. Never infer status from Git state.

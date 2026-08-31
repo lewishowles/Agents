@@ -49,6 +49,7 @@ Read only enough to orient. Stale sessions (5+ min idle) restart from scratch.
 - Skip completed tasks and old records unless the current task depends on their history
 - Run `git status --short` before editing to avoid overwriting work the user has not handled. Do not put its result in `PROGRESS.md`, or use it to infer task completion. Branch creation or switching is not part of task setup unless the user requests it.
 - Read `WORKSPACE.md` if present before running local commands
+- Surface any open question recorded on a chunk before starting that chunk, and ask it rather than quietly adopting its recommended default
 - Verify incomplete tasks and chunks still fit the current scope
 
 ## Starting the next task
