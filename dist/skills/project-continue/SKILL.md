@@ -52,6 +52,7 @@ Read only enough to orient. Stale sessions (5+ min idle) restart from scratch.
 
 - Read the handoff from `progress context get --json`, including `current_goal`, `previous_step`, `next_step`, `standing_context`, `verify_with`, and `stop_marker`
 - Verify the active task and chunk records before starting: the CLI status is the source of truth. If the task record says `done` but accepted chunks remain incomplete, complete the chunk records and task through the CLI, then update release and queue state.
+- Check the handoff against the active records and worktree before following it. Treat current evidence as fresher; surface any conflict and do not execute a stale next step.
 - Read active task, chunk, discovery, decision, and risk details only when needed
 - Read linked feature specs only when active; skip unrelated specs
 - Skip completed tasks and old records unless the current task depends on their history
@@ -104,6 +105,7 @@ Make one Edit/Write call covering every section below, not a separate call per b
 - When implementation for a chunk is finished, refresh the compact handoff with the last state change, the verification outcome in one clause, and the first next action. Do not list implementation details or individual checks. Leave the chunk and task `in-progress` until the user explicitly accepts it with “committed”, “continue”, “next”, or equivalent. Then complete the chunk with `progress chunk complete <chunk-id>`. If another chunk remains, resume from it later. After the final chunk is accepted, mark the task done with `progress task complete <task-id>` when no pending or active chunks remain. Update release and queue state through `progress release` and `progress task move` as needed. Do not archive completion in `PROGRESS.md`.
 - Set `previous_step` to the last state change and, when it affects continuation, a concise verification outcome using `progress context set`
 - Set `next_step` with the first concrete follow-up action using `progress context set`
+- Put unresolved facts and constraints in `standing_context`. Put the interruption, blocker, or in-flight command and its known state in `stop_marker`; state clearly when nothing is interrupted or nothing remains.
 - Update release status and queue order through `progress release` and `progress task move` when a release's last task lands as done
 - If nothing remains for the current goal, say that clearly in the handoff instead of leaving stale TODOs
 - Compact now if the project keeps root-level `PROGRESS.md` prose and it has grown significantly; current context makes it cheaper
