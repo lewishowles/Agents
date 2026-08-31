@@ -14,13 +14,15 @@ Work through in order. If an answer is missing, ask; don't guess.
 4. **Differentiation** — what makes this distinct from the generic version?
 5. **Code** — only then, reach for the editor
 
-If (4) is "nothing yet", resolve before proceeding. Any product page could belong anywhere if it's generic.
+An established product, platform, or design system takes precedence over this skill's taste defaults. Reuse its components, tokens, typography, palette, layout, and interaction patterns unless the user requests a new direction or project evidence shows that a choice is accidental or stale. A common style is not wrong merely because it is common.
+
+For greenfield or explicitly brand-defining work, if (4) is "nothing yet", resolve it before proceeding. An existing product can choose consistency as the correct outcome; a new visual direction needs a reason.
 
 ## Typography
 
 Choose type that reflects tone, not type that avoids controversy.
 
-- **Default pairings to avoid**: Inter + anything, Roboto + anything signal "safe option"
+- **For greenfield work, question familiar default pairings**: Inter + anything or Roboto + anything can signal that no product-specific choice was made
 - Pick scale intentionally: modular ratio (1.25, 1.333, 1.5)
 - Limit to two typefaces: one for display/headings, one for body. Use weight and size before a third face
 - Line height: 1.4–1.6 for body, 1.1–1.2 for large display headings
@@ -33,7 +35,7 @@ Colour should carry meaning, not just decoration.
 - Start from purpose: medical dashboard needs restraint; food brand can be saturated
 - Establish a palette: one dominant hue, one accent (used sparingly), neutral surface tones
 - **Contrast is non-negotiable**: 4.5:1 body text, 3:1 large text and UI (WCAG AA). Check light and dark variants
-- Avoid purple-blue or teal-green gradients: visual equivalent of Inter
+- For a greenfield palette, question purple-blue or teal-green gradients unless the product gives them a clear reason
 - If using a gradient, ensure clear directional rationale (light source, brand direction)
 
 ## Motion and animation
@@ -54,11 +56,11 @@ Motion should reinforce meaning, not demonstrate capability.
 - Avoid symmetrical layouts by default: asymmetry creates tension; symmetry signals formality. Choose deliberately
 - For heroes: lead with specific claim, not generic value prop. "Build accessible Vue components in minutes" beats "The modern component library"
 
-## Anti-patterns
+## Greenfield anti-pattern prompts
 
-Defaults to reject, not rules to follow:
+Use these only when the product has no established visual owner or the user asks for a new direction. They are prompts to check whether a choice is deliberate, not reasons to override an existing brand, platform, or design system.
 
-| Avoid                                  | Because                                              | Instead                                                                         |
+| Pattern to question                    | Risk                                                 | Instead                                                                         |
 | -------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------- |
 | Inter as default body font             | Ubiquitous; signals no decision was made             | Outfit, DM Sans, Fraunces, Syne, or a system stack used deliberately            |
 | Purple-to-blue gradient hero           | Most common SaaS pattern of the last five years      | Derive colour from purpose; one strong hue beats a gradient                     |
@@ -81,3 +83,5 @@ Before handing off to implementation, confirm:
 ---
 
 _Adapted from the Anthropic Claude Code frontend-design skill (MIT). Reworded and extended._
+
+The visual-owner precedence adapts ideas from Benjamin Stelzer's `scoville-ui-anti-ai-slop` skill, MIT licensed.

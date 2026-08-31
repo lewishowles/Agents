@@ -34,6 +34,16 @@ do-not-use-when:
 - Scenarios > rules — "imagine you're on a pricing page..." beats "always provide confirmation"
 - Humanise examples — "Lewis Howles" not "User X"
 
+## Fidelity before style
+
+Apply this when editing or reviewing text derived from an existing source, product behaviour, or named author. Unless the request explicitly changes the meaning:
+
+- Preserve claims, names, numbers, conditions, exceptions, negation, degree of certainty, attribution, and the author's position
+- Keep canonical product and project terms consistent; don't rename a concept for variety
+- Preserve working text contracts such as placeholders, interpolation or ICU branches, access keys, shortcuts, identifiers, schemas, and accessible names
+- Don't invent causes, capabilities, recovery steps, experience, or evidence to make the writing smoother
+- Compare the final passage with its source for the protected details, not only for tone and readability
+
 ## Language
 
 - **UK spelling** — colour, behaviour, organise, grey, recognise
@@ -124,3 +134,5 @@ For real before-and-after corrections from this repository, grouped by the shape
 ## Attribution
 
 The "AI prose tells" checklist adapts ideas from Hardik Pandya's `stop-slop` skill, MIT licensed.
+
+The source-fidelity guidance adapts ideas from Benjamin Stelzer's `scoville-scribe-anti-ai-slop` skill, MIT licensed.

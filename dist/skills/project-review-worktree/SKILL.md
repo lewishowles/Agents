@@ -25,7 +25,7 @@ Use `code-lookup` for structural questions. Use targeted reads; avoid generated,
 
 ## Skill routing
 
-Load and apply `code-review`, `code-style`, and relevant language or framework skills. When the changes include comments, documentation, test or `describe` names, descriptions, metadata, or other prose, also load `writing` and read a few relevant pairs from its plain-English corpus before the craftsmanship pass. Do not list an unloaded or unchecked skill as applied.
+Load and apply `code-review`, `code-style`, and relevant language or framework skills. When the changes include comments, documentation, test or `describe` names, descriptions, metadata, or other prose, also load `writing` and read a few relevant pairs from its plain-English corpus before the craftsmanship pass. When changes affect a visible interface, also load `frontend-design` and `accessibility`; use `accessibility-audit` only when the request calls for an accessibility audit. Do not list an unloaded or unchecked skill as applied.
 
 ## Review method
 
@@ -37,7 +37,7 @@ Load and apply `code-review`, `code-style`, and relevant language or framework s
 6. Compare implementation and documentation with the plan, risks, verification, and generated-source boundary. Reference documentation must match code; roadmaps may describe future work.
 7. Re-check PROGRESS.md's deferred or forward-looking notes (e.g. "optional hardening", "if a third caller ever needs this") against this diff. If the stated trigger condition is now met, treat it as a finding, not a resolved deferral.
 8. Run any remaining cheap, justified checks raised by source inspection.
-9. Run a separate cold craftsmanship pass over the current changed files after the correctness review. Inventory every changed prose unit, test or `describe` name, fixture or helper name and value, and new structural grouping. Read each item without relying on task-file vocabulary, previous approval, or a sibling pattern to justify it. Check whether a reader can understand it without translating internal mechanics, whether its name describes observable behaviour, and whether the added structure makes the file clearer. Existing precedent is context, not proof that the new item is good. After a craftsmanship finding is fixed, repeat this pass over the whole current chunk, not only the fix diff.
+9. Run a separate cold craftsmanship pass over the current changed files after the correctness review. Inventory every changed prose unit, test or `describe` name, fixture or helper name and value, and new structural grouping. For prose derived from an existing source, also inventory the claims, conditions, uncertainty, attribution, canonical terms, and working text contracts that must survive the edit. For visible UI, inventory the primary task and action hierarchy, canonical design-system choices, affected states, responsive transformations, and claims that need rendered or interactive evidence. Read each item without relying on task-file vocabulary, previous approval, or a sibling pattern to justify it. Check whether a reader can understand it without translating internal mechanics, whether its name describes observable behaviour, whether protected meaning still matches its source, whether the UI remains usable across relevant states and layouts, and whether the added structure makes the file clearer. Existing precedent is context, not proof that the new item is good. After a craftsmanship finding is fixed, repeat this pass over the whole current chunk, not only the fix diff.
 10. Lead with findings and evidence gaps. State when no must-fix issue exists.
 
 Don't use `git diff` for routine self-review. For independent review, use targeted diffs or file reads when clearest, keeping output narrow.
@@ -58,11 +58,12 @@ Check these against changed files and state which were checked:
 - **Simplest viable shape** — compare with direct code; new helpers, registry fields, callbacks, options, and indirection must make current use clearer, not prepare for possible reuse
 - **Naming and sibling consistency** — uses neighbouring conventions where they remain clear and suitable; precedent does not excuse a weak name or unnecessary structure
 - **Documentation coverage and wording** — use the inventory to find missing comments or JSDoc, then review communication separately. Read each changed comment, docstring, prop text, test name, description, metadata value, or documentation passage as a complete unit without relying on the diff or symbol name. Confirm that it is true, says what the thing is or does, gives the reader useful information beyond the identifier or mechanics, and uses the simplest concrete wording. Review repeated sibling wording individually. After a point fix, reread the whole sentence, paragraph, or value
+- **UI craftsmanship** — for visible UI, preserve the canonical visual owner, make task and action hierarchy clear, cover relevant states and responsive transformations, and distinguish source inspection from rendered or interactive evidence
 - **No out-of-contract changes** — every line traces to the task; adjacent improvements are findings, not edits
 
 ## Craftsmanship result
 
-Before approval, report the declaration inventory, craftsmanship inventory, skills applied, ready or changes requested, and findings. The craftsmanship inventory lists each reviewed item by file and line; group clean items by file to keep the record compact. Do not approve with an incomplete inventory, unchecked convention, prose accepted only because it is present, or a previous craftsmanship verdict that has not been repeated after a related fix.
+Before approval, report the declaration inventory, craftsmanship inventory, skills applied, ready or changes requested, and findings. The craftsmanship inventory lists each reviewed item by file and line; group clean items by file to keep the record compact. For source-derived prose and visible UI, include the protected meaning or working text contracts and the UI items checked. Do not approve with an incomplete inventory, unchecked convention, prose accepted only because it is present, or a previous craftsmanship verdict that has not been repeated after a related fix.
 
 ## Evidence status
 
@@ -98,7 +99,7 @@ Use this shape:
 
 ## Craftsmanship inventory
 
-- `<file>:<line>` — <prose, name, value, or grouping reviewed; pass or finding>.
+- `<file>:<line>` — <prose, name, value, grouping, source-fidelity item, or UI item reviewed; pass or finding>.
 
 ## Craftsmanship
 
@@ -138,3 +139,5 @@ Use `None found.` or `None.` for empty sections, unless the user asks for anothe
 ### HCOM reviewer delivery
 
 When this skill is used by an HCOM Reviewer, keep the complete output above as the durable `review` handoff record. The live HCOM message contains only the verdict, every actionable finding in one sentence, a compact verification summary with the first gap or failure, and the review record reference. Keep the declaration inventory and detailed evidence in the record; do not copy Scout receipts or the full review into the live message.
+
+The source-fidelity and UI-craftsmanship checks adapt ideas from Benjamin Stelzer's `scoville-scribe-anti-ai-slop` and `scoville-ui-anti-ai-slop` skills, MIT licensed.

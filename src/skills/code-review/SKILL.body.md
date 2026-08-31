@@ -48,6 +48,14 @@ Reviews improve code collaboratively. Feedback is specific, actionable, grounded
 - Colour contrast sufficient?
 - No unsanitised `v-html`?
 
+**UI quality** (any visible interface change)
+
+- Does the existing product, platform, or design system remain the visual owner, using its established components, tokens, and patterns?
+- Does the visual hierarchy make the primary task and the relative weight of secondary or destructive actions clear?
+- Are relevant loading, empty, error, disabled, success, focus, keyboard, and touch states covered rather than only the happy path?
+- Does the task remain usable at supported narrow and wide layouts, zoom levels, and content lengths through deliberate adaptation rather than shrinking alone?
+- Are claims about layout, interaction, responsiveness, or visual quality backed by rendered or interactive evidence, with source-only conclusions labelled as such?
+
 **Security** (input, auth, external data)
 
 - User input validated/sanitised?
@@ -136,3 +144,5 @@ Read all feedback before responding; items may depend on each other.
 ---
 
 Blast radius, cross-boundary rule consistency, and the no-padding rule adapt ideas from `alamops/skills` (`skills/code-review`), MIT licensed.
+
+The UI-quality checklist adapts ideas from Benjamin Stelzer's `scoville-ui-anti-ai-slop` skill, MIT licensed.
