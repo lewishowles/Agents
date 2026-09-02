@@ -2,7 +2,7 @@
 # Generated — edit skill.json and SKILL.body.md instead.
 name: writing
 description: >
-  Use this skill when writing or editing prose, including blogs, docs, longform, and marketing copy. For README files, see writing-readme; for UI microcopy, see writing-copy.
+  Use this skill when writing or editing prose, including blogs, docs, longform, marketing copy, commit messages, comments, docstrings, and written reports or handoffs. For README files, see writing-readme; for UI microcopy, see writing-copy.
 do-not-use-when:
   - Editing executable code, configuration, or generated output without prose changes
   - Writing UI labels, validation messages, tooltips, or other microcopy where writing-copy is narrower
@@ -73,6 +73,15 @@ These are recurring offenders, not a complete list. A new wording correction bec
 - Marketing or hype — describe what it does
 - "Just" and "simply" — drop or state plainly how few steps
 
+## Length and compression
+
+Prose usually reads as robotic because it was compressed too far, not because it ran too long. Squeezing a sentence until only abstract nouns remain meets a word budget and loses the meaning.
+
+- **Brevity is not a goal in comments, commit messages, documentation, or records** — write what the reader needs. Cut padding, repetition, and mechanism walkthroughs; never cut the words that name what happened
+- **Compression that hides the actor, the mechanism, or the result has gone too far** — "preserve bounded rollout evidence and provenance" is shorter than "name the session links, completion events, and rollbacks this touches", and unreadable
+- **Keep qualifiers that carry real uncertainty** — stripping every hedge produces prose no person would write. Cut a qualifier that hides a claim; keep one that reports genuine doubt
+- **A shorter sentence is not automatically a clearer one** — if the reader has to reconstruct what was removed, the edit failed
+
 ## AI prose tells
 
 Use this as a final pass when prose sounds generated or over-shaped:
@@ -82,6 +91,15 @@ Use this as a final pass when prose sounds generated or over-shaped:
 - **Vague significance** — replace "important", "significant", "crucial", or "meaningful" with the specific effect or risk
 - **False agency** — avoid abstract nouns doing human work unless the product voice needs it. Name the actor when responsibility matters
 - **Punch-line endings** — vary paragraph endings. Don't make every section finish with a quotable final sentence
+
+Treat each item above as a search aid, not a ban. Before changing a flagged construction, test whether it earns its place:
+
+- **Flatten test** — state the claim without the cadence. If nothing specific remains, the formula was doing the work of the missing reasoning. If a real claim remains, leave the construction alone
+- **Relation test** — restate the implied connection using "because", "although", "when", "if", "which", or "so". If you have to invent the relation to say it out loud, the original only implied one
+
+Keep quoted text, proper names, terms of art, and an ordinary word used accurately. Don't swap one flagged word for another; rewrite the claim or leave it.
+
+When prose reads as generated, fix the cause. Don't add inserted asides, staged hesitation, or forced informality to make it sound human. Texture that is already in the writing can be preserved; invented texture is performance, and reads worse than the flatness it was meant to cover.
 
 ## Phrasing
 
@@ -136,3 +154,5 @@ For real before-and-after corrections from this repository, grouped by the shape
 The "AI prose tells" checklist adapts ideas from Hardik Pandya's `stop-slop` skill, MIT licensed.
 
 The source-fidelity guidance adapts ideas from Benjamin Stelzer's `scoville-scribe-anti-ai-slop` skill, MIT licensed.
+
+The compression guidance, the flatten and relation tests, and the invented-texture warning adapt ideas from Addy Osmani's `clarity` skill, MIT licensed.
