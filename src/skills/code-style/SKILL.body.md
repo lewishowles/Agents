@@ -46,6 +46,7 @@ for line in contents.splitlines():
 - Prefer "user" over "consumer"
 - Destructured keys and imports: alphabetical
 - Name variables after what they represent, not how they look — `alertPrefix` not `capitalisedType`
+- A name that reads clearly in one file can be ambiguous in another. Check every new name against the other names already in its scope: when a bare `model`, `value`, `data`, or `item` sits beside several value-like names, give it the specific one (`selectedCountry`, not `model`). Matching a library-wide or sibling convention does not override local clarity.
 - Fixed string sets: define a named constants object — `const alertTypes = { ERROR: "error", MUTED: "muted" }` — and reference it in switch/if/template expressions
 
 ## Reuse existing helpers
@@ -70,6 +71,7 @@ Before writing new logic for a problem a sibling module already solves (prop det
 - Avoid shared "switchboard" helpers that accumulate one option per caller; let each caller own its formatting/behaviour, or name distinct modes explicitly
 - Prefer explicit, obviously-correct control flow over clever tricks (sentinel loops, index arithmetic) even when the clever version is correct
 - For repeated structural logic, compare explicit code, existing code, a helper, and a shared abstraction. Add one only when the behaviour and callers become clearer.
+- Place each declaration next to what it composes and its callers. Setup calls (`watch`, `onClickOutside`, `useEventListener`, lifecycle hooks) group with the other setup calls near the top, not after the method block; a helper sits beside its one caller. Reading order should follow the data flow.
 
 ## Comments & documentation
 
@@ -88,6 +90,7 @@ Before writing new logic for a problem a sibling module already solves (prop det
 - Lead with one line, present tense, no boilerplate. Put options in `@note`; keep `@example` short. Match surrounding tone
 - Plain-language voice; no unexplained jargon or "etc". Purpose over cleverness
 - Avoid inflated phrasing like "positioning context" or "caller-provided X"; don't invent a term for a concept the codebase doesn't already name (e.g. "wide panel"): reuse existing naming or ask
+- A comment records a fact for the next maintainer; it does not narrate to an audience. Read each new comment and docstring aloud: if it opens by announcing the point, restates the signature or name, or ends on a flourish, cut it
 - Before presenting, run new comments and markdown docs against the "AI prose tells" checklist in the writing skill (announcement phrases, formulaic contrast, vague significance, false agency, punch-line endings) — code comments are not exempt from sounding AI-generated
 - Prefer the codebase's concrete verb or noun over abstract process terms such as "classification" or "invocation" when a plain description of the behaviour is available
 - This also covers swapping an existing name for a more formal-sounding synonym, not just novel terms: if the code calls `useStorage`, describe it as storing/stored, not "persist"/"persistence"/"reactive". Match the API's own verb.
