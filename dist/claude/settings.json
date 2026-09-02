@@ -83,11 +83,19 @@
         "hooks": [
           {
             "type": "command",
+            "command": "bash -c 'bash \"$HOME/.claude/hooks/guard-commit-message.sh\"'"
+          },
+          {
+            "type": "command",
             "command": "bash -c 'bash \"$HOME/.claude/hooks/guard-destructive.sh\"'"
           },
           {
             "type": "command",
             "command": "bash -c 'bash \"$HOME/.claude/hooks/guard-hcom-ack.sh\"'"
+          },
+          {
+            "type": "command",
+            "command": "bash -c 'bash \"$HOME/.claude/hooks/guard-no-pager.sh\"'"
           },
           {
             "type": "command",

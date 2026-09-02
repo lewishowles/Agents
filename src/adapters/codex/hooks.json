@@ -1,125 +1,133 @@
 {
-  "hooks": {
-    "PreToolUse": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash \"${CODEX_HOME:-$HOME/.codex}/hooks/tool-call-checkpoint.sh\" codex"
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "set +e\noutput=$(serena-hooks remind --client=codex)\nstatus=$?\nset -e\ncase \"$output\" in\n\t*\"Too many consecutive\"*)\n\t\tprintf 'Serena reminder: too many consecutive source-inspection calls without symbolic tools. Next action should be a Serena symbolic lookup, diagnostics, or a single targeted read with a stated reason.\\n' >&2\n\t\texit 0\n\t\t;;\nesac\nif [ -n \"$output\" ]; then\n\tprintf '%s\\n' \"$output\"\nfi\nexit \"$status\""
-          },
-          {
-            "type": "command",
-            "command": "bash \"$HOME/.codex/hooks/guard-hcom-ack.sh\""
-          },
-          {
-            "type": "command",
-            "command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-pretooluse"
-          },
-          {
-            "type": "command",
-            "command": "bash \"$HOME/.codex/hooks/guard-destructive.sh\""
-          },
-          {
-            "type": "command",
-            "command": "bash \"$HOME/.codex/hooks/guard-search-boundaries.sh\""
-          }
-        ]
-      }
-    ],
-    "PreCompact": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash \"${CODEX_HOME:-$HOME/.codex}/hooks/tool-call-checkpoint.sh\" codex"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-posttooluse"
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-userpromptsubmit"
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "matcher": "startup|resume|clear|compact",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo \"Code discovery: prefer codebase-memory-mcp (search_graph, trace_path, get_code_snippet, query_graph, search_code) over grep/file-read; run index_repository first if the project is not indexed. Skip this entirely when the target file, symbol, or finding is already named in a task packet, handoff, or the user's message; read it directly instead.\""
-          }
-        ]
-      },
-      {
-        "matcher": "startup|resume",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "serena-hooks activate --client=codex"
-          }
-        ]
-      },
-      {
-        "matcher": "startup|resume|clear",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-sessionstart"
-          }
-        ]
-      },
-      {
-        "matcher": "clear",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash \"${CODEX_HOME:-$HOME/.codex}/hooks/tool-call-checkpoint.sh\" codex"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "serena-hooks cleanup --client=codex"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-stop"
-          }
-        ]
-      }
-    ]
-  }
+	"hooks": {
+		"PreToolUse": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash \"${CODEX_HOME:-$HOME/.codex}/hooks/tool-call-checkpoint.sh\" codex"
+					}
+				]
+			},
+			{
+				"matcher": "Bash",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "set +e\noutput=$(serena-hooks remind --client=codex)\nstatus=$?\nset -e\ncase \"$output\" in\n\t*\"Too many consecutive\"*)\n\t\tprintf 'Serena reminder: too many consecutive source-inspection calls without symbolic tools. Next action should be a Serena symbolic lookup, diagnostics, or a single targeted read with a stated reason.\\n' >&2\n\t\texit 0\n\t\t;;\nesac\nif [ -n \"$output\" ]; then\n\tprintf '%s\\n' \"$output\"\nfi\nexit \"$status\""
+					},
+					{
+						"type": "command",
+						"command": "bash \"$HOME/.codex/hooks/guard-hcom-ack.sh\""
+					},
+					{
+						"type": "command",
+						"command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-pretooluse"
+					},
+					{
+						"type": "command",
+						"command": "bash \"$HOME/.codex/hooks/guard-destructive.sh\""
+					},
+					{
+						"type": "command",
+						"command": "bash \"$HOME/.codex/hooks/guard-search-boundaries.sh\""
+					},
+					{
+						"type": "command",
+						"command": "bash \"$HOME/.codex/hooks/guard-no-pager.sh\""
+					},
+					{
+						"type": "command",
+						"command": "bash \"$HOME/.codex/hooks/guard-commit-message.sh\""
+					}
+				]
+			}
+		],
+		"PreCompact": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash \"${CODEX_HOME:-$HOME/.codex}/hooks/tool-call-checkpoint.sh\" codex"
+					}
+				]
+			}
+		],
+		"PostToolUse": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-posttooluse"
+					}
+				]
+			}
+		],
+		"UserPromptSubmit": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-userpromptsubmit"
+					}
+				]
+			}
+		],
+		"SessionStart": [
+			{
+				"matcher": "startup|resume|clear|compact",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "echo \"Code discovery: prefer codebase-memory-mcp (search_graph, trace_path, get_code_snippet, query_graph, search_code) over grep/file-read; run index_repository first if the project is not indexed. Skip this entirely when the target file, symbol, or finding is already named in a task packet, handoff, or the user's message; read it directly instead.\""
+					}
+				]
+			},
+			{
+				"matcher": "startup|resume",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "serena-hooks activate --client=codex"
+					}
+				]
+			},
+			{
+				"matcher": "startup|resume|clear",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-sessionstart"
+					}
+				]
+			},
+			{
+				"matcher": "clear",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash \"${CODEX_HOME:-$HOME/.codex}/hooks/tool-call-checkpoint.sh\" codex"
+					}
+				]
+			}
+		],
+		"Stop": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "serena-hooks cleanup --client=codex"
+					}
+				]
+			},
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"; hcom codex-stop"
+					}
+				]
+			}
+		]
+	}
 }

@@ -1,0 +1,13 @@
+{
+	"name": "guard-no-pager",
+	"description": "Blocks `git <subcommand> ... --no-pager`, which Git rejects; the flag belongs before the subcommand.",
+	"runtime": "claude",
+	"events": [
+		{
+			"event": "PreToolUse",
+			"matcher": "Bash"
+		}
+	],
+	"dependencies": ["jq"],
+	"failureMode": "silent"
+}

@@ -11,8 +11,10 @@ Hooks are shell scripts that Claude Code runs automatically at specific points i
 | Hook | Purpose | Event | Behaviour on failure |
 | ---- | ------- | ----- | -------------------- |
 | `auto-format` | Runs oxfmt after supported file writes when available. | PostToolUse (`Edit\|Write`) | `silent` |
+| `guard-commit-message` | Blocks an `hcom send` whose body proposes a commit message; subordinate roles leave that to the Orchestrator. | PreToolUse (`Bash`) | `silent`; requires jq |
 | `guard-destructive` | Blocks sudo, filesystem wipes, git config mutation, and rm — the unconditional-never commands in this repo's Git Safety Protocol and Communication rules. | PreToolUse (`Bash`) | `silent`; requires jq |
 | `guard-hcom-ack` | Blocks acknowledgement-only HCOM messages so team roles wait silently for actionable work or terminal receipts. | PreToolUse (`Bash`) | `silent`; requires jq |
+| `guard-no-pager` | Blocks `git <subcommand> ... --no-pager`, which Git rejects; the flag belongs before the subcommand. | PreToolUse (`Bash`) | `silent`; requires jq |
 | `guard-search-boundaries` | Blocks broad searches that bypass ignore rules or enter generated, dependency, cache, coverage, and browser-output directories. | PreToolUse (`Bash`) | `silent`; requires jq, python3 |
 | `hcom` | Routes verified Claude lifecycle events to HCOM without managing other Claude settings. | Notification, PermissionRequest, PostToolUse, PostToolUseFailure, PreToolUse (`Bash\|Task\|Write\|Edit`), SessionEnd, SessionStart, Stop, StopFailure, SubagentStart, SubagentStop, UserPromptSubmit | `silent`; requires hcom |
 | `image-for-agent-read` | Reroutes local image reads through image-for-agent using the fixed ui preset. | PreToolUse (`Read`) | `silent`; requires jq, image-for-agent |

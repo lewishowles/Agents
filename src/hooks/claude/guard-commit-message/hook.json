@@ -1,0 +1,13 @@
+{
+	"name": "guard-commit-message",
+	"description": "Blocks an `hcom send` whose body proposes a commit message; subordinate roles leave that to the Orchestrator.",
+	"runtime": "claude",
+	"events": [
+		{
+			"event": "PreToolUse",
+			"matcher": "Bash"
+		}
+	],
+	"dependencies": ["jq"],
+	"failureMode": "silent"
+}
