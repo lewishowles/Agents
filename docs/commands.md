@@ -44,7 +44,7 @@ Every skill can be invoked manually as a command. Type the skill name with a `/`
 | `/debugging` | `debugging` | When encountering any bug, test failure, or unexpected behaviour — before proposing a fix |
 | `/dependencies` | `dependencies` | When adding packages, what to choose, when to add |
 | `/error-handling` | `error-handling` | When validating input, graceful fallbacks, error handling |
-| `/friction-review` | `friction-review` | When reviewing recurring friction-log entries to propose rule/skill amendments |
+| `/friction-review` | `friction-review` | When reviewing recurring friction summary entries to propose rule/skill amendments |
 | `/frontend-design` | `frontend-design` | When designing UI or making aesthetic decisions for a public-facing interface |
 | `/frontend-security` | `frontend-security` | When writing or reviewing client-side code for security: XSS, CSP, auth tokens, secrets hygiene |
 | `/human-friendly-cli` | `human-friendly-cli` | When designing, reviewing, or extending CLI commands |

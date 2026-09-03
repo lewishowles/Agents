@@ -1,11 +1,11 @@
 {
 	"name": "friction-review",
-	"description": "Use this skill to turn recurring friction-log patterns into specific, minimal, human-reviewed amendments to src/rules/ or src/skills/. Runs src/skills/friction-review/scripts/analyse-friction.sh, proposes a diff per pattern, never auto-applies.",
-	"when": "When reviewing recurring friction-log entries to propose rule/skill amendments",
-	"triggers": ["friction-review", "review friction", "friction patterns", "friction log"],
+	"description": "Use this skill to turn recurring friction patterns from friction summary into specific, minimal, human-reviewed amendments to src/rules/ or src/skills/. Uses friction resolve after an accepted amendment, proposes a diff per pattern, and never auto-applies.",
+	"when": "When reviewing recurring friction summary entries to propose rule/skill amendments",
+	"triggers": ["friction-review", "review friction", "friction patterns", "friction summary"],
 	"do-not-use-when": [
-		"Logging a single friction entry — use .agent/scripts/log-friction.sh directly",
-		"The friction log is empty or has no recurring patterns",
+		"Logging a single friction entry — use friction add",
+		"The friction summary is empty or has no recurring patterns",
 		"Reviewing a code diff or PR — use code-review instead"
 	],
 	"filePatterns": [],

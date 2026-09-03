@@ -140,8 +140,8 @@ Verification for any change in this repo:
 
 - `bash scripts/sync.sh` — regenerates all `dist/` output; run after editing anything under `src/`
 - `bash scripts/validate.sh` — must exit 0; pipes are misleading, check `$?` directly rather than a `tail`ed exit
-- `bash tests/friction-logging.sh` — covers the tool-failure hook, the friction writer, and the analyser
-- `src/skills/friction-review/scripts/analyse-friction.sh` — recurring-friction summary; excludes `check-fail` unless `FRICTION_INCLUDE_CHECK_FAILS=1`
+- `bash tests/friction-logging.sh` — covers the tool-failure hook and the friction writer
+- `friction summary` — groups recurring friction by category, cwd and detail; excludes `check-fail` rows unless you pass `--include-check-fails`
 
 Gotchas:
 
