@@ -12,28 +12,30 @@ trap cleanup EXIT
 
 run_tool_failure_hook() {
 	local project_dir="$1"
-	local home_dir="$2"
+	local database_path="$2"
 	local payload="$3"
 
 	(
 		cd "$project_dir"
-		HOME="$home_dir" bash "$REPO_DIR/dist/claude/hooks/tool-failure-log.sh" <<< "$payload"
+		FRICTION_DATABASE="$database_path" bash "$REPO_DIR/dist/claude/hooks/tool-failure-log.sh" <<< "$payload"
 	)
 }
 
 test_tool_failures_are_logged() {
 	local project_dir="$TEST_ROOT/tool-failure-project"
-	local home_dir="$TEST_ROOT/tool-failure-home"
-	local log_file="$home_dir/.claude/logs/friction.log"
+	local database_path="$TEST_ROOT/tool-failure.db"
+	local summary_file="$TEST_ROOT/tool-failure-summary.json"
 	local payload='{"tool_name":"Bash","tool_input":{"command":"cat missing.txt"},"error":"cat: missing.txt: No such file or directory","is_interrupt":false,"duration_ms":12,"session_id":"test-session","cwd":"/ignored/by/log/schema"}'
 
-	mkdir -p "$project_dir" "$home_dir"
-	run_tool_failure_hook "$project_dir" "$home_dir" "$payload"
+	mkdir -p "$project_dir"
+	run_tool_failure_hook "$project_dir" "$database_path" "$payload"
+	FRICTION_DATABASE="$database_path" friction summary --include-tool-errors --json > "$summary_file"
 
-	assert_file "$log_file"
-	assert_contains "$log_file" "tool-error"
-	assert_contains "$log_file" "$project_dir"
-	assert_contains "$log_file" "Bash: cat missing.txt — cat: missing.txt: No such file or directory"
+	assert_contains "$summary_file" '"count": 1'
+	assert_contains "$summary_file" '"category": "tool-error"'
+	assert_contains "$summary_file" "$project_dir"
+	assert_contains "$summary_file" "Bash: cat missing.txt"
+	assert_contains "$summary_file" "cat: missing.txt: No such file or directory"
 }
 
 test_analyser_groups_log_entries() {
@@ -162,20 +164,22 @@ test_manual_writer_falls_back_to_project_log() {
 	assert_contains "$log_file" "central log was sandboxed"
 }
 
-test_tool_failure_hook_falls_back_to_project_log() {
-	local project_dir="$TEST_ROOT/tool-failure-fallback-project"
-	local blocked_home="$TEST_ROOT/tool-failure-blocked-home"
-	local log_file="$project_dir/.agent/logs/friction.log"
+test_tool_failure_hook_is_non_blocking() {
+	local project_dir="$TEST_ROOT/tool-failure-non-blocking-project"
+	local database_path="$TEST_ROOT/tool-failure-non-blocking.db"
 	local payload='{"tool_name":"Read","tool_input":{"file_path":"missing.md"},"error":"File does not exist","is_interrupt":false,"duration_ms":8,"session_id":"test-session","cwd":"/ignored/by/log/schema"}'
 
 	mkdir -p "$project_dir"
-	printf 'not a directory\n' > "$blocked_home"
 
-	run_tool_failure_hook "$project_dir" "$blocked_home" "$payload" >/dev/null 2>/dev/null
+	(
+		cd "$project_dir"
+		FRICTION_DATABASE="$database_path" bash "$REPO_DIR/dist/claude/hooks/tool-failure-log.sh" <<< "not JSON"
+	) || fail "Tool-failure hook exited non-zero for malformed input"
 
-	assert_file "$log_file"
-	assert_contains "$log_file" "tool-error"
-	assert_contains "$log_file" "Read: missing.md — File does not exist"
+	(
+		cd "$project_dir"
+		PATH="/usr/bin:/bin" /bin/bash "$REPO_DIR/dist/claude/hooks/tool-failure-log.sh" <<< "$payload"
+	) || fail "Tool-failure hook exited non-zero without friction"
 }
 
 test_analyser_discovers_project_fallback_logs() {
@@ -217,7 +221,7 @@ test_analyser_excludes_resolved_pattern
 test_analyser_resurfaces_pattern_after_resolution
 test_manual_writer_logs_entry
 test_manual_writer_falls_back_to_project_log
-test_tool_failure_hook_falls_back_to_project_log
+test_tool_failure_hook_is_non_blocking
 test_analyser_discovers_project_fallback_logs
 test_analyser_selftest_passes
 test_codex_hcom_hooks_bootstrap_homebrew_path
