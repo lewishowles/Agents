@@ -17,7 +17,7 @@ The session evidence may be:
 
 Do not use this skill for:
 
-- recurring friction-log review, use `friction-review`
+- recurring friction review, use `friction-review`
 - external artefacts such as websites, repos, docs, or skill collections, use `project-learn-from-source`
 - feedback already written by another agent or reviewer, use `project-synthesise-feedback`
 - general repo health checks, use `agent-config-review` for this repo or `project-audit` for other projects
@@ -40,7 +40,7 @@ Then gather only local context needed to judge if issue is already covered:
 
 1. Relevant `rules/` for always-on behaviour
 2. Existing skills matching task type or proposed fix
-3. `friction-review` output only if user asks for logged-pattern comparison
+3. `friction-review` output only if user asks to compare recorded patterns
 4. Repo scripts or diagnostics only for tooling-coverage lessons
 
 Avoid broad reads. This skill is learning triage, not audit.
@@ -51,14 +51,14 @@ Avoid broad reads. This skill is learning triage, not audit.
 2. **Name the behavioural gap** — identify specific agent behaviour needing change
 3. **Separate causes** — distinguish missing guidance, guidance not followed, ambiguous intent, tool limit, tooling gap, unavoidable complexity
 4. **Check existing coverage** — decide whether current rules, skills, hooks, diagnostics, docs already address gap
-5. **Choose destination** — route each lesson to: no change, friction log, existing rule, existing skill, new skill, script/check, docs, or user preference
+5. **Choose destination** — route each lesson to: no change, friction record, existing rule, existing skill, new skill, script/check, docs, or user preference
 6. **Apply evidence bar** — one session justifies a note; new skills need repeated concrete failure
 7. **Prefer minimal changes** — recommend smallest amendment preventing or shortening difficulty
 
 ## Routing guidance
 
 - **No change** — one-off, already resolved, too ambiguous, or not preventable
-- **Friction log** — concrete but needs recurrence evidence before changing rules or skills
+- **Friction record** — concrete but needs recurrence evidence before changing rules or skills
 - **Existing rule** — behaviour should apply every turn, regardless of task type
 - **Existing skill** — task-specific behaviour; skill already exists
 - **New skill idea** — specific, repeated failure mode not already covered
@@ -80,13 +80,13 @@ Use this shape unless the user asks for a different format:
 - **<Short lesson>**: <specific behavioural gap or system gap>.
   - Evidence: <user-visible moment or excerpt>
   - Existing coverage: <covered by X, partially covered by Y, or not found>
-  - Recommended destination: <no change | friction log | rule | existing skill | new skill idea | script/check | docs/template | user preference>
+  - Recommended destination: <no change | friction record | rule | existing skill | new skill idea | script/check | docs/template | user preference>
   - Proposed action: <specific next step, or "watch for recurrence">
 
 ## Suggested friction entries
 
 ```sh
-.agent/scripts/log-friction.sh "<category>" "<detail>"
+friction add "<category>" "<detail>"
 ```
 
 ## Proposed guidance changes
