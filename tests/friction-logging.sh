@@ -38,38 +38,6 @@ test_tool_failures_are_logged() {
 	assert_contains "$summary_file" "cat: missing.txt: No such file or directory"
 }
 
-test_manual_writer_logs_entry() {
-	local home_dir="$TEST_ROOT/manual-home"
-	local log_file="$home_dir/.claude/logs/friction.log"
-
-	(
-		cd "$TEST_ROOT"
-		HOME="$home_dir" bash "$REPO_DIR/scripts/agent-tools/log-friction.sh" "wrong-approach" "reimplemented clamp instead of using helper" >/dev/null
-	)
-
-	assert_file "$log_file"
-	assert_contains "$log_file" "wrong-approach"
-	assert_contains "$log_file" "reimplemented clamp instead of using helper"
-}
-
-test_manual_writer_falls_back_to_project_log() {
-	local project_dir="$TEST_ROOT/manual-fallback-project"
-	local blocked_home="$TEST_ROOT/blocked-home"
-	local log_file="$project_dir/.agent/logs/friction.log"
-
-	mkdir -p "$project_dir"
-	printf 'not a directory\n' > "$blocked_home"
-
-	(
-		cd "$project_dir"
-		HOME="$blocked_home" bash "$REPO_DIR/scripts/agent-tools/log-friction.sh" "missing-guidance" "central log was sandboxed" >/dev/null 2>/dev/null
-	)
-
-	assert_file "$log_file"
-	assert_contains "$log_file" "missing-guidance"
-	assert_contains "$log_file" "central log was sandboxed"
-}
-
 test_tool_failure_hook_is_non_blocking() {
 	local project_dir="$TEST_ROOT/tool-failure-non-blocking-project"
 	local database_path="$TEST_ROOT/tool-failure-non-blocking.db"
@@ -101,8 +69,6 @@ test_codex_hcom_hooks_bootstrap_homebrew_path() {
 }
 
 test_tool_failures_are_logged
-test_manual_writer_logs_entry
-test_manual_writer_falls_back_to_project_log
 test_tool_failure_hook_is_non_blocking
 test_codex_hcom_hooks_bootstrap_homebrew_path
 

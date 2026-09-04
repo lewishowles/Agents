@@ -172,7 +172,7 @@ When the Claude Code session ends, removes the session data used by `serena-remi
 
 **Requires:** `serena-hooks`; silently skips if not on PATH.
 
-Log friction manually with `.agent/scripts/log-friction.sh "<category>" "<detail>"`. It uses the same log and format for ignored rules, wrong approaches, wasted work, tool misuse, and missing guidance. `tool-failure-log` auto-logs failed Claude tool calls the same way; use `friction summary` to group recurring entries.
+Log friction manually with `friction add "<category>" "<detail>"`. `tool-failure-log` records failed Claude tool calls automatically; use `friction summary` to group recurring entries.
 
 ## How skill triggering works
 

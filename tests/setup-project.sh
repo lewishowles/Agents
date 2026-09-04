@@ -54,7 +54,6 @@ test_claude_setup() {
 	assert_link "$target_dir/.agent/scripts/change-impact.py"
 	assert_link "$target_dir/.agent/scripts/generated-file-guard.py"
 	assert_link "$target_dir/.agent/scripts/markdown-claims.py"
-	assert_link "$target_dir/.agent/scripts/log-friction.sh"
 	assert_contains "$target_dir/WORKSPACE.md" ".agent/scripts/project-diagnostics.py"
 	assert_contains "$target_dir/WORKSPACE.md" "project-checks --list"
 	assert_dir "$target_dir/.claude"
@@ -78,7 +77,6 @@ test_codex_setup() {
 	assert_link "$target_dir/.agent/scripts/change-impact.py"
 	assert_link "$target_dir/.agent/scripts/generated-file-guard.py"
 	assert_link "$target_dir/.agent/scripts/markdown-claims.py"
-	assert_link "$target_dir/.agent/scripts/log-friction.sh"
 	assert_contains "$target_dir/WORKSPACE.md" ".agent/scripts/project-diagnostics.py"
 	assert_contains "$target_dir/WORKSPACE.md" "project-checks --list"
 	assert_not_exists "$target_dir/.agents"
@@ -101,7 +99,6 @@ test_both_setup() {
 	assert_link "$target_dir/.agent/scripts/change-impact.py"
 	assert_link "$target_dir/.agent/scripts/generated-file-guard.py"
 	assert_link "$target_dir/.agent/scripts/markdown-claims.py"
-	assert_link "$target_dir/.agent/scripts/log-friction.sh"
 	assert_contains "$target_dir/WORKSPACE.md" ".agent/scripts/project-diagnostics.py"
 	assert_contains "$target_dir/WORKSPACE.md" "project-checks --list"
 	assert_file "$target_dir/.claude/.claudeignore"
@@ -124,7 +121,7 @@ test_existing_files_are_skipped() {
 	assert_equals "$(cat "$target_dir/CLAUDE.md")" "custom Claude rules"
 	assert_file "$target_dir/.claude/.claudeignore"
 	assert_contains "$output" "Shared agent tools"
-	assert_contains "$output" "8 unchanged"
+	assert_contains "$output" "7 unchanged"
 	assert_contains "$output" "Claude support files"
 	assert_contains "$output" "2 unchanged"
 }
@@ -287,13 +284,11 @@ test_status_reports_drifted_project() {
 	run_setup "$target_dir" --both
 	rm "$target_dir/WORKSPACE.md"
 	rm "$target_dir/.agent/scripts/repo-context.py"
-	rm "$target_dir/.agent/scripts/log-friction.sh"
 
 	run_setup_output "$target_dir" --status > "$output" 2>&1
 
 	assert_contains "$output" "WORKSPACE.md"
 	assert_contains "$output" "repo-context.py"
-	assert_contains "$output" "log-friction.sh"
 }
 
 test_shared_agent_tool_source_contract() {

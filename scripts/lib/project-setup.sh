@@ -8,7 +8,6 @@ SHARED_AGENT_TOOLS=(
 	"repo-context.py|$REPO_DIR/scripts/agent-tools/repo-context.py"
 	"generated-file-guard.py|$REPO_DIR/scripts/agent-tools/generated-file-guard.py"
 	"markdown-claims.py|$REPO_DIR/scripts/agent-tools/markdown-claims.py"
-	"log-friction.sh|$REPO_DIR/scripts/agent-tools/log-friction.sh"
 )
 
 # Asserts that the shared tool declaration exactly covers the source directory.
