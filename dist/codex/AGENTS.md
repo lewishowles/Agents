@@ -110,8 +110,8 @@ A confident conclusion is not authorisation to implement. If the last user messa
 - File missing? Symlink broken? Output unexpected? Stop. If a user says a missing file exists, state whether gitignored files were included before concluding it is missing. An absent `AGENTS.md`, `WORKSPACE.md`, or `PROGRESS.md` is not this case for read-only, analysis, or not-yet-onboarded work: fall back to the repo's own files and carry on.
 - At session start, and immediately before `progress task start` or `progress chunk start`, run `git status --short`. Before either progress transition, any output, including staged, unstaged, or untracked changes, blocks the state change and new implementation until the changes are reviewed and resolved or the work moves to a separate clean worktree. Git state is a safety and transition gate, not progress state: do not use it to infer, report, or reconcile task status, and never record commit hashes, branch state, or clean/dirty-tree claims in `PROGRESS.md`.
 - Don't workaround, retry, or dig deeper — state what you expected vs. what you found
-- For a potentially transient failure, one evidence-based retry is the limit. If that retry also fails, stop and hand back: state the symptom, what each attempt changed, and what evidence would separate the remaining explanations. Another attempt needs the user's go-ahead.
-- Treat environment, resource, and sandbox failures as terminal for the current agent run. This covers `EMFILE: too many open files`, blocked network access, a read-only or permission-denied filesystem path, a command that needs an interactive TTY or stdin (many `progress <noun> add` prompts, `gcloud auth login`), a missing daemon or service, and a package-manager install (`uv`, `pip`, `npm`, `brew`) the sandbox blocks. Do not retry, work around it by polling, reroute the command, or ask another agent or subagent to run it. Give the user the exact command, request the smallest useful result, and resume from that evidence.
+- For a potentially transient failure outside the resource and sandbox class in the next rule, one evidence-based retry is the limit. If that retry also fails, stop and hand back: state the symptom, what each attempt changed, and what evidence would separate the remaining explanations. Another attempt needs the user's go-ahead.
+- Treat environment, resource, and sandbox failures as terminal for the current agent run, with no retry, not even the one retry the previous rule allows. `EMFILE: too many open files` looks transient because file descriptors free up, but it is in this class: hand it back on the first hit. This class also covers blocked network access, a read-only or permission-denied filesystem path, a command that needs an interactive TTY or stdin (many `progress <noun> add` prompts, `gcloud auth login`), a missing daemon or service, and a package-manager install (`uv`, `pip`, `npm`, `brew`) the sandbox blocks. Do not retry, work around it by polling, reroute the command, or ask another agent or subagent to run it. When there is a command, give the user the exact command, request the smallest useful result, and resume from that evidence. When a tool call fails this way with no command to pass over (a `Read`, `Grep`, or `Glob` hitting `EMFILE`), name what you were reading and why, and let the user clear the condition or get you the content.
 - Once a command has failed this way in the session, or a repo's `AGENTS.md` gotchas, `WORKSPACE.md` forbidden operations, or a `progress` discovery record already say it will, do not run it again: hand it straight to the user. When a sandbox failure is new and likely to recur in later sessions, propose recording it in the repo's `AGENTS.md` or a `progress` discovery so the next session skips it too.
 - Recovers faster than chasing wrong paths. You know the system; I don't.
 
@@ -215,6 +215,21 @@ A commit boundary is a review boundary, not a release boundary. An API introduce
 ## Working across sessions
 
 **`progress` is the source of truth for project state.** When it is installed and the repository is initialised, use `progress next --json` at session start for the active task and chunk. Use the CLI's project, release, task, chunk, discovery, decision, and context records for task, queue, roadmap, notes, and handoff state. When the available operation or syntax is unclear, run `progress commands` once before using command-specific help; it lists every supported command and flag signature. Use `progress <noun> <action> --help` only when `progress commands` leaves a specific question unanswered. If `progress` is unavailable or the project is uninitialised, inspect `WORKSPACE.md`, `AGENTS.md`, package scripts, and nearby project docs. Do not create a markdown plan or guess a project identity as a fallback; ask the user to initialise or install `progress` before writing progress records.
+
+**Common `progress` commands have stable signatures. Don't `--help` them every turn.** The shapes below don't change between sessions; run `progress commands` once, or `progress <noun> <action> --help`, only for a command not listed here or a flag that's genuinely unclear.
+
+```sh
+progress next --json                              # session start: active task + chunk
+progress task start <task_id>                     # id is positional
+progress task complete <task_id>                  # when no pending or active chunks remain
+progress chunk start <chunk_id>
+progress chunk complete <chunk_id>
+progress discovery add --task <task_id> '<body>'  # body is positional, not --body
+progress decision add --task <task_id> '<body>'   # body is positional; --supersedes <note_id> optional
+progress context get --json
+```
+
+`--json` and `--database <path>` are accepted on every command. The `context set` field flags are listed in the HCOM Orchestrator handoff rule.
 
 **`progress next` selects the current item; it does not validate its scope.** Before resumed or delegated implementation begins, compare the active chunk with its incomplete siblings and stop if it overlaps or subsumes later work.
 
