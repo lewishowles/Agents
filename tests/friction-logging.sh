@@ -24,18 +24,18 @@ run_tool_failure_hook() {
 test_tool_failures_are_logged() {
 	local project_dir="$TEST_ROOT/tool-failure-project"
 	local database_path="$TEST_ROOT/tool-failure.db"
-	local summary_file="$TEST_ROOT/tool-failure-summary.json"
+	local entries_file="$TEST_ROOT/tool-failure-entries.json"
 	local payload='{"tool_name":"Bash","tool_input":{"command":"cat missing.txt"},"error":"cat: missing.txt: No such file or directory","is_interrupt":false,"duration_ms":12,"session_id":"test-session","cwd":"/ignored/by/log/schema"}'
 
 	mkdir -p "$project_dir"
 	run_tool_failure_hook "$project_dir" "$database_path" "$payload"
-	FRICTION_DATABASE="$database_path" friction summary --include-tool-errors --json > "$summary_file"
+	FRICTION_DATABASE="$database_path" friction list --include-tool-errors --json > "$entries_file"
 
-	assert_contains "$summary_file" '"count": 1'
-	assert_contains "$summary_file" '"category": "tool-error"'
-	assert_contains "$summary_file" "$project_dir"
-	assert_contains "$summary_file" "Bash: cat missing.txt"
-	assert_contains "$summary_file" "cat: missing.txt: No such file or directory"
+	assert_equals "$(jq '.data | length' "$entries_file")" "1"
+	assert_contains "$entries_file" '"category": "tool-error"'
+	assert_contains "$entries_file" "$project_dir"
+	assert_contains "$entries_file" "Bash: cat missing.txt"
+	assert_contains "$entries_file" "cat: missing.txt: No such file or directory"
 }
 
 test_tool_failure_hook_is_non_blocking() {

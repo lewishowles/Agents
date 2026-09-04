@@ -121,7 +121,7 @@ test_existing_files_are_skipped() {
 	assert_equals "$(cat "$target_dir/CLAUDE.md")" "custom Claude rules"
 	assert_file "$target_dir/.claude/.claudeignore"
 	assert_contains "$output" "Shared agent tools"
-	assert_contains "$output" "7 unchanged"
+	assert_contains "$output" "8 unchanged"
 	assert_contains "$output" "Claude support files"
 	assert_contains "$output" "2 unchanged"
 }
@@ -321,6 +321,40 @@ test_shared_agent_tool_source_contract() {
 	assert_contains "$output" "unlisted-tool.sh"
 }
 
+test_ensure_friction_installs_only_when_missing() {
+	local command_dir="$TEST_ROOT/friction-commands"
+	local install_log="$TEST_ROOT/friction-install.log"
+	local setup_library="$REPO_DIR/scripts/lib/project-setup.sh"
+
+	mkdir -p "$command_dir"
+
+	(
+		source "$setup_library"
+		cli_group_status() { :; }
+		PATH="$command_dir"
+		# Defines the friction() shim as a side effect of the mocked install call, so
+		# command -v friction resolves to it once ensure_friction runs the installer.
+		# The empty PATH above only keeps a real friction or uv binary from
+		# short-circuiting the earlier not-installed check.
+		uv() {
+			printf '%s\n' "$*" > "$install_log"
+			friction() { :; }
+		}
+
+		ensure_friction
+	)
+	assert_equals "$(cat "$install_log")" "tool install --from $HOME/Dev/Repositories/Packages/dev-tools/packages/friction friction"
+
+	(
+		source "$setup_library"
+		cli_group_status() { :; }
+		friction() { :; }
+		uv() { fail "Expected friction installation to be skipped"; }
+
+		ensure_friction
+	)
+}
+
 test_claude_setup
 test_codex_setup
 test_both_setup
@@ -339,5 +373,6 @@ test_status_reports_clean_project
 test_status_reports_configured_project
 test_status_reports_drifted_project
 test_shared_agent_tool_source_contract
+test_ensure_friction_installs_only_when_missing
 
 printf '✓ setup-project tests passed\n'

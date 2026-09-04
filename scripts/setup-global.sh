@@ -23,6 +23,10 @@ setup_claude() {
 	ensure_container_dir "$CLAUDE_DIR/commands" "commands"
 	cli_group_end
 
+	cli_group_begin "Claude command-line tools"
+	ensure_friction
+	cli_group_end
+
 	cli_group_begin "Claude files"
 	link_path "$REPO_DIR/dist/claude/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md" "CLAUDE.md"
 	link_path "$REPO_DIR/dist/claude/settings.json" "$CLAUDE_DIR/settings.json" "settings.json"
@@ -51,6 +55,32 @@ setup_claude() {
 		link_path "$command" "$CLAUDE_DIR/commands/$(basename "$command")" "commands/$(basename "$command")"
 	done
 	cli_group_end
+}
+
+# Ensures the friction command is available for the central Claude hook.
+ensure_friction() {
+	if command -v friction >/dev/null 2>&1; then
+		cli_group_status muted "friction" "globally installed"
+		return
+	fi
+
+	if ! command -v uv >/dev/null 2>&1; then
+		cli_group_status failed "friction" "missing and uv is not installed"
+		return 1
+	fi
+
+	cli_group_status warning "friction" "installing globally"
+	if ! uv tool install --from ~/Dev/Repositories/Packages/dev-tools/packages/friction friction >/dev/null; then
+		cli_group_status failed "friction" "global installation failed"
+		return 1
+	fi
+
+	if ! command -v friction >/dev/null 2>&1; then
+		cli_group_status failed "friction" "installation did not expose friction"
+		return 1
+	fi
+
+	cli_group_status success "friction" "installed globally"
 }
 
 setup_codex() {

@@ -2,8 +2,8 @@
 """Reproduce the aggregate counts quoted in the session audit report.
 
 Consolidates the one-off queries run during the audit so every number in the
-report can be re-derived. Reads transcripts under ~/.claude/projects and the
-friction log at ~/.claude/logs/friction.log; writes nothing.
+report can be re-derived. Reads transcripts under ~/.claude/projects and
+friction events through the friction CLI; writes nothing.
 
 Usage:
     python3 scripts/audit/metrics.py [--days 21]
@@ -19,9 +19,9 @@ import json
 import os
 import re
 import statistics
+import subprocess
 
 ROOT = os.path.expanduser("~/.claude/projects")
-FRICTION = os.path.expanduser("~/.claude/logs/friction.log")
 COMMAND_TEXT_LIMIT = 300
 RESULT_TEXT_LIMIT = 3000
 
@@ -285,30 +285,39 @@ def read_after_edit(paths):
 	print(f"  re-reads with no notice at all:   {without_notice}")
 
 
-# --- Section 4: friction log ------------------------------------------------
+# --- Section 4: friction CLI ------------------------------------------------
 
 def friction():
-	section("Friction log composition", "F8")
+	"""Print post-cutoff friction figures returned by the friction CLI."""
+	section("Friction CLI composition", "F8")
 
-	if not os.path.exists(FRICTION):
-		print("no friction log found")
+	command = [
+		"friction",
+		"list",
+		"--json",
+		"--since",
+		"2026-07-04",
+		"--include-check-fails",
+		"--include-tool-errors",
+	]
+
+	try:
+		result = subprocess.run(command, capture_output=True, check=True, text=True)
+		response = json.loads(result.stdout)
+	except (OSError, subprocess.CalledProcessError, json.JSONDecodeError):
+		print("friction CLI data unavailable")
 		return
 
-	cutoff = "2026-07-04"
-	rows = []
+	rows = response.get("data") if isinstance(response, dict) else None
+	if not isinstance(rows, list) or not all(isinstance(row, dict) for row in rows):
+		print("friction CLI returned invalid JSON")
+		return
 
-	with open(FRICTION, errors="replace") as handle:
-		for line in handle:
-			fields = line.rstrip("\n").split("\t")
-
-			if len(fields) >= 4 and fields[0] >= cutoff:
-				rows.append(fields)
-
-	categories = collections.Counter(row[1] for row in rows)
-	check_fails = [row for row in rows if row[1] == "check-fail"]
-	empty = [row for row in check_fails if not row[3].partition(":")[2].strip()]
-	by_repo = collections.Counter(os.path.basename(row[2]) for row in check_fails)
-	per_minute = collections.Counter(row[0][:16] for row in check_fails)
+	categories = collections.Counter(row.get("category") for row in rows)
+	check_fails = [row for row in rows if row.get("category") == "check-fail"]
+	empty = [row for row in check_fails if not row.get("error")]
+	by_repo = collections.Counter(os.path.basename(str(row.get("cwd", ""))) for row in check_fails)
+	per_minute = collections.Counter(str(row.get("timestamp_utc", ""))[:16] for row in check_fails)
 
 	print(f"entries in window: {len(rows)}")
 	print(f"by category: {dict(categories.most_common())}")

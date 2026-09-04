@@ -193,6 +193,7 @@ copy_shared_agent_tools() {
 
 	cli_group_begin "Shared agent tools"
 	ensure_project_checks
+	ensure_friction
 	ensure_dir "$PROJECT_DIR/.agent/scripts" ".agent/scripts/"
 
 	for entry in "${SHARED_AGENT_TOOLS[@]}"; do
@@ -247,6 +248,32 @@ ensure_project_checks() {
 	done
 
 	cli_group_status success "project-checks" "installed globally"
+}
+
+# Ensures the friction command is available for project rules and hooks.
+ensure_friction() {
+	if command -v friction >/dev/null 2>&1; then
+		cli_group_status muted "friction" "globally installed"
+		return
+	fi
+
+	if ! command -v uv >/dev/null 2>&1; then
+		cli_group_status failed "friction" "missing and uv is not installed"
+		return 1
+	fi
+
+	cli_group_status warning "friction" "installing globally"
+	if ! uv tool install --from ~/Dev/Repositories/Packages/dev-tools/packages/friction friction >/dev/null; then
+		cli_group_status failed "friction" "global installation failed"
+		return 1
+	fi
+
+	if ! command -v friction >/dev/null 2>&1; then
+		cli_group_status failed "friction" "installation did not expose friction"
+		return 1
+	fi
+
+	cli_group_status success "friction" "installed globally"
 }
 
 # Prints the review warning for generated workspace files.
