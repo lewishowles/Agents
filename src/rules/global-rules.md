@@ -109,6 +109,15 @@ A confident conclusion is not authorisation to implement. If the last user messa
 - Once a command has failed this way in the session, or a repo's `AGENTS.md` gotchas, `WORKSPACE.md` forbidden operations, or a `progress` discovery record already say it will, do not run it again: hand it straight to the user. When a sandbox failure is new and likely to recur in later sessions, propose recording it in the repo's `AGENTS.md` or a `progress` discovery so the next session skips it too.
 - Recovers faster than chasing wrong paths. You know the system; I don't.
 
+### Ad-hoc verification safety
+
+An improvised shell check that hangs or leaves a stray process behind can outlive the session. One such loop kept running for eight days at full CPU after the surrounding verification exited.
+
+- Never use an unbounded busy loop (`while :`, `while true`, `for (( ; ; ))`, `until false`) to simulate waiting, blocking, or a hung process. Use `sleep`, a blocking `read`, or `timeout` with a short limit.
+- Any ad-hoc check that can block, poll, wait, or hang needs a short explicit upper bound.
+- Avoid a background process unless the behaviour under test genuinely needs one. When one is required: capture its PID, install cleanup before the risky step, trap `EXIT`, `INT`, and `TERM`, kill descendants as well as the direct child, and `wait` for the terminated children so they are reaped. Cleanup must still run if an assertion fails, the check times out, it is interrupted, or the shell exits unexpectedly. Do not rely on closing the terminal, ending the agent session, or the parent tool process to clean up children.
+- Prefer existing project verification over an improvised harness. Before calling a verification complete, confirm every process it started has exited. If a check cannot be made bounded and self-cleaning, do not run it; use a safer approach or state the limitation.
+
 ### Staleness and recall
 
 Treat docs, comments, config-as-written, and remembered or prior-session facts as stale by default — they describe what was true when written, not what's true now. Before acting on one: fast-aging facts (versions, effective config, deployed state, file locations) get one live check before a consequential or destructive action; slow-aging facts (decisions, preferences) don't need re-verification each time.
