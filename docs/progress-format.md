@@ -67,7 +67,7 @@ A feature spec may describe a larger goal, investigation, or phase sequence. Its
 
 ### Clear planning language
 
-Write task files and feature specs for a reader who does not share the investigation context. Before marking a task `ready`:
+Write task files, feature specs, chunk titles, and chunk descriptions for a reader who does not share the investigation context. Before marking a task `ready`:
 
 - State the concrete problem before the proposed work.
 - Use direct statements with a clear subject and action. Where shorthand could be ambiguous, name the actor, input, behaviour, and result.
@@ -77,6 +77,7 @@ Write task files and feature specs for a reader who does not share the investiga
 - Describe interactions explicitly, including ordering, filtering, focus, state composition, and failure or recovery behaviour where relevant.
 - Write accessibility requirements and acceptance criteria as observable behaviour.
 - Preserve edge cases, constraints, failure behaviour, verification requirements, and technical decisions when simplifying the wording.
+- Make a task's `title`/`overview` and a chunk's title/description readable on their own: state what changed and why in plain words. Keep implementation detail, file paths, technique names, and discovery notes out of them; put those in `## Tasks`, `## Notes`, or a `discovery`/`decision` record instead. For example, write `fix the blank cell for dotted column IDs` / `the cell lookup fails when a column ID contains a dot`, not `treat column IDs as opaque configuration keys and build cells from configured columns`.
 
 If clearer wording would require making a product or architecture decision, leave the requirement unresolved and mark the task `needs-decision` instead of guessing. A rewrite clarifies the existing contract; it does not change scope, behaviour, decisions, or evidence.
 
