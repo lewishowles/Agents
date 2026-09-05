@@ -9,6 +9,7 @@ import hashlib
 import json
 import os
 import re
+import shlex
 import tempfile
 from pathlib import Path
 from typing import Iterable
@@ -70,6 +71,25 @@ CANDIDATE_KIND_NAMES = {
 	"rollbacks": "rollback",
 	"verification": "verification",
 }
+# Tool names whose call arguments carry a shell command string.
+SHELL_TOOL_NAMES = {"bash", "exec", "exec_command", "shell"}
+# Tool names whose call arguments carry a file path to edit.
+EDIT_TOOL_NAMES = {"apply_patch", "edit", "write"}
+# Matches an apply_patch header line ("*** Add File: path", "*** Update File: path",
+# "*** Delete File: path") to recover the edited path when it is not a separate argument.
+PATCH_PATH_PATTERN = re.compile(
+	r"^\*\*\* (?:Add|Delete|Update) File: (.+)$", re.MULTILINE
+)
+# Finds the real tool name in the harness's `tools.<name>(` call wrapper; payload.name
+# is always the wrapper's own name ("exec"), never this one.
+WRAPPED_TOOL_CALL_PATTERN = re.compile(r"tools\.([A-Za-z_][A-Za-z0-9_.]*)\(")
+# Matches a bare identifier passed as a wrapped call's argument, when the harness built
+# it as a variable beforehand instead of writing the value inline.
+TOOL_ARGUMENT_REFERENCE_PATTERN = re.compile(r"\s*([A-Za-z_][A-Za-z0-9_]*)\b")
+# Matches a const/let/var declaration that may hold the value for such an argument.
+TOOL_ARGUMENT_DECLARATION_PATTERN = re.compile(
+	r"\b(?:const|let|var)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*"
+)
 
 
 def parse_timestamp(value: object) -> datetime.datetime | None:
@@ -360,6 +380,88 @@ def call_target(payload: dict[str, object]) -> str | None:
 	return None
 
 
+def unwrapped_tool_call(payload: dict[str, object]) -> tuple[str, object] | None:
+	"""Return the real tool name and its decoded argument from a harness-wrapped call, resolving an inline literal directly or a bare identifier through its own declaration; null when neither resolves to one JSON value."""
+	for key in ("input", "arguments"):
+		value = payload.get(key)
+		if not isinstance(value, str):
+			continue
+
+		matches = list(WRAPPED_TOOL_CALL_PATTERN.finditer(value))
+		if len(matches) != 1:
+			continue
+		match = matches[0]
+
+		argument_text = value[match.end() :].lstrip()
+		if argument_text.startswith(('"', "{")):
+			try:
+				parsed_value, _ = json.JSONDecoder().raw_decode(value, match.end())
+			except json.JSONDecodeError:
+				continue
+
+			return match.group(1), parsed_value
+
+		argument_reference = TOOL_ARGUMENT_REFERENCE_PATTERN.match(value, match.end())
+		if argument_reference is None:
+			continue
+
+		argument_name = argument_reference.group(1)
+		for declaration in TOOL_ARGUMENT_DECLARATION_PATTERN.finditer(value):
+			if declaration.group(1) != argument_name:
+				continue
+
+			try:
+				parsed_value, value_end = json.JSONDecoder().raw_decode(
+					value, declaration.end()
+				)
+			except json.JSONDecodeError:
+				continue
+
+			# A declaration followed by "+" is building the value from concatenation,
+			# so the JSON literal alone is not the real argument; leave it unresolved.
+			if value[value_end:].lstrip().startswith("+"):
+				continue
+
+			return match.group(1), parsed_value
+
+	return None
+
+
+def tool_structure(payload: dict[str, object]) -> dict[str, object]:
+	"""Return the tool name plus a command argv, edit path, or skill name, each included only when the call arguments make it unambiguous."""
+	tool_call = unwrapped_tool_call(payload)
+	if tool_call is None:
+		return {}
+
+	tool_name, arguments = tool_call
+	structure = {"tool": tool_name}
+
+	if tool_name.casefold() in SHELL_TOOL_NAMES:
+		if isinstance(arguments, dict):
+			command = arguments.get("cmd")
+			if isinstance(command, str) and command:
+				try:
+					argv = shlex.split(command)
+				except ValueError:
+					argv = []
+				if argv:
+					structure["command_argv"] = argv
+
+	if tool_name.casefold() in EDIT_TOOL_NAMES:
+		if isinstance(arguments, str):
+			paths = set(PATCH_PATH_PATTERN.findall(arguments))
+			if len(paths) == 1:
+				structure["edit_path"] = paths.pop()
+
+	if tool_name.casefold() == "skill":
+		if isinstance(arguments, dict):
+			skill_name = arguments.get("skill")
+			if isinstance(skill_name, str) and skill_name:
+				structure["skill_name"] = skill_name
+
+	return structure
+
+
 def candidate(kind: str, references: list[str], **details: object) -> dict[str, object]:
 	"""Build one deterministic candidate that remains separate from semantic conclusions."""
 	return {"kind": kind, "evidence_references": references, **details}
@@ -604,6 +706,7 @@ def extract_rollout(
 				truncated["tool_event_count"] += 1
 				continue
 			target = call_target(payload)
+			structure = tool_structure(payload)
 			if not add_evidence(
 				{
 					"reference": reference,
@@ -611,6 +714,7 @@ def extract_rollout(
 					"kind": "tool_call",
 					"tool_type": payload.get("type"),
 					"target": target,
+					**structure,
 				}
 			):
 				continue
@@ -623,6 +727,7 @@ def extract_rollout(
 					"timestamp": formatted_timestamp,
 					"tool_type": payload.get("type"),
 					"target": target,
+					**structure,
 					"status": "unknown",
 					"status_source": "unavailable",
 					"exit_code": None,
@@ -982,6 +1087,12 @@ def run_selftest() -> None:
 	"""Verify provenance, authorship, tool status and candidate bounds in isolation."""
 	window_start = datetime.datetime(2026, 8, 8, 9, tzinfo=UTC)
 	window_end = datetime.datetime(2026, 8, 8, 11, tzinfo=UTC)
+	# Two real tool calls chained under one call_id, so unwrapped_tool_call() must treat
+	# the tool identity as ambiguous rather than attribute the shared outcome to either.
+	chained_tool_input = (
+		'const patch = "*** Begin Patch\\n*** Update File: src/chained.py\\n*** End Patch"; '
+		'await tools.apply_patch(patch); await tools.exec_command({"cmd": "validate"})'
+	)
 	with tempfile.TemporaryDirectory() as directory:
 		root = Path(directory)
 		parent = root / "rollout-parent.jsonl"
@@ -1088,7 +1199,7 @@ def run_selftest() -> None:
 						"type": "function_call",
 						"call_id": "failure",
 						"name": "exec",
-						"arguments": '{"command": "validate"}',
+						"arguments": 'const command = {"cmd": "validate"}; await tools.exec_command(command)',
 					},
 				),
 				fixture_record(
@@ -1107,7 +1218,7 @@ def run_selftest() -> None:
 						"type": "custom_tool_call",
 						"call_id": "retry",
 						"name": "exec",
-						"input": '{"command": "validate"}',
+						"input": 'const command = {"cmd": "validate"}; await tools.exec_command(command)',
 					},
 				),
 				fixture_record(
@@ -1146,6 +1257,63 @@ def run_selftest() -> None:
 						"call_id": "config",
 						"name": "exec",
 						"input": "cat AGENTS.md",
+					},
+				),
+				fixture_record(
+					"2026-08-08T10:03:30Z",
+					"response_item",
+					{
+						"type": "custom_tool_call",
+						"call_id": "edit",
+						"name": "exec",
+						"input": 'const patch = "*** Begin Patch\\n*** Update File: src/example.py\\n*** End Patch"; await tools.apply_patch(patch)',
+					},
+				),
+				fixture_record(
+					"2026-08-08T10:03:35Z",
+					"response_item",
+					{
+						"type": "custom_tool_call_output",
+						"call_id": "edit",
+						"output": {"status": "success"},
+					},
+				),
+				fixture_record(
+					"2026-08-08T10:03:40Z",
+					"response_item",
+					{
+						"type": "custom_tool_call",
+						"call_id": "skill",
+						"name": "exec",
+						"input": 'const r = await tools.Skill({"skill": "code-style"})',
+					},
+				),
+				fixture_record(
+					"2026-08-08T10:03:45Z",
+					"response_item",
+					{
+						"type": "custom_tool_call_output",
+						"call_id": "skill",
+						"output": {"status": "success"},
+					},
+				),
+				fixture_record(
+					"2026-08-08T10:03:50Z",
+					"response_item",
+					{
+						"type": "custom_tool_call",
+						"call_id": "chained",
+						"name": "exec",
+						"input": chained_tool_input,
+					},
+				),
+				fixture_record(
+					"2026-08-08T10:03:55Z",
+					"response_item",
+					{
+						"type": "custom_tool_call_output",
+						"call_id": "chained",
+						"output": {"status": "success"},
 					},
 				),
 				fixture_record(
@@ -1355,10 +1523,18 @@ def run_selftest() -> None:
 		assert ledger["success"]["exit_code"] == 0
 		assert ledger["failure"]["status"] == "failure"
 		assert ledger["failure"]["exit_code"] == 1
+		assert ledger["failure"]["command_argv"] == ["validate"]
 		assert ledger["retry"]["status"] == "success"
 		assert ledger["unknown"]["status"] == "unknown"
 		assert ledger["missing"]["unmatched_result"] is True
 		assert ledger["config"]["unmatched_call"] is True
+		assert ledger["edit"]["edit_path"] == "src/example.py"
+		assert ledger["skill"]["skill_name"] == "code-style"
+		assert ledger["chained"]["target"] == chained_tool_input
+		assert all(
+			key not in ledger["chained"]
+			for key in ("tool", "command_argv", "edit_path", "skill_name")
+		)
 		assert len(parent_rollout["candidates"]["retries"]) == 1
 		assert parent_rollout["candidates"]["retries"][0]["kind"] == "retry"
 		assert len(parent_rollout["candidates"]["verification"]) >= 1

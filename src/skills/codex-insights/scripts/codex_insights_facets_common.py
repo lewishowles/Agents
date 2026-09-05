@@ -43,6 +43,17 @@ CONFIGURATION_BASENAME_PATTERN = re.compile(
 	r"^(?:AGENTS\.md|WORKSPACE\.md|SKILL(?:\.body)?\.md|skill\.json)$",
 	re.IGNORECASE,
 )
+# Ordered action-label rules for one observation's descriptor; the first pattern that
+# matches the observation's tool, target executable, and command text wins.
+DESCRIPTOR_ACTION_RULES = (
+	(re.compile(r"\b(?:pytest|unittest|vitest)\b", re.IGNORECASE), "run unit tests"),
+	(re.compile(r"\b(?:ruff|eslint|flake8|pylint)\b", re.IGNORECASE), "run lint"),
+	(re.compile(r"\bhcom\s+send\b", re.IGNORECASE), "send hcom message"),
+	(
+		re.compile(r"\b(?:exec|exec_command|bash|shell)\b", re.IGNORECASE),
+		"run command",
+	),
+)
 
 CANDIDATE_FIELDS = {
 	"approach_changes": "approach_change",
@@ -111,6 +122,97 @@ def bounded_text(value: object, limit: int = MAX_EXCERPT_CHARS) -> str | None:
 
 	text = text.strip()
 	return text[:limit] if text else None
+
+
+def descriptor_for_entries(
+	kind: str,
+	entries: Iterable[dict[str, object]],
+	repo: object,
+	status: object = None,
+) -> dict[str, object]:
+	"""Build the action/tool/target/repo/outcome descriptor for one candidate or ledger observation from its tool-ledger entries, leaving target null when its type or value is not structurally unambiguous."""
+	entry_values = list(entries)
+	tools = {
+		entry["tool"]
+		for entry in entry_values
+		if isinstance(entry.get("tool"), str) and entry["tool"]
+	}
+	tool = next(iter(tools)) if len(tools) == 1 else None
+	command_arguments = []
+	has_edit_path = False
+	has_skill_name = False
+	for entry in entry_values:
+		has_edit_path = has_edit_path or isinstance(entry.get("edit_path"), str)
+		has_skill_name = has_skill_name or isinstance(entry.get("skill_name"), str)
+
+		command_argv = entry.get("command_argv")
+		if not isinstance(command_argv, list):
+			continue
+		command_arguments.extend(
+			argument for argument in command_argv if isinstance(argument, str)
+		)
+	action_text = " ".join(
+		[
+			kind,
+			*(value for value in tools),
+			*command_arguments,
+		]
+	)
+	if has_edit_path:
+		action = "edit file"
+	elif has_skill_name:
+		action = "use skill"
+	else:
+		action = next(
+			(
+				label
+				for pattern, label in DESCRIPTOR_ACTION_RULES
+				if pattern.search(action_text)
+			),
+			"record event",
+		)
+	targets = set()
+	for entry in entry_values:
+		edit_path = entry.get("edit_path")
+		if isinstance(edit_path, str) and edit_path:
+			targets.add(("file", edit_path))
+
+		skill_name = entry.get("skill_name")
+		if isinstance(skill_name, str) and skill_name:
+			targets.add(("skill", skill_name))
+
+		# A command only earns an executable target when it failed: a passing command
+		# is not friction worth attributing to a specific binary.
+		command_argv = entry.get("command_argv")
+		if (
+			entry.get("status") == "failure"
+			and isinstance(command_argv, list)
+			and command_argv
+			and isinstance(command_argv[0], str)
+			and command_argv[0]
+		):
+			targets.add(("executable", command_argv[0]))
+	if len(targets) == 1:
+		target_type, target_value = next(iter(targets))
+	else:
+		target_type, target_value = None, None
+
+	if kind == "retry":
+		outcome = "fail_then_pass"
+	elif status == "success":
+		outcome = "pass"
+	elif status == "failure":
+		outcome = "fail"
+	else:
+		outcome = "unknown"
+
+	return {
+		"action": action,
+		"tool": tool,
+		"target": {"type": target_type, "value": target_value},
+		"repo": bounded_text(repo, 280),
+		"outcome": outcome,
+	}
 
 
 def hash_bytes(value: bytes) -> str:
