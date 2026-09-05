@@ -1,0 +1,13 @@
+{
+	"name": "guard-runaway-process",
+	"description": "Blocks a Bash command whose only loop is an unbounded busy spin (`while :`, `while true`, `until false`, `for (( ; ; ))`) with no `sleep`, `break`, or `timeout`. This is the shape that left an orphaned shell burning CPU for eight days.",
+	"runtime": "claude",
+	"events": [
+		{
+			"event": "PreToolUse",
+			"matcher": "Bash"
+		}
+	],
+	"dependencies": ["jq"],
+	"failureMode": "silent"
+}

@@ -30,6 +30,10 @@
 					},
 					{
 						"type": "command",
+						"command": "bash \"$HOME/.codex/hooks/guard-runaway-process.sh\""
+					},
+					{
+						"type": "command",
 						"command": "bash \"$HOME/.codex/hooks/guard-search-boundaries.sh\""
 					},
 					{

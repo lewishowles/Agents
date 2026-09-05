@@ -99,6 +99,10 @@
           },
           {
             "type": "command",
+            "command": "bash -c 'bash \"$HOME/.claude/hooks/guard-runaway-process.sh\"'"
+          },
+          {
+            "type": "command",
             "command": "bash -c 'bash \"$HOME/.claude/hooks/guard-search-boundaries.sh\"'"
           }
         ]
