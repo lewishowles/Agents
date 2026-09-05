@@ -13,6 +13,7 @@ from codex_insights_facets_common import (
 	MAX_TURNS_PER_ROLLOUT,
 	available_conversation_id,
 	bounded_text,
+	descriptor_for_entries,
 	earliest_timestamp,
 	event_classification,
 	format_timestamp,
@@ -83,11 +84,36 @@ def candidate_event(
 	references = list(candidate_value["evidence_references"])
 	status = candidate_value.get("status")
 	target = bounded_text(candidate_value.get("target"), 280)
+	structure_entries = []
+	for ledger_value in rollout.get("tool_ledger", []):
+		ledger_entry = require_mapping(ledger_value, "rollout.tool_ledger[]")
+		ledger_references = {
+			reference
+			for reference in (
+				ledger_entry.get("call_reference"),
+				ledger_entry.get("result_reference"),
+			)
+			if isinstance(reference, str)
+		}
+		if ledger_references.intersection(references):
+			structure_entries.append(ledger_entry)
+	if not structure_entries:
+		# Raw evidence_index entries never carry a "status" key, so the failed-command
+		# executable target rule cannot fire through this fallback; it degrades to a
+		# null target rather than guessing one.
+		structure_entries = [
+			evidence_index[reference]
+			for reference in references
+			if reference in evidence_index
+		]
 	return {
 		"kind": kind,
 		"source": bounded_text(candidate_value.get("source"), 80),
 		"target": target,
 		"status": status,
+		"descriptor": descriptor_for_entries(
+			kind, structure_entries, rollout.get("project_path"), status
+		),
 		"evidence_references": references,
 		"timestamp": earliest_timestamp([candidate_value], evidence_index),
 		"conversation_id": available_conversation_id(rollout),
@@ -116,6 +142,12 @@ def ledger_event(
 		"source": ledger_entry.get("status_source"),
 		"target": bounded_text(ledger_entry.get("target"), 280),
 		"status": ledger_entry.get("status"),
+		"descriptor": descriptor_for_entries(
+			kind,
+			[ledger_entry],
+			rollout.get("project_path"),
+			ledger_entry.get("status"),
+		),
 		"expected_probe": ledger_entry.get("expected_probe"),
 		"evidence_references": references,
 		"timestamp": earliest_timestamp(
@@ -387,3 +419,52 @@ def conversation_facet(
 		"confidence": "medium" if conversation_id is not None else "low",
 	}
 	return facet, all_observations
+
+
+def run_selftest() -> None:
+	"""Verify descriptor construction resolves a structural target and leaves one null otherwise."""
+	evidence_index = {
+		"tool": {"reference": "tool", "timestamp": "2026-08-08T10:00:00Z"},
+		"user": {"reference": "user", "timestamp": "2026-08-08T10:00:01Z"},
+	}
+	rollout = {
+		"rollout_id": "rollout",
+		"conversation_id": "conversation",
+		"project_path": "/tmp/project",
+		"tool_ledger": [
+			{
+				"call_reference": "tool",
+				"result_reference": None,
+				"status": "failure",
+				"tool": "exec",
+				"command_argv": ["ruff", "check"],
+			}
+		],
+	}
+	resolved = ledger_event(
+		rollout, rollout["tool_ledger"][0], "tool_failure", evidence_index
+	)
+	assert resolved["descriptor"] == {
+		"action": "run lint",
+		"tool": "exec",
+		"target": {"type": "executable", "value": "ruff"},
+		"repo": "/tmp/project",
+		"outcome": "fail",
+	}
+	unknown = candidate_event(
+		rollout,
+		{"evidence_references": ["user"]},
+		"correction",
+		evidence_index,
+	)
+	assert unknown["descriptor"] == {
+		"action": "record event",
+		"tool": None,
+		"target": {"type": None, "value": None},
+		"repo": "/tmp/project",
+		"outcome": "unknown",
+	}
+
+
+if __name__ == "__main__":
+	run_selftest()
