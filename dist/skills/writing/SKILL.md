@@ -101,6 +101,18 @@ Keep quoted text, proper names, terms of art, and an ordinary word used accurate
 
 When prose reads as generated, fix the cause. Don't add inserted asides, staged hesitation, or forced informality to make it sound human. Texture that is already in the writing can be preserved; invented texture is performance, and reads worse than the flatness it was meant to cover.
 
+## Commit messages
+
+Lead with what the commit achieves and why it matters; mention implementation details only when they explain user-visible behaviour, compatibility, review risk, or a non-obvious tradeoff.
+
+Use a Conventional Commit subject (`type(scope): description`) naming the behavioural outcome with a plain verb for what happened — fix, add, remove, rename — not an abstract or softer synonym such as resolve, address, correct, or streamline. Prefer "track dirty state across record loads" over "extract mapFormData"; prefer "fix the broken import" over "resolve the import issue".
+
+Use concrete nouns and verbs from the changed behaviour. Avoid compressed umbrella wording such as "preserve evidence and provenance" when the commit can name the records or actions involved. Do not lift vocabulary straight from the code or task file (`facets`, `bounded`, `render`, `invocation`); name the behaviour in words a newcomer to the repo would use. This is a first-pass requirement, not a cleanup the user should have to ask for.
+
+Add a body whenever the subject alone would leave a reviewer guessing.
+
+Run the AI prose tells pass above over the finished message before presenting it.
+
 ## Phrasing
 
 Go-to wording for recurring moments. Starting points, not only options.

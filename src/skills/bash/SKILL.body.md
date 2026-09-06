@@ -131,6 +131,10 @@ fi
 jq -r '.name // "unknown"' "$config_path"
 ```
 
+## Background processes in verification
+
+Avoid a background process during ad-hoc verification unless the behaviour under test genuinely needs one. When one is required: capture its PID, install cleanup before the risky step, trap `EXIT`, `INT`, and `TERM`, kill descendants as well as the direct child, and `wait` for the terminated children so they are reaped. Cleanup must still run if an assertion fails, the check times out, it is interrupted, or the shell exits unexpectedly. Do not rely on closing the terminal, ending the agent session, or the parent tool process to clean up children.
+
 ## File existence checks
 
 Use `[[ -f path ]]` or `[[ -d path ]]` with explicit branch, not `&&` chain. A `&&` exits silently on any failure (not just missing files), making it unreliable for existence checks.

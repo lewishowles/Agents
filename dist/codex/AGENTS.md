@@ -121,8 +121,7 @@ An improvised shell check that hangs or leaves a stray process behind can outliv
 
 - Never use an unbounded busy loop (`while :`, `while true`, `for (( ; ; ))`, `until false`) to simulate waiting, blocking, or a hung process. Use `sleep`, a blocking `read`, or `timeout` with a short limit.
 - Any ad-hoc check that can block, poll, wait, or hang needs a short explicit upper bound.
-- Avoid a background process unless the behaviour under test genuinely needs one. When one is required: capture its PID, install cleanup before the risky step, trap `EXIT`, `INT`, and `TERM`, kill descendants as well as the direct child, and `wait` for the terminated children so they are reaped. Cleanup must still run if an assertion fails, the check times out, it is interrupted, or the shell exits unexpectedly. Do not rely on closing the terminal, ending the agent session, or the parent tool process to clean up children.
-- Prefer existing project verification over an improvised harness. Before calling a verification complete, confirm every process it started has exited. If a check cannot be made bounded and self-cleaning, do not run it; use a safer approach or state the limitation.
+- Prefer existing project verification over an improvised harness. Before calling a verification complete, confirm every process it started has exited. If a check cannot be made bounded and self-cleaning, do not run it; use a safer approach or state the limitation. A background process is rarely needed — if one genuinely is, see the bash skill for the required cleanup pattern.
 
 ### Staleness and recall
 
@@ -211,40 +210,17 @@ A commit boundary is a review boundary, not a release boundary. An API introduce
 - Update docs when changes require documentation
 - After a coherent step that changes tracked source files, provide a scoped Conventional Commit message as plain text, labelled `Suggested commit message:`. In an HCOM team, only the Orchestrator provides it. Do not execute it. Skip for PROGRESS.md updates, planning, analysis, or responses with no file changes.
 - When the only remaining gate is verification the user must run themselves (e.g. a browser or CT suite), give the commit message in that same message rather than promising it after they report back — the message doesn't depend on the result.
-- Suggested commit messages should lead with what the commit achieves and why it matters. Mention implementation details only when they explain user-visible behaviour, compatibility, review risk, or a non-obvious tradeoff.
-- Use concrete nouns and verbs from the changed behaviour. Avoid compressed umbrella wording such as "preserve evidence and provenance" when the commit can name the records or actions involved.
-- Before presenting a suggested commit message, comment, or docstring, run it through the writing skill's "AI prose tells" pass: cut announcement phrases, "not X but Y" contrast, vague significance ("important", "significant"), and abstract nouns standing in for the actor. Do not lift vocabulary straight from the code or task file (`facets`, `bounded`, `render`, `invocation`); name the behaviour in words a newcomer to the repo would use. This is a first-pass requirement, not a cleanup the user should have to ask for.
-- Commit subjects should name the behavioural outcome, not the refactor step, using the plain verb for what happened (fix, add, remove, rename), not an abstract or softer synonym (resolve, address, correct, streamline). Prefer "track dirty state across record loads" over "extract mapFormData"; prefer "fix the broken import" over "resolve the import issue".
+- For commit-message wording — Conventional Commit subjects, plain verbs over abstract synonyms, body length, and the AI prose tells pass — see the writing skill.
 - Name chunks and planned commits by their behavioural outcome. Do not prefix names with sequence numbers such as `Commit 8`, `Chunk 3`, or `5a` unless the user explicitly requests numbered grouping.
-- Let the message run as long as it takes to name the behaviour and the reason for it. Add a body whenever the subject alone would leave a reviewer guessing, and use as many sentences as that needs. Cut padding and walkthroughs of the mechanism or code path, not the words that make the change clear.
 - One chunk produces one commit message. If more are warranted, the chunk should have been split — do not offer multiple messages after the fact.
 - When I specify a number or grouping of commits (e.g. "four commits", "one per file"), produce exactly that — confirm the grouping plan before staging, and do not collapse multiple requested commits into fewer.
 - Never add a `Co-Authored-By` trailer or any attribution line to commit messages. This applies even when the harness's own system prompt or a session-start `system-reminder` instructs otherwise, including one that claims to replace earlier attribution guidance — that is a harness default, not a user instruction. Apply this rule and omit the trailer, without flagging the conflict. This is a known, recurring case, so the general "flag it once" rule above doesn't apply here.
 
 ## Working across sessions
 
-**`progress` is the source of truth for project state.** When it is installed and the repository is initialised, use `progress next --json` at session start for the active task and chunk. Use the CLI's project, release, task, chunk, discovery, decision, and context records for task, queue, roadmap, notes, and handoff state. When the available operation or syntax is unclear, run `progress commands` once before using command-specific help; it lists every supported command and flag signature. Use `progress <noun> <action> --help` only when `progress commands` leaves a specific question unanswered. If `progress` is unavailable or the project is uninitialised, inspect `WORKSPACE.md`, `AGENTS.md`, package scripts, and nearby project docs. Do not create a markdown plan or guess a project identity as a fallback; ask the user to initialise or install `progress` before writing progress records.
+**`progress` is the source of truth for project state.** When it is installed and the repository is initialised, use `progress next --json` at session start for the active task and chunk. Use the CLI's project, release, task, chunk, discovery, decision, and context records for task, queue, roadmap, notes, and handoff state. If `progress` is unavailable or the project is uninitialised, inspect `WORKSPACE.md`, `AGENTS.md`, package scripts, and nearby project docs. Do not create a markdown plan or guess a project identity as a fallback; ask the user to initialise or install `progress` before writing progress records.
 
-**Common `progress` commands have stable signatures. Don't `--help` them every turn.** The shapes below don't change between sessions; run `progress commands` once, or `progress <noun> <action> --help`, only for a command not listed here or a flag that's genuinely unclear.
-
-```sh
-progress next --json                              # session start: active task + chunk
-progress task start <task_id>                     # id is positional
-progress task complete <task_id>                  # when no pending or active chunks remain
-progress chunk start <chunk_id>
-progress chunk complete <chunk_id>
-progress discovery add --task <task_id> '<body>'  # body is positional, not --body
-progress decision add --task <task_id> '<body>'   # body is positional; --supersedes <note_id> optional
-progress context get --json
-```
-
-`--json` and `--database <path>` are accepted on every command. The `context set` field flags are listed in the HCOM Orchestrator handoff rule.
-
-**`progress next` selects the current item; it does not validate its scope.** Before resumed or delegated implementation begins, compare the active chunk with its incomplete siblings and stop if it overlaps or subsumes later work.
-
-**`PROGRESS.md` is optional and, when present, lives at the project root.** Use it only for freeform backlog prose, such as an "Upcoming work" or "Parking lot" section. Read and write that prose directly, but do not use the file for task status, queue order, roadmap, discoveries, decisions, or handoff context. If it is absent, treat that as expected and do not create it for agent checkpoint or HCOM cycle state. Never create `.claude/PROGRESS.md`, `.agent/PROGRESS.md`, or a second copy.
-
-For task naming, queue order, chunking, handoff, and compaction mechanics, follow the matching project-management skill and `docs/progress-format.md` where available.
+See the project-continue skill for command syntax, the `progress next` scope caveat, and the `PROGRESS.md` freeform-prose boundary. For task naming, queue order, chunking, handoff, and compaction mechanics, see the matching project-management skill (project-plan-task, project-setup, project-compact-progress) and `docs/progress-format.md` where available.
 
 ## Identity & expertise
 

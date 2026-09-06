@@ -8,6 +8,25 @@ The `progress` CLI stores the current project, release, task, chunk, discovery, 
 
 `PROGRESS.md`, when present, is optional root-level freeform backlog prose. Do not use it as a fallback for task, chunk, queue, release, discovery, decision, or handoff state. If the `progress` project binding is missing or uninitialised, report the explicit error, inspect `AGENTS.md`, `WORKSPACE.md`, package scripts, and nearby docs for safe local context, and ask the user to initialise or install `progress` before writing progress records. Use the full task and chunk contract returned by `progress next --json`.
 
+## Command syntax
+
+Run `progress commands` once per session to confirm the full command list; run `progress <noun> <action> --help` only when that still leaves a flag unclear. Common commands have stable signatures:
+
+```sh
+progress next --json                              # session start: active task + chunk
+progress task start <task_id>                     # id is positional
+progress task complete <task_id>                  # when no pending or active chunks remain
+progress chunk start <chunk_id>
+progress chunk complete <chunk_id>
+progress discovery add --task <task_id> '<body>'  # body is positional, not --body
+progress decision add --task <task_id> '<body>'   # body is positional; --supersedes <note_id> optional
+progress context get --json
+```
+
+`--json` and `--database <path>` are accepted on every command.
+
+**`progress next` selects the current item; it does not validate its scope.** Before resumed or delegated implementation begins, compare the active chunk with its incomplete siblings and stop if it overlaps or subsumes later work.
+
 ## Workspace file
 
 Read `<project-root>/WORKSPACE.md` during startup when present. Treat it as factual source for commands, generated files, diagnostics, progress locations, expensive checks, and forbidden operations.
