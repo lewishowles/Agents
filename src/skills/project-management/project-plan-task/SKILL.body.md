@@ -108,9 +108,9 @@ Sibling chunks must not overlap. When splitting a coarse chunk, narrow or replac
 
 Use three substantive files as a soft ceiling for one task, judged by review effort, not raw file count. A substantive file is one where the changed lines carry logic, tests, or prose the reviewer must actually read; a file whose change is only one or two lines (a registration, an import, a config value) does not count toward the ceiling, because there is nothing there to review. Ten files with one-line changes can be faster to review than one file with a hundred changed lines: weigh the diff, not the file count. Split a dense file across tasks when it contains several behaviour slices. Broad outcomes such as `complete component`, `full public API`, or `all integration` fail this gate unless the underlying change is genuinely small.
 
-An ordered task may use intermediate chunks that are not a complete feature when each is internally consistent, has focused verification, and is not presented or released as complete. Keep the task active until all required chunks and the final acceptance have landed.
+An ordered task may use intermediate chunks that are not a complete feature when each is internally consistent, has focused verification, and is not presented or released as complete. Keep the task active until all required chunks are complete.
 
-For a multi-commit task, make each independently reviewable commit a chunk. The task remains active until the user accepts the final chunk; do not infer completion from Git state.
+For a multi-commit task, make each independently reviewable commit a chunk. Complete each chunk record when its implementation and verification are done and you present it, and complete the task after the final chunk. Do not infer completion from Git state.
 
 ### Planning-quality gate
 
@@ -128,10 +128,12 @@ A spec explains why now, the problem, goals, non-goals, approach, entry point an
 
 Use one `task` record for the work and its stable contract: identity, overview, purpose, contract, model tier when needed, files and linked specs, acceptance criteria, verification, risks, release, and position.
 
+The contract is the stable "what": observable outcomes, public behaviour, invariants, constraints, and relevant states, independent of tools. For public, user-visible, or behaviourally significant work, name only the applicable failure and recovery states, such as loading, empty, denied, error, partial, stale, interrupted, or recovery. Keep it observable and invariant-focused, not implementation or testing steps; route accessibility, security, error-handling, and testing mechanics to specialist skills.
+
 End the `--contract` value with an explicit out-of-scope statement naming the adjacent work a reader could reasonably assume is included. There is no separate non-goals field, and every delegation packet has to state explicit non-scope, so a task without this makes each handoff redraw the boundary from memory. Name a specific exclusion or leave the statement out; a generic "nothing else is in scope" line adds nothing.
 
 Use `chunk` records for detailed implementation steps, including decisions-first ordering and mechanical-last work. Work discovered during a chunk stays in that chunk only when it answers the same primary review question. Put cross-cutting or unrelated implementation in its own chunk, or in a separate task when it is independently schedulable. Use `discovery` and `decision` records for durable findings rather than changing the task history by hand.
 
 Once a task's chunk split is known, create or update every known chunk in the same planning pass. Do not keep known chunks only in chat, handoff text, or a spec, and do not wait until implementation or delegation to add them. Later chunks may stay concise until work starts, but each record must name its reviewable outcome and order. Add a chunk later only when its boundary was genuinely unknown earlier.
 
-Start a task when implementation begins. Block it when an external blocker or unresolved decision makes it unsafe to continue, and unblock it only when that condition is resolved. When an unresolved decision affects only some chunks, record the open question and its recommended default in those chunks' descriptions and leave the rest workable; block the whole task only when the answer could change work across all of it. Complete chunks as they are accepted. Complete the task only after the user accepts the final reviewable outcome. Never infer status from Git state.
+Start a task when implementation begins. Block it when an external blocker or unresolved decision makes it unsafe to continue, and unblock it only when that condition is resolved. When an unresolved decision affects only some chunks, record the open question and its recommended default in those chunks' descriptions and leave the rest workable; block the whole task only when the answer could change work across all of it. Complete each chunk as you present its finished, verified work. Complete the task after the final chunk, when no pending or active chunks remain. Never infer status from Git state.

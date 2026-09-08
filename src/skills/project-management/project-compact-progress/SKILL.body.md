@@ -142,7 +142,7 @@ If scope changed, update "files likely to change" in the current section.
 
 ## Finishing work
 
-After work finishes, refresh the handoff with verified implementation steps, update `### Previous step`, and state that the task awaits the user's acceptance. Mark a task complete, promote the queue, or archive it only after the user says “committed”, “continue”, “next”, or equivalent.
+After a chunk's implementation and verification are done and the work is presented, complete the chunk record. Complete the task, promote the queue, and archive completed work when no pending or active chunks remain. Clear the handoff on task completion; refresh it mid-task only with facts a fresh session cannot recover from the records.
 
 ## Archive mode
 
@@ -150,7 +150,7 @@ Archive when completed work makes active work hard to find. Progress records hol
 
 Archive completed sections when:
 
-- Tasks are done after the user accepted their handoff
+- The task's records show it complete
 - Section no longer affects current or upcoming work
 - Detailed implementation notes are redundant with the code
 - New major phase starts and old phases are settled
