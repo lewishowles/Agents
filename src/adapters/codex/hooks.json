@@ -18,7 +18,7 @@
 					},
 					{
 						"type": "command",
-						"command": "bash \"$HOME/.codex/hooks/guard-hcom-ack.sh\""
+						"command": "bash \"$HOME/.codex/hooks/guard-hcom-ack.sh\" codex"
 					},
 					{
 						"type": "command",
