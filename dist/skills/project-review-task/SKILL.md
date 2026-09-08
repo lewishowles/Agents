@@ -53,7 +53,7 @@ If the supplied ID or name does not resolve, or the lookup is ambiguous, stop an
 - **Clear language** — a reader without the investigation context can understand each requirement; statements name the relevant subject and action, bullets do not compress separate requirements or decisions, unfamiliar terms are explained, and confirmed requirements, recommended defaults, and unresolved questions remain distinct.
 - **Behavioural contract** — inputs, outputs, states, boundaries, and relevant failure or recovery behaviour are stated without implementation recipes.
 - **Task boundary** — one coherent outcome, explicit non-goals, and independently reviewable files and verification.
-- **Chunk review size** — each chunk asks one primary review question and normally touches no more than three substantive files; split independent concerns and dense behaviour slices even when they belong to one feature or file.
+- **Chunk review size** — each chunk asks one primary review question and normally touches no more than three substantive files, judged by review effort, not raw file count: a file whose change is only one or two lines does not count toward that ceiling; split independent concerns and dense behaviour slices even when they belong to one feature or file.
 - **Dependencies** — real prerequisites, cross-repository relationships, permission limits, and sequencing are named.
 - **Altitude** — enough detail to act safely, with no speculative architecture or line-by-line solution disguised as a requirement.
 - **Maintainability** — existing helpers and patterns are considered; abstractions, flexibility, and process are proportionate to the evidence.
