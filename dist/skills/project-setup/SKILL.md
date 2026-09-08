@@ -55,7 +55,7 @@ After plan approval, consider delegating implementation tasks to subagents when:
 
 ### Review gate
 
-Delegate exactly one implementation chunk at a time. Do not delegate or begin a second chunk, even when files are independent, until the user has accepted the earlier handoff with “committed”, “continue”, “next”, or equivalent.
+Delegate exactly one implementation chunk at a time. Do not delegate or begin the next chunk in the same pass, even when files are independent. Complete the current chunk record, present it, and stop; the next chunk starts in a fresh session.
 
 For each delegated task:
 
