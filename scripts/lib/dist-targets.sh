@@ -23,6 +23,7 @@ CODEX_PARTS=(
 	"$REPO_DIR/src/rules/identity.md"
 	"$REPO_DIR/src/rules/skills-policy.md"
 	"$REPO_DIR/src/rules/file-discovery.md"
+	"$REPO_DIR/src/fragments/codex/exec-environment.md"
 )
 
 # Concatenates ordered fragment files into a single target file, with a blank

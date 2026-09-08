@@ -46,7 +46,7 @@ Minimise token cost by default; treat context as a limited shared budget.
 - When using persistent shell sessions, run `clear` before each command so poll output does not include prior scrollback. Polls that return full session history waste tokens proportional to session age.
 - Prefer local aggregation over returning raw records: use counts, `--files-with-matches`, selected JSON fields, Git stats, or another bounded projection that answers the question.
 - For long-running commands (builds, validation suites, test runs), redirect output to a file instead of polling the shell. Retain the full log only when it may be needed for diagnosis or audit, and return the command status, a concise summary, the log path, and the first relevant error when present. Read only targeted ranges from that log afterwards, never the whole file by default.
-- Put Git global options before the subcommand: `git -C <path> --no-pager log …`, never `git log … --no-pager`. Pass `--no-pager` to `git diff`, `git log`, and other commands that invoke a pager. A pager blocks the shell session and requires an extra keystroke to resume.
+- The Bash tool and Codex exec both capture output through a pipe, not a terminal, so Git never opens a pager and `--no-pager` is not needed. If you pass it anyway, or any other Git global option such as `-C`, it goes before the subcommand: `git -C <path> --no-pager log …`, never `git log … --no-pager`, which Git rejects with `error: invalid option`.
 - Pass every `hcom send` body with `--file <path>` (write the body to a scratch file first) unless it is a single short line with no apostrophe, backtick, quote, parenthesis, `$`, `!`, or newline. The injected HCOM context shows inline `-- 'plain text'` examples; treat `--file` as the default regardless. Inline bodies are the largest single source of failed sends: double quotes run backticks and `$(...)` as command substitution, single quotes break on the first apostrophe, and a body Bash splits across arguments fails with `Error: @mentions`.
 - Do not read build output, generated bundles, coverage, screenshots, or generated artefacts unless a reported failure points to a specific file or path.
 - Do not print large command output; if you do, acknowledge it briefly, switch to narrower commands, and avoid repeating the pattern.
@@ -57,6 +57,7 @@ Minimise token cost by default; treat context as a limited shared budget.
 - Do not re-run or re-print expensive commands unless something changed that can affect their result and local execution is justified by token cost.
 - Treat an itemised remaining-work list in a continuation or replacement packet as established evidence. Direct the next action without repeating discovery or verification unless relevant state changed.
 - Do not output placeholder status text between tool calls ("Still active", "Continuing…"). Notification-only wake-ups such as `<hcom>` do not require a status reply. Wait silently until there is something genuinely new to report: completion, a finding, a direction change, or a blocker. If identical wake-ups recur without a state change, treat them as a possible delivery failure, check `hcom status --logs` when HCOM inspection is authorised, and report the concrete error once rather than narrating each retry.
+- In an HCOM team, do not send acknowledgement or "will do" messages: `guard-hcom-ack` blocks them and the attempt is wasted. Wait silently for actionable work, or send a terminal result, blocker, decision, or correction. Address a teammate with `--reply-to <id>` and `--thread` rather than an `@name` recalled from earlier in the session; the CVCV name suffix changes between sessions, and a stale mention fails the whole send with `Error: @mentions`.
 - Write large deliverables (roadmaps, specs, reports) directly to the target file and summarise briefly in chat; never print the full document as a response.
 - Prefer structurally correct, formatter-friendly code over hand-polished indentation. Preserve indentation where it affects syntax or meaning, but do not spend effort aligning, beautifying, or manually wrapping whitespace that the project formatter will rewrite.
 
@@ -272,8 +273,8 @@ When a PreToolUse hook injects a skill requirement, treat it as binding. Stop be
 
 Minimise token cost while discovering files; answer the narrow question with the smallest output.
 
-- Prefer `rg` and `rg --files`, but include gitignored files during file discovery. For glob tools, set `include_gitignored: true`; for `rg`, include ignored files while keeping the search scoped to the smallest likely path.
-- Scope searches to the smallest likely directory, for example `rg --files src` instead of repo-wide scans.
+- Prefer `rg` and `rg --files`, scoped to the smallest likely directory (`rg --files src`, not a repo-wide scan). Plain `rg` already honours `.gitignore` and skips `node_modules`, `dist`, and caches, which is what you want by default.
+- When you specifically need files that `.gitignore` hides, add `--no-ignore` (or `include_gitignored: true` for the Glob/Grep tools) and keep the path scoped to a named directory. A broad `rg --no-ignore`, `grep -r`, or `find` targeting `.`, `~`, `/`, or a protected directory is blocked by `guard-search-boundaries`; scope the path or use the Grep/Glob tools instead.
 - Do not inspect generated, vendored, cached, build, dependency, or large binary directories unless explicitly asked: `node_modules`, `dist`, `build`, `.git`, coverage, caches, generated plugin bundles, lockfile-heavy generated output, local secrets.
 - Do not use broad `find`, `ls -R`, or unscoped glob searches. If `find` is unavoidable, scope it to named directories and group `-o` expressions with parentheses.
 - Before printing many files, prefer counts or `--files-with-matches`; open only the specific files needed.
@@ -284,6 +285,6 @@ Minimise token cost while discovering files; answer the narrow question with the
 - After making file edits, do not self-review by reading several changed files in sequence. Prefer diagnostics, formatter output, targeted symbol lookup, or a single patch-anchor read only when needed.
 - For build artefact checks, inspect the exact expected output path rather than listing whole build trees.
 - If a command unexpectedly starts dumping large output, stop using that pattern and switch to a narrower command.
-- If a user says a file exists and a search cannot find it, state that gitignored files were included before concluding it is missing.
+- If a user says a file exists and a search cannot find it, re-run with `--no-ignore` before concluding it is missing, then say whether gitignored files were included.
 - Never rely on a remembered line number to offset-read into a file. Formatters shift lines on save. Use `rg -n 'pattern' file` to find the current line first, then read from that offset.
 - Never use a `&&` chain to conclude a file exists or is absent. A `&&` exits non-zero silently on any failure in the chain, not just a missing file. Use the Read tool or an explicit `[[ -f path ]]` check with a verified exit status instead.
