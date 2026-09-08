@@ -261,6 +261,9 @@ When a PreToolUse hook injects a skill requirement, treat it as binding. Stop be
 
 - Re-read a skill only if the task type changes, the user asks, or you need a specific detail. Otherwise keep applying the loaded guidance without announcing it.
 - Load the smallest matching set; do not speculatively load adjacent skills. For analysis, review, or planning, do not load implementation skills (see Scope default in global-rules).
+- Load only the one or two skills the first edit actually needs before making it. Defer a matching skill whose guidance applies to a later part of the task (tests, copy, docs) until work reaches that part, instead of loading every matching skill in one wave up front.
+- Skip a skill's independent lookup for a fact a dispatch packet, handoff, or prior response has already inlined (an API shape, a token list, a routing decision). Load the skill later only if the task needs guidance beyond that inlined fact.
+- If a skill's output looks truncated or incomplete, trust it or re-read only the missing range. Do not re-invoke the whole skill to remove the uncertainty.
 - Summarise constraints in your own words — do not quote skill sections back.
 - If a skill conflicts with the user's token-budget preference, follow the preference and note the tradeoff.
 - Two loaded skills disagree? The more specific skill wins for the part it owns. Say which guidance you set aside and why. Record lasting ownership splits in the two skills' own files, not here.
