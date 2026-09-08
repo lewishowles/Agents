@@ -97,10 +97,12 @@ setup_codex() {
 	link_path "$REPO_DIR/dist/codex/AGENTS.md" "$HOME/.agents/AGENTS.md" "AGENTS.md"
 	link_path "$REPO_DIR/dist/codex/AGENTS.md" "$CODEX_DIR/AGENTS.md" "Codex AGENTS.md"
 	link_path "$REPO_DIR/dist/codex/hooks.json" "$CODEX_DIR/hooks.json" "Codex hooks"
-	link_path "$REPO_DIR/dist/codex/hooks/tool-call-checkpoint.sh" "$CODEX_DIR/hooks/tool-call-checkpoint.sh" "Codex tool-call checkpoint"
-	link_path "$REPO_DIR/dist/codex/hooks/guard-destructive.sh" "$CODEX_DIR/hooks/guard-destructive.sh" "Codex guard-destructive"
-	link_path "$REPO_DIR/dist/codex/hooks/guard-hcom-ack.sh" "$CODEX_DIR/hooks/guard-hcom-ack.sh" "Codex HCOM acknowledgement guard"
-	link_path "$REPO_DIR/dist/codex/hooks/guard-search-boundaries.sh" "$CODEX_DIR/hooks/guard-search-boundaries.sh" "Codex search-boundary guard"
+	prune_stale_repo_links "$CODEX_DIR/hooks" "$REPO_DIR/dist/codex/hooks" "hooks"
+	local hook
+	for hook in "$REPO_DIR"/dist/codex/hooks/*; do
+		[ -f "$hook" ] || continue
+		link_path "$hook" "$CODEX_DIR/hooks/$(basename "$hook")" "hooks/$(basename "$hook")"
+	done
 	ensure_codex_config
 	cli_group_end
 
